@@ -1,0 +1,37 @@
+{
+  "root": true, //指定此檔案為設定檔
+  "parser": "babel-eslint", //預設使用babel-eslint為其解析器
+  "parserOptions": {
+    "ecmaVersion": 6, //指定使用的ECMAScript版本
+    "sourceType": "module", // script(預設)或 module(若為ECMAScript模組)
+    "ecmaFeatures": {
+      "jsx": true //啟用 JSX
+    }
+  },
+  "extends": [
+    "airbnb",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": ["prettier"],
+  "rules": {
+    // 新增規則
+    "prettier/prettier": "warn", //當不符合prettier設定時跳出警告
+    "react/jsx-uses-react": "off", //關閉防止React被錯誤標示為未使用
+    "react/react-in-jsx-scope": "off" // 關閉jsx 檔案一定要使用 import React 的規則
+  },
+  "env": {
+    //指定環境，每個環境都有自己預設定義的全域變數，可以同時指定多個環境
+    "browser": true,
+    "jest": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      //設定React版本
+      "pragma": "React",
+      "version": "detect"
+    }
+  }
+}
