@@ -20,12 +20,11 @@
   "plugins": ["prettier", "@typescript-eslint"],
   "rules": {
     "@typescript-eslint/triple-slash-reference": "off",
-    "prettier/prettier": "warn",
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": "off",
-    "import/no-unresolved": 0,
-    "import/prefer-default-export": 0,
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
     "import/extensions": ["error", "never"],
     "semi": [2, "always"],
     "max-len": [
@@ -36,6 +35,12 @@
         "ignoreComments": true,
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true
+      }
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
       }
     ]
   },
