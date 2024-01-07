@@ -1,8 +1,26 @@
 import { useState } from 'react';
 import brand from '../assets/images/brand.png';
 
-function Header(props: { darkMode: string; setDarkMode: Function }) {
-  const { darkMode, setDarkMode } = props;
+type NavProps = {
+  href: string;
+  text: string;
+  itemType: string;
+};
+
+function NavItem({ href, text, itemType }: NavProps) {
+  return (
+    <li className={`mx-2.5 ${itemType === 'menuItem' && 'p-3'}`}>
+      <a href={href}>{text}</a>
+    </li>
+  );
+}
+
+type HeaderProps = {
+  darkMode: string;
+  setDarkMode: Function;
+};
+
+function Header({ darkMode, setDarkMode }: HeaderProps) {
   const [toggleMenu, setToggleMenu] = useState('translate-x-full');
 
   // Dark Mode
@@ -21,18 +39,10 @@ function Header(props: { darkMode: string; setDarkMode: Function }) {
         </div>
         <nav className="flex items-center text-lg">
           <ul className="hidden sm:flex flex-row items-center w-fit">
-            <li className="mx-2.5">
-              <a href="/">Blog</a>
-            </li>
-            <li className="mx-2.5">
-              <a href="/tags">tags</a>
-            </li>
-            <li className="mx-2.5">
-              <a href="/projects">projects</a>
-            </li>
-            <li className="mx-2.5">
-              <a href="/about">About</a>
-            </li>
+            <NavItem href="/" text="Blog" itemType="navItem" />
+            <NavItem href="/tags" text="tags" itemType="navItem" />
+            <NavItem href="/projects" text="projects" itemType="navItem" />
+            <NavItem href="/About" text="About" itemType="navItem" />
           </ul>
           {/* Search btn */}
           <button aria-label="search" type="button" className="mx-2">
@@ -138,18 +148,10 @@ function Header(props: { darkMode: string; setDarkMode: Function }) {
           </div>
           <div className="z-10 h-full py-5">
             <ul className="text-2xl text-left mx-8">
-              <li className="mx-2.5 p-3">
-                <a href="/">Blog</a>
-              </li>
-              <li className="mx-2.5 p-3">
-                <a href="/tags">tags</a>
-              </li>
-              <li className="mx-2.5 p-3">
-                <a href="/projects">projects</a>
-              </li>
-              <li className="mx-2.5 p-3">
-                <a href="/about">About</a>
-              </li>
+              <NavItem href="/" text="Blog" itemType="menuItem" />
+              <NavItem href="/tags" text="tags" itemType="menuItem" />
+              <NavItem href="/projects" text="projects" itemType="menuItem" />
+              <NavItem href="/About" text="About" itemType="menuItem" />
             </ul>
           </div>
         </div>
