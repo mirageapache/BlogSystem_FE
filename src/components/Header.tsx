@@ -30,7 +30,7 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
 
   return (
     <header className="flex justify-center w-full">
-      <div className="w-full sm:min-w-[640px] md:max-w-[768px] flex justify-between py-2 px-4">
+      <div className="w-full sm:min-w-[640px] md:max-w-[768px] xl:max-w-6xl flex justify-between py-2 px-4">
         <div id="brand" className="">
           <a className="flex flex-row items-center w-fit" href="/">
             <img className="w-11 h-11 mr-2.5" src={brand} alt="logo" />
