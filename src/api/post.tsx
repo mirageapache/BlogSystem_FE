@@ -1,5 +1,7 @@
 import axios from 'axios';
-import { baseUrl } from './index';
+import { DUMMYJSON_URL } from './index';
+
+const baseUrl = DUMMYJSON_URL;
 
 export async function getPosts() {
   const result = await axios
@@ -14,9 +16,9 @@ export async function getPosts() {
   return result;
 }
 
-export async function getTopTenPosts() {
+export async function getPostByLimit(limit: number) {
   const result = await axios
-    .get(`${baseUrl}/posts?limit=10`)
+    .get(`${baseUrl}/posts?limit=${limit}`)
     .then((res) => {
       const postData = res.data;
       return postData;

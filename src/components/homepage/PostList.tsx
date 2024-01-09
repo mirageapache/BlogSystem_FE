@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 import { get } from 'lodash';
 import PostItem from './PostItem';
-import { getTopTenPosts } from '../../api/post';
+import { getPostByLimit } from '../../api/post';
 
 interface PostType {
   body: string;
@@ -13,7 +13,7 @@ interface PostType {
 }
 
 function PostList() {
-  const { isLoading, error, data } = useQuery('posts', getTopTenPosts);
+  const { isLoading, error, data } = useQuery('posts', () => getPostByLimit(5));
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
@@ -22,7 +22,7 @@ function PostList() {
     <PostItem key={post.id} id={post.id} title={post.title} body={post.body} tags={post.tags} />
   ));
 
-  return <div className="flex-grow">{postItems}</div>;
+  return <div className="flex-grow px-8 md:px-0">{postItems}</div>;
 }
 
 export default PostList;
