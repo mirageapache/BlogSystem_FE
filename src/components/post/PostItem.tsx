@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 function PostTag(props: { text: string }) {
   const { text } = props;
