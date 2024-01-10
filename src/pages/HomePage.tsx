@@ -1,4 +1,4 @@
-import PostList from 'components/homepage/PostList';
+import PostList from 'components/post/PostList';
 import SideBar from 'components/homepage/SideBar';
 
 function HomePage() {
