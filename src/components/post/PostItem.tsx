@@ -2,7 +2,13 @@ import { Link } from 'react-router-dom';
 
 function PostTag(props: { text: string }) {
   const { text } = props;
-  return <a href="/">{text} </a>;
+  return (
+    <span className="mr-3">
+      <a href="/" className="font-bold">
+        {text.toUpperCase()}
+      </a>
+    </span>
+  );
 }
 
 interface PostType {

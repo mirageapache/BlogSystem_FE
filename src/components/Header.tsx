@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import brand from '../assets/images/brand.png';
+
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
 import { ReactComponent as DarkModeIcon } from '../assets/icons/darkMode.svg';
 import { ReactComponent as LightModeIcon } from '../assets/icons/lightMode.svg';
