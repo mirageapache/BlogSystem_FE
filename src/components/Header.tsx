@@ -27,7 +27,7 @@ type HeaderProps = {
 };
 
 function Header({ darkMode, setDarkMode }: HeaderProps) {
-  const [toggleMenu, setToggleMenu] = useState('translate-x-full');
+  const [toggleMenu, setToggleMenu] = useState('translate-x-full'); // Menu animation
 
   // Dark Mode
   function handleDarkMode() {
@@ -36,7 +36,7 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
 
   return (
     <header className="flex justify-center w-full">
-      <div className="w-full sm:min-w-[640px] md:max-w-[768px] xl:max-w-6xl flex justify-between py-2 px-10 md:px-4">
+      <div className="w-full sm:min-w-[640px] xl:max-w-6xl flex justify-between py-2 px-4">
         <div id="brand" className="">
           <a className="flex flex-row items-center w-fit" href="/">
             <img className="w-11 h-11 mr-2.5" src={brand} alt="logo" />
@@ -44,12 +44,6 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
           </a>
         </div>
         <nav className="flex items-center text-lg">
-          <ul className="hidden sm:flex flex-row items-center w-fit">
-            <NavItem href="/" text="Blog" itemType="navItem" />
-            <NavItem href="/topical" text="Topical" itemType="navItem" />
-            <NavItem href="/projects" text="Projects" itemType="navItem" />
-            <NavItem href="/About" text="About" itemType="navItem" />
-          </ul>
           {/* Search btn */}
           <button aria-label="search" type="button" className="mx-2">
             <SearchIcon className="h-5 w-5 m-1.5 stroke-0 fill-gray-900 dark:fill-gray-100" />
@@ -58,7 +52,7 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
             <>
               {/* DarkMode btn */}
               <button aria-label="darkMode" type="button" className="mx-2" onClick={handleDarkMode}>
-                <DarkModeIcon className="h-6 w-6 m-1.5 fill-gray-900 dark:fill-gray-100" />
+                <DarkModeIcon className="h-9 w-9 rounded-full p-2 m-1.5 fill-gray-900 dark:fill-gray-100 hover:bg-gray-300" />
               </button>
             </>
           ) : (
@@ -70,10 +64,16 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
                 className="mx-2"
                 onClick={handleDarkMode}
               >
-                <LightModeIcon className="h-6 w-6 m-1.5 fill-gray-900 dark:fill-gray-100" />
+                <LightModeIcon className="h-9 w-9 rounded-full p-2 m-1.5 fill-gray-900 dark:fill-gray-100 hover:bg-gray-600" />
               </button>
             </>
           )}
+          <button
+            type="button"
+            className="hidden sm:inline-block rounded-full text-white bg-sky-500 hover:bg-sky-700 px-4 py-1 dark:bg-sky-800"
+          >
+            登入
+          </button>
           {/* ToggleMenu btn */}
           <button
             aria-label="toggleMenu"
