@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import brand from '../assets/images/brand.png';
-
+// --- icons import ---
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
 import { ReactComponent as DarkModeIcon } from '../assets/icons/darkMode.svg';
 import { ReactComponent as LightModeIcon } from '../assets/icons/lightMode.svg';
@@ -28,20 +28,10 @@ type HeaderProps = {
 
 function Header({ darkMode, setDarkMode }: HeaderProps) {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // Toggle Menu 動畫效果
-  const [darkModeAnimation, setDarkModeAnimation] = useState('translate-y-0 opacity-100'); // 深色模式按鈕動畫效果
-  const [lightModeAnimation, setLightModeAnimation] = useState('translate-y-3 opacity-0'); // 明亮模式按鈕動畫效果
-  const [searchInputAnimation, setSearchInputAnimation] = useState('w-0 bg-white'); // 搜尋輸入框動畫效果
 
-  // 控制深色模式
-  function handleDarkMode() {
+  /** 深色模式切換 */
+  const handleDarkMode = () => {
     setDarkMode(darkMode === 'dark' ? '' : 'dark');
-    setDarkModeAnimation(darkMode === 'dark' ? 'translate-y-0 opacity-100 delay-300 ease-in' : 'translate-y-3 opacity-0 ease-in');
-    setLightModeAnimation(darkMode === 'dark' ? 'translate-y-3 opacity-0 ease-in' : 'translate-y-0 opacity-100 delay-300 ease-in');
-  }
-
-  // 控制搜尋輸入框
-  function SearchInputFocus(){
-    setSearchInputAnimation('')
   }
 
   return (
@@ -55,19 +45,19 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
         </div>
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}
-          <div className='flex items-center relative border border-red-500'>
-            <input type="text" placeholder="搜尋..." className={`p-4 h-6 text-lg rounded-full ${searchInputAnimation}`} />
-            <button aria-label="search" type="button" className="absolute right-0">
-              <SearchIcon className="h-5 w-5 m-1.5 border stroke-0 fill-gray-900 dark:fill-gray-100" />
-            </button>
+          <div className='hidden sm:flex items-center'>
+            <input 
+              type="text"
+              placeholder="搜尋..." 
+              className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-300 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none" 
+            />
+            <SearchIcon className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 fill-gray-500 dark:fill-gray-100" />
           </div>
           {/* 深色模式切換 */}
-          <div className="flex justify-center items-center relative">
-            <button aria-label="darkMode" type="button" className="mx-2" onClick={handleDarkMode}>
-              <DarkModeIcon className={`h-9 w-9 rounded-full p-2 m-1.5 fill-gray-900 dark:fill-gray-100 hover:bg-gray-300 transform duration-300 ${darkModeAnimation}`} />
-            </button>
-            <button aria-label="lightMode" type="button" className="mx-2 absolute" onClick={handleDarkMode}>
-              <LightModeIcon className={`h-9 w-9 rounded-full p-2 m-1.5 fill-gray-900 dark:fill-gray-100 hover:bg-gray-600 transform duration-300 ${lightModeAnimation}`} />
+          <div className="flex justify-center items-center">
+            <button aria-label="darkMode" type="button" className="flex w-9 h-9 mx-3 p-1.5 relative" onClick={handleDarkMode}>
+              <DarkModeIcon className="h-6 w-6 rounded-full fill-gray-900 translate-y-0 opacity-100 transform duration-300 delay-200 ease-in-out dark:fill-gray-100 dark:translate-y-4 dark:opacity-0" />
+              <LightModeIcon className="absolute h-6 w-6 rounded-full fill-gray-900 translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:fill-gray-100 dark:translate-y-0 dark:opacity-100" />
             </button>
           </div>
           {/* 註冊/登入 */}
