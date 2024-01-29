@@ -19,6 +19,8 @@
   ],
   "plugins": ["prettier", "@typescript-eslint"],
   "rules": {
+    "semi": [2, "always"],
+    "no-unused-vars": ["warn"],
     "@typescript-eslint/triple-slash-reference": "off",
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
@@ -26,7 +28,14 @@
     "import/no-unresolved": "off",
     "import/prefer-default-export": "off",
     "import/extensions": ["error", "never"],
-    "semi": [2, "always"],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": true,
+        "peerDependencies": true
+      }
+    ],
     "max-len": [
       "error",
       {
