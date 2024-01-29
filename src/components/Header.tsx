@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import brand from '../assets/images/brand.png';
 // --- icons import ---
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
@@ -6,26 +6,38 @@ import { ReactComponent as DarkModeIcon } from '../assets/icons/darkMode.svg';
 import { ReactComponent as LightModeIcon } from '../assets/icons/lightMode.svg';
 import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
 import { ReactComponent as CloseIcon } from '../assets/icons/close.svg';
+import { ReactComponent as CommentIcon } from '../assets/icons/comment.svg';
 
-type NavProps = {
+/** Toggle Menu 參數型別 */
+type ItemProps = {
   href: string;
   text: string;
-  itemType: string;
+  count: number;
+  children: ReactNode;
 };
 
-function NavItem({ href, text, itemType }: NavProps) {
-  return (
-    <li className={`mx-2.5 ${itemType === 'menuItem' && 'p-3'}`}>
-      <a href={href}>{text}</a>
-    </li>
-  );
-}
-
+/** Header 參數型別 */
 type HeaderProps = {
   darkMode: string;
   setDarkMode: Function;
 };
 
+/** Toggle Menu 元件 */
+function MenuItem({ href, text, count, children }: ItemProps) {
+  return (
+    <a href={href} className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-4">
+      <span className="flex items-center">
+        {children}
+      </span>
+      <span className="ml-3 font-bold">
+        {text}
+        {count > 0 && <label className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">{count}</label>}
+      </span>
+    </a>
+  );
+}
+
+/** Headr 元件 */
 function Header({ darkMode, setDarkMode }: HeaderProps) {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // Toggle Menu 動畫效果
 
@@ -34,9 +46,19 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
     setDarkMode(darkMode === 'dark' ? '' : 'dark');
   }
 
+  /** 螢幕寬度大於768px收合toggle menu */
+  function screenWidthChange() {
+    const screenWidth = window.innerWidth;
+    if(screenWidth > 640 && toggleMenuAnimation === 'translate-x-0'){
+      setToggleMenuAnimation('translate-x-full');
+    }
+  }
+  /** 監聽螢幕寬度變化 */
+  window.addEventListener('resize', screenWidthChange);
+
   return (
-    <header className="flex justify-center w-full">
-      <div className="w-full sm:min-w-[640px] xl:max-w-6xl flex justify-between py-2 px-4">
+    <header className="fixed flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
+      <div className="w-full flex justify-between py-2 px-4">
         <div id="brand" className="">
           <a className="flex flex-row items-center w-fit" href="/">
             <img className="w-11 h-11 mr-2.5" src={brand} alt="logo" />
@@ -49,7 +71,7 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
             <input 
               type="text"
               placeholder="搜尋..." 
-              className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-300 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none" 
+              className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none" 
             />
             <SearchIcon className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 fill-gray-500 dark:fill-gray-100" />
           </div>
@@ -79,7 +101,7 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
         </nav>
 
         <div
-          className={`fixed w-full h-full flex flex-col top-0 left-0 transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98]`}
+          className={`fixed z-30 w-full h-full flex flex-col top-0 left-0 transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98]`}
         >
           <div className="z-10 w-full flex justify-end p-4">
             {/* Close Menu btn */}
@@ -92,13 +114,13 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
               <CloseIcon className="h-7 w-7 fill-gray-900 dark:fill-gray-100" />
             </button>
           </div>
-          <div className="z-10 h-full py-5">
-            <ul className="text-2xl text-left mx-8">
-              <NavItem href="/" text="Blog" itemType="menuItem" />
-              <NavItem href="/tags" text="tags" itemType="menuItem" />
-              <NavItem href="/projects" text="projects" itemType="menuItem" />
-              <NavItem href="/About" text="About" itemType="menuItem" />
-            </ul>
+          <div className="h-full py-5 px-8 opacity-100">
+            <MenuItem href="/" text="Home" count={12} ><CommentIcon className="w-6 h-6"/></MenuItem>
+            <MenuItem href="/" text="Inbox" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
+            <MenuItem href="/" text="Chat" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
+            <MenuItem href="/" text="Actiivity" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
+            <MenuItem href="/" text="Explore" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
+            <MenuItem href="/" text="Profile" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
           </div>
         </div>
       </div>
