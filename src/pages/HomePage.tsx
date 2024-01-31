@@ -1,13 +1,16 @@
+// --- components ---
 import PostList from 'components/post/PostList';
 import SideBar from 'components/SideBar';
+// --- constants ---
+import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
 
 function HomePage() {
   return (
     <div className="flex justify-between">
-      <div className="fixed hidden sm:block sm:w-20 lg:w-60 p-3">
+      <div className={SIDEBAR_FRAME}>
         <SideBar />
       </div>
-      <div className="w-full sm:ml-20 lg:ml-60 p-5 border-l-[1px] border-gray-200 dark:border-gray-700">
+      <div className={SIDEBAR_CONTAINER_FRAME}>
         <PostList />
       </div>
     </div>
