@@ -12,7 +12,7 @@ function IconLink(props: { label: string; href: string; children: ReactNode }) {
 
 function Footer() {
   return (
-    <footer className="mt-auto w-full flex flex-col justify-center items-center p-5">
+    <footer className="mt-auto w-full flex flex-col justify-center items-center p-5 border-t-[1px]">
       <div className="flex justify-center">
         <IconLink label="mail" href="mailto:someone@example.com">
           <svg
@@ -63,8 +63,15 @@ function Footer() {
       </div>
       <div className="flex justify-center">
         <div className="m-4 p-1">
-          <input type="text" className="w-80 rounded-l-lg p-1.5 border border-orange-500 outline-none" placeholder="您的電子郵件..."/>
-          <button type="button" className="rounded-r-lg py-1.5 px-3 text-white border border-orange-500 bg-orange-500">
+          <input
+            type="text"
+            className="w-80 rounded-l-lg p-1.5 border border-orange-500 outline-none"
+            placeholder="您的電子郵件..."
+          />
+          <button
+            type="button"
+            className="rounded-r-lg py-1.5 px-3 text-white border border-orange-500 bg-orange-500"
+          >
             訂閱
           </button>
         </div>

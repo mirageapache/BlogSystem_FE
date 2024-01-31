@@ -1,6 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import brand from '../assets/images/brand.png';
 // --- icons import ---
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
@@ -27,13 +27,18 @@ type HeaderProps = {
 /** Toggle Menu 元件 */
 function MenuItem({ href, text, count, children }: ItemProps) {
   return (
-    <a href={href} className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-4">
-      <span className="flex items-center">
-        {children}
-      </span>
+    <a
+      href={href}
+      className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-4"
+    >
+      <span className="flex items-center">{children}</span>
       <span className="ml-3 font-bold">
         {text}
-        {count > 0 && <label className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">{count}</label>}
+        {count > 0 && (
+          <label className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+            {count}
+          </label>
+        )}
       </span>
     </a>
   );
@@ -46,12 +51,12 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
   /** 深色模式切換 */
   const handleDarkMode = () => {
     setDarkMode(darkMode === 'dark' ? '' : 'dark');
-  }
+  };
 
   /** 螢幕寬度大於768px收合toggle menu */
   function screenWidthChange() {
     const screenWidth = window.innerWidth;
-    if(screenWidth > 640 && toggleMenuAnimation === 'translate-x-0'){
+    if (screenWidth > 640 && toggleMenuAnimation === 'translate-x-0') {
       setToggleMenuAnimation('translate-x-full');
     }
   }
@@ -69,19 +74,24 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
         </div>
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}
-          <div className='hidden sm:flex items-center'>
-            <input 
+          <div className="hidden sm:flex items-center">
+            <input
               type="text"
-              placeholder="搜尋..." 
-              className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none" 
+              placeholder="搜尋..."
+              className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
             />
             <SearchIcon className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 fill-gray-500 dark:fill-gray-100" />
           </div>
           {/* 深色模式切換 */}
           <div className="flex justify-center items-center">
-            <button aria-label="darkMode" type="button" className="flex w-9 h-9 mx-3 p-1.5 relative" onClick={handleDarkMode}>
-              <DarkModeIcon className="h-6 w-6 rounded-full fill-gray-900 translate-y-0 opacity-100 transform duration-300 delay-200 ease-in-out dark:fill-gray-100 dark:translate-y-4 dark:opacity-0" />
-              <LightModeIcon className="absolute h-6 w-6 rounded-full fill-gray-900 translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:fill-gray-100 dark:translate-y-0 dark:opacity-100" />
+            <button
+              aria-label="darkMode"
+              type="button"
+              className="flex w-9 h-9 mx-3 p-1.5 relative"
+              onClick={handleDarkMode}
+            >
+              <DarkModeIcon className="h-6 w-6 rounded-full fill-gray-900 translate-y-0 opacity-100 transform duration-300 delay-200 ease-in-out dark:translate-y-4 dark:opacity-0" />
+              <LightModeIcon className="absolute h-6 w-6 rounded-full fill-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100" />
             </button>
           </div>
           {/* 註冊/登入 */}
@@ -117,23 +127,23 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
             </button>
           </div>
           <div className="h-full py-5 px-8 opacity-100">
-            <MenuItem href="/" text="Home" count={0} >
-              <FontAwesomeIcon icon={icon({name: 'home'})} />
+            <MenuItem href="/" text="Home" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'home' })} />
             </MenuItem>
-            <MenuItem href="/" text="Inbox" count={0} >
-              <FontAwesomeIcon icon={icon({name: 'inbox'})} />
+            <MenuItem href="/" text="Inbox" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
             </MenuItem>
-            <MenuItem href="/" text="Chat" count={0} >
-            <FontAwesomeIcon icon={icon({name: 'comment', style: 'regular'})} />
+            <MenuItem href="/" text="Chat" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'comment', style: 'regular' })} />
             </MenuItem>
-            <MenuItem href="/" text="Actiivity" count={0} >
-              <FontAwesomeIcon icon={icon({name: 'bell', style: 'regular'})} />
+            <MenuItem href="/" text="Actiivity" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
             </MenuItem>
-            <MenuItem href="/" text="Explore" count={0} >
-              <FontAwesomeIcon icon={icon({name: 'compass', style: 'regular'})} />
+            <MenuItem href="/" text="Explore" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
             </MenuItem>
-            <MenuItem href="/" text="Profile" count={0} >
-              <FontAwesomeIcon icon={icon({name: 'user', style: 'regular'})} />
+            <MenuItem href="/" text="Profile" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
             </MenuItem>
           </div>
         </div>

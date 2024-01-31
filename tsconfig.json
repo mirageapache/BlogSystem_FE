@@ -17,6 +17,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "tsconfig.eslint.json", "tailwind.config.js"],
+  "include": ["src", "tsconfig.eslint.json", "tailwind.config.js", "babel-plugin-macros.config.js"],
   "exclude": ["node_modules", "build"]
 }

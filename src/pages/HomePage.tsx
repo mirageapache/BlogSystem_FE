@@ -11,7 +11,9 @@ function HomePage() {
         <SideBar />
       </div>
       <div className={SIDEBAR_CONTAINER_FRAME}>
-        <PostList />
+        <div className="max-w-[600px] border border-red-500">
+          <PostList />
+        </div>
       </div>
     </div>
   );
