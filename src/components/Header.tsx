@@ -1,4 +1,6 @@
 import { useState, ReactNode } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
 import brand from '../assets/images/brand.png';
 // --- icons import ---
 import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
@@ -115,12 +117,24 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
             </button>
           </div>
           <div className="h-full py-5 px-8 opacity-100">
-            <MenuItem href="/" text="Home" count={12} ><CommentIcon className="w-6 h-6"/></MenuItem>
-            <MenuItem href="/" text="Inbox" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
-            <MenuItem href="/" text="Chat" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
-            <MenuItem href="/" text="Actiivity" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
-            <MenuItem href="/" text="Explore" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
-            <MenuItem href="/" text="Profile" count={0} ><CommentIcon className="w-6 h-6"/></MenuItem>
+            <MenuItem href="/" text="Home" count={0} >
+              <FontAwesomeIcon icon={icon({name: 'home'})} />
+            </MenuItem>
+            <MenuItem href="/" text="Inbox" count={0} >
+              <FontAwesomeIcon icon={icon({name: 'inbox'})} />
+            </MenuItem>
+            <MenuItem href="/" text="Chat" count={0} >
+            <FontAwesomeIcon icon={icon({name: 'comment', style: 'regular'})} />
+            </MenuItem>
+            <MenuItem href="/" text="Actiivity" count={0} >
+              <FontAwesomeIcon icon={icon({name: 'bell', style: 'regular'})} />
+            </MenuItem>
+            <MenuItem href="/" text="Explore" count={0} >
+              <FontAwesomeIcon icon={icon({name: 'compass', style: 'regular'})} />
+            </MenuItem>
+            <MenuItem href="/" text="Profile" count={0} >
+              <FontAwesomeIcon icon={icon({name: 'user', style: 'regular'})} />
+            </MenuItem>
           </div>
         </div>
       </div>
