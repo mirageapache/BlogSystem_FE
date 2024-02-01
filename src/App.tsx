@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 // --- components ---
-import Header from 'components/Header';
+import Header from './components/Header';
 // --- pages ---
-import HomePage from 'pages/HomePage';
-import PostDetailPage from 'pages/PostDetailPage';
+import HomePage from './pages/HomePage';
+import PostDetailPage from './pages/PostDetailPage';
 
 function App() {
   const [darkMode, setDarkMode] = useState('');

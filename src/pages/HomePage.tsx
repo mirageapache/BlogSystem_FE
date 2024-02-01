@@ -1,4 +1,5 @@
 // --- components ---
+import ArticleList from 'components/article/ArticleList';
 import PostList from 'components/post/PostList';
 import SideBar from 'components/SideBar';
 // --- constants ---
@@ -12,7 +13,8 @@ function HomePage() {
       </div>
       <div className={SIDEBAR_CONTAINER_FRAME}>
         <div className="max-w-[600px]">
-          <PostList />
+          {/* <PostList /> */}
+          <ArticleList />
         </div>
       </div>
     </div>
