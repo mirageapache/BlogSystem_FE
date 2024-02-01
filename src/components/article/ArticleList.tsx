@@ -3,7 +3,7 @@ import { get } from 'lodash';
 import ArticleItem from './ArticleItem';
 import { getPostByLimit } from '../../api/post';
 
-/**articleList 型別 */
+/** articleList 型別 */
 interface ArticleType {
   body: string;
   id: number;
@@ -20,7 +20,13 @@ function ArticleList() {
   if (error) return <p>Error</p>;
   const articleList: ArticleType[] = get(data, 'posts', []);
   const articleItem = articleList.map((article) => (
-    <ArticleItem key={article.id} id={article.id} title={article.title} body={article.body} tags={article.tags} />
+    <ArticleItem
+      key={article.id}
+      id={article.id}
+      title={article.title}
+      body={article.body}
+      tags={article.tags}
+    />
   ));
 
   return <div className="flex-grow px-8 md:px-0">{articleItem}</div>;

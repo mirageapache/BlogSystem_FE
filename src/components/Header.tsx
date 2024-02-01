@@ -35,9 +35,9 @@ function MenuItem({ href, text, count, children }: ItemProps) {
       <span className="ml-3 font-bold">
         {text}
         {count > 0 && (
-          <label className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+          <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
             {count}
-          </label>
+          </span>
         )}
       </span>
     </a>

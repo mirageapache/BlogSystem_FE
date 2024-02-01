@@ -54,8 +54,3 @@ function PostItem({ id, title, body, tags }: PostType) {
 }
 
 export default PostItem;
-
-// 名稱 認證標誌 貼文時間
-// 帳號 追蹤鈕
-// 內文
-// 喜歡數 回覆數 分享
