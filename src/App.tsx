@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 // --- pages ---
 import HomePage from './pages/HomePage';
+import SearchPage from './pages/SearchPage';
 import PostDetailPage from './pages/PostDetailPage';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
             <Routes>
               {/* WebSite */}
               <Route path="/" element={<HomePage />} />
+              <Route path="/search" element={<SearchPage />} />
 
               {/* Post */}
               <Route path="/post/:id" element={<PostDetailPage />} />

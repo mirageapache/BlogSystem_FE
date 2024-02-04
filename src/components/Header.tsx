@@ -1,14 +1,14 @@
 import { useState, ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from 'react-router-dom';
+// --- images ---
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import brand from '../assets/images/brand.png';
 // --- icons import ---
-import { ReactComponent as SearchIcon } from '../assets/icons/search.svg';
 import { ReactComponent as DarkModeIcon } from '../assets/icons/darkMode.svg';
 import { ReactComponent as LightModeIcon } from '../assets/icons/lightMode.svg';
 import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
 import { ReactComponent as CloseIcon } from '../assets/icons/close.svg';
-import { ReactComponent as CommentIcon } from '../assets/icons/comment.svg';
 
 /** Toggle Menu 參數型別 */
 type ItemProps = {
@@ -47,6 +47,15 @@ function MenuItem({ href, text, count, children }: ItemProps) {
 /** Headr 元件 */
 function Header({ darkMode, setDarkMode }: HeaderProps) {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // Toggle Menu 動畫效果
+  const [searchText, setSearchText] = useState('');
+  const navigate = useNavigate();
+
+  /** 跳轉至搜尋頁 */
+  const handleSearch = (key: string) => {
+    if (key === 'Enter' && searchText !== '') {
+      navigate(`/search?searchText=${searchText}`);
+    }
+  };
 
   /** 深色模式切換 */
   const handleDarkMode = () => {
@@ -64,7 +73,7 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
   window.addEventListener('resize', screenWidthChange);
 
   return (
-    <header className="fixed flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
+    <header className="fixed z-10 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
       <div className="w-full flex justify-between py-2 px-4">
         <div id="brand" className="">
           <a className="flex flex-row items-center w-fit" href="/">
@@ -74,14 +83,22 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
         </div>
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}
-          <div className="hidden sm:flex items-center">
-            <input
-              type="text"
-              placeholder="搜尋..."
-              className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
-            />
-            <SearchIcon className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 fill-gray-500 dark:fill-gray-100" />
-          </div>
+          {window.location.pathname !== '/search' && (
+            <div className="hidden sm:flex items-center">
+              <input
+                type="text"
+                name="search"
+                placeholder="搜尋..."
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyUp={(e) => handleSearch(e.key)}
+                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
+              />
+              <FontAwesomeIcon
+                icon={icon({ name: 'search', style: 'solid' })}
+                className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 text-gray-500 dark:text-gray-100"
+              />
+            </div>
+          )}
           {/* 深色模式切換 */}
           <div className="flex justify-center items-center">
             <button
