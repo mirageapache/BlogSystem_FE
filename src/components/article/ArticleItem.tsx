@@ -1,6 +1,7 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
+import { formatDateTime } from '../../utils/DateTimeUtils';
 
 /** Article Tags 元件 */
 function ArticleTag(props: { text: string }) {
@@ -44,7 +45,7 @@ function ArticleItem({ id, title, body, tags }: ArticleType) {
               <p className="mr-1">James</p>
               <p className="text-sm hover:text-orange-500 cusor-pointer my-1">(james_w)</p>
             </span>
-            <p className="">20240101</p>
+            <p className="">{formatDateTime('20240101')}</p>
           </div>
           <div>
             <h2 className="font-semibold text-2xl xl:text-3xl">

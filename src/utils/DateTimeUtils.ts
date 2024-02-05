@@ -1,41 +1,90 @@
-/**
- * 日期、時間轉換運算
- */
+import { isString } from "lodash";
 
 /**
- * 文章、貼文顯示日期轉換
- * @param date 日期
- * @param time 時間
+ * 文章、貼文顯示日期時間轉換
+ * @param datetime 日期時間
  */
-export const formatDate = (date: string) => {
-  const now = new Date();
-  const currentTime = now.getTime();
-  const currentDate = now
-  const inputDate = new Date(
-    parseInt(date.substring(0, 4), 10),
-    parseInt(date.substring(4, 6), 10) - 1,
-    parseInt(date.substring(6, 8), 10)
-  );
-  
-  console.log(currentDate, currentTime); // Thu Feb 01 2024 17:20:25 GMT+0800 (台北標準時間) 1706779225567
-  // 1 1706779069272
+export const formatDateTime = (datetime: string) => {
+  if(datetime.length <= 8){
+    datetime = datetime + "0000";
+  }
+  const currentDate = new Date();
+  const inputDate = new Date( // 輸入時間
+    parseInt(datetime.substring(0, 4), 10),      // 年
+    parseInt(datetime.substring(4, 6), 10) - 1,  // 月
+    parseInt(datetime.substring(6, 8), 10),      // 日
+    parseInt(datetime.substring(8, 10), 10),     // 時
+    parseInt(datetime.substring(10, 12), 10),    // 分
+  ); 
 
-  const diffTime = Math.abs(currentDate.getDate() - inputDate.getDate());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffDays = Math.abs(currentDate.getDate() - inputDate.getDate());
   
-  if (diffDays < 7) {
-    if(diffDays <= 0){
-      return '今天';
+  if (inputDate.getFullYear() === currentDate.getFullYear()) {
+    if(inputDate.getMonth() === currentDate.getMonth() && diffDays < 7) {
+      if(diffDays > 1){
+        // 少於一週以天數顯示
+        return `${diffDays}天`;
+      } else {
+        // 少於1天以小時顯示
+        let currentTime = parseInt(currentDate.getTime().toString().substring(0,10))
+        let inputTime = parseInt(inputDate.getTime().toString().substring(0,10))
+        return calcTimeDiff(currentTime, inputTime);
+      }
     }
     else {
-      return `${diffDays}天`;
+      return `${inputDate.getMonth() + 1}月${inputDate.getDate()}日`;
     }
   } else {
-    if (inputDate.getFullYear() === currentDate.getFullYear()) {
-      return `${inputDate.getMonth() + 1}月${inputDate.getDate()}日`;
-    } else {
-      return `${inputDate.getFullYear()}年${inputDate.getMonth() + 1}月${inputDate.getDate()}日`;
-    }
+    return `${inputDate.getFullYear()}年${inputDate.getMonth() + 1}月${inputDate.getDate()}日`;
   }
 };
+
+/** 
+ * 計算1天內時間差距(Calculate Time Difference)
+ * @param currentTime 現在時間(時間戳)
+ * @param inputTime 輸入時間(時間戳)
+ */
+export const calcTimeDiff = (currentTime: number, inputTime: number) => {
+  const diff = Math.abs(currentTime - inputTime); // 計算秒數差距
+
+  if (diff < 60 * 60) { // 不足1小時
+      const minutes = Math.floor(diff / 60);
+      if(minutes < 1){
+        return "剛剛";
+      } else {
+        return `${minutes} 分鐘前`;
+      }
+  } else if (diff < 60 * 60 * 24) { // 不足24小時
+      const hours = Math.floor(diff / (60 * 60));
+      return `${hours} 小時前`;
+  } else { // 超過24小時
+      return "1 天";
+  }
+}
+
+/** 格式化 - 日期(不足10補0)
+ * @param date
+ */
+export const formateDate = (date: string|number) => {
+  if(isString(date)) date = parseInt(date, 10);
+  if(date < 10){
+    return '0' + date.toString();
+  }
+  else {
+    return date.toString();
+  }
+}
+
+/** 格式化 - 月份(不足10補0)
+ * @param month
+ */
+export const formateMonth = (month: string|number) => {
+  if(isString(month)) month = parseInt(month, 10);
+  if(month < 10){
+    return '0' + month.toString();
+  }
+  else {
+    return month.toString();
+  }
+}
 
