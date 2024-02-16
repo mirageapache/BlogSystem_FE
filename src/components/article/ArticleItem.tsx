@@ -16,7 +16,7 @@ function ArticleTag(props: { text: string }) {
 }
 
 /** ArticleItem 參數型別 */
-interface ArticleType {
+interface ArticleItemPropsType {
   id: number;
   title: string;
   tags: string[];
@@ -24,7 +24,7 @@ interface ArticleType {
 }
 
 /** ArticleItem 元件 */
-function ArticleItem({ id, title, body, tags }: ArticleType) {
+function ArticleItem({ id, title, body, tags }: ArticleItemPropsType) {
   const tagsList = tags.map((tag) => <ArticleTag key={`${tag}-${id}`} text={tag} />);
 
   return (
@@ -63,8 +63,3 @@ function ArticleItem({ id, title, body, tags }: ArticleType) {
 }
 
 export default ArticleItem;
-
-// 名稱 認證標誌 貼文時間
-// 帳號 追蹤鈕
-// 內文
-// 喜歡數 回覆數 分享

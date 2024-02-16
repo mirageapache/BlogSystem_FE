@@ -1,6 +1,9 @@
 import { useState, ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+// --- functions / types ---
+import { searchStateType, setSearchText } from '../redux/searchSlice';
 // --- images ---
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import brand from '../assets/images/brand.png';
@@ -11,7 +14,7 @@ import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
 import { ReactComponent as CloseIcon } from '../assets/icons/close.svg';
 
 /** Toggle Menu 參數型別 */
-type ItemProps = {
+type ItemPropsType = {
   href: string;
   text: string;
   count: number;
@@ -19,13 +22,18 @@ type ItemProps = {
 };
 
 /** Header 參數型別 */
-type HeaderProps = {
+type HeaderPropsType = {
   darkMode: string;
   setDarkMode: Function;
 };
 
+/** stateType (Header) */
+interface stateType {
+  search: searchStateType;
+}
+
 /** Toggle Menu 元件 */
-function MenuItem({ href, text, count, children }: ItemProps) {
+function MenuItem({ href, text, count, children }: ItemPropsType) {
   return (
     <a
       href={href}
@@ -45,15 +53,17 @@ function MenuItem({ href, text, count, children }: ItemProps) {
 }
 
 /** Headr 元件 */
-function Header({ darkMode, setDarkMode }: HeaderProps) {
+function Header({ darkMode, setDarkMode }: HeaderPropsType) {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // Toggle Menu 動畫效果
-  const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const searchState = useSelector((state: stateType) => state.search);
+  const { searchText } = searchState;
 
   /** 跳轉至搜尋頁 */
   const handleSearch = (key: string) => {
     if (key === 'Enter' && searchText !== '') {
-      navigate(`/search?searchText=${searchText}`);
+      navigate('/search');
     }
   };
 
@@ -89,7 +99,7 @@ function Header({ darkMode, setDarkMode }: HeaderProps) {
                 type="text"
                 name="search"
                 placeholder="搜尋..."
-                onChange={(e) => setSearchText(e.target.value)}
+                onChange={(e) => dispatch(setSearchText(e.target.value))}
                 onKeyUp={(e) => handleSearch(e.key)}
                 className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
               />
