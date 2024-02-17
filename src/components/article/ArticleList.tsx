@@ -1,28 +1,28 @@
-import { useQuery } from 'react-query';
 import { get, isEmpty } from 'lodash';
 // --- components ---
 import ArticleItem from './ArticleItem';
 import Loading from './Loading';
-// --- api ---
-import { ApiResultType } from '../../api';
+// --- api / type ---
+import { apiResultType, articleListType} from '../../api/article';
 
-/** articleList 型別 */
-interface ArticleListType {
-  body: string;
-  id: number;
-  reactions: number;
-  tags: string[];
-  title: string;
-  userId: number;
-}
-
-function ArticleList(props:{ apiResult: ApiResultType}) {
+function ArticleList(props: { apiResult: apiResultType }) {
   const { isLoading, error, data } = props.apiResult;
-  // const { isLoading, error, data } = useQuery('posts', () => getPostByLimit(5));
+  const articleList: [articleListType] = get(data, 'posts')!;
 
   if (isLoading) return <Loading />;
-  if (!isEmpty(error)) return <p>{error.message}</p>;
-  const articleList: ArticleListType[] = get(data, 'posts', []);
+  if (!isEmpty(error) || isEmpty(articleList)){
+    return (
+      <div className="flex justify-center">
+        <p className="text-xl">
+          {isEmpty(error) ?
+            "搜尋不到相關結果!!"
+            :
+            "發生一些錯誤，請稍後再試!!"
+          }
+        </p>
+      </div>
+    )
+  };
   const articleItem = articleList.map((article) => (
     <ArticleItem
       key={article.id}
@@ -32,7 +32,6 @@ function ArticleList(props:{ apiResult: ApiResultType}) {
       tags={article.tags}
     />
   ));
-
   return <div className="flex-grow px-8 md:px-0">{articleItem}</div>;
 }
 

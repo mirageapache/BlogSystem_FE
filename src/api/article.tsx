@@ -3,6 +3,32 @@ import { DUMMYJSON_URL } from './index';
 
 const baseUrl = DUMMYJSON_URL;
 
+/** articleList 型別 */
+export interface articleListType {
+  body: string;
+  id: number;
+  reactions: number;
+  tags: [string];
+  title: string;
+  userId: number;
+}
+
+/** aritcleApi 型別 */
+export interface aritcleApiType {
+  post: [articleListType],
+  total: number;
+  skip: number;
+  limit: number;
+}
+
+
+/** API Result 型別*/
+export interface apiResultType{
+  isLoading: boolean;
+  error: { message: string } | null ;
+  data: aritcleApiType | unknown;
+}
+
 /** 取得所有文章 */
 export async function getArticles() {
   const result = await axios

@@ -1,7 +1,6 @@
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector, useDispatch } from 'react-redux';
-import { useQuery } from 'react-query';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
 import SideBar from 'components/SideBar';
@@ -12,9 +11,9 @@ import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstant
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- functions / types ---
 import { searchStateType, setSearchText } from '../redux/searchSlice';
-// --- api ---
-import { ApiResultType } from '../api';
-import { getSearchArticle } from '../api/article';
+// --- api / type ---
+import { apiResultType, getSearchArticle } from '../api/article';
+import { isEmpty } from 'lodash';
 
 /** stateType (SearchPage) */
 interface stateType{
@@ -25,16 +24,25 @@ function SearchPage() {
   const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState;
+  const [apiResult, setApiResult] = useState<apiResultType>({isLoading: true, error:null, data:null});
 
   /** 搜尋 */
-  const handleSearch = (key: string) => {
-    if (key === 'Enter') {
-      console.log(searchText);
-    }
-  };
+  const getSearchResult = async (searchString: string) => {
+    console.log(searchString);
+    const result = await getSearchArticle(searchString);
+    setApiResult({
+      isLoading: false,
+      error: null,
+      data: result,
+    });
+  }
 
-  const apiResult = useQuery<ApiResultType>('posts', () => getSearchArticle(searchText));
-  
+  useEffect(() => {
+    if(isEmpty(apiResult.data)){
+      getSearchResult('');
+    }
+  },[]);
+
   return (
     <div className="flex justify-between">
       <div className={SIDEBAR_FRAME}>
@@ -43,14 +51,16 @@ function SearchPage() {
       <div className={SIDEBAR_CONTAINER_FRAME}>
         <div className="max-w-[600px]">
           <PageBanner title="搜尋">
-            <div className="relative flex items-center my-2">
+            <div className="relative flex items-center min-w-[600px] my-2">
               <input
                 type="text"
                 name="search"
                 placeholder="搜尋..."
                 value={searchText}
-                onChange={(e) => dispatch(setSearchText(e.target.value))}
-                onKeyUp={(e) => handleSearch(e.key)}
+                onChange={(e) => {
+                  dispatch(setSearchText(e.target.value));
+                  getSearchResult(e.target.value);
+                }}
                 className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 outline-none"
               />
               <FontAwesomeIcon
@@ -60,7 +70,10 @@ function SearchPage() {
               {/* 清除搜尋字串 */}
               <FontAwesomeIcon
                 icon={icon({ name: 'xmark', style: 'solid' })}
-                onClick={() => dispatch(setSearchText(''))}
+                onClick={() => {
+                  dispatch(setSearchText(''));
+                  getSearchResult('');
+                }}
                 className="absolute right-0 h-5 w-5 m-1.5 mr-3 stroke-0 text-gray-500 dark:text-gray-100 cursor-pointer"
               />
             </div>
