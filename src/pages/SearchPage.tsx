@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector, useDispatch } from 'react-redux';
+import { isEmpty } from 'lodash';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
 import SideBar from 'components/SideBar';
@@ -13,10 +14,9 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { searchStateType, setSearchText } from '../redux/searchSlice';
 // --- api / type ---
 import { apiResultType, getSearchArticle } from '../api/article';
-import { isEmpty } from 'lodash';
 
 /** stateType (SearchPage) */
-interface stateType{
+interface stateType {
   search: searchStateType;
 }
 
@@ -24,24 +24,27 @@ function SearchPage() {
   const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState;
-  const [apiResult, setApiResult] = useState<apiResultType>({isLoading: true, error:null, data:null});
+  const [apiResult, setApiResult] = useState<apiResultType>({
+    isLoading: true,
+    error: null,
+    data: null,
+  });
 
   /** 搜尋 */
   const getSearchResult = async (searchString: string) => {
-    console.log(searchString);
     const result = await getSearchArticle(searchString);
     setApiResult({
       isLoading: false,
       error: null,
       data: result,
     });
-  }
+  };
 
   useEffect(() => {
-    if(isEmpty(apiResult.data)){
-      getSearchResult('');
+    if (isEmpty(apiResult.data)) {
+      getSearchResult(searchText);
     }
-  },[]);
+  }, []);
 
   return (
     <div className="flex justify-between">

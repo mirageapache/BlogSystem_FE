@@ -8,7 +8,6 @@ import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstant
 import { apiResultType, getPartialArticles } from '../api/article';
 
 function HomePage() {
-
   /** 取得文章 */
   const apiResult = useQuery('articles', () => getPartialArticles(5)) as apiResultType;
 

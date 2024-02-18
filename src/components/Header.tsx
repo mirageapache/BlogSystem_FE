@@ -2,10 +2,10 @@ import { useState, ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- functions / types ---
 import { searchStateType, setSearchText } from '../redux/searchSlice';
 // --- images ---
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import brand from '../assets/images/brand.png';
 // --- icons import ---
 import { ReactComponent as DarkModeIcon } from '../assets/icons/darkMode.svg';

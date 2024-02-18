@@ -15,17 +15,16 @@ export interface articleListType {
 
 /** aritcleApi 型別 */
 export interface aritcleApiType {
-  post: [articleListType],
+  post: [articleListType];
   total: number;
   skip: number;
   limit: number;
 }
 
-
-/** API Result 型別*/
-export interface apiResultType{
+/** API Result 型別 */
+export interface apiResultType {
   isLoading: boolean;
-  error: { message: string } | null ;
+  error: { message: string } | null;
   data: aritcleApiType | unknown;
 }
 
@@ -82,6 +81,5 @@ export async function getSearchArticle(searchString: string) {
     .catch((error) => {
       console.log(error);
     });
-    return result;
+  return result;
 }
-
