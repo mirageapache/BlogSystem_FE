@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import './index.css';
 import App from './App';
+import store from './redux/configStore';
 // import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
@@ -11,9 +13,11 @@ const queryClient = new QueryClient();
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </Provider>
     </QueryClientProvider>
   </React.StrictMode>
 );
