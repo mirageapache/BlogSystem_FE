@@ -6,6 +6,7 @@ import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import PostDetailPage from './pages/PostDetailPage';
+import ArticleDetailPage from './pages/ArticleDetailPage';
 
 function App() {
   const [darkMode, setDarkMode] = useState('');
@@ -22,6 +23,7 @@ function App() {
 
               {/* Post */}
               <Route path="/post/:id" element={<PostDetailPage />} />
+              <Route path="/article/:id" element={<ArticleDetailPage />} />
             </Routes>
           </div>
         </main>
