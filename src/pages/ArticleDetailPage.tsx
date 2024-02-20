@@ -6,6 +6,7 @@ import { getPostById } from '../api/post';
 import AuthorInfoPanel  from '../components/user/AuthorInfoPanel';
 import ArticleInfoPanel  from '../components/article/ArticleInfoPanel';
 import ContentSection  from '../components/article/ContentSection';
+import Spinner from '../components/Spinner';
 
 function ArticleDetailPage() {
   const { id } = useParams();
@@ -13,7 +14,7 @@ function ArticleDetailPage() {
 
   const { isLoading, error, data } = useQuery('posts', () => getPostById(id));
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Spinner />;
   if (error) return <p>Error</p>;
   return (
     <div className="flex justify-center">

@@ -2,10 +2,10 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import { isEmpty } from 'lodash';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+// --- api ---
 import { getPostById } from '../api/post';
-
-import { ReactComponent as HeartIcon } from '../assets/icons/heart.svg';
-import { ReactComponent as CommentIcon } from '../assets/icons/comment.svg';
 
 function PostDetailPage() {
   const { id } = useParams();
@@ -47,13 +47,19 @@ function PostDetailPage() {
           <div className="py-2 mb-5 flex justify-between border-b-[1px] dark:border-gray-700">
             <div className="flex">
               <span className="mr-5 flex justify-center items-center cursor-pointer fill-gray-400 hover:fill-red-400">
-                <HeartIcon className="w-6 h-6" />
+                <FontAwesomeIcon
+                  icon={icon({ name: 'heart', style: 'regular' })}
+                  className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-red-500"
+                />
                 <p className="text-md pl-2 font-bold text-center text-gray-400 dark:text-gray-100">
                   5
                 </p>
               </span>
               <span className="flex justify-center items-center cursor-pointer fill-gray-400 hover:fill-amber-400">
-                <CommentIcon className="w-6 h-6" />
+                <FontAwesomeIcon
+                  icon={icon({ name: 'comment', style: 'regular' })}
+                  className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-green-500"
+                /> 
                 <p className="text-md pl-2 font-bold text-center text-gray-400 dark:text-gray-100">
                   2
                 </p>
