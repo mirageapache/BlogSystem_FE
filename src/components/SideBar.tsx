@@ -1,8 +1,6 @@
 import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-// --- icons ---
-import { ReactComponent as CommentIcon } from '../assets/icons/comment.svg';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {

@@ -7,11 +7,6 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { searchStateType, setSearchText } from '../redux/searchSlice';
 // --- images ---
 import brand from '../assets/images/brand.png';
-// --- icons import ---
-import { ReactComponent as DarkModeIcon } from '../assets/icons/darkMode.svg';
-import { ReactComponent as LightModeIcon } from '../assets/icons/lightMode.svg';
-import { ReactComponent as MenuIcon } from '../assets/icons/menu.svg';
-import { ReactComponent as CloseIcon } from '../assets/icons/close.svg';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -109,18 +104,26 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
               />
             </div>
           )}
+
           {/* 深色模式切換 */}
           <div className="flex justify-center items-center">
             <button
               aria-label="darkMode"
               type="button"
-              className="flex w-9 h-9 mx-3 p-1.5 relative"
+              className="flex justify-center items-center w-9 h-9 mx-1.5 relative"
               onClick={handleDarkMode}
             >
-              <DarkModeIcon className="h-6 w-6 rounded-full fill-gray-900 translate-y-0 opacity-100 transform duration-300 delay-200 ease-in-out dark:translate-y-4 dark:opacity-0" />
-              <LightModeIcon className="absolute h-6 w-6 rounded-full fill-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100" />
+              <FontAwesomeIcon
+                icon={icon({ name: 'moon', style: 'solid' })}
+                className="h-6 w-6 text-gray-900 translate-y-0 opacity-100 transform duration-300 delay-200 ease-in-out dark:translate-y-4 dark:opacity-0"
+              />
+              <FontAwesomeIcon
+                icon={icon({ name: 'sun', style: 'solid' })}
+                className="absolute h-6 w-6 rounded-full text-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100"
+              />
             </button>
           </div>
+
           {/* 註冊/登入 */}
           <button
             type="button"
@@ -128,29 +131,37 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           >
             登入
           </button>
-          {/* ToggleMenu btn */}
+
+          {/* 選單按鈕 */}
           <button
             aria-label="toggleMenu"
             type="button"
-            className="mx-2 sm:hidden"
+            className="flex justify-center items-center mx-1.5 sm:hidden "
             onClick={() => setToggleMenuAnimation('translate-x-0')}
           >
-            <MenuIcon className="h-7 w-7 m-1 fill-gray-900 dark:fill-gray-100" />
+            <FontAwesomeIcon
+              icon={icon({ name: 'bars', style: 'solid' })}
+              className="h-6 w-6 m-1 text-gray-900 dark:text-gray-100"
+            />
           </button>
         </nav>
 
         <div
           className={`fixed z-30 w-full h-full flex flex-col top-0 left-0 transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98]`}
         >
-          <div className="z-10 w-full flex justify-end p-4">
-            {/* Close Menu btn */}
+          <div className="z-10 w-full flex justify-end py-2 px-4">
+            {/* 關閉選單 */}
             <button
               aria-label="close"
               type="button"
-              className="pr-3"
+              className="flex jsutify-center m-1"
               onClick={() => setToggleMenuAnimation('translate-x-full')}
             >
-              <CloseIcon className="h-7 w-7 fill-gray-900 dark:fill-gray-100" />
+              <FontAwesomeIcon
+                icon={icon({ name: 'xmark', style: 'solid' })}
+                className="h-7 w-7 m-1 text-gray-900 dark:text-gray-100"
+              />
+              {/* <CloseIcon className="h-7 w-7 fill-gray-900 dark:fill-gray-100" /> */}
             </button>
           </div>
           <div className="h-full py-5 px-8 opacity-100">

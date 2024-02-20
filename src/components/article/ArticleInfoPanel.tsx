@@ -1,22 +1,44 @@
 import React from 'react';
-// --- icon ---
-import { ReactComponent as HeartIcon } from '../../assets/icons/heart.svg';
-import { ReactComponent as CommentIcon } from '../../assets/icons/comment.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 
 function ArticleInfoPanel() {
   return (
     <div className="py-2 mb-5 flex justify-between border-b-[1px] dark:border-gray-700">
       <div className="flex">
-        <span className="mr-5 flex justify-center items-center cursor-pointer fill-gray-400 hover:fill-red-400">
-          <HeartIcon className="w-6 h-6" />
-          <p className="text-md pl-2 font-bold text-center text-gray-400 dark:text-gray-100">5</p>
+        {/* 喜歡 */}
+        <span className="mr-5 flex justify-center items-center cursor-pointer">
+          <FontAwesomeIcon
+            icon={icon({ name: 'heart', style: 'regular' })}
+            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-red-500"
+          />
+          <p className="text-md font-bold text-center text-gray-400 dark:text-gray-100">5</p>
         </span>
-        <span className="flex justify-center items-center cursor-pointer fill-gray-400 hover:fill-amber-400">
-          <CommentIcon className="w-6 h-6" />
-          <p className="text-md pl-2 font-bold text-center text-gray-400 dark:text-gray-100">2</p>
+        {/* 留言 */}
+        <span className="flex justify-center items-center cursor-pointer">
+          <FontAwesomeIcon
+            icon={icon({ name: 'comment', style: 'regular' })}
+            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-green-500"
+          />
+          <p className="text-md font-bold text-center text-gray-400 dark:text-gray-100">2</p>
         </span>
       </div>
-      <div className="flex border border-red-500">right icon</div>
+      <div className="flex">
+        {/* 分享 */}
+        <span className="mr-5 flex justify-center items-center cursor-pointer ">
+          <FontAwesomeIcon
+            icon={icon({ name: 'share', style: 'solid' })}
+            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          />
+        </span>
+        {/* 收藏 */}
+        <span className="flex justify-center items-center cursor-pointer">
+          <FontAwesomeIcon
+            icon={icon({ name: 'bookmark', style: 'regular' })}
+            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          />
+        </span>
+      </div>
     </div>
   );
 }

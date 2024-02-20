@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEmpty } from 'lodash';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
 import SideBar from 'components/SideBar';
 import PageBanner from 'components/PageBanner';
 // --- constants ---
 import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
-// --- icons ---
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- functions / types ---
 import { searchStateType, setSearchText } from '../redux/searchSlice';
 // --- api / type ---
