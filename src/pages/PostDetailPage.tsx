@@ -38,7 +38,7 @@ function PostDetailPage() {
                   Follow
                 </button>
               </span>
-              <span className="flex text-sm text-gary-400">
+              <span className="flex text-sm text-gray-400">
                 <p>5min read</p>｜<p>January 15, 2023</p>
               </span>
             </div>

@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- functions / types ---
-import { searchStateType, setSearchText } from '../redux/searchSlice';
+import { SearchStateType, setSearchText } from '../redux/searchSlice';
+import { LoginStateType, setSignInPop } from '../redux/loginSlice';
 // --- images ---
 import brand from '../assets/images/brand.png';
+// --- components ---
+import SignInPopup from './login/SignInPopup';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -24,7 +27,8 @@ type HeaderPropsType = {
 
 /** stateType (Header) */
 interface stateType {
-  search: searchStateType;
+  search: SearchStateType;
+  login: LoginStateType;
 }
 
 /** Toggle Menu 元件 */
@@ -47,12 +51,12 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
   );
 }
 
-/** Headr 元件 */
 function Header({ darkMode, setDarkMode }: HeaderPropsType) {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // Toggle Menu 動畫效果
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
+  const loginState = useSelector((state: stateType) => state.login);
   const { searchText } = searchState;
 
   /** 跳轉至搜尋頁 */
@@ -110,7 +114,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             <button
               aria-label="darkMode"
               type="button"
-              className="flex justify-center items-center w-9 h-9 mx-1.5 relative"
+              className="flex justify-center items-center w-9 h-9 mx-1.5 md:mx-4 relative"
               onClick={handleDarkMode}
             >
               <FontAwesomeIcon
@@ -128,6 +132,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           <button
             type="button"
             className="hidden sm:inline-block rounded-full text-white bg-sky-500 hover:bg-sky-700 px-4 py-1 dark:bg-sky-800"
+            onClick={()=>dispatch(setSignInPop(true))}
           >
             登入
           </button>
@@ -146,6 +151,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           </button>
         </nav>
 
+        {/* 手機板選單 */}
         <div
           className={`fixed z-30 w-full h-full flex flex-col top-0 left-0 transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98]`}
         >
@@ -161,7 +167,6 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
                 icon={icon({ name: 'xmark', style: 'solid' })}
                 className="h-7 w-7 m-1 text-gray-900 dark:text-gray-100"
               />
-              {/* <CloseIcon className="h-7 w-7 fill-gray-900 dark:fill-gray-100" /> */}
             </button>
           </div>
           <div className="h-full py-5 px-8 opacity-100">
@@ -186,6 +191,11 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           </div>
         </div>
       </div>
+      
+      {loginState.showSignInPop && 
+        <SignInPopup />
+      }
+
     </header>
   );
 }

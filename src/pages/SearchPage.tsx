@@ -10,13 +10,13 @@ import PageBanner from 'components/PageBanner';
 // --- constants ---
 import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
 // --- functions / types ---
-import { searchStateType, setSearchText } from '../redux/searchSlice';
+import { SearchStateType, setSearchText } from '../redux/searchSlice';
 // --- api / type ---
 import { apiResultType, getSearchArticle } from '../api/article';
 
 /** stateType (SearchPage) */
 interface stateType {
-  search: searchStateType;
+  search: SearchStateType;
 }
 
 function SearchPage() {
