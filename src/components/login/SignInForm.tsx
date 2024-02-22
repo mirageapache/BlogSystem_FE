@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Field, reduxForm } from 'redux-form';
+import { required, maxLength } from '../../utils/Validate';
+// --- componetns ---
+import FormInput from 'components/form/FormInput';
 
 interface ValueType {
   username: string;
@@ -23,9 +26,9 @@ const validate = (values: ValueType) => {
   return errors;
 };
 
-
-// 登入表單組件
 function SignInForm() {
+  const [errorMsg, setErrorMsg] = useState('');
+
 
   /** 送出登入表單 */
   const submitSignIn: React.FormEventHandler = (event) => {
@@ -36,12 +39,22 @@ function SignInForm() {
   return (
     <form onSubmit={submitSignIn}>
       <div>
-        <label htmlFor="username">帳號:</label>
-        <Field name="username" component="input" type="text" />
+        <Field 
+          name="username"
+          component={FormInput}
+          placeholder="帳號"
+          type="text"
+          validate={[required('帳號為必填欄位'), maxLength(20, '帳號上限為20字')]}
+        />
       </div>
-      <div>
-        <label htmlFor="password">密碼:</label>
-        <Field name="password" component="input" type="password" />
+      <div className="my-3">
+        <Field 
+          name="password" 
+          component={FormInput}
+          placeholder="密碼"
+          type="password" 
+          validate={[required('密碼為必填欄位')]}
+        />
       </div>
       <button type="submit">登入</button>
     </form>

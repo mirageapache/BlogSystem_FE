@@ -9,13 +9,7 @@ import { setSignInPop } from '../../redux/loginSlice';
 
 function SignInPopup() {
   const dispatch = useDispatch();
-
-  /** 送出登入表單 */
-  const submitSignIn: React.FormEventHandler = (event: SyntheticEvent) => {
-    event.preventDefault();
-    console.log('sign in');
-  }
-
+  
   return (
     <div className="fixed z-30 flex justify-center items-center w-screen h-screen">
       <div className="fixed w-screen h-screen bg-gray-950 opacity-80" />
