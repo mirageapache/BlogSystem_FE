@@ -1,4 +1,3 @@
-import { SyntheticEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { useDispatch } from 'react-redux';
@@ -9,14 +8,14 @@ import { setSignInPop } from '../../redux/loginSlice';
 
 function SignInPopup() {
   const dispatch = useDispatch();
-  
+
   return (
     <div className="fixed z-30 flex justify-center items-center w-screen h-screen">
       <div className="fixed w-screen h-screen bg-gray-950 opacity-80" />
-      <div className="absolute z-10 w-80 border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
+      <div className="absolute z-10 w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
         {/* popup header */}
         <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">
-          <h2 className="text-2xl">登入</h2>
+          <h2 className="text-2xl text-orange-500 font-semibold">登入</h2>
           <button
             aria-label="close"
             type="button"
@@ -30,12 +29,12 @@ function SignInPopup() {
           </button>
         </div>
         {/* popup body */}
-        <div className="p-5">
+        <div className="p-4 flex justify-center items-center">
           <SignInForm />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default SignInPopup
+export default SignInPopup;

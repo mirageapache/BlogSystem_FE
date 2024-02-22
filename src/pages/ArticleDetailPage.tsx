@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 // --- api ---
 import { getPostById } from '../api/post';
 // --- components ---
-import AuthorInfoPanel  from '../components/user/AuthorInfoPanel';
-import ArticleInfoPanel  from '../components/article/ArticleInfoPanel';
-import ContentSection  from '../components/article/ContentSection';
+import AuthorInfoPanel from '../components/user/AuthorInfoPanel';
+import ArticleInfoPanel from '../components/article/ArticleInfoPanel';
+import ContentSection from '../components/article/ContentSection';
 import Spinner from '../components/Spinner';
 
 function ArticleDetailPage() {
@@ -28,7 +28,7 @@ function ArticleDetailPage() {
             <ArticleInfoPanel />
           </div>
           {/* 文章內文 */}
-          <ContentSection content={data.body}/>
+          <ContentSection content={data.body} />
         </div>
       </div>
     </div>
