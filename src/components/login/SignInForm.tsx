@@ -10,21 +10,21 @@ interface ValueType {
 }
 
 // 驗證函式
-const validate = (values: ValueType) => {
-  const errors = { username: '', password: '' };
+// const validate = (values: ValueType) => {
+//   const errors = { username: '', password: '' };
 
-  if (!values.username) {
-    errors.username = '必填';
-  } else if (values.username.length > 20) {
-    errors.username = '不能超過20個字';
-  }
-  if (!values.password) {
-    errors.password = '必填';
-  } else if (values.password.length > 20) {
-    errors.password = '不能超過20個字';
-  }
-  return errors;
-};
+//   if (!values.username) {
+//     errors.username = '必填';
+//   } else if (values.username.length > 20) {
+//     errors.username = '不能超過20個字';
+//   }
+//   if (!values.password) {
+//     errors.password = '必填';
+//   } else if (values.password.length > 20) {
+//     errors.password = '不能超過20個字';
+//   }
+//   return errors;
+// };
 
 function SignInForm() {
   const [errorMsg, setErrorMsg] = useState('');
@@ -66,5 +66,5 @@ function SignInForm() {
 
 export default reduxForm({
   form: 'signin', // 表單名稱
-  validate, // 驗證函式
+  // validate, // 驗證函式
 })(SignInForm);

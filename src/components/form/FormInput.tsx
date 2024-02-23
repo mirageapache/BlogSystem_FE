@@ -1,44 +1,54 @@
+import { useState } from 'react';
 import { isEmpty } from 'lodash';
-import React from 'react';
-
+import { fieldInputPropTypes, fieldMetaPropTypes } from 'redux-form';
+import PropTypes from 'prop-types';
 interface FormInputPorpsType {
   name: string;
   text: string;
   placeholder: string;
   classname: string;
-  meta: { error: string; touched: boolean };
+  input: fieldInputPropTypes;
+  meta: fieldMetaPropTypes;
 }
 
-function FormInput({ name, text, placeholder, classname, meta }: FormInputPorpsType) {
-  console.log(meta);
+function FormInput({ name, text, placeholder, classname, input, meta }: FormInputPorpsType) {
+  const [showErrorTip, setShowErrorTip] = useState(false);
+  
 
-  // const onBlur(e) {
-  //   e.preventDefault();
-  //   this.setState({
-  //     showMemo: false,
-  //   });
-  //   this.props.input.onBlur(e);
-  // }
+  function onBlur() {
+    setShowErrorTip(true);
+    meta.touched = true;
+    input.onBlur();
+  }
 
-  // const onFocus(e) {
-  //   e.preventDefault();
-  //   this.setState({
-  //     showMemo: true,
-  //     onFocus: true,
-  //   });
-  // }
+  function onFocus() {
+    setShowErrorTip(false);
+  }
 
   return (
     <div>
-      <input
-        name={name}
-        type={text}
-        placeholder={placeholder}
-        className={`w-full border-b-[1px] border-gray-300 outline-none mt-2 px-2 py-1 ${classname} ${!isEmpty(
-          meta.error && 'border-red-500'
-        )}`}
-      />
-      {meta.touched && !isEmpty(meta.error) && <p className="text-red-500 text-sm">{meta.error}</p>}
+      {showErrorTip && meta.touched && !isEmpty(meta.error) ?
+        <input
+          name={name}
+          type={text}
+          placeholder={placeholder}
+          className={`w-full border-b-[1px] border-gray-300 outline-none mt-2 px-2 py-1 ${classname}`}
+          onBlur={onBlur}
+          onFocus={onFocus}
+        />
+      :
+        <>
+          <input
+            name={name}
+            type={text}
+            placeholder={placeholder}
+            className={`w-full border-b-2 border-red-500 bg- outline-none mt-2 px-2 py-1 ${classname}`}
+            onBlur={onBlur}
+            onFocus={onFocus}
+          />
+          <p className="text-red-500 text-sm">{meta.error}</p>
+        </>
+      }
     </div>
   );
 }
