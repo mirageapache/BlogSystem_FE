@@ -1,38 +1,39 @@
 import React, { useState } from 'react';
-import { Field, reduxForm } from 'redux-form';
+import { connect } from 'react-redux';
+import {
+  Field,
+  reduxForm,
+  getFormMeta,
+  getFormValues,
+  FormState,
+  InjectedFormProps,
+} from 'redux-form';
 import { required, maxLength } from '../../utils/Validate';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 
-interface ValueType {
+interface formValuesType {
   username: string;
   password: string;
 }
 
-// 驗證函式
-// const validate = (values: ValueType) => {
-//   const errors = { username: '', password: '' };
+type SignInFormType = InjectedFormProps<{}, {}, string> & {
+  formValues: formValuesType;
+};
 
-//   if (!values.username) {
-//     errors.username = '必填';
-//   } else if (values.username.length > 20) {
-//     errors.username = '不能超過20個字';
-//   }
-//   if (!values.password) {
-//     errors.password = '必填';
-//   } else if (values.password.length > 20) {
-//     errors.password = '不能超過20個字';
-//   }
-//   return errors;
-// };
+const mapStateToProps = (state: FormState) => ({
+  formValues: getFormValues('signin')(state),
+});
 
-function SignInForm() {
-  const [errorMsg, setErrorMsg] = useState('');
+function SignInForm(props: SignInFormType) {
+  const { formValues } = props;
+  console.log(formValues);
 
   /** 送出登入表單 */
   const submitSignIn: React.FormEventHandler = (event) => {
     event.preventDefault();
-    console.log('sign in');
+    const meta = getFormMeta('signin');
+    console.log(meta);
   };
 
   return (
@@ -53,7 +54,7 @@ function SignInForm() {
             component={FormInput}
             placeholder="密碼"
             type="password"
-            validate={[required('密碼為必填欄位')]}
+            validate={[required('密碼為必填欄位'), maxLength(20, '密碼上限為20字')]}
           />
         </div>
       </div>
@@ -64,7 +65,8 @@ function SignInForm() {
   );
 }
 
-export default reduxForm({
-  form: 'signin', // 表單名稱
-  // validate, // 驗證函式
-})(SignInForm);
+export default connect(mapStateToProps)(
+  reduxForm({
+    form: 'signin',
+  })(SignInForm)
+);
