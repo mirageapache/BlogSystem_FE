@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
 
@@ -10,13 +9,15 @@ interface FormInputPorpsType {
   classname: string;
   input: CommonFieldProps;
   meta: WrappedFieldMetaProps;
+  showErrorTip: boolean
+  setShowErrorTip: (value: boolean) => void;
 }
 
-function FormInput({ name, text, placeholder, classname, input, meta }: FormInputPorpsType) {
-  const [showErrorTip, setShowErrorTip] = useState(false);
+function FormInput({ name, text, placeholder, classname, input, meta, showErrorTip, setShowErrorTip }: FormInputPorpsType) {
+  const inputStyle = "w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2";
 
   function onBlur() {
-    setShowErrorTip(true);
+    if(!isEmpty(meta.error)) setShowErrorTip(true);
     input.onBlur(); // 觸發原生input事件(觸發meta.touch)
   }
 
@@ -32,7 +33,7 @@ function FormInput({ name, text, placeholder, classname, input, meta }: FormInpu
             name={name}
             type={text}
             placeholder={placeholder}
-            className={`w-full border-b-2 border-red-500 bg- outline-none mt-2 px-2 py-1 ${classname}`}
+            className={`${inputStyle} border-b-2 border-red-500 bg-yellow-100 ${classname}`}
             onBlur={onBlur}
             onFocus={onFocus}
             onChange={input.onChange}
@@ -44,7 +45,7 @@ function FormInput({ name, text, placeholder, classname, input, meta }: FormInpu
           name={name}
           type={text}
           placeholder={placeholder}
-          className={`w-full border-b-[1px] border-gray-300 outline-none mt-2 px-2 py-1 ${classname}`}
+          className={`${inputStyle} border-b-[1px] border-gray-400 dark:border-gray-700 ${classname}`}
           onBlur={onBlur}
           onFocus={onFocus}
           onChange={input.onChange}

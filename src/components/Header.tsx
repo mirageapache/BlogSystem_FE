@@ -26,7 +26,7 @@ type HeaderPropsType = {
 };
 
 /** stateType (Header) */
-interface stateType {
+interface StateType {
   search: SearchStateType;
   login: LoginStateType;
 }
@@ -55,8 +55,8 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // Toggle Menu 動畫效果
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const searchState = useSelector((state: stateType) => state.search);
-  const loginState = useSelector((state: stateType) => state.login);
+  const searchState = useSelector((state: StateType) => state.search);
+  const loginState = useSelector((state: StateType) => state.login);
   const { searchText } = searchState;
 
   /** 跳轉至搜尋頁 */
