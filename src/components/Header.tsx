@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../redux/searchSlice';
-import { LoginStateType, setSignInPop } from '../redux/loginSlice';
+import { LoginStateType, setSignInPop, setSignUpPop } from '../redux/loginSlice';
 // --- images ---
 import brand from '../assets/images/brand.png';
 // --- components ---
@@ -131,10 +131,25 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           {/* 註冊/登入 */}
           <button
             type="button"
-            className="hidden sm:inline-block rounded-full text-white bg-sky-500 hover:bg-sky-700 px-4 py-1 dark:bg-sky-800"
-            onClick={()=>dispatch(setSignInPop(true))}
+            className="hidden sm:flex items-center rounded-full text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
+            onClick={() => dispatch(setSignInPop(true))}
           >
-            登入
+            <p className="hidden md:inline-block">登入</p>
+            <FontAwesomeIcon
+              icon={icon({ name: 'right-to-bracket', style: 'solid' })}
+              className="h-5 w-5 md:hidden dark:opacity-100"
+            />
+          </button>
+          <button
+            type="button"
+            className="hidden sm:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-500 border border-gray-400 dark:border-gray-700"
+            onClick={() => dispatch(setSignUpPop(true))}
+          >
+            <p className="hidden md:inline-block">註冊</p>
+            <FontAwesomeIcon
+              icon={icon({ name: 'user-plus', style: 'solid' })}
+              className="h-5 w-5 md:hidden dark:opacity-100"
+            />
           </button>
 
           {/* 選單按鈕 */}
@@ -191,11 +206,8 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           </div>
         </div>
       </div>
-      
-      {loginState.showSignInPop && 
-        <SignInPopup />
-      }
 
+      {loginState.showSignInPop && <SignInPopup />}
     </header>
   );
 }

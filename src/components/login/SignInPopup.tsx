@@ -1,11 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { useDispatch } from 'react-redux';
-import { change } from 'redux-form';
+import { connect, useDispatch } from 'react-redux';
+import { reduxForm, change, getFormValues, FormState } from 'redux-form';
 // --- components ---
 import SignInForm from './SignInForm';
 // --- functions / types ---
 import { setSignInPop } from '../../redux/loginSlice';
+
+const mapStateToProps = (state: FormState) => ({
+  formValues: getFormValues('signin')(state),
+});
 
 function SignInPopup(props: any) {
   const { dispatch } = props;
@@ -16,7 +20,7 @@ function SignInPopup(props: any) {
     dispatch(change('signin', 'account', ''));
     dispatch(change('signin', 'password', ''));
     sliceDispatch(setSignInPop(false));
-  }
+  };
 
   return (
     <div className="fixed w-full h-full z-30 flex justify-center items-center">
@@ -46,4 +50,8 @@ function SignInPopup(props: any) {
   );
 }
 
-export default SignInPopup;
+export default connect(mapStateToProps)(
+  reduxForm({
+    form: 'signin',
+  })(SignInPopup)
+);

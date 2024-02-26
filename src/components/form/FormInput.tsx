@@ -9,15 +9,25 @@ interface FormInputPorpsType {
   classname: string;
   input: CommonFieldProps;
   meta: WrappedFieldMetaProps;
-  showErrorTip: boolean
+  showErrorTip: boolean;
   setShowErrorTip: (value: boolean) => void;
 }
 
-function FormInput({ name, text, placeholder, classname, input, meta, showErrorTip, setShowErrorTip }: FormInputPorpsType) {
-  const inputStyle = "w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2";
+function FormInput({
+  name,
+  text,
+  placeholder,
+  classname,
+  input,
+  meta,
+  showErrorTip,
+  setShowErrorTip,
+}: FormInputPorpsType) {
+  const inputStyle =
+    'w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2';
 
   function onBlur() {
-    if(!isEmpty(meta.error)) setShowErrorTip(true);
+    if (!isEmpty(meta.error)) setShowErrorTip(true);
     input.onBlur(); // 觸發原生input事件(觸發meta.touch)
   }
 

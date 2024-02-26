@@ -20,7 +20,7 @@ function SignUpPopup(props: any) {
     dispatch(change('signup', 'account', ''));
     dispatch(change('signup', 'password', ''));
     sliceDispatch(setSignUpPop(false));
-  }
+  };
 
   return (
     <div className="fixed w-screen h-screen z-30 flex justify-center items-center">

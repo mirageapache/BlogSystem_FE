@@ -20,7 +20,8 @@ const mapStateToProps = (state: FormState) => ({
   formMeta: getFormMeta('signup')(state),
 });
 
-function SignUpForm(props: any) { // 目前找不到適合props的型別，故使用any代替
+function SignUpForm(props: any) {
+  // 目前找不到適合props的型別，故使用any代替
   const { handleSubmit, dispatch } = props;
   const [showErrorTip, setShowErrorTip] = useState(false); // 輸入錯誤顯示判斷
 
@@ -29,7 +30,7 @@ function SignUpForm(props: any) { // 目前找不到適合props的型別，故�
     dispatch(change('signup', 'account', ''));
     dispatch(change('signup', 'password', ''));
     window.location.replace('/signin');
-  }
+  };
 
   /** 忘記密碼 */
   // const findPassword = () => {
@@ -38,7 +39,7 @@ function SignUpForm(props: any) { // 目前找不到適合props的型別，故�
 
   /** 送出登入資料 */
   const submitSignUp = async (form: SignUpParamType) => {
-    if(!showErrorTip){
+    if (!showErrorTip) {
       console.log(form);
       try {
         const res = await SignUp(form);
@@ -81,11 +82,22 @@ function SignUpForm(props: any) { // 目前找不到適合props的型別，故�
         <h3 className="text-red-500">該帳號已被使用!</h3>
       </div> */}
       <div className="grid grid-cols-2 gap-4 my-2">
-        <button type="button" className="px-4 py-2 rounded-md border border-gray-400 dard:border-gray-700" onClick={directSignUp}>前往登入</button>
+        <button
+          type="button"
+          className="px-4 py-2 rounded-md border border-gray-400 dard:border-gray-700"
+          onClick={directSignUp}
+        >
+          前往登入
+        </button>
         {/* <button type="button" className="px-4 py-2 rounded-md border border-gray-400 dard:border-gray-700" onClick={findPassword}>忘記密碼</button> */}
       </div>
-      <div className='mt-4'>
-        <button type="submit" className="w-full px-4 py-2 text-lg text-white rounded-md bg-green-600">註冊</button>
+      <div className="mt-4">
+        <button
+          type="submit"
+          className="w-full px-4 py-2 text-lg text-white rounded-md bg-green-600"
+        >
+          註冊
+        </button>
       </div>
     </form>
   );

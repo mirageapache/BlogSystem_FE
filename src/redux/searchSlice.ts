@@ -22,15 +22,17 @@ const searchSlice = createSlice({
   reducers: {
     /** 設定搜尋自串 */
     setSearchText(state: SearchStateType, action: PayloadAction<string>) {
-      state.searchText = action.payload;
+      const newState = { ...state, searchText: action.payload };
+      return newState;
     },
     /** 設定搜尋類型 */
     resetSearchCategory(state: SearchStateType, action: PayloadAction<number>) {
-      state.searchCategory = action.payload;
+      const newState = { ...state, searchCategory: action.payload };
+      return newState;
     },
     /** 重設 search state */
-    resetSearchState(state: SearchStateType) {
-      state = initState;
+    resetSearchState() {
+      return initState;
     },
   },
 });
