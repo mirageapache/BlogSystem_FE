@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 
 /** FormInputPorps 型別 */
 interface FormInputPorpsType {
   name: string;
-  text: string;
+  type: string;
   placeholder: string;
   classname: string;
   input: CommonFieldProps;
@@ -15,7 +18,7 @@ interface FormInputPorpsType {
 
 function FormInput({
   name,
-  text,
+  type,
   placeholder,
   classname,
   input,
@@ -23,8 +26,8 @@ function FormInput({
   showErrorTip,
   setShowErrorTip,
 }: FormInputPorpsType) {
-  const inputStyle =
-    'w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2';
+  const [hidePassword, setHidePassword] = useState(type === 'password'); // 隱藏密碼
+  const inputStyle = 'w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2';
 
   function onBlur() {
     if (!isEmpty(meta.error)) setShowErrorTip(true);
@@ -39,21 +42,34 @@ function FormInput({
     <div>
       {showErrorTip && meta.touched && !isEmpty(meta.error) ? (
         <>
-          <input
-            name={name}
-            type={text}
-            placeholder={placeholder}
-            className={`${inputStyle} border-b-2 border-red-500 bg-yellow-100 ${classname}`}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            onChange={input.onChange}
-          />
+          <span className='relative'>
+            <input
+              name={name}
+              type={type}
+              placeholder={placeholder}
+              className={`${inputStyle} border-b-2 border-red-500 bg-yellow-100 ${classname}`}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              onChange={input.onChange}
+            />
+            {hidePassword ?
+              <FontAwesomeIcon
+                icon={icon({ name: 'eye-slash', style: 'solid' })}
+                className="absolute h-6 w-6"
+              />
+              :
+              <FontAwesomeIcon
+                icon={icon({ name: 'eye', style: 'solid' })}
+                className="absolute h-6 w-6 text-gray-900"
+              />
+            }
+          </span>
           <p className="text-red-500 text-sm">{meta.error}</p>
         </>
       ) : (
         <input
           name={name}
-          type={text}
+          type={type}
           placeholder={placeholder}
           className={`${inputStyle} border-b-[1px] border-gray-400 dark:border-gray-700 ${classname}`}
           onBlur={onBlur}
