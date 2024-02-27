@@ -3,19 +3,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-// --- functions / types ---
-import { SearchStateType, setSearchText } from '../redux/searchSlice';
-import { LoginStateType, setSignInPop, setSignUpPop } from '../redux/loginSlice';
 // --- images ---
 import brand from '../assets/images/brand.png';
 // --- components ---
 import SignInPopup from './login/SignInPopup';
+import SignUpPopup from './login/SignUpPopup';
+// --- functions / types ---
+import { SearchStateType, setSearchText } from '../redux/searchSlice';
+import { LoginStateType, setSignInPop, setSignUpPop } from '../redux/loginSlice';
+import { isEmpty } from 'lodash';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
   href: string;
   text: string;
-  count: number;
+  count?: number;
   children: ReactNode;
 };
 
@@ -41,7 +43,7 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
       <span className="flex items-center">{children}</span>
       <span className="ml-3 font-bold">
         {text}
-        {count > 0 && (
+        {!isEmpty(count) && (
           <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
             {count}
           </span>
@@ -100,7 +102,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
                 placeholder="搜尋..."
                 onChange={(e) => dispatch(setSearchText(e.target.value))}
                 onKeyUp={(e) => handleSearch(e.key)}
-                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
+                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-76 outline-none"
               />
               <FontAwesomeIcon
                 icon={icon({ name: 'search', style: 'solid' })}
@@ -109,12 +111,12 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             </div>
           )}
 
-          {/* 深色模式切換 */}
-          <div className="flex justify-center items-center">
+          <div className="flex justify-around items-center">
+            {/* 深色模式切換 */}
             <button
               aria-label="darkMode"
               type="button"
-              className="flex justify-center items-center w-9 h-9 mx-1.5 md:mx-4 relative"
+              className="hidden sm:flex justify-center items-center w-9 h-9 mx-1.5 md:mx-4 relative"
               onClick={handleDarkMode}
             >
               <FontAwesomeIcon
@@ -126,31 +128,31 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
                 className="absolute h-6 w-6 rounded-full text-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100"
               />
             </button>
+            {/* 登入 */}
+            <button
+              type="button"
+              className="flex items-center rounded-full text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
+              onClick={() => dispatch(setSignInPop(true))}
+            >
+              <p className="hidden md:inline-block">登入</p>
+              <FontAwesomeIcon
+                icon={icon({ name: 'right-to-bracket', style: 'solid' })}
+                className="h-5 w-5 md:hidden dark:opacity-100"
+              />
+            </button>
+            {/* 註冊 */}
+            <button
+              type="button"
+              className="flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-500 border border-gray-400 dark:border-gray-700"
+              onClick={() => dispatch(setSignUpPop(true))}
+            >
+              <p className="hidden md:inline-block">註冊</p>
+              <FontAwesomeIcon
+                icon={icon({ name: 'user-plus', style: 'solid' })}
+                className="h-5 w-5 md:hidden dark:opacity-100"
+              />
+            </button>
           </div>
-
-          {/* 註冊/登入 */}
-          <button
-            type="button"
-            className="hidden sm:flex items-center rounded-full text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
-            onClick={() => dispatch(setSignInPop(true))}
-          >
-            <p className="hidden md:inline-block">登入</p>
-            <FontAwesomeIcon
-              icon={icon({ name: 'right-to-bracket', style: 'solid' })}
-              className="h-5 w-5 md:hidden dark:opacity-100"
-            />
-          </button>
-          <button
-            type="button"
-            className="hidden sm:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-500 border border-gray-400 dark:border-gray-700"
-            onClick={() => dispatch(setSignUpPop(true))}
-          >
-            <p className="hidden md:inline-block">註冊</p>
-            <FontAwesomeIcon
-              icon={icon({ name: 'user-plus', style: 'solid' })}
-              className="h-5 w-5 md:hidden dark:opacity-100"
-            />
-          </button>
 
           {/* 選單按鈕 */}
           <button
@@ -166,7 +168,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           </button>
         </nav>
 
-        {/* 手機板選單 */}
+        {/* 手機版選單 */}
         <div
           className={`fixed z-30 w-full h-full flex flex-col top-0 left-0 transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98]`}
         >
@@ -185,29 +187,51 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             </button>
           </div>
           <div className="h-full py-5 px-8 opacity-100">
-            <MenuItem href="/" text="Home" count={0}>
+            <div className='flex border border-red-500'>
+              {/* 模式切換 */}
+              {/* <button
+                aria-label="darkMode"
+                type="button"
+                className="hidden sm:flex justify-center items-center w-9 h-9 mx-1.5 md:mx-4 relative"
+                onClick={handleDarkMode}
+              >
+                <FontAwesomeIcon
+                  icon={icon({ name: 'moon', style: 'solid' })}
+                  className="h-6 w-6 text-gray-900 translate-y-0 opacity-100 transform duration-300 delay-200 ease-in-out dark:translate-y-4 dark:opacity-0"
+                />
+                <FontAwesomeIcon
+                  icon={icon({ name: 'sun', style: 'solid' })}
+                  className="absolute h-6 w-6 rounded-full text-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100"
+                />
+              </button> */}
+            </div>
+            <MenuItem href="/" text="首頁" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'home' })} />
             </MenuItem>
-            <MenuItem href="/" text="Inbox" count={0}>
-              <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
-            </MenuItem>
-            <MenuItem href="/" text="Chat" count={0}>
-              <FontAwesomeIcon icon={icon({ name: 'comment', style: 'regular' })} />
-            </MenuItem>
-            <MenuItem href="/" text="Actiivity" count={0}>
-              <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-            </MenuItem>
-            <MenuItem href="/" text="Explore" count={0}>
+            <MenuItem href="/explore" text="探索" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
             </MenuItem>
-            <MenuItem href="/" text="Profile" count={0}>
+            <MenuItem href="/search" text="搜尋" >
+              <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
+            </MenuItem>
+            {/* 登入後顯示 */}
+            <MenuItem href="/profile" text="個人資料" >
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
             </MenuItem>
+            <MenuItem href="/inbox" text="訊息匣" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
+            </MenuItem>
+            <MenuItem href="/activity" text="動態" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
+            </MenuItem>            
           </div>
         </div>
       </div>
 
+      {/* 登入&註冊 Modal */}
       {loginState.showSignInPop && <SignInPopup />}
+      {loginState.showSignUpPop && <SignUpPopup />}
+
     </header>
   );
 }
