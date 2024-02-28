@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { DUMMYJSON_URL } from './index';
+import { DUMMYJSON_URL, LOCALHOST } from './index';
 
-const baseUrl = '';
+const baseUrl = LOCALHOST;
 
 /** 註冊參數型別 */
 export interface SignUpParamType {
@@ -18,8 +18,9 @@ export interface SignInParamType {
 
 /** 註冊 */
 export async function SignUp(param: SignUpParamType) {
+  console.log(param);
   const result = await axios
-    .post(`${baseUrl}/signup`, param)
+    .post(`${baseUrl}/login/signup`, param)
     .then((res) => {
       const postData = res.data;
       return postData;

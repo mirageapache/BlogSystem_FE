@@ -24,11 +24,17 @@ function SignUpPopup(props: any) {
 
   return (
     <div className="fixed w-screen h-screen z-30 flex justify-center items-center">
-      <div className="fixed w-screen h-screen bg-gray-950 opacity-80" />
+      <button
+        type="button"
+        className="fixed w-full h-full bg-gray-950 opacity-80"
+        onClick={handleCancel}
+      >
+        <p className="hidden">p</p>
+      </button>
       <div className="absolute z-10 w-4/5 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
         {/* popup header */}
         <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">
-          <h2 className="text-2xl text-orange-500 font-semibold">登入</h2>
+          <h2 className="text-2xl text-orange-500 font-semibold">歡迎加入</h2>
           <button
             aria-label="close"
             type="button"
@@ -53,6 +59,6 @@ function SignUpPopup(props: any) {
 // export default SignUpPopup;
 export default connect(mapStateToProps)(
   reduxForm({
-    form: 'signin',
+    form: 'signup',
   })(SignUpPopup)
 );

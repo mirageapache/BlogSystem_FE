@@ -24,9 +24,7 @@ export const checkLength = (min: number, max: number, msg: string) => (value: st
  */
 export const onlyEngNum = (errorMessage: string) => (value: string) => {
   const regExp = /[^a-z^A-Z^0-9]/g;
-  return (
-    (value && !regExp.test(value)) ? (errorMessage || '限輸入英文字及數字') : undefined
-  );
+  return value && !regExp.test(value) ? errorMessage || '限輸入英文字及數字' : undefined;
 };
 
 /**
@@ -34,9 +32,7 @@ export const onlyEngNum = (errorMessage: string) => (value: string) => {
  */
 export const englishOnly = (errorMessage: string) => (value: string) => {
   const regExp = /^[a-zA-Z]+$/;
-  return (
-    (value && !regExp.test(value)) ? (errorMessage || '限輸入英文') : undefined
-  );
+  return value && !regExp.test(value) ? errorMessage || '限輸入英文' : undefined;
 };
 
 /**
@@ -44,20 +40,18 @@ export const englishOnly = (errorMessage: string) => (value: string) => {
  */
 export const intOnly = (errorMessage: string) => (value: string) => {
   const regExp = /^[0-9]+$/;
-  return (
-    (value && !regExp.test(value)) ? (errorMessage || '請輸入數字') : undefined
-  );
+  return value && !regExp.test(value) ? errorMessage || '請輸入數字' : undefined;
 };
 
-/** 
+/**
  * 確認密碼檢核
  */
 export const passwordCheck = (value: string, allValues: unknown) => {
-  if(get(allValues, 'password', null) !== get(allValues, 'confirmPassword', null)){
+  if (get(allValues, 'password', null) !== get(allValues, 'confirmPassword', null)) {
     return '密碼與確認密碼不相符';
   }
   return undefined;
-}
+};
 
 /**
  * Email檢核

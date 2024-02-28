@@ -23,12 +23,18 @@ function SignInPopup(props: any) {
   };
 
   return (
-    <div className="fixed w-full h-full z-30 flex justify-center items-center">
-      <div className="fixed w-full h-full bg-gray-950 opacity-80" />
-      <div className="absolute z-10 w-4/5 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
+    <div className="fixed w-full h-full z-30 flex justify-center items-center select-none">
+      <button
+        type="button"
+        className="fixed w-full h-full bg-gray-950 opacity-80"
+        onClick={handleCancel}
+      >
+        <p className="hidden">p</p>
+      </button>
+      <div className="absolute z-10 w-full min-[320px]:w-11/12 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
         {/* popup header */}
         <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">
-          <h2 className="text-2xl text-orange-500 font-semibold">登入</h2>
+          <h2 className="text-2xl text-orange-500 font-semibold">歡迎回來</h2>
           <button
             aria-label="close"
             type="button"
@@ -37,7 +43,7 @@ function SignInPopup(props: any) {
           >
             <FontAwesomeIcon
               icon={icon({ name: 'xmark', style: 'solid' })}
-              className="w-5 h-5 m-1 text-gray-900 dark:text-gray-100"
+              className="w-5 h-5 m-1 text-gray-700 dark:text-gray-400"
             />
           </button>
         </div>

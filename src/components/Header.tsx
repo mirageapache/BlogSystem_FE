@@ -2,6 +2,7 @@ import { useState, ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- images ---
 import brand from '../assets/images/brand.png';
@@ -11,13 +12,12 @@ import SignUpPopup from './login/SignUpPopup';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../redux/searchSlice';
 import { LoginStateType, setSignInPop, setSignUpPop } from '../redux/loginSlice';
-import { isEmpty } from 'lodash';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
   href: string;
   text: string;
-  count?: number;
+  count: number;
   children: ReactNode;
 };
 
@@ -143,7 +143,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             {/* 註冊 */}
             <button
               type="button"
-              className="flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-500 border border-gray-400 dark:border-gray-700"
+              className="hidden md:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-500 border border-gray-400 dark:border-gray-700"
               onClick={() => dispatch(setSignUpPop(true))}
             >
               <p className="hidden md:inline-block">註冊</p>
@@ -187,7 +187,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             </button>
           </div>
           <div className="h-full py-5 px-8 opacity-100">
-            <div className='flex border border-red-500'>
+            <div className="flex border border-red-500">
               {/* 模式切換 */}
               {/* <button
                 aria-label="darkMode"
@@ -211,11 +211,11 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             <MenuItem href="/explore" text="探索" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
             </MenuItem>
-            <MenuItem href="/search" text="搜尋" >
+            <MenuItem href="/search" text="搜尋" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
             </MenuItem>
             {/* 登入後顯示 */}
-            <MenuItem href="/profile" text="個人資料" >
+            <MenuItem href="/profile" text="個人資料" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
             </MenuItem>
             <MenuItem href="/inbox" text="訊息匣" count={0}>
@@ -223,7 +223,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             </MenuItem>
             <MenuItem href="/activity" text="動態" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-            </MenuItem>            
+            </MenuItem>
           </div>
         </div>
       </div>
@@ -231,7 +231,6 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
       {/* 登入&註冊 Modal */}
       {loginState.showSignInPop && <SignInPopup />}
       {loginState.showSignUpPop && <SignUpPopup />}
-
     </header>
   );
 }

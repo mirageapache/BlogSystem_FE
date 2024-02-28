@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash';
 type ItemProps = {
   href: string;
   text: string;
-  count?: number;
+  count: number;
   children: ReactNode;
 };
 
@@ -42,7 +42,7 @@ function SideBar() {
         <SideBarItem href="/explore" text="探索" count={0}>
           <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
         </SideBarItem>
-        <SideBarItem href="/search" text="搜尋" >
+        <SideBarItem href="/search" text="搜尋" count={0}>
           <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
         </SideBarItem>
         {/* 登入後顯示 */}

@@ -8,26 +8,41 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 interface FormInputPorpsType {
   name: string;
   type: string;
+  ispwd: boolean;
   placeholder: string;
   classname: string;
   input: CommonFieldProps;
   meta: WrappedFieldMetaProps;
-  showErrorTip: boolean;
-  setShowErrorTip: (value: boolean) => void;
 }
 
-function FormInput({
-  name,
-  type,
-  placeholder,
-  classname,
-  input,
-  meta,
-  showErrorTip,
-  setShowErrorTip,
-}: FormInputPorpsType) {
-  const [hidePassword, setHidePassword] = useState(type === 'password'); // 隱藏密碼
-  const inputStyle = 'w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2';
+function FormInput({ name, type, ispwd, placeholder, classname, input, meta }: FormInputPorpsType) {
+  const [hidePassword, setHidePassword] = useState(ispwd); // 隱藏密碼
+  const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
+  const pwdtype = hidePassword ? 'password' : 'text'; // 控制密碼顯示/隱藏的input type
+  const inputType = ispwd ? pwdtype : type;
+  const inputStyle =
+    'w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2';
+
+  console.log(meta.submitFailed);
+
+  // 顯示/隱藏密碼控制
+  const showToggle = hidePassword ? (
+    <FontAwesomeIcon
+      icon={icon({ name: 'eye-slash', style: 'solid' })}
+      className="absolute mt-3.5 right-0 h-6 w-6 text-gray-700 cursor-pointer"
+      onClick={() => {
+        setHidePassword(false);
+      }}
+    />
+  ) : (
+    <FontAwesomeIcon
+      icon={icon({ name: 'eye', style: 'solid' })}
+      className="absolute mt-3.5 right-0 h-6 w-6 text-gray-700 cursor-pointer"
+      onClick={() => {
+        setHidePassword(true);
+      }}
+    />
+  );
 
   function onBlur() {
     if (!isEmpty(meta.error)) setShowErrorTip(true);
@@ -39,43 +54,36 @@ function FormInput({
   }
 
   return (
-    <div>
-      {showErrorTip && meta.touched && !isEmpty(meta.error) ? (
+    <div className="relative">
+      {(showErrorTip && meta.touched && !isEmpty(meta.error)) || meta.submitFailed ? (
         <>
-          <span className='relative'>
+          <span className="relative">
             <input
               name={name}
-              type={type}
+              type={inputType}
               placeholder={placeholder}
-              className={`${inputStyle} border-b-2 border-red-500 bg-yellow-100 ${classname}`}
+              className={`${inputStyle} border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950 ${classname} `}
               onBlur={onBlur}
               onFocus={onFocus}
               onChange={input.onChange}
             />
-            {hidePassword ?
-              <FontAwesomeIcon
-                icon={icon({ name: 'eye-slash', style: 'solid' })}
-                className="absolute h-6 w-6"
-              />
-              :
-              <FontAwesomeIcon
-                icon={icon({ name: 'eye', style: 'solid' })}
-                className="absolute h-6 w-6 text-gray-900"
-              />
-            }
+            {ispwd && showToggle}
           </span>
           <p className="text-red-500 text-sm">{meta.error}</p>
         </>
       ) : (
-        <input
-          name={name}
-          type={type}
-          placeholder={placeholder}
-          className={`${inputStyle} border-b-[1px] border-gray-400 dark:border-gray-700 ${classname}`}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onChange={input.onChange}
-        />
+        <span>
+          <input
+            name={name}
+            type={inputType}
+            placeholder={placeholder}
+            className={`${inputStyle} border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 ${classname} `}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            onChange={input.onChange}
+          />
+          {ispwd && showToggle}
+        </span>
       )}
     </div>
   );
