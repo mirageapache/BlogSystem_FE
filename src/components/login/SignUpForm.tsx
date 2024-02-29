@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { isEmpty } from 'lodash';
 import { Field, reduxForm, getFormMeta, getFormValues, FormState, change } from 'redux-form';
 import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
 // --- componetns ---
@@ -16,9 +15,9 @@ const mapStateToProps = (state: FormState) => ({
 });
 
 function SignUpForm(props: any) {
-  // 目前找不到適合props的型別，故使用any代替
   const { handleSubmit, dispatch } = props;
   const sliceDispatch = useDispatch();
+  const [errorMsg, setErrorMsg] = useState('');
 
   /** 導頁至登入 */
   const directSignUp = () => {
@@ -29,23 +28,29 @@ function SignUpForm(props: any) {
   };
 
   /** 送出註冊資料 */
-  const submitSignUp = async (value: SignUpParamType) => {
-    console.log(value);
-    // try {
-    //   const res = await SignUp(form);
-    //   console.log(res);
-    //   window.localStorage.setItem('authToken', res.authToken);
-    //   window.location.replace('/');
-    // } catch (error) {
-    //   console.log(error);
-    // }
+  const submitSignUp = async (form: SignUpParamType) => {
+    console.log(form);
+    try {
+      const res = await SignUp(form);
+      console.log(res);
+      window.localStorage.setItem('authToken', res.authToken);
+      window.location.replace('/');
+
+      if (res.response.status === 200) {
+        window.location.replace('/');
+      } else {
+        setErrorMsg(res.message);
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    // <form className="w-full max-w-80">
     <form className="w-full max-w-80" onSubmit={handleSubmit(submitSignUp)}>
       <div className="mb-6 w-full">
-        <div className="my-3">
+        <div>
           <Field
             name="email"
             component={FormInput}
@@ -78,19 +83,12 @@ function SignUpForm(props: any) {
             ]}
           />
         </div>
-        {/* <div>
-          <Field
-            name="account"
-            component={FormInput}
-            placeholder="帳號"
-            type="text"
-            validate={[required('帳號為必填欄位'), maxLength(20, '帳號上限為20字')]}
-          />
-        </div> */}
       </div>
-      <div>
-        <h3 className="text-red-500">該帳號已被使用!</h3>
-      </div>
+      { errorMsg && 
+        <div>
+          <h3 className="text-red-500">{errorMsg}</h3>
+        </div>
+      }
       <div className="mt-4">
         <button
           type="submit"
@@ -99,7 +97,6 @@ function SignUpForm(props: any) {
           註冊
         </button>
       </div>
-
       <div className="grid grid-cols-2 gap-4 my-2">
         <span className="flex">
           已有帳戶？
@@ -112,20 +109,8 @@ function SignUpForm(props: any) {
   );
 }
 
-const onSubmitFail = (errors: any, dispatch: any) => {
-  console.log(errors);
-  if (!isEmpty(errors.email)) {
-    console.log(errors.email);
-  } else if (!isEmpty(errors.password)) {
-    console.log(errors.password);
-  } else if (!isEmpty(errors.confirmPassword)) {
-    console.log(errors.confirmPassword);
-  }
-};
-
 export default connect(mapStateToProps)(
   reduxForm({
     form: 'signup',
-    onSubmitFail,
   })(SignUpForm)
 );

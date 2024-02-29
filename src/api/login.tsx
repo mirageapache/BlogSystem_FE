@@ -1,7 +1,9 @@
 import axios from 'axios';
+import bcrypt from 'bcryptjs';
 import { DUMMYJSON_URL, LOCALHOST } from './index';
 
 const baseUrl = LOCALHOST;
+const saltRounds = bcrypt.genSaltSync(11);
 
 /** 註冊參數型別 */
 export interface SignUpParamType {
@@ -18,9 +20,11 @@ export interface SignInParamType {
 
 /** 註冊 */
 export async function SignUp(param: SignUpParamType) {
-  console.log(param);
+  const hashedpwd = await bcrypt.hash(param.password, saltRounds); // 對密碼進行加密
+  const newParam = { ...param, password: hashedpwd };
+
   const result = await axios
-    .post(`${baseUrl}/login/signup`, param)
+    .post(`${baseUrl}/login/signup`, newParam)
     .then((res) => {
       const postData = res.data;
       return postData;
@@ -33,8 +37,11 @@ export async function SignUp(param: SignUpParamType) {
 
 /** 登入 */
 export async function SignIn(param: SignInParamType) {
+  const hashedpwd = await bcrypt.hash(param.password, saltRounds); //加密
+  const newParam = { ...param, password: hashedpwd };
+
   const result = await axios
-    .post(`${baseUrl}/signin`, param)
+    .post(`${baseUrl}/signin`, newParam)
     .then((res) => {
       const postData = res.data;
       return postData;

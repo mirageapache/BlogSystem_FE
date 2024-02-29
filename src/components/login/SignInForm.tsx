@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { isEmpty } from 'lodash';
 import {
   Field,
   reduxForm,
@@ -56,7 +55,7 @@ function SignInForm(props: any) {
         window.localStorage.setItem('authToken', res.authToken);
         window.location.replace('/');
       } else {
-        console.log(res.message);
+        setErrorMsg(res.message);
       }
     } catch (error) {
       console.log(error);
@@ -86,9 +85,11 @@ function SignInForm(props: any) {
           />
         </div>
       </div>
-      {/* <div>
-        <h3 className="text-red-500">帳號或密碼錯誤!</h3>
-      </div> */}
+      { errorMsg && 
+        <div>
+          <h3 className="text-red-500">{errorMsg}</h3>
+        </div>
+      }
       <div className="mt-4">
         <button
           type="submit"

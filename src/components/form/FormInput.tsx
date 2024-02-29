@@ -23,8 +23,6 @@ function FormInput({ name, type, ispwd, placeholder, classname, input, meta }: F
   const inputStyle =
     'w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2';
 
-  console.log(meta.submitFailed);
-
   // 顯示/隱藏密碼控制
   const showToggle = hidePassword ? (
     <FontAwesomeIcon
