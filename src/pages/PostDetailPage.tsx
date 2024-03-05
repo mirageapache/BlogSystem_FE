@@ -59,7 +59,7 @@ function PostDetailPage() {
                 <FontAwesomeIcon
                   icon={icon({ name: 'comment', style: 'regular' })}
                   className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-green-500"
-                /> 
+                />
                 <p className="text-md pl-2 font-bold text-center text-gray-400 dark:text-gray-100">
                   2
                 </p>

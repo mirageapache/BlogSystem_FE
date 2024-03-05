@@ -3,12 +3,12 @@ import React from 'react';
 import Avatar from './Avatar';
 import FollowBtn from './FollowBtn';
 
-function AuthorInfoPanel(props: { avatarUrl: string}) {
+function AuthorInfoPanel(props: { avatarUrl: string }) {
   const { avatarUrl } = props;
   return (
     <div className="flex my-4">
       <div className="flex justify-center items-center mr-4">
-        <Avatar avatarUrl={avatarUrl} />
+        <Avatar avatarUrl={avatarUrl} size="w-11 h-11" textSize="text-xl" />
       </div>
       <div>
         <span className="flex">

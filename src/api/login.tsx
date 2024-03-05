@@ -37,7 +37,7 @@ export async function SignUp(param: SignUpParamType) {
 
 /** 登入 */
 export async function SignIn(param: SignInParamType) {
-  const hashedpwd = await bcrypt.hash(param.password, saltRounds); //加密
+  const hashedpwd = await bcrypt.hash(param.password, saltRounds); // 加密
   const newParam = { ...param, password: hashedpwd };
 
   const result = await axios

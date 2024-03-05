@@ -85,11 +85,11 @@ function SignInForm(props: any) {
           />
         </div>
       </div>
-      { errorMsg && 
+      {errorMsg && (
         <div>
           <h3 className="text-red-500">{errorMsg}</h3>
         </div>
-      }
+      )}
       <div className="mt-4">
         <button
           type="submit"

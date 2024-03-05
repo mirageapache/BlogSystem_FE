@@ -41,7 +41,6 @@ function SignUpForm(props: any) {
       } else {
         setErrorMsg(res.message);
       }
-
     } catch (error) {
       console.log(error);
     }
@@ -84,11 +83,11 @@ function SignUpForm(props: any) {
           />
         </div>
       </div>
-      { errorMsg && 
+      {errorMsg && (
         <div>
           <h3 className="text-red-500">{errorMsg}</h3>
         </div>
-      }
+      )}
       <div className="mt-4">
         <button
           type="submit"
