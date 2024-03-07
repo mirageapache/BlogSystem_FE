@@ -3,8 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 // --- constants ---
 import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
 // --- components ---
-import Header from './components/Header';
-import SideBar from './components/SideBar';
+import Header from './components/layout/Header';
+import SideBar from './components/layout/SideBar';
 
 // --- pages ---
 import HomePage from './pages/HomePage';

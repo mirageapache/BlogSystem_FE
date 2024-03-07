@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
-import PageBanner from 'components/PageBanner';
+import PageBanner from 'components/layout/PageBanner';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../redux/searchSlice';
 // --- api / type ---
