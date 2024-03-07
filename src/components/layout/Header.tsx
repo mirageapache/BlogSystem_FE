@@ -142,8 +142,10 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
         </nav>
 
         {/* 手機版選單 */}
-        <MainMenu toggleMenuAnimation={toggleMenuAnimation} setToggleMenuAnimation={setToggleMenuAnimation} />
-        
+        <MainMenu
+          toggleMenuAnimation={toggleMenuAnimation}
+          setToggleMenuAnimation={setToggleMenuAnimation}
+        />
       </div>
 
       {/* 登入&註冊 Modal */}

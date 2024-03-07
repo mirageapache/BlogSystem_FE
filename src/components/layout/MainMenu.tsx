@@ -13,7 +13,7 @@ type ItemPropsType = {
 
 interface MainMenuType {
   toggleMenuAnimation: string;
-  setToggleMenuAnimation : (value: string) => void;
+  setToggleMenuAnimation: (value: string) => void;
 }
 
 /** MainMenu Item 元件 */
@@ -38,7 +38,6 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
 
 /** MainMenu 元件 */
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
-
   return (
     <div
       className={`fixed z-30 top-0 right-0 w-full sm:max-w-[300px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98]`}
@@ -57,9 +56,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
           />
         </button>
       </div>
-      <div>
-        {/* profile */}
-      </div>
+      <div>{/* profile */}</div>
       <div className="h-full py-5 px-8 opacity-100">
         <div className="text-left h-fit sm:px-1 px-5">
           <div className="ml-2.5">
@@ -80,7 +77,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
             </MenuItem>
             <MenuItem href="/write" text="撰寫文章" count={0}>
-              <FontAwesomeIcon icon={icon({ name: 'pen', style: 'regular' })} />
+              <FontAwesomeIcon icon={icon({ name: 'pen', style: 'solid' })} />
             </MenuItem>
             {/* <MenuItem href="/profile" text="個人資料" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
@@ -89,8 +86,8 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         </div>
       </div>
       <div className="flex border border-red-500">
-          {/* 快速設定 */}
-          {/* <button
+        {/* 快速設定 */}
+        {/* <button
             aria-label="darkMode"
             type="button"
             className="hidden sm:flex justify-center items-center w-9 h-9 mx-1.5 md:mx-4 relative"
@@ -105,7 +102,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               className="absolute h-6 w-6 rounded-full text-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100"
             />
           </button> */}
-        </div>
+      </div>
     </div>
   );
 }

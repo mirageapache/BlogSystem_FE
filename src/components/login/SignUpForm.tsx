@@ -29,17 +29,15 @@ function SignUpForm(props: any) {
 
   /** 送出註冊資料 */
   const submitSignUp = async (form: SignUpParamType) => {
-    console.log(form);
     try {
       const res = await SignUp(form);
-      console.log(res);
-      window.localStorage.setItem('authToken', res.authToken);
-      window.location.replace('/');
 
+      console.log(res);
       if (res.response.status === 200) {
+        window.localStorage.setItem('authToken', res.authToken);
         window.location.replace('/');
       } else {
-        setErrorMsg(res.message);
+        setErrorMsg(res.response.data.message);
       }
     } catch (error) {
       console.log(error);
