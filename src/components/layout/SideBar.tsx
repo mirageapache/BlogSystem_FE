@@ -16,7 +16,7 @@ function SideBarItem({ href, text, count, children }: ItemProps) {
   return (
     <a
       href={href}
-      className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-4"
+      className="flex my-1.5 text-xl text-gray-700 dark:text-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-4"
     >
       <span className="flex items-center">{children}</span>
       <span className="ml-3 font-bold hidden lg:block">

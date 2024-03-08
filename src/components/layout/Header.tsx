@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,8 +6,7 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- images ---
 import brand from '../../assets/images/brand.png';
 // --- components ---
-import SignInPopup from '../login/SignInPopup';
-import SignUpPopup from '../login/SignUpPopup';
+
 import MainMenu from './MainMenu';
 
 // --- functions / types ---
@@ -20,7 +19,6 @@ type HeaderPropsType = {
   setDarkMode: Function;
 };
 
-/** stateType (Header) */
 interface StateType {
   search: SearchStateType;
   login: LoginStateType;
@@ -31,7 +29,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const searchState = useSelector((state: StateType) => state.search);
-  const loginState = useSelector((state: StateType) => state.login);
+  
   const { searchText } = searchState;
 
   /** 跳轉至搜尋頁 */
@@ -43,7 +41,9 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
 
   /** 深色模式切換 */
   const handleDarkMode = () => {
-    setDarkMode(darkMode === 'dark' ? '' : 'dark');
+    const newValue = darkMode === 'dark' ? '' : 'dark';
+    setDarkMode(newValue);
+    localStorage.setItem('darkMode', newValue);
   };
 
   /** 螢幕寬度大於768px收合toggle menu */
@@ -68,7 +68,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}
           {window.location.pathname !== '/search' && (
-            <div className="hidden sm:flex items-center">
+            <div className="hidden sm:flex items-center mr-1.5">
               <input
                 type="text"
                 name="search"
@@ -85,8 +85,8 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           )}
 
           <div className="flex justify-around items-center">
-            {/* 深色模式切換 */}
-            <button
+            
+            {/* <button
               aria-label="darkMode"
               type="button"
               className="hidden sm:flex justify-center items-center w-9 h-9 mx-1.5 md:mx-4 relative"
@@ -100,7 +100,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
                 icon={icon({ name: 'sun', style: 'solid' })}
                 className="absolute h-6 w-6 rounded-full text-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100"
               />
-            </button>
+            </button> */}
             {/* 登入 */}
             <button
               type="button"
@@ -131,7 +131,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           <button
             aria-label="toggleMenu"
             type="button"
-            className="flex justify-center items-center mx-1.5 sm:hidden "
+            className="flex justify-center items-center mx-1.5"
             onClick={() => setToggleMenuAnimation('translate-x-0')}
           >
             <FontAwesomeIcon
@@ -141,16 +141,15 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           </button>
         </nav>
 
-        {/* 手機版選單 */}
+        {/* 主選單 */}
         <MainMenu
           toggleMenuAnimation={toggleMenuAnimation}
           setToggleMenuAnimation={setToggleMenuAnimation}
+          handleDarkMode={handleDarkMode}
         />
       </div>
 
-      {/* 登入&註冊 Modal */}
-      {loginState.showSignInPop && <SignInPopup />}
-      {loginState.showSignUpPop && <SignUpPopup />}
+      
     </header>
   );
 }

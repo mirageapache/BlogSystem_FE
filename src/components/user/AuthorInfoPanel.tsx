@@ -6,19 +6,13 @@ import FollowBtn from './FollowBtn';
 function AuthorInfoPanel(props: { avatarUrl: string }) {
   const { avatarUrl } = props;
   return (
-    <div className="flex my-4">
+    <div className="flex items-center my-4">
       <div className="flex justify-center items-center mr-4">
         <Avatar avatarUrl={avatarUrl} size="w-11 h-11" textSize="text-xl" />
       </div>
       <div>
-        <span className="flex">
-          <p className="font-semibold">James</p>
-          ｜
-          <FollowBtn state={0} />
-        </span>
-        <span className="flex text-sm text-gray-400">
-          <p>5min read</p>｜<p>January 15, 2023</p>
-        </span>
+        <p className="font-semibold">James</p>
+        <p className="text-gray-700 dark:text-gray-400">@james_w</p>
       </div>
     </div>
   );
