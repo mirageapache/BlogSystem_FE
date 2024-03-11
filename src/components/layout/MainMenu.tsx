@@ -2,7 +2,11 @@ import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { isEmpty } from 'lodash';
+import { useDispatch } from 'react-redux';
+// --- components ---
 import AuthorInfoPanel from 'components/user/AuthorInfoPanel';
+// --- functions / types ---
+import { setDarkMode } from '../../redux/sysSlice';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -15,7 +19,6 @@ type ItemPropsType = {
 interface MainMenuType {
   toggleMenuAnimation: string;
   setToggleMenuAnimation: (value: string) => void;
-  handleDarkMode: () => void;
 }
 
 /** MainMenu Item 元件 */
@@ -39,13 +42,13 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
 }
 
 /** MainMenu 元件 */
-function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation, handleDarkMode }: MainMenuType) {
+function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
   const isLogin = !isEmpty(localStorage.getItem("authToken"));
-  console.log(isLogin);
+  const dispatch = useDispatch();
 
   return (
     <div
-      className={`fixed z-30 top-0 right-0 w-full sm:max-w-[300px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98]`}
+      className={`fixed z-30 top-0 right-0 w-full sm:max-w-[300px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98] border-l-[1px] border-gray-300 dark:border-gray-700`}
     >
       <div className="z-10 w-full flex justify-end py-2 px-4">
         {/* 關閉選單 */}
@@ -91,9 +94,9 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation, handleDarkMode 
           </div>
         </div>
       </div>
-      <div className="flex p-5 border">
+      <div className="flex p-5 border-t-[1px] border-gray-300 dark:border-gray-700">
         {/* 快速設定 */}
-        <span className="w-14 border border-gray-400 rounded-full px-1 bg-gray-150 dark:bg-gray-700" onClick={handleDarkMode}>
+        <span className="w-14 border border-gray-400 rounded-full px-1 bg-gray-150 dark:bg-gray-700" onClick={()=>{dispatch(setDarkMode())}}>
           {/* 深色模式切換 */}
           <button
             aria-label="darkMode"

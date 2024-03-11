@@ -13,27 +13,29 @@ import SignUpPopup from './components/login/SignUpPopup';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import PostDetailPage from './pages/PostDetailPage';
-import ArticleDetailPage from './pages/ArticleDetailPage';
+import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
 import UserProfilePage from './pages/user/UserProfilePage';
 
 // --- functions / types ---
+import { SysStateType } from './redux/sysSlice';
 import { SearchStateType } from './redux/searchSlice';
 import { LoginStateType } from './redux/loginSlice';
 
+
 /** stateType  */
 interface StateType {
+  system: SysStateType;
   search: SearchStateType;
   login: LoginStateType;
 }
 
 function App() {
-  const [darkMode, setDarkMode] = useState(localStorage.getItem('darkMode') || '');
+  const sysState = useSelector((state: StateType) => state.system);
   const loginState = useSelector((state: StateType) => state.login);
-
   return (
-    <div className={`font-sans ${darkMode} `}>
+    <div className={`font-sans ${sysState.darkMode}`}>
       <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-        <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+        <Header />
         <main className="mb-auto mt-16 flex-grow flex justify-center">
           <div className="w-full flex justify-between">
             <section className={SIDEBAR_FRAME}>

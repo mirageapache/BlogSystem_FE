@@ -1,12 +1,12 @@
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 // --- api ---
-import { getPostById } from '../api/post';
+import { getPostById } from '../../api/post';
 // --- components ---
-import AuthorInfoPanel from '../components/user/AuthorInfoPanel';
-import ArticleInfoPanel from '../components/article/ArticleInfoPanel';
-import ContentSection from '../components/article/ContentSection';
-import Spinner from '../components/layout/Spinner';
+import AuthorInfoPanel from '../../components/user/AuthorInfoPanel';
+import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
+import ContentSection from '../../components/article/ContentSection';
+import Spinner from '../../components/layout/Spinner';
 
 function ArticleDetailPage() {
   const { id } = useParams();

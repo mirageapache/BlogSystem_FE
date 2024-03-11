@@ -14,22 +14,21 @@ import { SearchStateType, setSearchText } from '../../redux/searchSlice';
 import { LoginStateType, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 
 /** Header 參數型別 */
-type HeaderPropsType = {
-  darkMode: string;
-  setDarkMode: Function;
-};
+// type HeaderPropsType = {
+//   darkMode: string;
+//   setDarkMode: Function;
+// };
 
 interface StateType {
   search: SearchStateType;
   login: LoginStateType;
 }
 
-function Header({ darkMode, setDarkMode }: HeaderPropsType) {
+function Header() {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // MainMenu 動畫效果
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const searchState = useSelector((state: StateType) => state.search);
-  
+  const dispatch = useDispatch();
   const { searchText } = searchState;
 
   /** 跳轉至搜尋頁 */
@@ -39,12 +38,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
     }
   };
 
-  /** 深色模式切換 */
-  const handleDarkMode = () => {
-    const newValue = darkMode === 'dark' ? '' : 'dark';
-    setDarkMode(newValue);
-    localStorage.setItem('darkMode', newValue);
-  };
+  
 
   /** 螢幕寬度大於768px收合toggle menu */
   function screenWidthChange() {
@@ -85,22 +79,6 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
           )}
 
           <div className="flex justify-around items-center">
-            
-            {/* <button
-              aria-label="darkMode"
-              type="button"
-              className="hidden sm:flex justify-center items-center w-9 h-9 mx-1.5 md:mx-4 relative"
-              onClick={handleDarkMode}
-            >
-              <FontAwesomeIcon
-                icon={icon({ name: 'moon', style: 'solid' })}
-                className="h-6 w-6 text-gray-900 translate-y-0 opacity-100 transform duration-300 delay-200 ease-in-out dark:translate-y-4 dark:opacity-0"
-              />
-              <FontAwesomeIcon
-                icon={icon({ name: 'sun', style: 'solid' })}
-                className="absolute h-6 w-6 rounded-full text-white translate-y-4 opacity-0 transform duration-300 delay-200 ease-in-out dark:translate-y-0 dark:opacity-100"
-              />
-            </button> */}
             {/* 登入 */}
             <button
               type="button"
@@ -116,7 +94,7 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
             {/* 註冊 */}
             <button
               type="button"
-              className="hidden md:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-500 border border-gray-400 dark:border-gray-700"
+              className="hidden md:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-400 border border-gray-400 dark:text-gray-300"
               onClick={() => dispatch(setSignUpPop(true))}
             >
               <p className="hidden md:inline-block">註冊</p>
@@ -145,11 +123,8 @@ function Header({ darkMode, setDarkMode }: HeaderPropsType) {
         <MainMenu
           toggleMenuAnimation={toggleMenuAnimation}
           setToggleMenuAnimation={setToggleMenuAnimation}
-          handleDarkMode={handleDarkMode}
         />
       </div>
-
-      
     </header>
   );
 }
