@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import { Field, reduxForm, getFormMeta, getFormValues, FormState, change } from 'redux-form';
+import {
+  Field,
+  reduxForm,
+  getFormMeta,
+  getFormValues,
+  FormState,
+  change,
+  InjectedFormProps,
+} from 'redux-form';
 import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
 // --- componetns ---
 import FormInput from '../form/FormInput';
@@ -14,14 +22,16 @@ const mapStateToProps = (state: FormState) => ({
   formMeta: getFormMeta('signup')(state),
 });
 
-function SignUpForm(props: any) {
-  const { handleSubmit, dispatch } = props;
+type SignInFormType = InjectedFormProps<{}, {}, string> & any & { handleClose: () => void };
+
+function SignUpForm(props: SignInFormType) {
+  const { handleSubmit, dispatch, handleClose } = props;
   const sliceDispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState('');
 
   /** 導頁至登入 */
   const directSignUp = () => {
-    dispatch(change('signup', 'account', ''));
+    dispatch(change('signup', 'email', ''));
     dispatch(change('signup', 'password', ''));
     sliceDispatch(setSignInPop(true));
     sliceDispatch(setSignUpPop(false));
@@ -33,9 +43,10 @@ function SignUpForm(props: any) {
       const res = await SignUp(form);
 
       console.log(res);
-      if (res.response.status === 200) {
+      if (res.status === 200) {
         window.localStorage.setItem('authToken', res.authToken);
         window.location.replace('/');
+        handleClose();
       } else {
         setErrorMsg(res.response.data.message);
       }

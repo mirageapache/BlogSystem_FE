@@ -26,7 +26,7 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
   return (
     <a
       href={href}
-      className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-4"
+      className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3"
     >
       <span className="flex items-center">{children}</span>
       <span className="ml-3 font-bold">
@@ -43,7 +43,7 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
 
 /** MainMenu 元件 */
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
-  const isLogin = !isEmpty(localStorage.getItem("authToken"));
+  const isLogin = !isEmpty(localStorage.getItem('authToken'));
   const dispatch = useDispatch();
 
   return (
@@ -64,11 +64,11 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
           />
         </button>
       </div>
-      {isLogin &&
-        <div className="m-5 border-b-[1px] border-gray-400 dark:border-gray-700">
+      {isLogin && (
+        <div className="mx-5 border-b-[1px] border-gray-400 dark:border-gray-700">
           <AuthorInfoPanel avatarUrl="" />
         </div>
-      }
+      )}
       <div className="h-full py-5 px-8 opacity-100">
         <div className="text-left h-fit sm:px-1 px-5">
           <div className="ml-2.5">
@@ -96,23 +96,24 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       </div>
       <div className="flex p-5 border-t-[1px] border-gray-300 dark:border-gray-700">
         {/* 快速設定 */}
-        <span className="w-14 border border-gray-400 rounded-full px-1 bg-gray-150 dark:bg-gray-700" onClick={()=>{dispatch(setDarkMode())}}>
-          {/* 深色模式切換 */}
-          <button
-            aria-label="darkMode"
-            type="button"
-            className="relative hidden sm:flex justify-center items-center w-7 h-7"
-          >
-            <FontAwesomeIcon
-              icon={icon({ name: 'sun', style: 'solid' })}
-              className="h-5 w-5 text-gray-900 translate-x-0 opacity-100 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-0"
-            />
-            <FontAwesomeIcon
-              icon={icon({ name: 'moon', style: 'solid' })}
-              className="absolute h-5 w-5 text-white translate-x-0 opacity-0 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-100"
-            />
-          </button>
-        </span>
+        {/* 深色模式切換 */}
+        <button
+          aria-label="darkMode"
+          type="button"
+          className="w-14 h-7 flex items-center border border-gray-400 rounded-full px-2 bg-gray-150 dark:bg-gray-700"
+          onClick={() => {
+            dispatch(setDarkMode());
+          }}
+        >
+          <FontAwesomeIcon
+            icon={icon({ name: 'sun', style: 'solid' })}
+            className="h-5 w-5 text-gray-900 translate-x-0 opacity-100 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-0"
+          />
+          <FontAwesomeIcon
+            icon={icon({ name: 'moon', style: 'solid' })}
+            className="absolute h-5 w-5 text-white translate-x-0 opacity-0 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-100"
+          />
+        </button>
       </div>
     </div>
   );

@@ -38,8 +38,6 @@ function Header() {
     }
   };
 
-  
-
   /** 螢幕寬度大於768px收合toggle menu */
   function screenWidthChange() {
     const screenWidth = window.innerWidth;

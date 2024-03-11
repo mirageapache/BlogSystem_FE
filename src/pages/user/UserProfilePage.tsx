@@ -1,9 +1,6 @@
 import React from 'react';
 // --- components ---
-import SideBar from 'components/layout/SideBar';
 import Avatar from 'components/user/Avatar';
-// --- constants ---
-import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
 
 function UserProfilePage() {
   return (

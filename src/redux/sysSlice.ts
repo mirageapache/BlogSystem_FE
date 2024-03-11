@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface SysStateType {
@@ -17,7 +18,7 @@ const sysSlice = createSlice({
     /** 深色模式切換 */
     setDarkMode(state: SysStateType) {
       let newState = '';
-      if(state.darkMode === ''){
+      if (state.darkMode === '') {
         newState = 'dark';
       }
       localStorage.setItem('darkMode', newState);

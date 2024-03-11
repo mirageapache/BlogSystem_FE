@@ -27,13 +27,12 @@ export async function SignUp(param: SignUpParamType) {
   const result = await axios
     .post(`${baseUrl}/login/signup`, newParam)
     .then((res) => {
-      const postData = res.data;
-      return postData;
+      return res;
     })
     .catch((error) => {
       return error;
     });
-  return result;
+  return result.response;
 }
 
 /** 登入 */

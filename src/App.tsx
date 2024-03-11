@@ -21,7 +21,6 @@ import { SysStateType } from './redux/sysSlice';
 import { SearchStateType } from './redux/searchSlice';
 import { LoginStateType } from './redux/loginSlice';
 
-
 /** stateType  */
 interface StateType {
   system: SysStateType;
