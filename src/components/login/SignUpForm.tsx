@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import {
-  Field,
-  reduxForm,
-  getFormMeta,
-  getFormValues,
-  FormState,
-  change,
-} from 'redux-form';
+import { Field, reduxForm, getFormMeta, getFormValues, FormState, change } from 'redux-form';
 import { get, isEmpty } from 'lodash';
 import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
 // --- componetns ---
@@ -30,7 +23,7 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
   const cleanForm = () => {
     dispatch(change('signup', 'email', ''));
     dispatch(change('signup', 'password', ''));
-  }
+  };
 
   /** 導頁至登入 */
   const directSignUp = () => {
@@ -49,14 +42,14 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
   const submitSignUp = async (form: SignUpParamType) => {
     try {
       const res = await SignUp(form);
+      const result = get(res, 'response');
+      console.log(result);
       if (get(res, 'response.status') === 200) {
         window.localStorage.setItem('authToken', res.authToken);
         window.location.replace('/');
         handleClose();
-      } else {
-        if(!isEmpty(get(res, 'response.data.message', ''))){
-          setErrorMsg(get(res, 'response.data.message'));
-        }
+      } else if (!isEmpty(get(res, 'response.data.message', ''))) {
+        setErrorMsg(get(res, 'response.data.message'));
       }
     } catch (error) {
       console.log(error);

@@ -3,16 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { get, isEmpty } from 'lodash';
 // --- images ---
 import brand from '../../assets/images/brand.png';
 // --- components ---
-
 import MainMenu from './MainMenu';
-
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../../redux/searchSlice';
 import { LoginStateType, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
-import { get, isEmpty } from 'lodash';
 
 interface StateType {
   search: SearchStateType;
@@ -72,7 +70,7 @@ function Header() {
             </div>
           )}
 
-          {isLogin ?
+          {isLogin ? (
             <div className="flex justify-around items-center">
               {/* 登入 */}
               <button
@@ -99,7 +97,7 @@ function Header() {
                 />
               </button>
             </div>
-          :
+          ) : (
             <>
               {/* 選單按鈕 */}
               <button
@@ -114,8 +112,7 @@ function Header() {
                 />
               </button>
             </>
-          }
-          
+          )}
         </nav>
 
         {/* 主選單 */}

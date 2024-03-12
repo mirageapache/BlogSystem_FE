@@ -26,6 +26,7 @@ export async function SignUp(param: SignUpParamType) {
     .catch((error) => {
       return error;
     });
+  console.log(result);
   return result;
 }
 
@@ -41,7 +42,7 @@ export async function SignIn(param: SignInParamType) {
   const newParam = { ...param, password: hashedpwd };
 
   const result = await axios
-    .post(`${baseUrl}/signin`, newParam)
+    .post(`${baseUrl}/login/signin`, newParam)
     .then((res) => {
       return res;
     })
