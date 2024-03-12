@@ -7,15 +7,9 @@ const saltRounds = bcrypt.genSaltSync(11);
 
 /** 註冊參數型別 */
 export interface SignUpParamType {
-  account: string;
+  email: string;
   password: string;
   confirmPassword: string;
-  email: string;
-}
-
-export interface SignInParamType {
-  account: string;
-  password: string;
 }
 
 /** 註冊 */
@@ -32,7 +26,13 @@ export async function SignUp(param: SignUpParamType) {
     .catch((error) => {
       return error;
     });
-  return result.response;
+  return result;
+}
+
+/** 登入參數型別 */
+export interface SignInParamType {
+  email: string;
+  password: string;
 }
 
 /** 登入 */
@@ -43,11 +43,10 @@ export async function SignIn(param: SignInParamType) {
   const result = await axios
     .post(`${baseUrl}/signin`, newParam)
     .then((res) => {
-      const postData = res.data;
-      return postData;
+      return res;
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
   return result;
 }

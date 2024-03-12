@@ -15,8 +15,8 @@ function SignInPopup(props: any) {
   const { dispatch } = props;
   const sliceDispatch = useDispatch();
 
-  /** 取消登入 */
-  const handleCancel = () => {
+  /** 關閉登入Popup */
+  const handleClose = () => {
     dispatch(change('signin', 'account', ''));
     dispatch(change('signin', 'password', ''));
     sliceDispatch(setSignInPop(false));
@@ -27,7 +27,7 @@ function SignInPopup(props: any) {
       <button
         type="button"
         className="fixed w-full h-full bg-gray-950 opacity-80"
-        onClick={handleCancel}
+        onClick={handleClose}
       >
         <p className="hidden">p</p>
       </button>
@@ -39,7 +39,7 @@ function SignInPopup(props: any) {
             aria-label="close"
             type="button"
             className="flex jsutify-center m-1"
-            onClick={handleCancel}
+            onClick={handleClose}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'xmark', style: 'solid' })}

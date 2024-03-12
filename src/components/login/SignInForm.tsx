@@ -13,9 +13,10 @@ import { required, maxLength, isEmail } from '../../utils/Validate';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 // --- api / types ---
-import { SignInParamType, SignIn } from '../../api/login';
+import { SignInParamType, SignIn } from '../../api/auth';
 // --- functions / types ---
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
+import { get, isEmpty } from 'lodash';
 
 // 原先要指定給props的型別，但會有無法解決的型別錯誤
 // type SignInFormType = InjectedFormProps<{}, {}, string> & {
@@ -33,12 +34,23 @@ function SignInForm(props: any) {
   const sliceDispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState('');
 
-  /** 導頁至註冊 */
-  const directSignUp = () => {
+  /** 清除表單資料 */
+  const cleanForm = () => {
     dispatch(change('signin', 'email', ''));
     dispatch(change('signin', 'password', ''));
+  }
+
+  /** 導頁至註冊 */
+  const directSignUp = () => {
+    cleanForm();
     sliceDispatch(setSignInPop(false));
     sliceDispatch(setSignUpPop(true));
+  };
+
+  /** 關閉登入Popup */
+  const handleClose = () => {
+    cleanForm();
+    sliceDispatch(setSignInPop(false));
   };
 
   /** 忘記密碼 */
@@ -53,9 +65,11 @@ function SignInForm(props: any) {
       console.log(res);
       if (res.response.status === 200) {
         window.localStorage.setItem('authToken', res.authToken);
-        window.location.replace('/');
+        handleClose();
       } else {
-        setErrorMsg(res.message);
+        if(!isEmpty(get(res, 'response.data.message', ''))){
+          setErrorMsg(get(res, 'response.data.message'));
+        }
       }
     } catch (error) {
       console.log(error);

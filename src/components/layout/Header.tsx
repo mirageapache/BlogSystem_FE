@@ -12,12 +12,7 @@ import MainMenu from './MainMenu';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../../redux/searchSlice';
 import { LoginStateType, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
-
-/** Header 參數型別 */
-// type HeaderPropsType = {
-//   darkMode: string;
-//   setDarkMode: Function;
-// };
+import { get, isEmpty } from 'lodash';
 
 interface StateType {
   search: SearchStateType;
@@ -30,6 +25,7 @@ function Header() {
   const searchState = useSelector((state: StateType) => state.search);
   const dispatch = useDispatch();
   const { searchText } = searchState;
+  const isLogin = !isEmpty(localStorage.getItem('authToken'));
 
   /** 跳轉至搜尋頁 */
   const handleSearch = (key: string) => {
@@ -76,45 +72,50 @@ function Header() {
             </div>
           )}
 
-          <div className="flex justify-around items-center">
-            {/* 登入 */}
-            <button
-              type="button"
-              className="flex items-center rounded-full text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
-              onClick={() => dispatch(setSignInPop(true))}
-            >
-              <p className="hidden md:inline-block">登入</p>
-              <FontAwesomeIcon
-                icon={icon({ name: 'user', style: 'regular' })}
-                className="h-5 w-5 md:hidden dark:opacity-100"
-              />
-            </button>
-            {/* 註冊 */}
-            <button
-              type="button"
-              className="hidden md:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-400 border border-gray-400 dark:text-gray-300"
-              onClick={() => dispatch(setSignUpPop(true))}
-            >
-              <p className="hidden md:inline-block">註冊</p>
-              <FontAwesomeIcon
-                icon={icon({ name: 'user-plus', style: 'solid' })}
-                className="h-5 w-5 md:hidden dark:opacity-100"
-              />
-            </button>
-          </div>
-
-          {/* 選單按鈕 */}
-          <button
-            aria-label="toggleMenu"
-            type="button"
-            className="flex justify-center items-center mx-1.5"
-            onClick={() => setToggleMenuAnimation('translate-x-0')}
-          >
-            <FontAwesomeIcon
-              icon={icon({ name: 'bars', style: 'solid' })}
-              className="h-6 w-6 m-1 text-gray-900 dark:text-gray-100"
-            />
-          </button>
+          {isLogin ?
+            <div className="flex justify-around items-center">
+              {/* 登入 */}
+              <button
+                type="button"
+                className="flex items-center rounded-full text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
+                onClick={() => dispatch(setSignInPop(true))}
+              >
+                <p className="hidden md:inline-block">登入</p>
+                <FontAwesomeIcon
+                  icon={icon({ name: 'user', style: 'regular' })}
+                  className="h-5 w-5 md:hidden dark:opacity-100"
+                />
+              </button>
+              {/* 註冊 */}
+              <button
+                type="button"
+                className="hidden md:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-400 border border-gray-400 dark:text-gray-300"
+                onClick={() => dispatch(setSignUpPop(true))}
+              >
+                <p className="hidden md:inline-block">註冊</p>
+                <FontAwesomeIcon
+                  icon={icon({ name: 'user-plus', style: 'solid' })}
+                  className="h-5 w-5 md:hidden dark:opacity-100"
+                />
+              </button>
+            </div>
+          :
+            <>
+              {/* 選單按鈕 */}
+              <button
+                aria-label="toggleMenu"
+                type="button"
+                className="flex justify-center items-center mx-1.5"
+                onClick={() => setToggleMenuAnimation('translate-x-0')}
+              >
+                <FontAwesomeIcon
+                  icon={icon({ name: 'bars', style: 'solid' })}
+                  className="h-6 w-6 m-1 text-gray-900 dark:text-gray-100"
+                />
+              </button>
+            </>
+          }
+          
         </nav>
 
         {/* 主選單 */}

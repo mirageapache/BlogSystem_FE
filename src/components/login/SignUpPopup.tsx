@@ -15,7 +15,7 @@ function SignUpPopup(props: any) {
   const { dispatch } = props;
   const sliceDispatch = useDispatch();
 
-  /** 取消登入 */
+  /** 關閉註冊Popup */
   const handleClose = () => {
     dispatch(change('signup', 'email', ''));
     dispatch(change('signup', 'password', ''));

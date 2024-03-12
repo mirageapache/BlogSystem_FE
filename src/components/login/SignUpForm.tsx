@@ -7,13 +7,13 @@ import {
   getFormValues,
   FormState,
   change,
-  InjectedFormProps,
 } from 'redux-form';
+import { get, isEmpty } from 'lodash';
 import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 // --- api / types ---
-import { SignUpParamType, SignUp } from '../../api/login';
+import { SignUpParamType, SignUp } from '../../api/auth';
 // --- functions / types ---
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 
@@ -22,18 +22,26 @@ const mapStateToProps = (state: FormState) => ({
   formMeta: getFormMeta('signup')(state),
 });
 
-type SignInFormType = InjectedFormProps<{}, {}, string> & any & { handleClose: () => void };
-
-function SignUpForm(props: SignInFormType) {
-  const { handleSubmit, dispatch, handleClose } = props;
+function SignUpForm({ handleSubmit, dispatch }: any) {
   const sliceDispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState('');
 
-  /** 導頁至登入 */
-  const directSignUp = () => {
+  /** 清除表單資料 */
+  const cleanForm = () => {
     dispatch(change('signup', 'email', ''));
     dispatch(change('signup', 'password', ''));
+  }
+
+  /** 導頁至登入 */
+  const directSignUp = () => {
+    cleanForm();
     sliceDispatch(setSignInPop(true));
+    sliceDispatch(setSignUpPop(false));
+  };
+
+  /** 關閉註冊Popup */
+  const handleClose = () => {
+    cleanForm();
     sliceDispatch(setSignUpPop(false));
   };
 
@@ -41,14 +49,14 @@ function SignUpForm(props: SignInFormType) {
   const submitSignUp = async (form: SignUpParamType) => {
     try {
       const res = await SignUp(form);
-
-      console.log(res);
-      if (res.status === 200) {
+      if (get(res, 'response.status') === 200) {
         window.localStorage.setItem('authToken', res.authToken);
         window.location.replace('/');
         handleClose();
       } else {
-        setErrorMsg(res.response.data.message);
+        if(!isEmpty(get(res, 'response.data.message', ''))){
+          setErrorMsg(get(res, 'response.data.message'));
+        }
       }
     } catch (error) {
       console.log(error);
@@ -118,7 +126,7 @@ function SignUpForm(props: SignInFormType) {
 }
 
 export default connect(mapStateToProps)(
-  reduxForm({
+  reduxForm<SignUpParamType, {}, string>({
     form: 'signup',
   })(SignUpForm)
 );
