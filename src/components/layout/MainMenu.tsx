@@ -124,6 +124,22 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               className="absolute h-5 w-5 text-white translate-x-0 opacity-0 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-100"
             />
           </button>
+
+          {/* 修改登出鈕樣式 */}
+          <button
+            aria-label="logout"
+            type="button"
+            className="w-14 h-7 flex items-center border border-gray-400 rounded-full px-2 bg-gray-150 dark:bg-gray-700"
+            onClick={() => {
+              localStorage.removeItem('authToken');
+              window.location.reload();
+            }}
+          >
+            <FontAwesomeIcon
+              icon={icon({ name: 'right-from-bracket', style: 'solid' })}
+              className="h-5 w-5 text-gray-900 translate-x-0 opacity-100 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-0"
+            />
+          </button>
         </div>
       </div>
     </div>

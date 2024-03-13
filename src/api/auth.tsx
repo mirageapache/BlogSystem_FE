@@ -1,6 +1,6 @@
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
-import { DUMMYJSON_URL, LOCALHOST } from './index';
+import { LOCALHOST } from './index';
 
 const baseUrl = LOCALHOST;
 const saltRounds = bcrypt.genSaltSync(11);
@@ -26,7 +26,6 @@ export async function SignUp(param: SignUpParamType) {
     .catch((error) => {
       return error;
     });
-  console.log(result);
   return result;
 }
 

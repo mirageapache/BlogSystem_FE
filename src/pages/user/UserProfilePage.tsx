@@ -23,8 +23,10 @@ function UserProfilePage() {
       case 'follow':
         setActiveStyle('translate-x-[200%]');
         break;
+      default:
+        setActiveStyle('translate-x-0');
     }
-  }
+  };
 
   return (
     <div className="w-full sm:max-w-[600px] p-5 border border-blue-500">
@@ -47,29 +49,43 @@ function UserProfilePage() {
         {/* 頁籤 */}
         <div>
           <div className="mt-4 text-lg flex border-b-[1px] border-gray-400 dark:text-gray-400">
-            <button className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none" onClick={()=>handleTabActive('article')}>文章</button>
-            <button className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none" onClick={()=>handleTabActive('post')}>貼文</button>
-            <button className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none" onClick={()=>handleTabActive('follow')}>追蹤</button>
+            <button
+              type="button"
+              className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
+              onClick={() => handleTabActive('article')}
+            >
+              文章
+            </button>
+            <button
+              type="button"
+              className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
+              onClick={() => handleTabActive('post')}
+            >
+              貼文
+            </button>
+            <button
+              type="button"
+              className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
+              onClick={() => handleTabActive('follow')}
+            >
+              追蹤
+            </button>
           </div>
           <div className="flex justify-start -translate-y-0.5">
-            <div className={`border-b-2 border-orange-500 w-1/3  ${activeStyle} transform duration-300 ease-in-out`}></div>
+            <div
+              className={`border-b-2 border-orange-500 w-1/3 text-transparent ${activeStyle} transform duration-300 ease-in-out`}
+            >
+              x
+            </div>
           </div>
         </div>
-        {activeTab === 'article' && 
+        {activeTab === 'article' && (
           <div className="">
             <ArticleList apiResult={apiResult} />
           </div>
-        }
-        {activeTab === 'post' && 
-          <div className="">
-            尚無貼文資料
-          </div>
-        }
-        {activeTab === 'follow' && 
-          <div className="">
-            尚未追蹤其他人
-          </div>
-        }
+        )}
+        {activeTab === 'post' && <div className="">尚無貼文資料</div>}
+        {activeTab === 'follow' && <div className="">尚未追蹤其他人</div>}
       </div>
     </div>
   );

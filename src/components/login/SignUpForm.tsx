@@ -40,13 +40,12 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
 
   /** 送出註冊資料 */
   const submitSignUp = async (form: SignUpParamType) => {
+    setErrorMsg('');
     try {
       const res = await SignUp(form);
-      const result = get(res, 'response');
-      console.log(result);
-      if (get(res, 'response.status') === 200) {
-        window.localStorage.setItem('authToken', res.authToken);
-        window.location.replace('/');
+      if (get(res, 'status') === 200) {
+        // 加入提示訊息
+        // window.location.replace('/');
         handleClose();
       } else if (!isEmpty(get(res, 'response.data.message', ''))) {
         setErrorMsg(get(res, 'response.data.message'));

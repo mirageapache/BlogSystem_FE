@@ -71,6 +71,21 @@ function Header() {
           )}
 
           {isLogin ? (
+            <>
+              {/* 選單按鈕 */}
+              <button
+                aria-label="toggleMenu"
+                type="button"
+                className="flex justify-center items-center mx-1.5"
+                onClick={() => setToggleMenuAnimation('translate-x-0')}
+              >
+                <FontAwesomeIcon
+                  icon={icon({ name: 'bars', style: 'solid' })}
+                  className="h-6 w-6 m-1 text-gray-900 dark:text-gray-100"
+                />
+              </button>
+            </>
+          ) : (
             <div className="flex justify-around items-center">
               {/* 登入 */}
               <button
@@ -97,21 +112,6 @@ function Header() {
                 />
               </button>
             </div>
-          ) : (
-            <>
-              {/* 選單按鈕 */}
-              <button
-                aria-label="toggleMenu"
-                type="button"
-                className="flex justify-center items-center mx-1.5"
-                onClick={() => setToggleMenuAnimation('translate-x-0')}
-              >
-                <FontAwesomeIcon
-                  icon={icon({ name: 'bars', style: 'solid' })}
-                  className="h-6 w-6 m-1 text-gray-900 dark:text-gray-100"
-                />
-              </button>
-            </>
           )}
         </nav>
 

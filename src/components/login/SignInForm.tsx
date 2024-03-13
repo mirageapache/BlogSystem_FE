@@ -55,16 +55,17 @@ function SignInForm(props: any) {
 
   /** 忘記密碼 */
   const findPassword = () => {
-    console.log('execute find password.');
+    // console.log('execute find password.');
   };
 
   /** 送出登入資料 */
   const submitSignIn = async (form: SignInParamType) => {
+    setErrorMsg('');
     try {
       const res = await SignIn(form);
-      console.log(res);
-      if (res.response.status === 200) {
-        window.localStorage.setItem('authToken', res.authToken);
+      if (get(res, 'status') === 200) {
+        const authToken = get(res, 'data.authToken');
+        window.localStorage.setItem('authToken', authToken);
         handleClose();
       } else if (!isEmpty(get(res, 'response.data.message', ''))) {
         setErrorMsg(get(res, 'response.data.message'));
