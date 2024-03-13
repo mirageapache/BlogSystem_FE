@@ -50,12 +50,12 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
     <div className="fixed">
       <button
         type="button"
-        className={`w-full h-full top-0 left-0 border border-red-500 ${
+        className={`w-full h-full top-0 left-0 text-transparent ${
           toggleMenuAnimation === 'translate-x-full' ? 'none' : 'fixed'
         }`}
         onClick={() => setToggleMenuAnimation('translate-x-full')}
       >
-        c
+        x
       </button>
       <div
         className={`fixed z-30 top-0 right-0 w-full sm:max-w-[300px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98] border-l-[1px] border-gray-300 dark:border-gray-700`}

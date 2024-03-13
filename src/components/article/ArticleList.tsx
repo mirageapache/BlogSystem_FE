@@ -29,7 +29,7 @@ function ArticleList(props: { apiResult: apiResultType }) {
       tags={article.tags}
     />
   ));
-  return <div className="flex-grow px-8 md:px-0">{articleItem}</div>;
+  return <div className="flex-grow">{articleItem}</div>;
 }
 
 export default ArticleList;
