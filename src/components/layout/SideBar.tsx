@@ -33,6 +33,8 @@ function SideBarItem({ href, text, count, children }: ItemProps) {
 
 /** SideBar 元件 */
 function SideBar() {
+  const isLogin = !isEmpty(localStorage.getItem('authToken'));
+
   return (
     <div className="text-left h-fit sm:px-1 px-5">
       <div className="ml-2.5">
@@ -45,16 +47,19 @@ function SideBar() {
         <SideBarItem href="/search" text="搜尋" count={0}>
           <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
         </SideBarItem>
-        {/* 登入後顯示 */}
-        <SideBarItem href="/profile" text="個人資料" count={0}>
-          <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
-        </SideBarItem>
-        <SideBarItem href="/inbox" text="訊息匣" count={0}>
-          <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
-        </SideBarItem>
-        <SideBarItem href="/activity" text="動態" count={0}>
-          <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-        </SideBarItem>
+        {isLogin &&
+          <>
+            <SideBarItem href="/profile" text="個人資料" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
+            </SideBarItem>
+            <SideBarItem href="/inbox" text="訊息匣" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
+            </SideBarItem>
+            <SideBarItem href="/activity" text="動態" count={0}>
+              <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
+            </SideBarItem>
+          </>
+        }
       </div>
     </div>
   );

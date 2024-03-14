@@ -91,21 +91,23 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               <MenuItem href="/search" text="搜尋" count={0}>
                 <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
               </MenuItem>
-              {/* 以下選項須判斷是否登入 */}
-              <MenuItem href="/inbox" text="訊息匣" count={0}>
-                <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
-              </MenuItem>
-              <MenuItem href="/activity" text="動態" count={0}>
-                <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-              </MenuItem>
-              <MenuItem href="/write" text="撰寫文章" count={0}>
-                <FontAwesomeIcon icon={icon({ name: 'pen', style: 'solid' })} />
-              </MenuItem>
+              {isLogin &&
+                <>
+                  <MenuItem href="/inbox" text="訊息匣" count={0}>
+                    <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
+                  </MenuItem>
+                  <MenuItem href="/activity" text="動態" count={0}>
+                    <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
+                  </MenuItem>
+                  <MenuItem href="/write" text="撰寫文章" count={0}>
+                    <FontAwesomeIcon icon={icon({ name: 'pen', style: 'solid' })} />
+                  </MenuItem>
+                </>
+              }
             </div>
           </div>
         </div>
-        <div className="flex p-5 border-t-[1px] border-gray-300 dark:border-gray-700">
-          {/* 快速設定 */}
+        <div className="flex justify-between p-5 border-t-[1px] border-gray-300 dark:border-gray-700">
           {/* 深色模式切換 */}
           <button
             aria-label="darkMode"
@@ -125,19 +127,18 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             />
           </button>
 
-          {/* 修改登出鈕樣式 */}
           <button
             aria-label="logout"
             type="button"
-            className="w-14 h-7 flex items-center border border-gray-400 rounded-full px-2 bg-gray-150 dark:bg-gray-700"
+            className="p-2"
             onClick={() => {
               localStorage.removeItem('authToken');
-              window.location.reload();
+              // window.location.reload();
             }}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'right-from-bracket', style: 'solid' })}
-              className="h-5 w-5 text-gray-900 translate-x-0 opacity-100 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-0"
+              className="h-5 w-5 text-gray-700 dark:text-gray-300"
             />
           </button>
         </div>
