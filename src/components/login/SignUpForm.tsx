@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { Field, reduxForm, getFormMeta, getFormValues, FormState, change } from 'redux-form';
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
 // --- componetns ---
 import FormInput from '../form/FormInput';
@@ -9,6 +11,7 @@ import FormInput from '../form/FormInput';
 import { SignUpParamType, SignUp } from '../../api/auth';
 // --- functions / types ---
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
+import { handleErrMsg } from '../../utils/FetchErrors';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('signup')(state),
@@ -18,6 +21,7 @@ const mapStateToProps = (state: FormState) => ({
 function SignUpForm({ handleSubmit, dispatch }: any) {
   const sliceDispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   /** 清除表單資料 */
   const cleanForm = () => {
@@ -41,18 +45,20 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
   /** 送出註冊資料 */
   const submitSignUp = async (form: SignUpParamType) => {
     setErrorMsg('');
+    setIsLoading(true);
     try {
       const res = await SignUp(form);
       if (get(res, 'status') === 200) {
         // 加入提示訊息
         // window.location.replace('/');
         handleClose();
-      } else if (!isEmpty(get(res, 'response.data.message', ''))) {
-        setErrorMsg(get(res, 'response.data.message'));
+      } else {
+        setErrorMsg(handleErrMsg(res));
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -102,7 +108,14 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
           type="submit"
           className="w-full px-4 py-2 text-lg text-white rounded-md bg-green-600"
         >
-          註冊
+          {isLoading ? (
+            <FontAwesomeIcon
+              icon={icon({ name: 'spinner', style: 'solid' })}
+              className="animate-spin h-5 w-5"
+            />
+          ) : (
+            <>註冊</>
+          )}
         </button>
       </div>
       <div className="grid grid-cols-2 gap-4 my-2">

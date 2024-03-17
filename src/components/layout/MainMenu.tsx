@@ -91,7 +91,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               <MenuItem href="/search" text="搜尋" count={0}>
                 <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
               </MenuItem>
-              {isLogin &&
+              {isLogin && (
                 <>
                   <MenuItem href="/inbox" text="訊息匣" count={0}>
                     <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
@@ -103,7 +103,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     <FontAwesomeIcon icon={icon({ name: 'pen', style: 'solid' })} />
                   </MenuItem>
                 </>
-              }
+              )}
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             className="p-2"
             onClick={() => {
               localStorage.removeItem('authToken');
-              // window.location.reload();
+              setToggleMenuAnimation('translate-x-full');
             }}
           >
             <FontAwesomeIcon

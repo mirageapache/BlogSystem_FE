@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import {
   Field,
   reduxForm,
@@ -33,6 +35,7 @@ function SignInForm(props: any) {
   const { handleSubmit, dispatch } = props;
   const sliceDispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   /** 清除表單資料 */
   const cleanForm = () => {
@@ -61,6 +64,7 @@ function SignInForm(props: any) {
   /** 送出登入資料 */
   const submitSignIn = async (form: SignInParamType) => {
     setErrorMsg('');
+    setIsLoading(true);
     try {
       const res = await SignIn(form);
       if (get(res, 'status') === 200) {
@@ -71,8 +75,9 @@ function SignInForm(props: any) {
         setErrorMsg(get(res, 'response.data.message'));
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -108,7 +113,14 @@ function SignInForm(props: any) {
           type="submit"
           className="w-full px-4 py-2 text-lg text-white rounded-md bg-green-600"
         >
-          登入
+          {isLoading ? (
+            <FontAwesomeIcon
+              icon={icon({ name: 'spinner', style: 'solid' })}
+              className="animate-spin h-5 w-5 "
+            />
+          ) : (
+            <>登入</>
+          )}
         </button>
       </div>
       <div className="flex max-[420px]:flex-col justify-center mt-4">

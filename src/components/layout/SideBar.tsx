@@ -47,9 +47,9 @@ function SideBar() {
         <SideBarItem href="/search" text="搜尋" count={0}>
           <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
         </SideBarItem>
-        {isLogin &&
+        {isLogin && (
           <>
-            <SideBarItem href="/profile" text="個人資料" count={0}>
+            <SideBarItem href="/profile/1" text="個人資料" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
             </SideBarItem>
             <SideBarItem href="/inbox" text="訊息匣" count={0}>
@@ -59,7 +59,7 @@ function SideBar() {
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
             </SideBarItem>
           </>
-        }
+        )}
       </div>
     </div>
   );

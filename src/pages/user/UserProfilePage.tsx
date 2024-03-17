@@ -29,7 +29,7 @@ function UserProfilePage() {
   };
 
   return (
-    <div className="w-full sm:max-w-[600px] p-5 border border-blue-500">
+    <div className="w-full sm:max-w-[600px] p-5">
       <div className="flex gap-4 mb-3">
         <div>
           <Avatar avatarUrl="" size="w-[72px] h-[72px]" textSize="text-4xl" />
@@ -73,10 +73,8 @@ function UserProfilePage() {
           </div>
           <div className="flex justify-start -translate-y-0.5">
             <div
-              className={`border-b-2 border-orange-500 w-1/3 text-transparent ${activeStyle} transform duration-300 ease-in-out`}
-            >
-              x
-            </div>
+              className={`border-b-[3px] border-orange-500 w-1/3 text-transparent ${activeStyle} transform duration-300 ease-in-out`}
+            />
           </div>
         </div>
         {activeTab === 'article' && (
