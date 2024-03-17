@@ -15,8 +15,7 @@ export interface SignUpParamType {
 /** 註冊 */
 export async function SignUp(param: SignUpParamType) {
   const hashedPwd = await bcrypt.hash(param.password, saltRounds); // 對密碼進行加密
-  const hashedCheckPwd = await bcrypt.hash(param.confirmPassword, saltRounds);
-  const newParam = { ...param, password: hashedPwd, confirmPassword: hashedCheckPwd };
+  const newParam = { ...param, password: hashedPwd };
 
   const result = await axios
     .post(`${baseUrl}/login/signup`, newParam)
@@ -37,11 +36,12 @@ export interface SignInParamType {
 
 /** 登入 */
 export async function SignIn(param: SignInParamType) {
-  const hashedpwd = await bcrypt.hash(param.password, saltRounds); // 加密
-  const newParam = { ...param, password: hashedpwd };
+  // bcrypt.compare 是用明碼和密碼比對，還要再研究怎麼實作加密傳送
+  // const hashedpwd = await bcrypt.hash(param.password, saltRounds);
+  // const newParam = { ...param, password: hashedpwd };
 
   const result = await axios
-    .post(`${baseUrl}/login/signin`, newParam)
+    .post(`${baseUrl}/login/signin`, param)
     .then((res) => {
       return res;
     })

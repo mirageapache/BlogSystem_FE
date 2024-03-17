@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { isEmpty, get } from 'lodash';
 import { DUMMYJSON_URL } from './index';
 
 const baseUrl = DUMMYJSON_URL;
@@ -75,8 +76,10 @@ export async function getSearchArticle(searchString: string) {
   const result = await axios
     .get(`${baseUrl}/posts/search?q=${searchString}`)
     .then((res) => {
-      const articleData = res.data;
-      return articleData;
+      if (isEmpty(get(res, 'data.posts', []))) {
+        return { mssage: '搜尋不到相關結果!!' };
+      }
+      return res.data;
     })
     .catch((error) => {
       console.log(error);

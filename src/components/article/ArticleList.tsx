@@ -8,15 +8,14 @@ import { apiResultType, articleListType } from '../../api/article';
 function ArticleList(props: { apiResult: apiResultType }) {
   const { apiResult } = props;
   const { isLoading, error, data } = apiResult;
-  const articleList: [articleListType] = get(data, 'posts')!;
+  const articleList: [articleListType] = get(data, 'posts', null)!;
+  const errorMsg = get(apiResult, 'data.mssage', '');
 
   if (isLoading) return <Loading />;
-  if (!isEmpty(error) || isEmpty(articleList)) {
+  if (!isEmpty(error) || !isEmpty(errorMsg)) {
     return (
       <div className="flex justify-center mt-10">
-        <p className="text-3xl">
-          {isEmpty(error) ? '搜尋不到相關結果!!' : '發生一些錯誤，請稍後再試!!'}
-        </p>
+        <p className="text-3xl">{!isEmpty(errorMsg) ? errorMsg : '發生一些錯誤，請稍後再試!!'}</p>
       </div>
     );
   }
