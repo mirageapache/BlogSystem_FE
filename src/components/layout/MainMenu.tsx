@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { isEmpty } from 'lodash';
 import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 // --- components ---
 import AuthorInfoPanel from 'components/user/AuthorInfoPanel';
 // --- functions / types ---
@@ -45,6 +47,18 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
   const isLogin = !isEmpty(localStorage.getItem('authToken'));
   const dispatch = useDispatch();
+  const swal = withReactContent(Swal);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    swal.fire({
+      title: '已成功登出',
+      icon: 'info',
+      confirmButtonText: '確認'
+    }).then(() => {
+      setToggleMenuAnimation('translate-x-full');
+    })
+  }
 
   return (
     <div className="fixed">
@@ -131,10 +145,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             aria-label="logout"
             type="button"
             className="p-2"
-            onClick={() => {
-              localStorage.removeItem('authToken');
-              setToggleMenuAnimation('translate-x-full');
-            }}
+            onClick={handleLogout}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'right-from-bracket', style: 'solid' })}

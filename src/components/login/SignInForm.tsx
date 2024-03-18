@@ -3,6 +3,8 @@ import { connect, useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import {
   Field,
   reduxForm,
@@ -36,6 +38,7 @@ function SignInForm(props: any) {
   const sliceDispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const swal = withReactContent(Swal);
 
   /** 清除表單資料 */
   const cleanForm = () => {
@@ -70,7 +73,13 @@ function SignInForm(props: any) {
       if (get(res, 'status') === 200) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);
-        handleClose();
+        swal.fire({
+          title: '登入成功',
+          icon: 'success',
+          confirmButtonText: '確認'
+        }).then(() => {
+          handleClose();
+        });
       } else if (!isEmpty(get(res, 'response.data.message', ''))) {
         setErrorMsg(get(res, 'response.data.message'));
       }

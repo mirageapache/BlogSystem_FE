@@ -4,12 +4,14 @@ import { Field, reduxForm, getFormMeta, getFormValues, FormState, change } from 
 import { get } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 // --- api / types ---
 import { SignUpParamType, SignUp } from '../../api/auth';
 // --- functions / types ---
+import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { handleErrMsg } from '../../utils/FetchErrors';
 
@@ -22,6 +24,7 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
   const sliceDispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const swal = withReactContent(Swal);
 
   /** 清除表單資料 */
   const cleanForm = () => {
@@ -49,9 +52,14 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
     try {
       const res = await SignUp(form);
       if (get(res, 'status') === 200) {
-        // 加入提示訊息
-        // window.location.replace('/');
-        handleClose();
+        // 提示訊息
+        swal.fire({
+          title: '註冊成功🎉',
+          icon: 'success',
+          confirmButtonText: '確認'
+        }).then(() => {
+          handleClose();
+        })
       } else {
         setErrorMsg(handleErrMsg(res));
       }
