@@ -73,13 +73,15 @@ function SignInForm(props: any) {
       if (get(res, 'status') === 200) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);
-        swal.fire({
-          title: '登入成功',
-          icon: 'success',
-          confirmButtonText: '確認'
-        }).then(() => {
-          handleClose();
-        });
+        swal
+          .fire({
+            title: '登入成功',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            handleClose();
+          });
       } else if (!isEmpty(get(res, 'response.data.message', ''))) {
         setErrorMsg(get(res, 'response.data.message'));
       }

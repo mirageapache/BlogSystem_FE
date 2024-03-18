@@ -53,13 +53,15 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
       const res = await SignUp(form);
       if (get(res, 'status') === 200) {
         // 提示訊息
-        swal.fire({
-          title: '註冊成功🎉',
-          icon: 'success',
-          confirmButtonText: '確認'
-        }).then(() => {
-          handleClose();
-        })
+        swal
+          .fire({
+            title: '註冊成功🎉',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            handleClose();
+          });
       } else {
         setErrorMsg(handleErrMsg(res));
       }
