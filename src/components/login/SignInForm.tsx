@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { useCookies } from 'react-cookie';
 import {
   Field,
   reduxForm,
@@ -39,6 +40,7 @@ function SignInForm(props: any) {
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const swal = withReactContent(Swal);
+  const [cookies, setCookie, removeCookie] = useCookies(['_id']);
 
   /** 清除表單資料 */
   const cleanForm = () => {
@@ -68,11 +70,14 @@ function SignInForm(props: any) {
   const submitSignIn = async (form: SignInParamType) => {
     setErrorMsg('');
     setIsLoading(true);
+
     try {
       const res = await SignIn(form);
+      console.log(res);
       if (get(res, 'status') === 200) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);
+        setCookie('_id', res.data.userId, { path: '/' });
         swal
           .fire({
             title: '登入成功',

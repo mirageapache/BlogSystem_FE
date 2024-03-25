@@ -4,6 +4,7 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { isEmpty } from 'lodash';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
+import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
 // --- components ---
 import AuthorInfoPanel from 'components/user/AuthorInfoPanel';
@@ -48,17 +49,21 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   const isLogin = !isEmpty(localStorage.getItem('authToken'));
   const dispatch = useDispatch();
   const swal = withReactContent(Swal);
+  const [cookies, setCookie, removeCookie] = useCookies(['_id']);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    swal.fire({
-      title: '已成功登出',
-      icon: 'info',
-      confirmButtonText: '確認'
-    }).then(() => {
-      setToggleMenuAnimation('translate-x-full');
-    })
-  }
+    removeCookie('_id');
+    swal
+      .fire({
+        title: '已成功登出',
+        icon: 'info',
+        confirmButtonText: '確認',
+      })
+      .then(() => {
+        setToggleMenuAnimation('translate-x-full');
+      });
+  };
 
   return (
     <div className="fixed">
@@ -141,12 +146,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             />
           </button>
 
-          <button
-            aria-label="logout"
-            type="button"
-            className="p-2"
-            onClick={handleLogout}
-          >
+          <button aria-label="logout" type="button" className="p-2" onClick={handleLogout}>
             <FontAwesomeIcon
               icon={icon({ name: 'right-from-bracket', style: 'solid' })}
               className="h-5 w-5 text-gray-700 dark:text-gray-300"

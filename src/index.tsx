@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { CookiesProvider } from 'react-cookie';
 import './index.css';
 import App from './App';
 import store from './redux/configStore';
@@ -14,9 +15,11 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <CookiesProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </CookiesProvider>
       </Provider>
     </QueryClientProvider>
   </React.StrictMode>

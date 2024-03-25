@@ -1,9 +1,9 @@
 import axios from 'axios';
-import bcrypt from 'bcryptjs';
+import bcrypt, { genSaltSync } from 'bcryptjs';
 import { LOCALHOST } from './index';
 
 const baseUrl = LOCALHOST;
-const saltRounds = bcrypt.genSaltSync(11);
+const saltRounds = genSaltSync(11);
 
 /** 註冊參數型別 */
 export interface SignUpParamType {
