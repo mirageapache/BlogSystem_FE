@@ -3,22 +3,18 @@ import { hashSync, genSaltSync } from 'bcryptjs';
 import { LOCALHOST } from './index';
 
 const baseUrl = LOCALHOST;
+const authToken = localStorage.getItem('authToken');
 
-/** 註冊參數型別 */
-export interface SignUpParamType {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-/** 註冊 */
-export async function SignUp(param: SignUpParamType) {
-  const hashedPwd = hashSync(param.password, genSaltSync(11)); // 對密碼進行加密
-  const hashedCheckPwd = hashSync(param.confirmPassword, genSaltSync(11));
-  const newParam = { ...param, password: hashedPwd, confirmPassword: hashedCheckPwd };
-
+/** 取得使用者詳細資料 */
+export async function getUserProfile(userId: string) {
+  
   const result = await axios
-    .post(`${baseUrl}/login/signup`, newParam)
+    .post(`${baseUrl}/user/${userId}`, null, {
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      }  
+    })
     .then((res) => {
       return res;
     })
