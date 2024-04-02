@@ -5,7 +5,7 @@ import { DUMMYJSON_URL } from './index';
 const baseUrl = DUMMYJSON_URL;
 
 /** articleList 型別 */
-export interface articleListType {
+export interface ArticleListType {
   body: string;
   id: number;
   reactions: number;
@@ -15,18 +15,18 @@ export interface articleListType {
 }
 
 /** aritcleApi 型別 */
-export interface aritcleApiType {
-  post: [articleListType];
+export interface AritcleApiType {
+  post: [ArticleListType];
   total: number;
   skip: number;
   limit: number;
 }
 
 /** API Result 型別 */
-export interface apiResultType {
+export interface ApiResultType {
   isLoading: boolean;
   error: { message: string } | null;
-  data: aritcleApiType | unknown;
+  data: AritcleApiType | unknown;
 }
 
 /** 取得所有文章 */

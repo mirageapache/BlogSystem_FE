@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
+import { useCookies } from 'react-cookie';
 // --- components ---
 import Avatar from 'components/user/Avatar';
 import ArticleList from 'components/article/ArticleList';
 // --- api / type ---
-import { apiResultType, getPartialArticles } from '../../api/article';
+import { ApiResultType, getPartialArticles } from '../../api/article';
+import { UserDataType, getUserProfile } from '../../api/user';
 
 function UserProfilePage() {
-  const apiResult = useQuery('aritcles', () => getPartialArticles(10)) as apiResultType;
+  const apiResult = useQuery('aritcles', () => getPartialArticles(10)) as ApiResultType;
   const [activeTab, setActiveTab] = useState('article');
   const [activeStyle, setActiveStyle] = useState('');
+  const [cookies, setCookie, removeCookie] = useCookies(['_id']);
+  const [userData, setUserData] = useState({});
 
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {
@@ -28,6 +32,12 @@ function UserProfilePage() {
         setActiveStyle('translate-x-0');
     }
   };
+
+  useEffect(() => {
+    console.log(cookies._id);
+    const getUserData = getUserProfile(cookies._id);
+    setUserData(getUserData);
+  }, [])
 
   return (
     <div className="w-full sm:max-w-[600px] p-5">

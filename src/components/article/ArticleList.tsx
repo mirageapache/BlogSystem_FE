@@ -3,12 +3,12 @@ import { get, isEmpty } from 'lodash';
 import ArticleItem from './ArticleItem';
 import Loading from './Loading';
 // --- api / type ---
-import { apiResultType, articleListType } from '../../api/article';
+import { ApiResultType, ArticleListType } from '../../api/article';
 
-function ArticleList(props: { apiResult: apiResultType }) {
+function ArticleList(props: { apiResult: ApiResultType }) {
   const { apiResult } = props;
   const { isLoading, error, data } = apiResult;
-  const articleList: [articleListType] = get(data, 'posts', null)!;
+  const articleList: [ArticleListType] = get(data, 'posts', null)!;
   const errorMsg = get(apiResult, 'data.mssage', '');
 
   if (isLoading) return <Loading />;
