@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { hashSync, genSaltSync } from 'bcryptjs';
 import { LOCALHOST } from './index';
 
 const baseUrl = LOCALHOST;
@@ -13,12 +12,8 @@ export interface SignUpParamType {
 
 /** 註冊 */
 export async function SignUp(param: SignUpParamType) {
-  const hashedPwd = hashSync(param.password, genSaltSync(11)); // 對密碼進行加密
-  const hashedCheckPwd = hashSync(param.confirmPassword, genSaltSync(11));
-  const newParam = { ...param, password: hashedPwd, confirmPassword: hashedCheckPwd };
-
   const result = await axios
-    .post(`${baseUrl}/login/signup`, newParam)
+    .post(`${baseUrl}/login/signup`, param)
     .then((res) => {
       return res;
     })
@@ -36,11 +31,8 @@ export interface SignInParamType {
 
 /** 登入 */
 export async function SignIn(param: SignInParamType) {
-  const hashedpwd = hashSync(param.password, genSaltSync(11));
-  const newParam = { ...param, password: hashedpwd };
-
   const result = await axios
-    .post(`${baseUrl}/login/signin`, newParam)
+    .post(`${baseUrl}/login/signin`, param)
     .then((res) => {
       return res;
     })
