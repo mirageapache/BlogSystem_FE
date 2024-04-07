@@ -13,7 +13,7 @@ function UserProfilePage() {
   const apiResult = useQuery('aritcles', () => getPartialArticles(10)) as ApiResultType;
   const [activeTab, setActiveTab] = useState('article');
   const [activeStyle, setActiveStyle] = useState('');
-  const [cookies, setCookie, removeCookie] = useCookies(['_id']);
+  const [cookies, setCookie, removeCookie] = useCookies(['uid']);
   const [userData, setUserData] = useState<UserDataType>();
 
   /** 頁籤切換 */
@@ -35,82 +35,80 @@ function UserProfilePage() {
   };
 
   useEffect(() => {
-    console.log(cookies._id);
+    console.log(cookies.uid);
     const fetchData = async () => {
-      const userData = await getUserProfile(cookies._id);
-      setUserData(userData);
+      const userDatas = await getUserProfile(cookies.uid);
+      setUserData(userDatas);
     };
     fetchData();
   }, []);
 
+  if (isEmpty(userData)) {
+    return (
+      <div>
+        <p>使用者不存在</p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {isEmpty(userData) ? (
+    <div className="w-full sm:max-w-[600px] p-5">
+      <div className="flex gap-4 mb-3">
         <div>
-          <p>使用者不存在</p>
+          <Avatar avatarUrl={userData.avatar} size="w-[72px] h-[72px]" textSize="text-4xl" />
         </div>
-      ) : (
-        <>
-          <div className="w-full sm:max-w-[600px] p-5">
-            <div className="flex gap-4 mb-3">
-              <div>
-                <Avatar avatarUrl={userData.avatar} size="w-[72px] h-[72px]" textSize="text-4xl" />
-              </div>
-              <div className="">
-                <p className="text-3xl font-semibold">{userData.name}</p>
-                <p className="text-gray-500">@{userData.account}</p>
-              </div>
-            </div>
-            <div>
-              <p>
-                Helping software engineers level up and standout in their career.talks about how to
-                level up in your software engineering career.
-              </p>
-            </div>
-            <div>
-              {/* 頁籤 */}
-              <div>
-                <div className="mt-4 text-lg flex border-b-[1px] border-gray-400 dark:text-gray-400">
-                  <button
-                    type="button"
-                    className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
-                    onClick={() => handleTabActive('article')}
-                  >
-                    文章
-                  </button>
-                  <button
-                    type="button"
-                    className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
-                    onClick={() => handleTabActive('post')}
-                  >
-                    貼文
-                  </button>
-                  <button
-                    type="button"
-                    className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
-                    onClick={() => handleTabActive('follow')}
-                  >
-                    追蹤
-                  </button>
-                </div>
-                <div className="flex justify-start -translate-y-0.5">
-                  <div
-                    className={`border-b-[3px] border-orange-500 w-1/3 text-transparent ${activeStyle} transform duration-300 ease-in-out`}
-                  />
-                </div>
-              </div>
-              {activeTab === 'article' && (
-                <div className="">
-                  <ArticleList apiResult={apiResult} />
-                </div>
-              )}
-              {activeTab === 'post' && <div className="">尚無貼文資料</div>}
-              {activeTab === 'follow' && <div className="">尚未追蹤其他人</div>}
-            </div>
+        <div className="">
+          <p className="text-3xl font-semibold">{userData.name}</p>
+          <p className="text-gray-500">@{userData.account}</p>
+        </div>
+      </div>
+      <div>
+        <p>
+          Helping software engineers level up and standout in their career.talks about how to level
+          up in your software engineering career.
+        </p>
+      </div>
+      <div>
+        {/* 頁籤 */}
+        <div>
+          <div className="mt-4 text-lg flex border-b-[1px] border-gray-400 dark:text-gray-400">
+            <button
+              type="button"
+              className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
+              onClick={() => handleTabActive('article')}
+            >
+              文章
+            </button>
+            <button
+              type="button"
+              className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
+              onClick={() => handleTabActive('post')}
+            >
+              貼文
+            </button>
+            <button
+              type="button"
+              className="flex w-1/3 justify-center py-1.5 hover:cursor-pointer outline-none"
+              onClick={() => handleTabActive('follow')}
+            >
+              追蹤
+            </button>
           </div>
-        </>
-      )}
-    </>
+          <div className="flex justify-start -translate-y-0.5">
+            <div
+              className={`border-b-[3px] border-orange-500 w-1/3 text-transparent ${activeStyle} transform duration-300 ease-in-out`}
+            />
+          </div>
+        </div>
+        {activeTab === 'article' && (
+          <div className="">
+            <ArticleList apiResult={apiResult} />
+          </div>
+        )}
+        {activeTab === 'post' && <div className="">尚無貼文資料</div>}
+        {activeTab === 'follow' && <div className="">尚未追蹤其他人</div>}
+      </div>
+    </div>
   );
 }
 

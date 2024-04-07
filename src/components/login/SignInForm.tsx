@@ -40,7 +40,7 @@ function SignInForm(props: any) {
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const swal = withReactContent(Swal);
-  const [cookies, setCookie, removeCookie] = useCookies(['_id']);
+  const [cookies, setCookie, removeCookie] = useCookies(['uid']);
 
   /** 清除表單資料 */
   const cleanForm = () => {
@@ -77,7 +77,7 @@ function SignInForm(props: any) {
       if (get(res, 'status') === 200) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);
-        setCookie('_id', res.data.userId, { path: '/' });
+        setCookie('uid', res.data.userId, { path: '/' });
         swal
           .fire({
             title: '登入成功',

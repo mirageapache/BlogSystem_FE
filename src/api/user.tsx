@@ -21,10 +21,10 @@ export interface UserDataType {
 export async function getUserProfile(userId: string): Promise<UserDataType> {
   const result = await axios
     .post(`${baseUrl}/user/${userId}`, null, {
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-      }  
+        Authorization: `Bearer ${authToken}`,
+      },
     })
     .then((res) => {
       console.log(res);
@@ -35,4 +35,3 @@ export async function getUserProfile(userId: string): Promise<UserDataType> {
     });
   return result;
 }
-
