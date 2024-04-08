@@ -22,6 +22,7 @@ import FormInput from '../form/FormInput';
 import { SignInParamType, SignIn } from '../../api/auth';
 // --- functions / types ---
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
+import { setUserData } from '../../redux/userSlice';
 
 // 原先要指定給props的型別，但會有無法解決的型別錯誤
 // type SignInFormType = InjectedFormProps<{}, {}, string> & {
@@ -78,6 +79,12 @@ function SignInForm(props: any) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);
         setCookie('uid', res.data.userId, { path: '/' });
+        sliceDispatch(
+          setUserData({
+            userAccount: res.data.account,
+            userName: res.data.name,
+          })
+        );
         swal
           .fire({
             title: '登入成功',
