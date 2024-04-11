@@ -19,6 +19,8 @@ export interface UserDataType {
 
 /** 取得使用者詳細資料 */
 export async function getUserProfile(userId: string): Promise<UserDataType> {
+  console.log(userId);
+  console.log(authToken);
   const result = await axios
     .post(`${baseUrl}/user/${userId}`, null, {
       headers: {
@@ -31,7 +33,8 @@ export async function getUserProfile(userId: string): Promise<UserDataType> {
       return res.data as UserDataType;
     })
     .catch((error) => {
-      throw new Error(error.response?.data?.message || '取得使用者資料時發生錯誤');
+      return error;
+      // throw new Error(error.response?.data?.message || '取得使用者資料時發生錯誤');
     });
   return result;
 }

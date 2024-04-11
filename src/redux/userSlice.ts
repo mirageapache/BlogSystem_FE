@@ -1,8 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getUserProfile } from 'api/user';
-import { get, isEmpty } from 'lodash';
-import { useCookies } from 'react-cookie';
+import { isEmpty } from 'lodash';
 
 // --- functions ---
 import { getCookies } from 'utils/common';
@@ -17,11 +16,11 @@ export interface UserDataType {
 }
 
 export interface UserStateType {
-  userData: UserDataType
+  userData: UserDataType;
 }
 
 /** user state 預設值 */
-let initState = {
+const initState = {
   userData: {
     uid: '',
     account: '',
@@ -29,22 +28,20 @@ let initState = {
     avatar: '',
     status: 0,
     theme: 0,
-  }
+  },
 };
 
 // getUserData
 const getUserData = async (uid: string) => {
-  console.log(uid);
   const res = await getUserProfile(uid);
-  // console.log(res);
-}
+  console.log(res);
+};
 
-const authToken = localStorage.getItem('authToken') || "";
+const authToken = localStorage.getItem('authToken') || '';
 const uid = getCookies('uid');
-if(!isEmpty(authToken) && !isEmpty(uid)){
+if (!isEmpty(authToken) && !isEmpty(uid)) {
   getUserData(uid!);
 }
-
 
 /** User Slice Function */
 const UserSlice = createSlice({
