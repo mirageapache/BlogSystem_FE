@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { isEmpty } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
@@ -10,6 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 import AuthorInfoPanel from 'components/user/AuthorInfoPanel';
 // --- functions / types ---
 import { setDarkMode } from '../../redux/sysSlice';
+import { UserStateType } from '../../redux/userSlice';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -22,6 +23,10 @@ type ItemPropsType = {
 interface MainMenuType {
   toggleMenuAnimation: string;
   setToggleMenuAnimation: (value: string) => void;
+}
+
+interface StateType {
+  user: UserStateType;
 }
 
 /** MainMenu Item 元件 */
@@ -50,6 +55,9 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   const dispatch = useDispatch();
   const swal = withReactContent(Swal);
   const [cookies, setCookie, removeCookie] = useCookies(['_id']);
+  const userState = useSelector((state: StateType) => state.user);
+
+  // console.log(userState);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');

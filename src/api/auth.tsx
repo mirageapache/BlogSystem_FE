@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { LOCALHOST } from './index';
+import { API_URL } from './index';
 
-const baseUrl = LOCALHOST;
+const baseUrl = API_URL;
 
 /** 註冊參數型別 */
 export interface SignUpParamType {

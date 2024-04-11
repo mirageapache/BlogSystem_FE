@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { LOCALHOST } from './index';
+import { API_URL } from './index';
 
-const baseUrl = LOCALHOST;
+const baseUrl = API_URL;
 const authToken = localStorage.getItem('authToken');
 
 /** 使用者資料型別 */

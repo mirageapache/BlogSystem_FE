@@ -78,13 +78,8 @@ function SignInForm(props: any) {
       if (get(res, 'status') === 200) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);
-        setCookie('uid', res.data.userId, { path: '/' });
-        sliceDispatch(
-          setUserData({
-            userAccount: res.data.account,
-            userName: res.data.name,
-          })
-        );
+        setCookie('uid', res.data.userData.uid, { path: '/' });
+        sliceDispatch(setUserData(res.data.userData));
         swal
           .fire({
             title: '登入成功',
