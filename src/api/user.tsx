@@ -19,15 +19,14 @@ export interface UserDataType {
 
 /** 取得使用者詳細資料 */
 export async function getUserProfile(userId: string): Promise<UserDataType> {
+  const config = {
+    headers: { Authorization: `Bearer ${authToken}` },
+  };
+
   console.log(userId);
   console.log(authToken);
   const result = await axios
-    .post(`${baseUrl}/user/${userId}`, null, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-    })
+    .post(`${baseUrl}/user/${userId}`, null, config)
     .then((res) => {
       console.log(res);
       return res.data as UserDataType;
