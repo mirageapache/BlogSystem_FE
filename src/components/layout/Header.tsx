@@ -11,6 +11,7 @@ import MainMenu from './MainMenu';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../../redux/searchSlice';
 import { LoginStateType, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
+import { checkLogin } from 'utils/common';
 
 interface StateType {
   search: SearchStateType;
@@ -23,7 +24,6 @@ function Header() {
   const searchState = useSelector((state: StateType) => state.search);
   const dispatch = useDispatch();
   const { searchText } = searchState;
-  const isLogin = !isEmpty(localStorage.getItem('authToken'));
 
   /** 跳轉至搜尋頁 */
   const handleSearch = (key: string) => {
@@ -70,7 +70,7 @@ function Header() {
             </div>
           )}
 
-          {isLogin ? (
+          {checkLogin() ? (
             <>
               {/* 選單按鈕 */}
               <button

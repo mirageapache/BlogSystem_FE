@@ -11,6 +11,7 @@ import AuthorInfoPanel from 'components/user/AuthorInfoPanel';
 // --- functions / types ---
 import { setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
+import { checkLogin } from 'utils/common';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -51,14 +52,13 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
 
 /** MainMenu 元件 */
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
-  const isLogin = !isEmpty(localStorage.getItem('authToken'));
   const dispatch = useDispatch();
   const swal = withReactContent(Swal);
   const [cookies, setCookie, removeCookie] = useCookies(['_id']);
   const userState = useSelector((state: StateType) => state.user);
+  const userData = userState.userData;
 
-  // console.log(userState);
-
+  /** 登出 */
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     removeCookie('_id');
@@ -101,9 +101,9 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             />
           </button>
         </div>
-        {isLogin && (
+        {checkLogin() && (
           <div className="mx-5 border-b-[1px] border-gray-400 dark:border-gray-700">
-            <AuthorInfoPanel avatarUrl="" />
+            <AuthorInfoPanel account={userData.account} name={userData.name} avatarUrl={userData.avatar} />
           </div>
         )}
         <div className="h-full py-5 px-8 opacity-100">
@@ -118,7 +118,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               <MenuItem href="/search" text="搜尋" count={0}>
                 <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
               </MenuItem>
-              {isLogin && (
+              {checkLogin() && (
                 <>
                   <MenuItem href="/inbox" text="訊息匣" count={0}>
                     <FontAwesomeIcon icon={icon({ name: 'inbox' })} />

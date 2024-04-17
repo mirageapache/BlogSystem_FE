@@ -35,10 +35,9 @@ function UserProfilePage() {
   };
 
   useEffect(() => {
-    console.log(cookies.uid);
     const fetchData = async () => {
-      const userDatas = await getUserProfile(cookies.uid);
-      setUserData(userDatas);
+      const res = await getUserProfile(cookies.uid);
+      setUserData(res.data);
     };
     fetchData();
   }, []);

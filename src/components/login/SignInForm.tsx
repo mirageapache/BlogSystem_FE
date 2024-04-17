@@ -15,7 +15,7 @@ import {
   change,
   // InjectedFormProps,
 } from 'redux-form';
-import { required, maxLength, isEmail } from '../../utils/Validate';
+import { required, maxLength, isEmail } from '../../utils/validates';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 // --- api / types ---
@@ -74,7 +74,6 @@ function SignInForm(props: any) {
 
     try {
       const res = await SignIn(form);
-      console.log(res);
       if (get(res, 'status') === 200) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);

@@ -7,4 +7,4 @@ const renderServer = 'https://blogsystem-aakz.onrender.com';
 export const DUMMYJSON_URL = 'https://dummyjson.com';
 
 /** base Url */
-export const API_URL = localhost;
+export const API_URL = renderServer;

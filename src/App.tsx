@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 // --- constants ---
 import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
 // --- components ---
@@ -20,6 +21,9 @@ import UserProfilePage from './pages/user/UserProfilePage';
 import { SysStateType } from './redux/sysSlice';
 import { SearchStateType } from './redux/searchSlice';
 import { LoginStateType } from './redux/loginSlice';
+import { getCookies } from './utils/common';
+import { getUserProfile } from './api/user';
+import { setUserData } from './redux/userSlice';
 
 /** stateType  */
 interface StateType {
@@ -29,8 +33,31 @@ interface StateType {
 }
 
 function App() {
+  const sliceDispatch = useDispatch();
   const sysState = useSelector((state: StateType) => state.system);
   const loginState = useSelector((state: StateType) => state.login);
+
+  // getUserData
+  const getUserData = async (userId: string) => {
+    const res = await getUserProfile(userId);
+    console.log(res.data);
+    if(res.status === 200){
+      sliceDispatch(setUserData({
+        ...res.data,
+        theme: 0,
+      }));
+    }
+  };
+
+  /** 判斷是否有儲存authToken及uid */
+  useEffect(() => {
+    const authToken = localStorage.getItem('authToken') || '';
+    const uid = getCookies('uid');
+    if (!isEmpty(authToken) && !isEmpty(uid)) {
+      getUserData(uid!);
+    }
+  }, []);
+
   return (
     <div className={`font-sans ${sysState.darkMode}`}>
       <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">

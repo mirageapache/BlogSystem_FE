@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './index';
+import { ResponseType } from '../types/api';
 
 const baseUrl = API_URL;
 const authToken = localStorage.getItem('authToken');
@@ -17,19 +18,28 @@ export interface UserDataType {
   status: number;
 }
 
+export interface UserSettingType {
+  language: string;
+  theme: number;
+  tags: [string];
+  emailPrompt: Boolean;
+  mobilePrompt: Boolean;
+}
+
+interface GetUserProfileType extends ResponseType{
+  data: UserDataType;
+}
+
 /** 取得使用者詳細資料 */
-export async function getUserProfile(userId: string): Promise<UserDataType> {
+export async function getUserProfile(userId: string): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };
 
-  console.log(userId);
-  console.log(authToken);
   const result = await axios
     .post(`${baseUrl}/user/${userId}`, null, config)
     .then((res) => {
-      console.log(res);
-      return res.data as UserDataType;
+      return res;
     })
     .catch((error) => {
       return error;

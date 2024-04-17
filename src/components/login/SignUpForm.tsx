@@ -11,9 +11,9 @@ import FormInput from '../form/FormInput';
 // --- api / types ---
 import { SignUpParamType, SignUp } from '../../api/auth';
 // --- functions / types ---
-import { required, checkLength, passwordCheck, isEmail } from '../../utils/Validate';
+import { required, checkLength, passwordCheck, isEmail } from '../../utils/validates';
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
-import { handleErrMsg } from '../../utils/FetchErrors';
+import { handleErrMsg } from '../../utils/fetchErrors';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('signup')(state),

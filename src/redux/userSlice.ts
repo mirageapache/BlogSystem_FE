@@ -5,13 +5,10 @@ import { isEmpty } from 'lodash';
 
 // --- functions ---
 import { getCookies } from 'utils/common';
+// --- types ---
+import { UserDataType, UserSettingType } from 'api/user';
 
-export interface UserDataType {
-  uid: string;
-  account: string;
-  name: string;
-  avatar: string;
-  status: number;
+interface UserInfoType extends UserDataType {
   theme: number;
 }
 
@@ -22,26 +19,19 @@ export interface UserStateType {
 /** user state 預設值 */
 const initState = {
   userData: {
-    uid: '',
+    userId: '',
+    email: '',
     account: '',
     name: '',
     avatar: '',
+    bio: '',
+    userRole: 0,
+    createdAt: '',
     status: 0,
     theme: 0,
   },
 };
 
-// getUserData
-const getUserData = async (uid: string) => {
-  const res = await getUserProfile(uid);
-  console.log(res);
-};
-
-const authToken = localStorage.getItem('authToken') || '';
-const uid = getCookies('uid');
-if (!isEmpty(authToken) && !isEmpty(uid)) {
-  getUserData(uid!);
-}
 
 /** User Slice Function */
 const UserSlice = createSlice({
@@ -49,8 +39,7 @@ const UserSlice = createSlice({
   initialState: initState,
   reducers: {
     /** 設定User資料 */
-    setUserData(state: UserStateType, action: PayloadAction<UserDataType>) {
-      console.log(action.payload);
+    setUserData(state: UserStateType, action: PayloadAction<UserInfoType>) {
       state.userData = action.payload;
     },
   },

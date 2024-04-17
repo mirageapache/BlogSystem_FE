@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { isEmpty } from 'lodash';
+import { checkLogin } from 'utils/common';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -33,7 +34,6 @@ function SideBarItem({ href, text, count, children }: ItemProps) {
 
 /** SideBar 元件 */
 function SideBar() {
-  const isLogin = !isEmpty(localStorage.getItem('authToken'));
 
   return (
     <div className="text-left h-fit sm:px-1 px-5">
@@ -47,7 +47,7 @@ function SideBar() {
         <SideBarItem href="/search" text="搜尋" count={0}>
           <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
         </SideBarItem>
-        {isLogin && (
+        {checkLogin() && (
           <>
             <SideBarItem href="/profile/1" text="個人資料" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
