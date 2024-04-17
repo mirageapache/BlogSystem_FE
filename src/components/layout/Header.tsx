@@ -11,7 +11,7 @@ import MainMenu from './MainMenu';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../../redux/searchSlice';
 import { LoginStateType, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
-import { checkLogin } from 'utils/common';
+import { checkLogin } from '../../utils/common';
 
 interface StateType {
   search: SearchStateType;

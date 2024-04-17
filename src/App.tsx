@@ -41,11 +41,13 @@ function App() {
   const getUserData = async (userId: string) => {
     const res = await getUserProfile(userId);
     console.log(res.data);
-    if(res.status === 200){
-      sliceDispatch(setUserData({
-        ...res.data,
-        theme: 0,
-      }));
+    if (res.status === 200) {
+      sliceDispatch(
+        setUserData({
+          ...res.data,
+          theme: 0,
+        })
+      );
     }
   };
 

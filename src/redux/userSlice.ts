@@ -1,12 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getUserProfile } from 'api/user';
-import { isEmpty } from 'lodash';
-
-// --- functions ---
-import { getCookies } from 'utils/common';
 // --- types ---
-import { UserDataType, UserSettingType } from 'api/user';
+import { UserDataType } from 'api/user';
 
 interface UserInfoType extends UserDataType {
   theme: number;
@@ -31,7 +26,6 @@ const initState = {
     theme: 0,
   },
 };
-
 
 /** User Slice Function */
 const UserSlice = createSlice({

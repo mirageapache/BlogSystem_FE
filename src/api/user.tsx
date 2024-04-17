@@ -26,7 +26,7 @@ export interface UserSettingType {
   mobilePrompt: Boolean;
 }
 
-interface GetUserProfileType extends ResponseType{
+interface GetUserProfileType extends ResponseType {
   data: UserDataType;
 }
 

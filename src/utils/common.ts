@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-import { isEmpty } from "lodash";
+import { isEmpty } from 'lodash';
 
 /**
  * 取得Cookies
@@ -22,8 +22,8 @@ export const getCookies = (name: string) => {
 export const checkLogin = () => {
   const id = getCookies('uid');
   const token = localStorage.getItem('authToken');
-  if(!isEmpty(id) && !isEmpty(token)) {
+  if (!isEmpty(id) && !isEmpty(token)) {
     return true;
   }
-  return false
+  return false;
 };

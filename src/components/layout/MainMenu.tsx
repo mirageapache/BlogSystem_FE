@@ -11,7 +11,7 @@ import AuthorInfoPanel from 'components/user/AuthorInfoPanel';
 // --- functions / types ---
 import { setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
-import { checkLogin } from 'utils/common';
+import { checkLogin } from '../../utils/common';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -56,7 +56,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   const swal = withReactContent(Swal);
   const [cookies, setCookie, removeCookie] = useCookies(['_id']);
   const userState = useSelector((state: StateType) => state.user);
-  const userData = userState.userData;
+  const { userData } = userState;
 
   /** 登出 */
   const handleLogout = () => {
@@ -103,7 +103,11 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         </div>
         {checkLogin() && (
           <div className="mx-5 border-b-[1px] border-gray-400 dark:border-gray-700">
-            <AuthorInfoPanel account={userData.account} name={userData.name} avatarUrl={userData.avatar} />
+            <AuthorInfoPanel
+              account={userData.account}
+              name={userData.name}
+              avatarUrl={userData.avatar}
+            />
           </div>
         )}
         <div className="h-full py-5 px-8 opacity-100">

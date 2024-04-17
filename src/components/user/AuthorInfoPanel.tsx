@@ -3,7 +3,7 @@ import React from 'react';
 import Avatar from './Avatar';
 import FollowBtn from './FollowBtn';
 
-function AuthorInfoPanel(props: { account: string, name: string, avatarUrl: string }) {
+function AuthorInfoPanel(props: { account: string; name: string; avatarUrl: string }) {
   const { account, name, avatarUrl } = props;
   return (
     <div className="flex items-center my-4">

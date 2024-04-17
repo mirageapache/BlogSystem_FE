@@ -34,7 +34,6 @@ function SideBarItem({ href, text, count, children }: ItemProps) {
 
 /** SideBar 元件 */
 function SideBar() {
-
   return (
     <div className="text-left h-fit sm:px-1 px-5">
       <div className="ml-2.5">
