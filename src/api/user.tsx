@@ -6,7 +6,6 @@ import { UserDataType } from '../types/userType';
 const baseUrl = API_URL;
 const authToken = localStorage.getItem('authToken');
 
-
 interface GetUserProfileType extends AxResponseType {
   data: UserDataType;
 }

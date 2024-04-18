@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isEmpty, get } from 'lodash';
 import { DUMMYJSON_URL } from './index';
 import { ArticleListType } from '../types/articleType';
-import { RqResponseType } from 'types/apiType';
+import { RqResponseType } from '../types/apiType';
 
 const baseUrl = DUMMYJSON_URL;
 

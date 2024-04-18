@@ -14,9 +14,8 @@ function Avatar(props: { name: string; avatarUrl: string; size: string; textSize
         <p className={`${textSize} text-center text-white`}>{avatarName}</p>
       </span>
     );
-  } else {
-    return <img className={`${size} rounded-full`} src={avatarUrl} alt="author avatar" />;
   }
+  return <img className={`${size} rounded-full`} src={avatarUrl} alt="author avatar" />;
 }
 
 export default Avatar;

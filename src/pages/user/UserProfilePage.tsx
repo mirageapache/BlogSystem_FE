@@ -58,7 +58,12 @@ function UserProfilePage() {
     <div className="w-full sm:max-w-[600px] p-5">
       <div className="flex gap-4 mb-3">
         <div>
-          <Avatar name="test" avatarUrl={userData.avatar} size="w-[72px] h-[72px]" textSize="text-4xl" />
+          <Avatar
+            name="test"
+            avatarUrl={userData.avatar}
+            size="w-[72px] h-[72px]"
+            textSize="text-4xl"
+          />
         </div>
         <div className="">
           <p className="text-3xl font-semibold">{userData.name}</p>
@@ -66,9 +71,7 @@ function UserProfilePage() {
         </div>
       </div>
       <div>
-        <p>
-          {userData.bio}
-        </p>
+        <p>{userData.bio}</p>
       </div>
       <div>
         {/* 頁籤 */}
