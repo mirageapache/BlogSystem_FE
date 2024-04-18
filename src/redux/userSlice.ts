@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // --- types ---
-import { UserDataType } from 'api/user';
+import { UserDataType } from 'types/userType';
 
 interface UserInfoType extends UserDataType {
   theme: number;

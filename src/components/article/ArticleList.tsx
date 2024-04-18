@@ -3,7 +3,8 @@ import { get, isEmpty } from 'lodash';
 import ArticleItem from './ArticleItem';
 import Loading from './Loading';
 // --- api / type ---
-import { ApiResultType, ArticleListType } from '../../api/article';
+import { ApiResultType } from '../../api/article';
+import { ArticleListType } from '../../types/articleType';
 
 function ArticleList(props: { apiResult: ApiResultType }) {
   const { apiResult } = props;

@@ -1,32 +1,24 @@
 import axios from 'axios';
 import { isEmpty, get } from 'lodash';
 import { DUMMYJSON_URL } from './index';
+import { ArticleListType } from '../types/articleType';
+import { RqResponseType } from 'types/apiType';
 
 const baseUrl = DUMMYJSON_URL;
 
-/** articleList 型別 */
-export interface ArticleListType {
-  body: string;
-  id: number;
-  reactions: number;
-  tags: [string];
-  title: string;
-  userId: number;
-}
-
-/** aritcleApi 型別 */
+/** aritcleApi 型別
+ * 目前使用dummyjson的資料，所以建立這個型別(以符合資料結構)
+ */
 export interface AritcleApiType {
-  post: [ArticleListType];
+  post: ArticleListType[];
   total: number;
   skip: number;
   limit: number;
 }
 
 /** API Result 型別 */
-export interface ApiResultType {
-  isLoading: boolean;
-  error: { message: string } | null;
-  data: AritcleApiType | unknown;
+export interface ApiResultType extends RqResponseType {
+  data: AritcleApiType | null;
 }
 
 /** 取得所有文章 */

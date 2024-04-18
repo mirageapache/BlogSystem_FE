@@ -19,7 +19,8 @@ import { required, maxLength, isEmail } from '../../utils/validates';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 // --- api / types ---
-import { SignInParamType, SignIn } from '../../api/auth';
+import { SignIn } from '../../api/auth';
+import { SignInParamType } from '../../types/authType';
 // --- functions / types ---
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { setUserData } from '../../redux/userSlice';

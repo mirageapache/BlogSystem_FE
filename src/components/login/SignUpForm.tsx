@@ -9,7 +9,8 @@ import withReactContent from 'sweetalert2-react-content';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 // --- api / types ---
-import { SignUpParamType, SignUp } from '../../api/auth';
+import { SignUp } from '../../api/auth';
+import { SignUpParamType } from '../../types/authType';
 // --- functions / types ---
 import { required, checkLength, passwordCheck, isEmail } from '../../utils/validates';
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';

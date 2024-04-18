@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 // --- api ---
 import { getPostById } from '../../api/post';
 // --- components ---
-import AuthorInfoPanel from '../../components/user/AuthorInfoPanel';
+import UserInfoPanel from '../../components/user/UserInfoPanel';
 import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
 import ContentSection from '../../components/article/ContentSection';
 import Spinner from '../../components/layout/Spinner';
@@ -23,7 +23,7 @@ function ArticleDetailPage() {
         <div className="flex flex-col w-full">
           <div className="w-full">
             {/* 作者資訊 */}
-            <AuthorInfoPanel account="" name="" avatarUrl={avatarUrl} />
+            <UserInfoPanel account="" name="" avatarUrl={avatarUrl} />
             {/* 文章資訊 */}
             <ArticleInfoPanel />
           </div>

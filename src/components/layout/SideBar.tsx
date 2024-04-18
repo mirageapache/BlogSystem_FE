@@ -2,7 +2,8 @@ import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { isEmpty } from 'lodash';
-import { checkLogin } from 'utils/common';
+import { checkLogin, getCookies } from 'utils/common';
+import { Link } from 'react-router-dom';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -15,8 +16,8 @@ type ItemProps = {
 /** SideBar Item 元件 */
 function SideBarItem({ href, text, count, children }: ItemProps) {
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       className="flex my-1.5 text-xl text-gray-700 dark:text-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-4"
     >
       <span className="flex items-center">{children}</span>
@@ -28,12 +29,14 @@ function SideBarItem({ href, text, count, children }: ItemProps) {
           </span>
         )}
       </span>
-    </a>
+    </Link>
   );
 }
 
 /** SideBar 元件 */
 function SideBar() {
+  const uid = getCookies('uid');
+
   return (
     <div className="text-left h-fit sm:px-1 px-5">
       <div className="ml-2.5">
@@ -48,7 +51,7 @@ function SideBar() {
         </SideBarItem>
         {checkLogin() && (
           <>
-            <SideBarItem href="/profile/1" text="個人資料" count={0}>
+            <SideBarItem href={`/profile/${uid}`} text="個人資料" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
             </SideBarItem>
             <SideBarItem href="/inbox" text="訊息匣" count={0}>

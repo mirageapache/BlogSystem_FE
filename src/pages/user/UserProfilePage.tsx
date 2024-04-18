@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { isEmpty } from 'lodash';
+import { redirect, useParams } from 'react-router-dom';
 // --- components ---
 import Avatar from 'components/user/Avatar';
 import ArticleList from 'components/article/ArticleList';
 // --- api / type ---
 import { ApiResultType, getPartialArticles } from '../../api/article';
-import { UserDataType, getUserProfile } from '../../api/user';
+import { getUserProfile } from '../../api/user';
+import { UserDataType } from '../../types/userType';
 
+// ***須進行登入身分的驗證，確認是登入的當前使用者才顯示"編輯"等功能
 function UserProfilePage() {
   const apiResult = useQuery('aritcles', () => getPartialArticles(10)) as ApiResultType;
   const [activeTab, setActiveTab] = useState('article');
   const [activeStyle, setActiveStyle] = useState('');
-  const [cookies, setCookie, removeCookie] = useCookies(['uid']);
+  // const [cookies, setCookie, removeCookie] = useCookies(['uid']);
+  const { uid } = useParams();
   const [userData, setUserData] = useState<UserDataType>();
 
   /** 頁籤切換 */
@@ -36,7 +40,7 @@ function UserProfilePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getUserProfile(cookies.uid);
+      const res = await getUserProfile(uid!);
       setUserData(res.data);
     };
     fetchData();
@@ -54,7 +58,7 @@ function UserProfilePage() {
     <div className="w-full sm:max-w-[600px] p-5">
       <div className="flex gap-4 mb-3">
         <div>
-          <Avatar avatarUrl={userData.avatar} size="w-[72px] h-[72px]" textSize="text-4xl" />
+          <Avatar name="test" avatarUrl={userData.avatar} size="w-[72px] h-[72px]" textSize="text-4xl" />
         </div>
         <div className="">
           <p className="text-3xl font-semibold">{userData.name}</p>
@@ -63,8 +67,7 @@ function UserProfilePage() {
       </div>
       <div>
         <p>
-          Helping software engineers level up and standout in their career.talks about how to level
-          up in your software engineering career.
+          {userData.bio}
         </p>
       </div>
       <div>

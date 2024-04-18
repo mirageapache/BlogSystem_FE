@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
 // --- components ---
-import AuthorInfoPanel from 'components/user/AuthorInfoPanel';
+import UserInfoPanel from 'components/user/UserInfoPanel';
 // --- functions / types ---
 import { setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
@@ -103,7 +103,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         </div>
         {checkLogin() && (
           <div className="mx-5 border-b-[1px] border-gray-400 dark:border-gray-700">
-            <AuthorInfoPanel
+            <UserInfoPanel
               account={userData.account}
               name={userData.name}
               avatarUrl={userData.avatar}

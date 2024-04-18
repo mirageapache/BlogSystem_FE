@@ -78,7 +78,7 @@ function App() {
                 <Route path="/post/:id" element={<PostDetailPage />} />
                 <Route path="/article/:id" element={<ArticleDetailPage />} />
                 {/* User */}
-                <Route path="/profile/:id" element={<UserProfilePage />} />
+                <Route path="/profile/:uid" element={<UserProfilePage />} />
               </Routes>
             </section>
           </div>

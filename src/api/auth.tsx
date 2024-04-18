@@ -1,14 +1,8 @@
 import axios from 'axios';
 import { API_URL } from './index';
+import { SignUpParamType, SignInParamType } from '../types/authType';
 
 const baseUrl = API_URL;
-
-/** 註冊參數型別 */
-export interface SignUpParamType {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
 
 /** 註冊 */
 export async function SignUp(param: SignUpParamType) {
@@ -21,12 +15,6 @@ export async function SignUp(param: SignUpParamType) {
       return error;
     });
   return result;
-}
-
-/** 登入參數型別 */
-export interface SignInParamType {
-  email: string;
-  password: string;
 }
 
 /** 登入 */
