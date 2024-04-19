@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { isEmpty } from 'lodash';
 // --- images ---
 import brand from '../../assets/images/brand.png';
 // --- components ---

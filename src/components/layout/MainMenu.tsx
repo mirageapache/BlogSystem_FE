@@ -54,14 +54,14 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
   const dispatch = useDispatch();
   const swal = withReactContent(Swal);
-  const [cookies, setCookie, removeCookie] = useCookies(['_id']);
+  const [cookies, setCookie, removeCookie] = useCookies(['uid']);
   const userState = useSelector((state: StateType) => state.user);
   const { userData } = userState;
 
   /** 登出 */
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    removeCookie('_id');
+    removeCookie('uid');
     swal
       .fire({
         title: '已成功登出',

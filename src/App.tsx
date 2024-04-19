@@ -37,10 +37,9 @@ function App() {
   const sysState = useSelector((state: StateType) => state.system);
   const loginState = useSelector((state: StateType) => state.login);
 
-  // getUserData
+  /** getUserData */
   const getUserData = async (userId: string) => {
     const res = await getUserProfile(userId);
-    console.log(res.data);
     if (res.status === 200) {
       sliceDispatch(
         setUserData({

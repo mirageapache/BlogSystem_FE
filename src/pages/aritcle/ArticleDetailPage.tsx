@@ -6,7 +6,7 @@ import { getPostById } from '../../api/post';
 import UserInfoPanel from '../../components/user/UserInfoPanel';
 import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
 import ContentSection from '../../components/article/ContentSection';
-import Spinner from '../../components/layout/Spinner';
+import Spinner from '../../components/tips/Spinner';
 
 function ArticleDetailPage() {
   const { id } = useParams();

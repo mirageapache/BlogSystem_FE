@@ -1,4 +1,3 @@
-import React from 'react';
 import { isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
 import { formatDateTime } from '../../utils/dateTime';

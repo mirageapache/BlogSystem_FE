@@ -63,6 +63,20 @@ export async function getArticleById<T>(id: T) {
   return result;
 }
 
+/** 取得單一使用者文章 */
+export async function getArticleByUser<T>(id: T) {
+  const result = await axios
+    .get(`${baseUrl}/posts?user=${id}`)
+    .then((res) => {
+      const postData = res.data;
+      return postData;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return result;
+}
+
 /** 取得搜尋文章 */
 export async function getSearchArticle(searchString: string) {
   const result = await axios
