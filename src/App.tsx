@@ -22,8 +22,9 @@ import { SysStateType } from './redux/sysSlice';
 import { SearchStateType } from './redux/searchSlice';
 import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
-import { getUserProfile } from './api/user';
+import { getOwnProfile } from './api/user';
 import { setUserData } from './redux/userSlice';
+import EditProfilePage from 'pages/user/EditProfilePage';
 
 /** stateType  */
 interface StateType {
@@ -39,7 +40,7 @@ function App() {
 
   /** getUserData */
   const getUserData = async (userId: string) => {
-    const res = await getUserProfile(userId);
+    const res = await getOwnProfile(userId);
     if (res.status === 200) {
       sliceDispatch(
         setUserData({
@@ -78,6 +79,7 @@ function App() {
                 <Route path="/article/:id" element={<ArticleDetailPage />} />
                 {/* User */}
                 <Route path="/profile/:uid" element={<UserProfilePage />} />
+                <Route path="/editProfile/:uid" element={<EditProfilePage />} />
               </Routes>
             </section>
           </div>

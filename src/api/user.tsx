@@ -10,8 +10,10 @@ interface GetUserProfileType extends AxResponseType {
   data: UserDataType;
 }
 
-/** 取得使用者詳細資料 */
-export async function getUserProfile(userId: string): Promise<GetUserProfileType> {
+/** 取得自己的使用者資料
+ * 須帶authToken做驗證
+ */
+export async function getOwnProfile(userId: string): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };
@@ -19,6 +21,20 @@ export async function getUserProfile(userId: string): Promise<GetUserProfileType
   const result = await axios
     .post(`${baseUrl}/user/${userId}`, null, config)
     .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}
+
+/** 取得一般使用者詳細資料 */
+export async function getUserProfile(userId: string): Promise<GetUserProfileType> {
+  const result = await axios
+    .post(`${baseUrl}/user/${userId}`, null)
+    .then((res) => {
+      console.log(res);
       return res;
     })
     .catch((error) => {
