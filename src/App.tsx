@@ -23,7 +23,7 @@ import { SearchStateType } from './redux/searchSlice';
 import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
-import { setUserData } from './redux/userSlice';
+import { UserStateType, setUserData } from './redux/userSlice';
 import EditProfilePage from 'pages/user/EditProfilePage';
 
 /** stateType  */
@@ -31,12 +31,14 @@ interface StateType {
   system: SysStateType;
   search: SearchStateType;
   login: LoginStateType;
+  user: UserStateType;
 }
 
 function App() {
   const sliceDispatch = useDispatch();
   const sysState = useSelector((state: StateType) => state.system);
   const loginState = useSelector((state: StateType) => state.login);
+  const userState = useSelector((state: StateType) => state.user);
 
   /** getUserData */
   const getUserData = async (userId: string) => {
@@ -55,7 +57,9 @@ function App() {
   useEffect(() => {
     const authToken = localStorage.getItem('authToken') || '';
     const uid = getCookies('uid');
-    if (!isEmpty(authToken) && !isEmpty(uid)) {
+    const { userId } = userState.userData;
+    if (!isEmpty(authToken) && !isEmpty(uid) && isEmpty(userId)) {
+      // 判斷redex中沒有userData，且有cookie及authToken再執行
       getUserData(uid!);
     }
   }, []);
@@ -79,7 +83,7 @@ function App() {
                 <Route path="/article/:id" element={<ArticleDetailPage />} />
                 {/* User */}
                 <Route path="/profile/:uid" element={<UserProfilePage />} />
-                <Route path="/editProfile/:uid" element={<EditProfilePage />} />
+                <Route path="/editProfile" element={<EditProfilePage />} />
               </Routes>
             </section>
           </div>

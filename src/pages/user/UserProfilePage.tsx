@@ -7,11 +7,11 @@ import { Link, useParams } from 'react-router-dom';
 import Avatar from 'components/user/Avatar';
 import ArticleList from 'components/article/ArticleList';
 import Spinner from 'components/tips/Spinner';
+import BasicErrorPanel from 'components/tips/BasicErrorPanel';
+import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
 import { ApiResultType, getPartialArticles } from '../../api/article';
 import { getOwnProfile, getUserProfile } from '../../api/user';
-import BasicErrorPanel from 'components/tips/BasicErrorPanel';
-import NoSearchResult from 'components/tips/NoSearchResult';
 
 function UserProfilePage() {
   const [activeTab, setActiveTab] = useState('article');
@@ -75,7 +75,7 @@ function UserProfilePage() {
             {identify &&
               <div>
                 <Link
-                  to={"/editProfile/1"}
+                  to={"/editProfile"}
                   type="button"
                   className="flex items-center rounded-lg text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
                 >
