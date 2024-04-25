@@ -16,16 +16,16 @@ import { getOwnProfile, getUserProfile } from '../../api/user';
 function UserProfilePage() {
   const [activeTab, setActiveTab] = useState('article');
   const [activeStyle, setActiveStyle] = useState('');
-  const { uid } = useParams();
+  const { userId } = useParams();
   const [cookies] = useCookies(['uid']);
   let getUserDataFetch;
   let identify = false; // 身分驗證 true => own / false => others
   // ***進行身分驗證，確認是登入的當前使用者才顯示"編輯"等功能
-  if(cookies.uid === uid){
-    getUserDataFetch = useQuery('user', () => getOwnProfile(uid!));
+  if(cookies.uid === userId){
+    getUserDataFetch = useQuery('user', () => getOwnProfile(userId!));
     identify = true;
   } else {
-    getUserDataFetch = useQuery('user', () => getUserProfile(uid!));
+    getUserDataFetch = useQuery('user', () => getUserProfile(userId!));
   }
   const { isLoading, isSuccess, data } = getUserDataFetch;
   const fetchStatus = get(data, 'status', '404');
@@ -90,8 +90,6 @@ function UserProfilePage() {
             </div>
           }
           
-
-
           <div>
             {/* 頁籤 */}
             <div>

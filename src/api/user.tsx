@@ -19,7 +19,7 @@ export async function getOwnProfile(userId: string): Promise<GetUserProfileType>
   };
 
   const result = await axios
-    .post(`${baseUrl}/user/${userId}`, null, config)
+    .post(`${baseUrl}/user/own/${userId}`, null, config)
     .then((res) => {
       return res;
     })
@@ -34,7 +34,6 @@ export async function getUserProfile(userId: string): Promise<GetUserProfileType
   const result = await axios
     .post(`${baseUrl}/user/${userId}`, null)
     .then((res) => {
-      console.log(res);
       return res;
     })
     .catch((error) => {

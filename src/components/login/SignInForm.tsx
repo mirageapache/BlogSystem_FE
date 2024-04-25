@@ -78,7 +78,7 @@ function SignInForm(props: any) {
       if (get(res, 'status') === 200) {
         const authToken = get(res, 'data.authToken');
         window.localStorage.setItem('authToken', authToken);
-        setCookie('uid', res.data.userData.uid, { path: '/' });
+        setCookie('uid', res.data.userData.userId, { path: '/' });
         sliceDispatch(setUserData(res.data.userData));
         swal
           .fire({

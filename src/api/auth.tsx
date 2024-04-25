@@ -36,12 +36,10 @@ export async function SignIn(param: SignInParamType) {
  */
 export async function Auth(userId: string) {
   const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-    body: { id: userId },
+    headers: { Authorization: `Bearer ${authToken}` }
   };
-
   const result = await axios
-    .get(`${baseUrl}/login/auth`, config)
+    .post(`${baseUrl}/login/auth`, { id: userId }, config)
     .then((res) => {
       return res;
     })

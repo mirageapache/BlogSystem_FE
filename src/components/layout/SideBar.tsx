@@ -35,7 +35,7 @@ function SideBarItem({ href, text, count, children }: ItemProps) {
 
 /** SideBar 元件 */
 function SideBar() {
-  const uid = getCookies('uid');
+  const userId = getCookies('uid');
 
   return (
     <div className="text-left h-fit sm:px-1 px-5">
@@ -51,7 +51,7 @@ function SideBar() {
         </SideBarItem>
         {checkLogin() && (
           <>
-            <SideBarItem href={`/profile/${uid}`} text="個人資料" count={0}>
+            <SideBarItem href={`/profile/${userId}`} text="個人資料" count={0}>
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
             </SideBarItem>
             <SideBarItem href="/inbox" text="訊息匣" count={0}>
