@@ -21,7 +21,7 @@ function UserProfilePage() {
   let getUserDataFetch;
   let identify = false; // 身分驗證 true => own / false => others
   // ***進行身分驗證，確認是登入的當前使用者才顯示"編輯"等功能
-  if(cookies.uid === userId){
+  if (cookies.uid === userId) {
     getUserDataFetch = useQuery('user', () => getOwnProfile(userId!));
     identify = true;
   } else {
@@ -49,10 +49,10 @@ function UserProfilePage() {
     }
   };
 
-  if(isLoading) return <Spinner />
+  if (isLoading) return <Spinner />;
 
-  if(isSuccess){
-    if(fetchStatus === 200){
+  if (isSuccess) {
+    if (fetchStatus === 200) {
       const userData = get(getUserDataFetch, 'data.data');
       return (
         <div className="w-full sm:max-w-[600px] p-5">
@@ -72,24 +72,24 @@ function UserProfilePage() {
               </div>
             </div>
             {/* 編輯功能 */}
-            {identify &&
+            {identify && (
               <div>
                 <Link
-                  to={"/editProfile"}
+                  to="/editProfile"
                   type="button"
                   className="flex items-center rounded-lg text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
                 >
                   <p className="hidden md:inline-block">編輯</p>
                 </Link>
               </div>
-            }
+            )}
           </div>
-          {!isEmpty(userData.bio) && 
+          {!isEmpty(userData.bio) && (
             <div className="bg-gray-100 rounded-md p-2">
               <p>{userData.bio}</p>
             </div>
-          }
-          
+          )}
+
           <div>
             {/* 頁籤 */}
             <div>
@@ -133,16 +133,11 @@ function UserProfilePage() {
         </div>
       );
     }
-    
-    return (
-      <NoSearchResult message='你查詢的使用者不存在' type="user" />
-    )
+
+    return <NoSearchResult message="你查詢的使用者不存在" type="user" />;
   }
 
-  return (
-    <BasicErrorPanel errorMsg='' />
-  )
-  
+  return <BasicErrorPanel errorMsg="" />;
 }
 
 export default UserProfilePage;

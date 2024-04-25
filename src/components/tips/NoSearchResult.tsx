@@ -2,14 +2,12 @@ import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-interface propsType{
+interface propsType {
   message: string | undefined;
   type: string | undefined;
 }
 
 function NoSearchResult({ message, type }: propsType) {
-
-
   return (
     <div className="flex justify-center items-center max-h-80 mt-10">
       <FontAwesomeIcon

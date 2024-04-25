@@ -5,6 +5,7 @@ import { isEmpty } from 'lodash';
 // --- constants ---
 import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
 // --- components ---
+import EditProfilePage from 'pages/user/EditProfilePage';
 import Header from './components/layout/Header';
 import SideBar from './components/layout/SideBar';
 import SignInPopup from './components/login/SignInPopup';
@@ -24,7 +25,6 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
-import EditProfilePage from 'pages/user/EditProfilePage';
 
 /** stateType  */
 interface StateType {

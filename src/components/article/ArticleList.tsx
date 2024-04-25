@@ -1,8 +1,8 @@
 import { get, isEmpty } from 'lodash';
 // --- components ---
+import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import ArticleItem from './ArticleItem';
 import Loading from './Loading';
-import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 // --- api / type ---
 import { ApiResultType } from '../../api/article';
 import { ArticleListType } from '../../types/articleType';
@@ -15,9 +15,7 @@ function ArticleList(props: { apiResult: ApiResultType }) {
 
   if (isLoading) return <Loading />;
   if (!isEmpty(error) || !isEmpty(errorMsg)) {
-    return (
-      <BasicErrorPanel errorMsg={errorMsg} />
-    );
+    return <BasicErrorPanel errorMsg={errorMsg} />;
   }
   const articleItem = articleList.map((article) => (
     <ArticleItem
