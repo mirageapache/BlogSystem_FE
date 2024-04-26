@@ -41,8 +41,8 @@ function App() {
   const userState = useSelector((state: StateType) => state.user);
 
   /** getUserData */
-  const getUserData = async (userId: string) => {
-    const res = await getOwnProfile(userId);
+  const getUserData = async (userId: string, authToken: string) => {
+    const res = await getOwnProfile(userId, authToken);
     if (res.status === 200) {
       sliceDispatch(
         setUserData({
@@ -60,7 +60,7 @@ function App() {
     const { userId } = userState.userData;
     if (!isEmpty(authToken) && !isEmpty(uid) && isEmpty(userId)) {
       // 判斷redex中沒有userData，且有cookie及authToken再執行
-      getUserData(uid!);
+      getUserData(uid!, authToken!);
     }
   }, []);
 

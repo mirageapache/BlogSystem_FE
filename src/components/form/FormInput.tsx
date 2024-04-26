@@ -4,8 +4,8 @@ import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 
-/** FormInputPorps 型別 */
-interface FormInputPorpsType {
+/** FormInputProps 型別 */
+interface FormInputPropsType {
   name: string;
   type: string;
   ispwd: boolean;
@@ -15,7 +15,7 @@ interface FormInputPorpsType {
   meta: WrappedFieldMetaProps;
 }
 
-function FormInput({ name, type, ispwd, placeholder, classname, input, meta }: FormInputPorpsType) {
+function FormInput({ name, type, ispwd, placeholder, classname, input, meta }: FormInputPropsType) {
   const [hidePassword, setHidePassword] = useState(ispwd); // 隱藏密碼
   const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
   const pwdtype = hidePassword ? 'password' : 'text'; // 控制密碼顯示/隱藏的input type
