@@ -12,7 +12,10 @@ interface GetUserProfileType extends AxResponseType {
 /** 取得自己的使用者資料
  * 須帶authToken做驗證
  */
-export async function getOwnProfile(userId: string, authToken: string): Promise<GetUserProfileType> {
+export async function getOwnProfile(
+  userId: string,
+  authToken: string
+): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };

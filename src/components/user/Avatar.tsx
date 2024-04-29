@@ -4,7 +4,13 @@ import { isEmpty } from 'lodash';
 // --- functions ---
 import { bgColorConvert } from '../../utils/common';
 
-function Avatar(props: { name: string; avatarUrl: string; size: string; textSize: string; bgColor: string }) {
+function Avatar(props: {
+  name: string;
+  avatarUrl: string;
+  size: string;
+  textSize: string;
+  bgColor: string;
+}) {
   const { name, avatarUrl, size, textSize, bgColor } = props;
   const colorStyle = bgColorConvert(bgColor);
 

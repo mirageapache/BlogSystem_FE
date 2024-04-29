@@ -10,9 +10,9 @@ import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
+import { UserDataType } from 'types/userType';
 import { ApiResultType, getPartialArticles } from '../../api/article';
 import { getOwnProfile, getUserProfile } from '../../api/user';
-import { UserDataType } from 'types/userType';
 
 function UserProfilePage() {
   const [activeTab, setActiveTab] = useState('article');
@@ -36,10 +36,10 @@ function UserProfilePage() {
       setFetchStatus(result.status);
     } catch (error) {
       console.log(error);
-      setErrorMsg("get error");
+      setErrorMsg('get error');
     }
     setIsLoading(false);
-  }
+  };
 
   /** 取得其他人資料 */
   const OtherProfileDataFetch = async () => {
@@ -50,11 +50,10 @@ function UserProfilePage() {
       setFetchStatus(result.status);
     } catch (error) {
       console.log(error);
-      setErrorMsg("get error");
+      setErrorMsg('get error');
     }
     setIsLoading(false);
-  }
-
+  };
 
   useEffect(() => {
     setIdentify(false);
@@ -64,9 +63,9 @@ function UserProfilePage() {
     } else {
       OtherProfileDataFetch();
     }
-  }, [userId])
+  }, [userId]);
 
-    const apiResult = useQuery('aritcles', () => getPartialArticles(10)) as ApiResultType;
+  const apiResult = useQuery('aritcles', () => getPartialArticles(10)) as ApiResultType;
 
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {
@@ -87,7 +86,7 @@ function UserProfilePage() {
   };
 
   if (isLoading) return <Spinner />;
-  if (errorMsg || isEmpty(userData)) return <BasicErrorPanel errorMsg="" />
+  if (errorMsg || isEmpty(userData)) return <BasicErrorPanel errorMsg="" />;
   if (fetchStatus === 404) return <NoSearchResult message="你查詢的使用者不存在" type="user" />;
 
   return (

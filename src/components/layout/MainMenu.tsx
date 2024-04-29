@@ -6,13 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
+import { Link } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 // --- functions / types ---
 import { setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
 import { checkLogin } from '../../utils/common';
-import { Link } from 'react-router-dom';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -64,7 +64,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   /** 關閉選單(Menu) */
   const closeMenu = () => {
     setToggleMenuAnimation('translate-x-full');
-  }
+  };
 
   /** 登出 */
   const handleLogout = () => {
