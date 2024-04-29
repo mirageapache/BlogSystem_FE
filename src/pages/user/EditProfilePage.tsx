@@ -82,7 +82,9 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
           </div>
 
           <div>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email" className="font-bold">
+              Email
+            </label>
             <Field
               name="email"
               component={FormInput}
@@ -93,7 +95,9 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
             />
             <br />
 
-            <label htmlFor="name">名稱</label>
+            <label htmlFor="name" className="font-bold">
+              名稱
+            </label>
             <Field
               name="name"
               component={FormInput}
@@ -104,7 +108,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
             />
             <br />
 
-            <label htmlFor="bio" className="">
+            <label htmlFor="bio" className="font-bold">
               自我介紹
             </label>
             <Field

@@ -8,12 +8,22 @@ interface FormTextAreaPropsType {
   placeholder: string;
   classname: string;
   value: string;
-  input: CommonFieldProps;
+  input: CommonFieldProps & { value: string };
   meta: WrappedFieldMetaProps;
+  normalize: (value: string) => string | number | readonly string[] | undefined;
 }
 
-function FormTextArea({ name, placeholder, classname, value, input, meta }: FormTextAreaPropsType) {
+function FormTextArea({
+  name,
+  placeholder,
+  classname,
+  value,
+  input,
+  meta,
+  normalize,
+}: FormTextAreaPropsType) {
   const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
+  const normalizedValue = normalize ? normalize(input.value) : input.value;
   const inputStyle =
     'w-full rounded-md text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-2 resize-none';
   let activeStyle = '';
@@ -43,6 +53,7 @@ function FormTextArea({ name, placeholder, classname, value, input, meta }: Form
           onBlur={onBlur}
           onFocus={onFocus}
           onChange={input.onChange}
+          value={normalizedValue}
         >
           {value}
         </textarea>
