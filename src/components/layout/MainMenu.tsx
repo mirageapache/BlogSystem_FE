@@ -12,6 +12,7 @@ import UserInfoPanel from 'components/user/UserInfoPanel';
 import { setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
 import { checkLogin } from '../../utils/common';
+import { Link } from 'react-router-dom';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -19,6 +20,7 @@ type ItemPropsType = {
   text: string;
   count: number;
   children: ReactNode;
+  closeMenu: () => void;
 };
 
 interface MainMenuType {
@@ -31,11 +33,12 @@ interface StateType {
 }
 
 /** MainMenu Item 元件 */
-function MenuItem({ href, text, count, children }: ItemPropsType) {
+function MenuItem({ href, text, count, children, closeMenu }: ItemPropsType) {
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3"
+      onClick={closeMenu}
     >
       <span className="flex items-center">{children}</span>
       <span className="ml-3 font-bold">
@@ -46,7 +49,7 @@ function MenuItem({ href, text, count, children }: ItemPropsType) {
           </span>
         )}
       </span>
-    </a>
+    </Link>
   );
 }
 
@@ -57,6 +60,11 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   const [cookies, setCookie, removeCookie] = useCookies(['uid']);
   const userState = useSelector((state: StateType) => state.user);
   const { userData } = userState;
+
+  /** 關閉選單(Menu) */
+  const closeMenu = () => {
+    setToggleMenuAnimation('translate-x-full');
+  }
 
   /** 登出 */
   const handleLogout = () => {
@@ -69,7 +77,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         confirmButtonText: '確認',
       })
       .then(() => {
-        setToggleMenuAnimation('translate-x-full');
+        closeMenu();
       });
   };
 
@@ -80,7 +88,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         className={`w-full h-full top-0 left-0 text-transparent ${
           toggleMenuAnimation === 'translate-x-full' ? 'none' : 'fixed'
         }`}
-        onClick={() => setToggleMenuAnimation('translate-x-full')}
+        onClick={closeMenu}
       >
         x
       </button>
@@ -93,7 +101,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             aria-label="close"
             type="button"
             className="flex jsutify-center m-1"
-            onClick={() => setToggleMenuAnimation('translate-x-full')}
+            onClick={closeMenu}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'xmark', style: 'solid' })}
@@ -103,34 +111,37 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         </div>
         {checkLogin() && (
           <div className="mx-5 border-b-[1px] border-gray-400 dark:border-gray-700">
-            <UserInfoPanel
-              account={userData.account}
-              name={userData.name}
-              avatarUrl={userData.avatar}
-            />
+            <Link to={`/profile/${userData.userId}`} onClick={closeMenu}>
+              <UserInfoPanel
+                account={userData.account}
+                name={userData.name}
+                avatarUrl={userData.avatar}
+                bgColor={userData.bgColor}
+              />
+            </Link>
           </div>
         )}
         <div className="h-full py-5 px-8 opacity-100">
           <div className="text-left h-fit sm:px-1 px-5">
             <div className="ml-2.5">
-              <MenuItem href="/" text="首頁" count={0}>
+              <MenuItem href="/" text="首頁" count={0} closeMenu={closeMenu}>
                 <FontAwesomeIcon icon={icon({ name: 'home' })} />
               </MenuItem>
-              <MenuItem href="/explore" text="探索" count={0}>
+              <MenuItem href="/explore" text="探索" count={0} closeMenu={closeMenu}>
                 <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
               </MenuItem>
-              <MenuItem href="/search" text="搜尋" count={0}>
+              <MenuItem href="/search" text="搜尋" count={0} closeMenu={closeMenu}>
                 <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
               </MenuItem>
               {checkLogin() && (
                 <>
-                  <MenuItem href="/inbox" text="訊息匣" count={0}>
+                  <MenuItem href="/inbox" text="訊息匣" count={0} closeMenu={closeMenu}>
                     <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
                   </MenuItem>
-                  <MenuItem href="/activity" text="動態" count={0}>
+                  <MenuItem href="/activity" text="動態" count={0} closeMenu={closeMenu}>
                     <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
                   </MenuItem>
-                  <MenuItem href="/write" text="撰寫文章" count={0}>
+                  <MenuItem href="/write" text="撰寫文章" count={0} closeMenu={closeMenu}>
                     <FontAwesomeIcon icon={icon({ name: 'pen', style: 'solid' })} />
                   </MenuItem>
                 </>

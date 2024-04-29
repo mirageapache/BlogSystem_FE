@@ -5,6 +5,7 @@ export interface UserDataType {
   account: string;
   name: string;
   avatar: string;
+  bgColor: string;
   bio: string;
   userRole: number;
   createdAt: string;

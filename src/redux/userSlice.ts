@@ -19,6 +19,7 @@ const initState = {
     account: '',
     name: '',
     avatar: '',
+    bgColor: '',
     bio: '',
     userRole: 0,
     createdAt: '',
@@ -28,7 +29,7 @@ const initState = {
 };
 
 /** User Slice Function */
-const UserSlice = createSlice({
+const userSlice = createSlice({
   name: 'user',
   initialState: initState,
   reducers: {
@@ -39,5 +40,5 @@ const UserSlice = createSlice({
   },
 });
 
-export const { setUserData } = UserSlice.actions;
-export default UserSlice.reducer;
+export const { setUserData } = userSlice.actions;
+export default userSlice.reducer;

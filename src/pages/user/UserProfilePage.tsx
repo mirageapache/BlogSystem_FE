@@ -100,6 +100,7 @@ function UserProfilePage() {
               avatarUrl={userData.avatar}
               size="w-[72px] h-[72px]"
               textSize="text-4xl"
+              bgColor={userData.bgColor}
             />
           </div>
           <div className="">

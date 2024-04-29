@@ -24,6 +24,7 @@ import { SignInParamType } from '../../types/authType';
 // --- functions / types ---
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { setUserData } from '../../redux/userSlice';
+import { redirect } from 'react-router-dom';
 
 // 原先要指定給props的型別，但會有無法解決的型別錯誤
 // type SignInFormType = InjectedFormProps<{}, {}, string> & {
@@ -87,6 +88,11 @@ function SignInForm(props: any) {
             confirmButtonText: '確認',
           })
           .then(() => {
+            const location = window.location;
+            const pathname = get(location, 'pathname', '');
+            if(pathname === '/editProfile'){
+              location.href = `${location.host}/profile/${res.data.userData.userId}`; // 導到userProfilePage
+            }
             handleClose();
           });
       } else if (!isEmpty(get(res, 'response.data.message', ''))) {

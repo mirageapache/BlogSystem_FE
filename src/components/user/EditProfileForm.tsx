@@ -12,7 +12,9 @@ import { required, isEmail } from 'utils/validates';
 import { UserStateType } from 'redux/userSlice';
 import { compose } from 'redux';
 
-function EditProfileForm({handleSubmit}: any) {
+function EditProfileForm(props: any) {
+  const { handleSubmit, userData } = props;
+  console.log(userData);
 
   /** 送出編輯資料 */
   const submitEditProfile =(form: UserDataType) => {
@@ -21,13 +23,12 @@ function EditProfileForm({handleSubmit}: any) {
 
   // const userState = useSelector((state: {user: UserStateType}) => state.user);
   // const { userData } = userState;
-  // console.log(userData);
 
   return (
     <form onSubmit={handleSubmit(submitEditProfile)}>
       {/* avatar */}
       <div className="flex flex-col items-center w-full mb-5 pb-5 border-b-[1px] dark:border-gray-700">
-        <Avatar name="test" avatarUrl="" size="w-[90px] h-[90px]" textSize="text-4xl" />
+        <Avatar name="test" avatarUrl="" size="w-[90px] h-[90px]" textSize="text-4xl" bgColor='' />
         <label
           htmlFor="avatar"
           className="mt-3 bg-gray-300 rounded-md text-sm p-1 cursor-pointer"

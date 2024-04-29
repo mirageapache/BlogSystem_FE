@@ -23,7 +23,7 @@ function ArticleDetailPage() {
         <div className="flex flex-col w-full">
           <div className="w-full">
             {/* 作者資訊 */}
-            <UserInfoPanel account="" name="" avatarUrl={avatarUrl} />
+            <UserInfoPanel account="" name="" avatarUrl={avatarUrl} bgColor="" />
             {/* 文章資訊 */}
             <ArticleInfoPanel />
           </div>
