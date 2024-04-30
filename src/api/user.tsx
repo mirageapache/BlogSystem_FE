@@ -43,3 +43,25 @@ export async function getUserProfile(userId: string): Promise<GetUserProfileType
     });
   return result;
 }
+
+/** 更新使用者資料 */
+export async function updateProfile(
+  formData: UserDataType,
+  userId: string,
+  authToken: string
+) {
+  const config = {
+    headers: { Authorization: `Bearer ${authToken}` },
+  };
+
+  formData = { ...formData, userId };
+  const result = await axios
+    .patch(`${baseUrl}/user/own/${userId}`, formData, config)
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}

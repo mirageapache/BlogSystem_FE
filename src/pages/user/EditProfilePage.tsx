@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
@@ -15,17 +15,20 @@ import FormInput from 'components/form/FormInput';
 import FormTextArea from 'components/form/FormTextArea';
 // --- functions ---
 import { getOwnProfile } from 'api/user';
-import { required, isEmail } from 'utils/validates';
+import { required, isEmail, maxLength } from 'utils/validates';
 // --- types ---
 import { UserDataType } from 'types/userType';
 import { getCookies } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
+// --- api ---
+import { updateProfile } from 'api/user';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('editProfile')(state),
 });
 
 function EditProfilePage({ handleSubmit, dispatch }: any) {
+  const [firstLoad, setFirstLoad] = useState(true);
   const sliceDispatch = useDispatch();
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
@@ -38,18 +41,21 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
   const { isLoading, isSuccess, data } = getUserData;
   const userData = get(data, 'data');
 
-  // useEffect 用來設定 Redux Form 的初始值
+  // 設定 Redux Form 的初始值
   useEffect(() => {
-    if (isSuccess && !isEmpty(userData)) {
+    if (isSuccess && !isEmpty(userData) && firstLoad) {
       dispatch(change('editProfile', 'email', userData.email));
+      dispatch(change('editProfile', 'account', userData.account));
       dispatch(change('editProfile', 'name', userData.name));
       dispatch(change('editProfile', 'bio', userData.bio));
+      setFirstLoad(false);
     }
   }, [isSuccess, userData, dispatch]);
 
   /** 送出編輯資料 */
   const submitEditProfile = (form: UserDataType) => {
     console.log(form);
+    updateProfile(form, userId!, authToken!);
   };
 
   if (isLoading) return <Spinner />;
@@ -82,20 +88,38 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
           </div>
 
           <div>
-            <label htmlFor="email" className="font-bold">
-              Email
-            </label>
+            <div className="flex">
+              <label htmlFor="email" className="font-bold">
+                <span className="text-red-500">*</span>
+                Email
+              </label>
+              <p></p>
+            </div>
             <Field
               name="email"
               component={FormInput}
               placeholder="請填寫Email"
               type="email"
-              validate={[required('Email未必填欄位'), isEmail('Email格式錯誤')]}
-              normalize={(value: string) => (userData ? userData.email : value)}
+              validate={[required('Email為必填資料'), isEmail('Email格式錯誤')]}
+              // normalize={(value: string) => (userData ? userData.email : value)}
             />
             <br />
 
             <label htmlFor="name" className="font-bold">
+              <span className="text-red-500">*</span>
+              帳號
+            </label>
+            <Field
+              name="account"
+              component={FormInput}
+              placeholder="請填寫帳號"
+              type="text"
+              validate={[required('帳號為必填資料')]}
+            />
+            <br />
+
+            <label htmlFor="name" className="font-bold">
+              <span className="text-red-500">*</span>
               名稱
             </label>
             <Field
@@ -103,8 +127,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
               component={FormInput}
               placeholder="請填寫名稱"
               type="text"
-              validate={[required('務必讓大家知道你的名字')]}
-              normalize={(value: string) => (userData ? userData.name : value)}
+              validate={[required('名稱為必填資料')]}
             />
             <br />
 
@@ -116,8 +139,8 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
               component={FormTextArea}
               placeholder="來說說你的故事吧！"
               type="text"
+              validate={[maxLength(200, '自我介紹內容不超過200字')]}
               value="自我介紹"
-              normalize={(value: string) => (userData ? userData.bio : value)}
             />
           </div>
           <div className="mt-5">

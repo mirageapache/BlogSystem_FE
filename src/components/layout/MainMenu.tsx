@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
-import { Link } from 'react-router-dom';
+import { Link, redirect } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 // --- functions / types ---
@@ -78,6 +78,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       })
       .then(() => {
         closeMenu();
+        redirect('/');
       });
   };
 

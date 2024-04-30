@@ -64,7 +64,7 @@ function FormInput({
 
   return (
     <div className="relative">
-      {(showErrorTip && meta.touched && !isEmpty(meta.error)) || meta.submitFailed ? (
+      {(showErrorTip && meta.touched && !isEmpty(meta.error))? (
         <>
           <span className="relative">
             <input
