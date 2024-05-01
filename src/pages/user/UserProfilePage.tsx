@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { Link, useParams } from 'react-router-dom';
 // --- components ---
 import Avatar from 'components/user/Avatar';
@@ -121,7 +121,7 @@ function UserProfilePage() {
         )}
       </div>
       {!isEmpty(userData.bio) && (
-        <div className="bg-gray-100 rounded-md p-2">
+        <div className="bg-gray-100 dark:bg-gray-700 rounded-md p-2">
           <p>{userData.bio}</p>
         </div>
       )}

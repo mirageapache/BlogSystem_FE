@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
-import { Link, redirect } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 // --- functions / types ---
@@ -60,6 +60,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   const [cookies, setCookie, removeCookie] = useCookies(['uid']);
   const userState = useSelector((state: StateType) => state.user);
   const { userData } = userState;
+  const navigate = useNavigate();
 
   /** 關閉選單(Menu) */
   const closeMenu = () => {
@@ -78,7 +79,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       })
       .then(() => {
         closeMenu();
-        redirect('/');
+        navigate('/');
       });
   };
 

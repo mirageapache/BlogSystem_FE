@@ -14,18 +14,20 @@ function Avatar(props: {
   const { name, avatarUrl, size, textSize, bgColor } = props;
   const colorStyle = bgColorConvert(bgColor);
 
+  console.log(avatarUrl);
+
   if (isEmpty(avatarUrl)) {
     const avatarName = name.substring(0, 1).toUpperCase();
 
     return (
       <span
-        className={`${size} ${colorStyle} rounded-full flex justify-center items-center font-semibold`}
+        className={`${size} ${colorStyle} rounded-full flex justify-center items-center font-semibold cursor-default`}
       >
         <p className={`${textSize} text-center text-white`}>{avatarName}</p>
       </span>
     );
   }
-  return <img className={`${size} rounded-full`} src={avatarUrl} alt="author avatar" />;
+  return <img className={`${size} border rounded-full`} src={avatarUrl} alt="avatar" />;
 }
 
 export default Avatar;

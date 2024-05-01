@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { get, isEmpty } from 'lodash';
 import validator from 'validator';
 
@@ -11,15 +12,15 @@ export const required = (errorMessage: string) => (value: string) =>
  * 最大值檢核
  */
 export const maxLength = (max: number, msg: string) => (value: string) => {
-  if(!isEmpty(value)) value.length > max ? msg : '';
-}
+  if (!isEmpty(value)) value.length > max ? msg : '';
+};
 
 /**
  * 長度檢核
  */
-export const checkLength = (min: number, max: number, msg: string) => (value: string) =>{
-  if(!isEmpty(value)) value.length < min || value.length > max ? msg : '';
-}
+export const checkLength = (min: number, max: number, msg: string) => (value: string) => {
+  if (!isEmpty(value)) value.length < min || value.length > max ? msg : '';
+};
 
 /**
  * 英、數字檢核
