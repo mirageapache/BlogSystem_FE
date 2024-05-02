@@ -14,8 +14,6 @@ function Avatar(props: {
   const { name, avatarUrl, size, textSize, bgColor } = props;
   const colorStyle = bgColorConvert(bgColor);
 
-  console.log(avatarUrl);
-
   if (isEmpty(avatarUrl)) {
     const avatarName = name.substring(0, 1).toUpperCase();
 

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { connect, useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
@@ -31,13 +31,13 @@ const mapStateToProps = (state: FormState) => ({
 
 function EditProfilePage({ handleSubmit, dispatch }: any) {
   const [firstLoad, setFirstLoad] = useState(true);
-  const [avatarFile, setAvatarFile] = useState<FileList | undefined>();
+  const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
+  const [avatarFile, setAvatarFile] = useState<FileList | null>(null); // 處理avatar file upload
   const sliceDispatch = useDispatch();
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
   const swal = withReactContent(Swal);
   const navigate = useNavigate();
-  const avatarUrl = isEmpty(avatarFile) ? '' : avatarFile![0].name;
 
   if (isEmpty(userId) || isEmpty(authToken)) {
     sliceDispatch(setSignInPop(true));
@@ -63,26 +63,24 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
 
   /** 送出編輯資料 */
   const submitEditProfile = async (form: UserDataType) => {
-    console.log(avatarFile);
-    const variable = isEmpty(avatarFile) ? form : { ...form, avatarFile };
+    const variable = isEmpty(avatar) ? form : { avatarFile, ...form };
     console.log(variable);
-    // try {
-    //   const result = await updateProfile(form, userId!, authToken!);
-    //   console.log(result);
-    //   if (result.status === 200) {
-    //     swal
-    //       .fire({
-    //         title: '修改成功',
-    //         icon: 'success',
-    //         confirmButtonText: '確認',
-    //       })
-    //       .then(() => {
-    //         navigate(`/profile/${userId}`);
-    //       });
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const result = await updateProfile(variable, userId!, authToken!);
+      if (result.status === 200) {
+        swal
+          .fire({
+            title: '修改成功',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            navigate(`/profile/${userId}`);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (isLoading) return <Spinner />;
@@ -98,7 +96,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
           <div className="flex flex-col items-center w-full mb-5 pb-5 border-b-[1px] dark:border-gray-700">
             <Avatar
               name={userData.name}
-              avatarUrl={avatarUrl}
+              avatarUrl={avatar}
               size="w-[90px] h-[90px]"
               textSize="text-4xl"
               bgColor={userData.bgColor}
@@ -109,7 +107,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
             >
               更新頭貼
             </label>
-            <Field name="avatar" id="avatar" component={FileInput} setAvatarFile={setAvatarFile} />
+            <Field name="avatar" id="avatar" component={FileInput} setAvatar={setAvatar} setAvatarFile={setAvatarFile} />
           </div>
 
           <div>
@@ -121,7 +119,6 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
               <p className="text-xs ml-1 text-orange-500 dark:text-orange-400">
                 <FontAwesomeIcon
                   icon={icon({ name: 'info-circle', style: 'solid' })}
-                  // className="text-gray-600"
                 />
                 修改後即更換登入系統及電子報接收之Email
               </p>
@@ -173,10 +170,10 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
               value="自我介紹"
             />
           </div>
-          <div className="flex justify-between mt-5">
+          <div className="flex justify-end mt-3">
             <button
               type="button"
-              className="w-full sm:w-40 px-4 py-2 text-lg text-white rounded-md bg-gray-600"
+              className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-gray-600"
               onClick={() => {
                 navigate(`/profile/${userId}`);
               }}
@@ -185,7 +182,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
             </button>
             <button
               type="submit"
-              className="w-full sm:w-40 px-4 py-2 text-lg text-white rounded-md bg-green-600"
+              className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
             >
               修改
             </button>

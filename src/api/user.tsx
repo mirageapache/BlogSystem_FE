@@ -50,9 +50,8 @@ export async function updateProfile(formData: UserDataType, userId: string, auth
     headers: { Authorization: `Bearer ${authToken}` },
   };
 
-  const variable = { ...formData, userId };
   const result = await axios
-    .patch(`${baseUrl}/user/own/${userId}`, variable, config)
+    .patch(`${baseUrl}/user/own/${userId}`, formData, config)
     .then((res) => {
       return res;
     })
