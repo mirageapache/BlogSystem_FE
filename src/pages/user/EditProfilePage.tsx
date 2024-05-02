@@ -107,7 +107,13 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
             >
               更新頭貼
             </label>
-            <Field name="avatar" id="avatar" component={FileInput} setAvatar={setAvatar} setAvatarFile={setAvatarFile} />
+            <Field
+              name="avatar"
+              id="avatar"
+              component={FileInput}
+              setAvatar={setAvatar}
+              setAvatarFile={setAvatarFile}
+            />
           </div>
 
           <div>
@@ -117,9 +123,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                 電子郵件
               </label>
               <p className="text-xs ml-1 text-orange-500 dark:text-orange-400">
-                <FontAwesomeIcon
-                  icon={icon({ name: 'info-circle', style: 'solid' })}
-                />
+                <FontAwesomeIcon icon={icon({ name: 'info-circle', style: 'solid' })} />
                 修改後即更換登入系統及電子報接收之Email
               </p>
             </div>

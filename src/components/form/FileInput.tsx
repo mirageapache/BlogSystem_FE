@@ -13,7 +13,15 @@ interface FileInputPorpsType {
   setAvatar: (file: FileList) => void;
 }
 
-function FileInput({ name, id, classname, input, setAvatar, setAvatarFile, dispatch }: FileInputPorpsType | any) {
+function FileInput({
+  name,
+  id,
+  classname,
+  input,
+  setAvatar,
+  setAvatarFile,
+  dispatch,
+}: FileInputPorpsType | any) {
   /** 上傳圖片檔案 */
   const handleFileChange = (event: React.ChangeEvent<any>) => {
     const fileList = event.target.files; // 獲取選擇的檔案列表
