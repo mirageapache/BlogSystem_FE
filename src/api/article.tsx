@@ -1,31 +1,24 @@
 import axios from 'axios';
+import { isEmpty, get } from 'lodash';
 import { DUMMYJSON_URL } from './index';
+import { ArticleListType } from '../types/articleType';
+import { RqResponseType } from '../types/apiType';
 
 const baseUrl = DUMMYJSON_URL;
 
-/** articleList 型別 */
-export interface articleListType {
-  body: string;
-  id: number;
-  reactions: number;
-  tags: [string];
-  title: string;
-  userId: number;
-}
-
-/** aritcleApi 型別 */
-export interface aritcleApiType {
-  post: [articleListType];
+/** aritcleApi 型別
+ * 目前使用dummyjson的資料，所以建立這個型別(以符合資料結構)
+ */
+export interface AritcleApiType {
+  post: ArticleListType[];
   total: number;
   skip: number;
   limit: number;
 }
 
 /** API Result 型別 */
-export interface apiResultType {
-  isLoading: boolean;
-  error: { message: string } | null;
-  data: aritcleApiType | unknown;
+export interface ApiResultType extends RqResponseType {
+  data: AritcleApiType | null;
 }
 
 /** 取得所有文章 */
@@ -70,13 +63,29 @@ export async function getArticleById<T>(id: T) {
   return result;
 }
 
+/** 取得單一使用者文章 */
+export async function getArticleByUser<T>(id: T) {
+  const result = await axios
+    .get(`${baseUrl}/posts?user=${id}`)
+    .then((res) => {
+      const postData = res.data;
+      return postData;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return result;
+}
+
 /** 取得搜尋文章 */
 export async function getSearchArticle(searchString: string) {
   const result = await axios
     .get(`${baseUrl}/posts/search?q=${searchString}`)
     .then((res) => {
-      const articleData = res.data;
-      return articleData;
+      if (isEmpty(get(res, 'data.posts', []))) {
+        return { mssage: '搜尋不到相關結果!!' };
+      }
+      return res.data;
     })
     .catch((error) => {
       console.log(error);

@@ -1,24 +1,21 @@
 import { get, isEmpty } from 'lodash';
 // --- components ---
+import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import ArticleItem from './ArticleItem';
 import Loading from './Loading';
 // --- api / type ---
-import { apiResultType, articleListType } from '../../api/article';
+import { ApiResultType } from '../../api/article';
+import { ArticleListType } from '../../types/articleType';
 
-function ArticleList(props: { apiResult: apiResultType }) {
+function ArticleList(props: { apiResult: ApiResultType }) {
   const { apiResult } = props;
   const { isLoading, error, data } = apiResult;
-  const articleList: [articleListType] = get(data, 'posts')!;
+  const articleList: [ArticleListType] = get(data, 'posts', null)!;
+  const errorMsg = get(apiResult, 'data.mssage', '');
 
   if (isLoading) return <Loading />;
-  if (!isEmpty(error) || isEmpty(articleList)) {
-    return (
-      <div className="flex justify-center mt-10">
-        <p className="text-3xl">
-          {isEmpty(error) ? '搜尋不到相關結果!!' : '發生一些錯誤，請稍後再試!!'}
-        </p>
-      </div>
-    );
+  if (!isEmpty(error) || !isEmpty(errorMsg)) {
+    return <BasicErrorPanel errorMsg={errorMsg} />;
   }
   const articleItem = articleList.map((article) => (
     <ArticleItem
@@ -29,7 +26,7 @@ function ArticleList(props: { apiResult: apiResultType }) {
       tags={article.tags}
     />
   ));
-  return <div className="flex-grow px-8 md:px-0">{articleItem}</div>;
+  return <div className="flex-grow">{articleItem}</div>;
 }
 
 export default ArticleList;
