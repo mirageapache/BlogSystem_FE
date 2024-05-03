@@ -45,7 +45,7 @@ export async function getUserProfile(userId: string): Promise<GetUserProfileType
 }
 
 /** 更新使用者資料 */
-export async function updateProfile(formData: UserDataType, userId: string, authToken: string) {
+export async function updateProfile(formData: FormData, userId: string, authToken: string): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };

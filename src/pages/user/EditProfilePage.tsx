@@ -32,7 +32,7 @@ const mapStateToProps = (state: FormState) => ({
 function EditProfilePage({ handleSubmit, dispatch }: any) {
   const [firstLoad, setFirstLoad] = useState(true);
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
-  const [avatarFile, setAvatarFile] = useState<FileList | null>(null); // 處理avatar file upload
+  const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
   const sliceDispatch = useDispatch();
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
@@ -63,10 +63,15 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
 
   /** 送出編輯資料 */
   const submitEditProfile = async (form: UserDataType) => {
-    const variable = isEmpty(avatar) ? form : { avatarFile, ...form };
-    console.log(variable);
+    const formData = new FormData();
+    formData.append("email", form.email);
+    formData.append("name", form.name);
+    formData.append("account", form.account);
+    formData.append("bio", form.bio);
+    if(!isEmpty(avatar)) formData.append("avatarFile", avatarFile);
+    
     try {
-      const result = await updateProfile(variable, userId!, authToken!);
+      const result = await updateProfile(formData, userId!, authToken!);
       if (result.status === 200) {
         swal
           .fire({
@@ -102,14 +107,14 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
               bgColor={userData.bgColor}
             />
             <label
-              htmlFor="avatar"
+              htmlFor="avatarFile"
               className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
             >
               更新頭貼
             </label>
             <Field
-              name="avatar"
-              id="avatar"
+              name="avatarFile"
+              id="avatarFile"
               component={FileInput}
               setAvatar={setAvatar}
               setAvatarFile={setAvatarFile}
