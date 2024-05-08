@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { isEmpty } from 'lodash';
 import React from 'react';
-import { CommonFieldProps, change } from 'redux-form';
+import { CommonFieldProps } from 'redux-form';
 
 /** FileInputPorps 型別 */
 interface FileInputPorpsType {
@@ -17,10 +17,8 @@ function FileInput({
   name,
   id,
   classname,
-  input,
   setAvatar,
   setAvatarFile,
-  dispatch,
 }: FileInputPorpsType | any) {
   /** 處理上傳圖片檔 */
   const handleFileChange = (event: React.ChangeEvent<any>) => {

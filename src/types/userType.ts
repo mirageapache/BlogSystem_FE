@@ -16,7 +16,11 @@ export interface UserDataType {
 export interface UserSettingType {
   language: string;
   theme: number;
-  tags: string[];
   emailPrompt: Boolean;
   mobilePrompt: Boolean;
 }
+
+/** 使用者個人資訊
+ * [包含 userDataType 及 userSettingType ]
+ * */
+export interface userProfileType extends UserDataType, UserSettingType {}

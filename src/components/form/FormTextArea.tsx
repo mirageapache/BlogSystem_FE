@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
+import { FORM_CONTROL } from 'constants/LayoutConstants';
 
 /** FormTextAreaPropsType 型別 */
 interface FormTextAreaPropsType {
@@ -24,8 +25,6 @@ function FormTextArea({
 }: FormTextAreaPropsType) {
   const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
   const normalizedValue = normalize ? normalize(input.value) : input.value;
-  const inputStyle =
-    'w-full rounded-md text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-2 resize-none';
   let activeStyle = '';
   if (showErrorTip && meta.touched && !isEmpty(meta.error)) {
     activeStyle = 'border-2 border-red-500 bg-yellow-100 dark:bg-gray-950'; // with error style
@@ -47,7 +46,7 @@ function FormTextArea({
       <textarea
         name={name}
         placeholder={placeholder}
-        className={`${inputStyle} ${activeStyle} ${classname}`}
+        className={`rounded-md resize-none focus:border-2 ${FORM_CONTROL} ${activeStyle} ${classname}`}
         rows={3}
         onBlur={onBlur}
         onFocus={onFocus}
