@@ -11,6 +11,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- api ---
 import { getOwnProfile, updateProfile } from 'api/user';
+// --- constant ---
+import { FORM_CONTROL } from 'constants/LayoutConstants';
 // --- components ---
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
@@ -24,7 +26,6 @@ import { required, isEmail, maxLength } from 'utils/validates';
 import { userProfileType } from 'types/userType';
 import { getCookies } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
-import { FORM_CONTROL } from 'constants/LayoutConstants';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('editProfile')(state),
@@ -50,11 +51,10 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
   });
   const { isLoading, isSuccess, data } = getUserData;
   const userData = get(data, 'data') as userProfileType;
-  
+
   // 設定 Redux Form 的初始值
   useEffect(() => {
     if (isSuccess && !isEmpty(userData) && firstLoad) {
-      console.log(userData);
       dispatch(change('editProfile', 'email', userData.email));
       dispatch(change('editProfile', 'account', userData.account));
       dispatch(change('editProfile', 'name', userData.name));
@@ -70,14 +70,14 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
   /** 送出編輯資料 */
   const submitEditProfile = async (form: userProfileType) => {
     const formData = new FormData();
-    formData.append("email", form.email);
-    formData.append("name", form.name);
-    formData.append("account", form.account);
-    formData.append("bio", form.bio);
-    formData.append("language", form.language);
-    formData.append("emailPrompt", get(form, 'emailPrompt', false).toString());
-    formData.append("mobilePrompt", get(form, 'mobilePrompt', false).toString());
-    if(!isEmpty(avatar)) formData.append("avatarFile", avatarFile);
+    formData.append('email', form.email);
+    formData.append('name', form.name);
+    formData.append('account', form.account);
+    formData.append('bio', form.bio);
+    formData.append('language', form.language);
+    formData.append('emailPrompt', get(form, 'emailPrompt', false).toString());
+    formData.append('mobilePrompt', get(form, 'mobilePrompt', false).toString());
+    if (!isEmpty(avatar)) formData.append('avatarFile', avatarFile);
     try {
       const result = await updateProfile(formData, userId!, authToken!);
       console.log(result);
@@ -192,7 +192,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                 validate={[maxLength(200, '自我介紹內容不超過200字')]}
                 value="自我介紹"
               />
-            </div>            
+            </div>
           </div>
 
           {/* user setting */}
@@ -207,8 +207,12 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                   component="select"
                   className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 rounded-md focus:border-2`}
                 >
-                  <option value="zh" className="">中文</option>
-                  <option value="en" className="">English</option>
+                  <option value="zh" className="">
+                    中文
+                  </option>
+                  <option value="en" className="">
+                    English
+                  </option>
                 </Field>
               </div>
             </div>
@@ -217,12 +221,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                 <label htmlFor="emailPrompt" className="font-bold mr-5">
                   是否開啟Email通知推播
                 </label>
-                <Field
-                  name="emailPrompt"
-                  component="input"
-                  type="checkbox"
-                  className={`w-5 h-5`}
-                />
+                <Field name="emailPrompt" component="input" type="checkbox" className="w-5 h-5" />
               </div>
             </div>
             <div className="my-10">
@@ -230,12 +229,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                 <label htmlFor="mobilePrompt" className="font-bold mr-5">
                   是否開啟手機通知推播
                 </label>
-                <Field
-                  name="mobilePrompt"
-                  component="input"
-                  type="checkbox"
-                  className={`w-5 h-5`}
-                />
+                <Field name="mobilePrompt" component="input" type="checkbox" className="w-5 h-5" />
               </div>
             </div>
           </div>
