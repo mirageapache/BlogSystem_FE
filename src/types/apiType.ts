@@ -11,7 +11,6 @@ export interface AxResponseType {
   status: number;
 }
 
-
 /** React Query Response 通用型別
  * 適用於使用ReactQuery Fetch API 資料時
  * 將客製的 Type 賦予於 @data

@@ -26,7 +26,7 @@ export async function getOwnProfile(
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
@@ -39,13 +39,17 @@ export async function getUserProfile(userId: string): Promise<GetUserProfileType
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
 
 /** 更新使用者資料 */
-export async function updateProfile(formData: FormData, userId: string, authToken: string): Promise<GetUserProfileType> {
+export async function updateProfile(
+  formData: FormData,
+  userId: string,
+  authToken: string
+): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };
@@ -56,7 +60,20 @@ export async function updateProfile(formData: FormData, userId: string, authToke
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
+    });
+  return result;
+}
+
+/** 取得追蹤&粉絲資料 */
+export async function getFollowList(userId: string): Promise<GetUserProfileType> {
+  const result = await axios
+    .get(`${baseUrl}/follow?userId=${userId}`)
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error.response;
     });
   return result;
 }

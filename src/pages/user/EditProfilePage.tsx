@@ -80,7 +80,6 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
     if (!isEmpty(avatar)) formData.append('avatarFile', avatarFile);
     try {
       const result = await updateProfile(formData, userId!, authToken!);
-      console.log(result);
       if (result.status === 200) {
         swal
           .fire({
