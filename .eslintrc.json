@@ -39,7 +39,7 @@
     "max-len": [
       "error",
       {
-        "code": 100,
+        "code": 120,
         "ignoreUrls": true,
         "ignoreComments": true,
         "ignoreStrings": true,
@@ -51,7 +51,8 @@
       {
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }] // 允許使用"_id"
   },
   "env": {
     "browser": true,

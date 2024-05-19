@@ -2,6 +2,7 @@ import { RqResponseType } from './apiType';
 
 /** 使用者資料型別 */
 export interface UserDataType {
+  _id: string;
   userId: string;
   email: string;
   account: string;

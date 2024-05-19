@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React from 'react';
 // --- components ---
 import Avatar from './Avatar';
@@ -7,10 +8,11 @@ function UserInfoPanel(props: {
   name: string;
   avatarUrl: string;
   bgColor: string;
+  className?: string;
 }) {
-  const { account, name, avatarUrl, bgColor } = props;
+  const { account, name, avatarUrl, bgColor, className } = props;
   return (
-    <div className="flex items-center my-4">
+    <div className={`flex items-center ${className}`}>
       <div className="flex justify-center items-center mr-4">
         <Avatar
           name={name}

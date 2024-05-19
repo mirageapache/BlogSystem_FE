@@ -1,11 +1,13 @@
 import React from 'react';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
 // --- types ---
-import { FollowResultType } from 'types/followType';
+import { FollowListType, FollowResultType } from 'types/followType';
+import { UserDataType } from 'types/userType';
 // --- components ---
-import Avatar from './Avatar';
+import NoSearchResult from 'components/tips/NoSearchResult';
 import UserLoading from './UserLoading';
+import UserInfoPanel from './UserInfoPanel';
 
 interface PropsType {
   type: string;
@@ -14,31 +16,39 @@ interface PropsType {
 
 function FollowList({ type, followList }: PropsType) {
   const { isLoading, error, data } = followList;
-  const followData =
-    type === 'follower' ? get(data, 'data.follower', {}) : get(data, 'data.following', {});
+  let followData: UserDataType[] = get(data, 'data.following', []);
+  if (type === 'follower') followData = get(data, 'data.follower', []);
 
-  console.log(followData);
-
-  // const ListData = followData.map((item, index) => {
-  //   console.log(item);
-  //   return (
-  //     <div className="flex" key={item.userId}>
-  //       <Avatar name="avatar" avatarUrl="" size="w-11 h-11" textSize="text-xl" bgColor="" />
-  //       {/* <div></div> */}
-  //     </div>
-  //   );
-  // });
+  const ListData = followData.map((item) => {
+    return (
+      <div className="flex justify-between" key={item._id}>
+        <UserInfoPanel
+          account={item.account}
+          name={item.name}
+          avatarUrl={item.avatar}
+          bgColor={item.bgColor}
+          className="my-2"
+        />
+        <div className="flex items-center">
+          <button type="button" className="py-1 px-4 rounded-lg bg-green-600" onClick={() => {}}>
+            追蹤
+          </button>
+        </div>
+      </div>
+    );
+  });
 
   if (isLoading) return <UserLoading />;
+  if (isEmpty(followData)) {
+    if (type === 'following')
+      return (
+        <NoSearchResult msgOne="你還沒有追蹤其他人喔!" msgTwo="快去尋找有趣的人吧" type="user" />
+      );
+    if (type === 'follower')
+      return <NoSearchResult msgOne="你還沒有粉絲喔!" msgTwo="快去拓展你的粉絲圈吧" type="user" />;
+  }
 
-  return (
-    <div>
-      {/* <div className="flex">
-        <Avatar name="avatar" avatarUrl="" size="w-11 h-11" textSize="text-xl" bgColor="" />
-        <div></div>
-      </div> */}
-    </div>
-  );
+  return <div>{ListData}</div>;
 }
 
 export default FollowList;

@@ -119,6 +119,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                 name={userData.name}
                 avatarUrl={userData.avatar}
                 bgColor={userData.bgColor}
+                className="my-4"
               />
             </Link>
           </div>

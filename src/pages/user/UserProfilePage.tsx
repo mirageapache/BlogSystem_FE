@@ -88,7 +88,7 @@ function UserProfilePage() {
 
   if (isLoading) return <Spinner />;
   if (error || isEmpty(userData)) return <BasicErrorPanel errorMsg="" />;
-  if (fetchStatus === 404) return <NoSearchResult message="使用者不存在" type="user" />;
+  if (fetchStatus === 404) return <NoSearchResult msgOne="使用者不存在" msgTwo="" type="user" />;
 
   return (
     <div className="w-full sm:max-w-[600px] p-5">
