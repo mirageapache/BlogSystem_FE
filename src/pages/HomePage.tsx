@@ -3,11 +3,11 @@ import { useQuery } from 'react-query';
 import ArticleList from 'components/article/ArticleList';
 
 // --- api / type ---
-import { ApiResultType, getPartialArticles } from '../api/article';
+import { ArticleResultType, getPartialArticles } from '../api/article';
 
 function HomePage() {
   /** 取得文章 */
-  const apiResult = useQuery('articles', () => getPartialArticles(5)) as ApiResultType;
+  const apiResult = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
 
   return (
     <div className="max-w-[600px] p-4 sm:p-0">

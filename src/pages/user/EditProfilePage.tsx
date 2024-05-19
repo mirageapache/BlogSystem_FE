@@ -33,6 +33,8 @@ const mapStateToProps = (state: FormState) => ({
 
 function EditProfilePage({ handleSubmit, dispatch }: any) {
   const [firstLoad, setFirstLoad] = useState(true);
+  const [emailChange, setEmailChange] = useState(false);
+  const [accountChange, setAccountChange] = useState(false);
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
   const sliceDispatch = useDispatch();
@@ -70,9 +72,9 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
   /** 送出編輯資料 */
   const submitEditProfile = async (form: userProfileType) => {
     const formData = new FormData();
-    formData.append('email', form.email);
+    if (emailChange) formData.append('email', form.email);
     formData.append('name', form.name);
-    formData.append('account', form.account);
+    if (accountChange) formData.append('account', form.account);
     formData.append('bio', form.bio);
     formData.append('language', form.language);
     formData.append('emailPrompt', get(form, 'emailPrompt', false).toString());
@@ -148,6 +150,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                 placeholder="請填寫Email"
                 type="email"
                 validate={[required('Email為必填資料'), isEmail('Email格式錯誤')]}
+                onChange={() => setEmailChange(true)}
               />
             </div>
 
@@ -162,6 +165,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                 placeholder="請填寫帳號"
                 type="text"
                 validate={[required('帳號為必填資料')]}
+                onChange={() => setAccountChange(true)}
               />
             </div>
 

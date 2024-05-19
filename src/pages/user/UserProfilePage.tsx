@@ -9,70 +9,61 @@ import ArticleList from 'components/article/ArticleList';
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
+import FollowList from 'components/user/FollowList';
 // --- api / type ---
-import { UserDataType } from 'types/userType';
-import { ApiResultType, getPartialArticles } from '../../api/article';
-import { getFollowList, getOwnProfile, getUserProfile } from '../../api/user';
+import { UserDataType, UserResultType } from 'types/userType';
+import { FollowResultType } from 'types/followType';
+import { ArticleResultType, getPartialArticles } from '../../api/article';
+import { getOwnProfile, getUserProfile } from '../../api/user';
+import { getFollowList } from '../../api/follow';
 
 function UserProfilePage() {
-  const [activeTab, setActiveTab] = useState('article');
-  const [activeStyle, setActiveStyle] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [activeTab, setActiveTab] = useState('article'); // 頁籤控制
+  const [activeStyle, setActiveStyle] = useState(''); // 頁籤樣式控制
   const authToken = localStorage.getItem('authToken');
-  const { userId } = useParams();
-  const [cookies] = useCookies(['uid']);
-  const [userData, setUserData] = useState<UserDataType>();
-  const [fetchStatus, setFetchStatus] = useState(0);
-  const [identify, setIdentify] = useState(false); // 身分驗證 true => own / false => others
+  const { userId } = useParams(); // 網址列的userId
+  const [cookies] = useCookies(['uid']); // 存在cookie的userId
+  let identify = false; // 身分驗證 true => own / false => others
+
+  let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
+  let articleResult: ArticleResultType;
+  let followList: FollowResultType;
 
   /** 取得個人資料 */
-  const OwnProfileDataFetch = async () => {
-    setIsLoading(true);
-    try {
-      const result = await getOwnProfile(userId!, authToken!);
-      console.log(result);
-      if (result.status === 200) {
-        setIdentify(true);
-        setUserData(result.data);
-        setFetchStatus(result.status);
-      }
-    } catch (error) {
-      setErrorMsg('get error');
-    }
-    setIsLoading(false);
-  };
+  if (cookies.uid === userId && !isEmpty(authToken)) {
+    // own
+    identify = true;
+    fetchProfile = useQuery('getOwnProfile', () =>
+      getOwnProfile(userId!, authToken!)
+    ) as UserResultType;
+  } else {
+    // others
+    fetchProfile = useQuery('getUserProfile', () => getUserProfile(userId!)) as UserResultType;
+  }
 
-  /** 取得其他人資料 */
-  const OtherProfileDataFetch = async () => {
-    setIsLoading(true);
-    try {
-      const result = await getUserProfile(userId!);
-      setUserData(result.data);
-      setFetchStatus(result.status);
-    } catch (error) {
-      console.log(error);
-      setErrorMsg('get error');
-    }
-    setIsLoading(false);
-  };
+  const { isLoading, error, data } = fetchProfile as UserResultType;
+  const fetchStatus = get(data, 'status', 404);
+  const userData = get(data, 'data', {}) as UserDataType;
 
-  useEffect(() => {
-    setIdentify(false);
-    // ***進行身分驗證，確認是登入的當前使用者才顯示"編輯"等功能
-    if (cookies.uid === userId && !isEmpty(authToken)) {
-      OwnProfileDataFetch();
-    } else {
-      OtherProfileDataFetch();
-    }
-  }, [userId]);
-
-  /** 取得文章資料 */
-  const apiResult = useQuery('aritcles', () => getPartialArticles(10)) as ApiResultType;
-
-  /** 取得追蹤&粉絲資料 */
-  const followList = useQuery('followList', () => getFollowList(userId!));
-  // console.log(followList);
+  switch (activeTab) {
+    case 'article':
+      /** 取得文章資料 */
+      articleResult = useQuery('aritcles', () => getPartialArticles(10)) as ArticleResultType;
+      break;
+    // case 'post':
+    //   break;
+    case 'follow':
+      /** 取得追蹤資料 */
+      followList = useQuery('followList', () => getFollowList(userId!)) as FollowResultType;
+      break;
+    case 'follower':
+      /** 取得粉絲資料 */
+      followList = useQuery('followList', () => getFollowList(userId!)) as FollowResultType;
+      break;
+    default:
+      articleResult = useQuery('aritcles', () => getPartialArticles(10)) as ArticleResultType;
+      break;
+  }
 
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {
@@ -96,8 +87,8 @@ function UserProfilePage() {
   };
 
   if (isLoading) return <Spinner />;
-  if (errorMsg || isEmpty(userData)) return <BasicErrorPanel errorMsg="" />;
-  if (fetchStatus === 404) return <NoSearchResult message="你查詢的使用者不存在" type="user" />;
+  if (error || isEmpty(userData)) return <BasicErrorPanel errorMsg="" />;
+  if (fetchStatus === 404) return <NoSearchResult message="使用者不存在" type="user" />;
 
   return (
     <div className="w-full sm:max-w-[600px] p-5">
@@ -179,7 +170,7 @@ function UserProfilePage() {
         {/* 文章 Article */}
         {activeTab === 'article' && (
           <div className="">
-            <ArticleList apiResult={apiResult} />
+            <ArticleList apiResult={articleResult!} />
           </div>
         )}
 
@@ -187,10 +178,18 @@ function UserProfilePage() {
         {activeTab === 'post' && <div className="">尚無貼文資料</div>}
 
         {/* 追蹤 follow */}
-        {activeTab === 'follow' && <div className="">尚未追蹤其他人</div>}
+        {activeTab === 'follow' && (
+          <div className="">
+            <FollowList type="following" followList={followList!} />
+          </div>
+        )}
 
         {/* 粉絲 follower */}
-        {activeTab === 'follower' && <div className="">還沒有追蹤你的粉絲</div>}
+        {activeTab === 'follower' && (
+          <div className="">
+            <FollowList type="follower" followList={followList!} />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,12 +2,12 @@ import { get, isEmpty } from 'lodash';
 // --- components ---
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import ArticleItem from './ArticleItem';
-import Loading from './Loading';
+import Loading from './ArticleLoading';
 // --- api / type ---
-import { ApiResultType } from '../../api/article';
+import { ArticleResultType } from '../../api/article';
 import { ArticleListType } from '../../types/articleType';
 
-function ArticleList(props: { apiResult: ApiResultType }) {
+function ArticleList(props: { apiResult: ArticleResultType }) {
   const { apiResult } = props;
   const { isLoading, error, data } = apiResult;
   const articleList: [ArticleListType] = get(data, 'posts', null)!;

@@ -1,3 +1,5 @@
+import { RqResponseType } from './apiType';
+
 /** 使用者資料型別 */
 export interface UserDataType {
   userId: string;
@@ -24,3 +26,8 @@ export interface UserSettingType {
  * [包含 userDataType 及 userSettingType ]
  * */
 export interface userProfileType extends UserDataType, UserSettingType {}
+
+/** user react-query Result 型別 */
+export interface UserResultType extends RqResponseType {
+  data: UserDataType | null;
+}

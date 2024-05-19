@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const localhost = 'http://localhost:3100'; // localhost
 const renderServer = 'https://blogsystem-aakz.onrender.com'; // render server
 

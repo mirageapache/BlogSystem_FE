@@ -17,6 +17,8 @@ export interface AxResponseType {
  */
 export interface RqResponseType {
   isLoading: boolean;
+  isError: boolean;
+  isSuccess: boolean;
   error: { message: string } | null;
-  data: unknown;
+  data: unknown | null;
 }

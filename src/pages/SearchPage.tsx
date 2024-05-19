@@ -9,7 +9,7 @@ import PageBanner from 'components/layout/PageBanner';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../redux/searchSlice';
 // --- api / type ---
-import { ApiResultType, getSearchArticle } from '../api/article';
+import { ArticleResultType, getSearchArticle } from '../api/article';
 
 /** stateType (SearchPage) */
 interface stateType {
@@ -20,8 +20,10 @@ function SearchPage() {
   const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState;
-  const [apiResult, setApiResult] = useState<ApiResultType>({
-    isLoading: true,
+  const [apiResult, setApiResult] = useState<ArticleResultType>({
+    isLoading: false,
+    isError: false,
+    isSuccess: false,
     error: null,
     data: null,
   });
@@ -31,13 +33,15 @@ function SearchPage() {
     const result = await getSearchArticle(searchString);
     setApiResult({
       isLoading: false,
+      isError: false,
+      isSuccess: false,
       error: null,
       data: result,
     });
   };
 
   useEffect(() => {
-    if (isEmpty(apiResult.data)) {
+    if (isEmpty(apiResult!.data)) {
       getSearchResult(searchText);
     }
   }, []);
