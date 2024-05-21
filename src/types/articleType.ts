@@ -1,4 +1,3 @@
-
 /** articleList 型別 */
 export interface ArticleListType {
   body: string;

@@ -21,4 +21,5 @@ export interface RqResponseType {
   isSuccess: boolean;
   error: { message: string } | null;
   data: unknown | null;
+  refetch: () => void;
 }

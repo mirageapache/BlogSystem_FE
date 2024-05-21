@@ -170,7 +170,7 @@ function UserProfilePage() {
         {/* 文章 Article */}
         {activeTab === 'article' && (
           <div className="">
-            <ArticleList apiResult={articleResult!} />
+            <ArticleList articleQueryData={articleResult!} />
           </div>
         )}
 

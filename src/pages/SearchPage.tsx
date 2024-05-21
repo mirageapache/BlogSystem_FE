@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useQuery } from 'react-query';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
@@ -20,31 +21,20 @@ function SearchPage() {
   const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState;
-  const [apiResult, setApiResult] = useState<ArticleResultType>({
-    isLoading: false,
-    isError: false,
-    isSuccess: false,
-    error: null,
-    data: null,
-  });
 
-  /** 搜尋 */
-  const getSearchResult = async (searchString: string) => {
-    const result = await getSearchArticle(searchString);
-    setApiResult({
-      isLoading: false,
-      isError: false,
-      isSuccess: false,
-      error: null,
-      data: result,
-    });
+  // Article 文章資料
+  const articleQueryData = useQuery('aritcleList', () => getSearchArticle(searchText), {
+    enabled: false, // 禁用初始自動查詢
+  }) as ArticleResultType;
+
+  console.log(articleQueryData);
+
+  const { refetch } = articleQueryData;
+  // handle search text change
+  const handleSearchTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSearchText(e.target.value));
+    refetch(); // 重新發起查詢
   };
-
-  useEffect(() => {
-    if (isEmpty(apiResult!.data)) {
-      getSearchResult(searchText);
-    }
-  }, []);
 
   return (
     <div className="max-w-[600px]">
@@ -57,7 +47,7 @@ function SearchPage() {
             value={searchText}
             onChange={(e) => {
               dispatch(setSearchText(e.target.value));
-              getSearchResult(e.target.value);
+              handleSearchTextChange(e);
             }}
             className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 outline-none"
           />
@@ -70,13 +60,13 @@ function SearchPage() {
             icon={icon({ name: 'xmark', style: 'solid' })}
             onClick={() => {
               dispatch(setSearchText(''));
-              getSearchResult('');
+              refetch(); // 清除搜尋字串後重新發起查詢
             }}
             className="absolute right-0 h-5 w-5 m-1.5 mr-3 stroke-0 text-gray-500 dark:text-gray-100 cursor-pointer"
           />
         </div>
       </PageBanner>
-      <ArticleList apiResult={apiResult} />
+      <ArticleList articleQueryData={articleQueryData} />
     </div>
   );
 }
