@@ -27,7 +27,7 @@ function FormTextArea({
   const normalizedValue = normalize ? normalize(input.value) : input.value;
   let activeStyle = '';
   if (showErrorTip && meta.touched && !isEmpty(meta.error)) {
-    activeStyle = 'border-2 border-red-500 bg-yellow-100 dark:bg-gray-950'; // with error style
+    activeStyle = 'm-1.5 border-2 border-red-500 bg-yellow-100 dark:bg-gray-950'; // with error style
   } else {
     activeStyle = 'border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'; // normal style
   }

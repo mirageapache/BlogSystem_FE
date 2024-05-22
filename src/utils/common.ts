@@ -75,3 +75,13 @@ export const bgColorConvert = (color: string) => {
       return 'bg-sky-600';
   }
 };
+
+/** 捲動至頁面頂端 */
+export const scrollToTop = () => {
+  // 檢查瀏覽器是否支援scroll behavior
+  if ('scrollBehavior' in document.documentElement.style) {
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // 使用平滑滾動
+  } else {
+    window.scrollTo(0, 0); // 其他情況，簡單直接移動
+  }
+};

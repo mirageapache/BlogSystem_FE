@@ -24,7 +24,7 @@ import FormTextArea from 'components/form/FormTextArea';
 import { required, isEmail, maxLength } from 'utils/validates';
 // --- types ---
 import { userProfileType } from 'types/userType';
-import { getCookies } from '../../utils/common';
+import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 
 const mapStateToProps = (state: FormState) => ({
@@ -91,6 +91,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
           })
           .then(() => {
             navigate(`/profile/${userId}`);
+            scrollToTop();
           });
       }
     } catch (error) {
@@ -208,7 +209,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
                 <Field
                   name="language"
                   component="select"
-                  className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 rounded-md focus:border-2`}
+                  className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-700 rounded-md focus:border-2`}
                 >
                   <option value="zh" className="">
                     中文
