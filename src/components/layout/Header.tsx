@@ -60,7 +60,7 @@ function Header() {
                 placeholder="搜尋..."
                 onChange={(e) => dispatch(setSearchText(e.target.value))}
                 onKeyUp={(e) => handleSearch(e.key)}
-                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-76 outline-none"
+                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
               />
               <FontAwesomeIcon
                 icon={icon({ name: 'search', style: 'solid' })}
