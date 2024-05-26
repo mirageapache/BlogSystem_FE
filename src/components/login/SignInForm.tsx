@@ -91,10 +91,10 @@ function SignInForm(props: any) {
           .then(() => {
             const { location } = window;
             const pathname = get(location, 'pathname', '');
-            if (pathname === '/editProfile') {
-              location.href = `${location.host}/profile/${res.data.userData.userId}`; // 導到userProfilePage
+            if (pathname === '/user/editProfile') {
+              location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
             }
-            navigate('/');
+            // navigate('/');
             handleClose();
           });
       } else if (!isEmpty(get(res, 'response.data.message', ''))) {

@@ -1,9 +1,11 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { isEmpty } from 'lodash';
-import { checkLogin, getCookies } from 'utils/common';
+import { get, isEmpty } from 'lodash';
+import { checkLogin, getCookies, scrollToTop } from 'utils/common';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { SysStateType, setActivePage } from '../../redux/sysSlice';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -14,6 +16,10 @@ type ItemProps = {
   activeItem: boolean;
   changeItem: () => void;
 };
+
+interface StateType {
+  system: SysStateType;
+}
 
 const activeStyle = 'text-orange-500 hover:text-orange-500 hover:fill-orange-500';
 const normalStyle = 'text-gray-700 dark:text-gray-300 hover:text-orange-500';
@@ -26,7 +32,10 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
       className={`flex my-1.5 text-xl cursor-pointer py-4 ${
         activeItem ? activeStyle : normalStyle
       }`}
-      onClick={changeItem}
+      onClick={() => {
+        changeItem();
+        scrollToTop();
+      }}
     >
       <span className="flex items-center">{children}</span>
       <span className="ml-3 font-bold hidden lg:block">
@@ -43,8 +52,10 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
 
 /** SideBar 元件 */
 function SideBar() {
+  const sliceDispatch = useDispatch();
+  const systemState = useSelector((state: StateType) => state.system);
+  const activePage = get(systemState, 'activePage');
   const userId = getCookies('uid');
-  const [activeItem, setActiveItem] = useState('home'); // 顯示作用中的 Item
 
   return (
     <div className="text-left h-fit sm:px-1 px-5">
@@ -53,8 +64,8 @@ function SideBar() {
           href="/"
           text="首頁"
           count={0}
-          activeItem={activeItem === 'home'}
-          changeItem={() => setActiveItem('home')}
+          activeItem={activePage === '' || activePage === 'home'}
+          changeItem={() => sliceDispatch(setActivePage('home'))}
         >
           <FontAwesomeIcon icon={icon({ name: 'home' })} />
         </SideBarItem>
@@ -62,8 +73,8 @@ function SideBar() {
           href="/explore"
           text="探索"
           count={0}
-          activeItem={activeItem === 'explore'}
-          changeItem={() => setActiveItem('explore')}
+          activeItem={activePage === 'explore'}
+          changeItem={() => sliceDispatch(setActivePage('explore'))}
         >
           <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
         </SideBarItem>
@@ -71,19 +82,19 @@ function SideBar() {
           href="/search"
           text="搜尋"
           count={0}
-          activeItem={activeItem === 'search'}
-          changeItem={() => setActiveItem('search')}
+          activeItem={activePage === 'search'}
+          changeItem={() => sliceDispatch(setActivePage('search'))}
         >
           <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
         </SideBarItem>
         {checkLogin() && (
           <>
             <SideBarItem
-              href={`/profile/${userId}`}
+              href={`/user/profile/${userId}`}
               text="個人資料"
               count={0}
-              activeItem={activeItem === 'profile'}
-              changeItem={() => setActiveItem('profile')}
+              activeItem={activePage === 'user'}
+              changeItem={() => sliceDispatch(setActivePage('user'))}
             >
               <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
             </SideBarItem>
@@ -91,8 +102,8 @@ function SideBar() {
               href="/inbox"
               text="訊息匣"
               count={0}
-              activeItem={activeItem === 'inbox'}
-              changeItem={() => setActiveItem('inbox')}
+              activeItem={activePage === 'inbox'}
+              changeItem={() => sliceDispatch(setActivePage('inbox'))}
             >
               <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
             </SideBarItem>
@@ -100,8 +111,8 @@ function SideBar() {
               href="/activity"
               text="動態"
               count={0}
-              activeItem={activeItem === 'activity'}
-              changeItem={() => setActiveItem('activity')}
+              activeItem={activePage === 'activity'}
+              changeItem={() => sliceDispatch(setActivePage('activity'))}
             >
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
             </SideBarItem>

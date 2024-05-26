@@ -90,7 +90,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
             confirmButtonText: '確認',
           })
           .then(() => {
-            navigate(`/profile/${userId}`);
+            navigate(`/user/profile/${userId}`);
             scrollToTop();
           });
       }
@@ -244,7 +244,8 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
               type="button"
               className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-gray-600"
               onClick={() => {
-                navigate(`/profile/${userId}`);
+                navigate(`/user/profile/${userId}`);
+                scrollToTop();
               }}
             >
               取消

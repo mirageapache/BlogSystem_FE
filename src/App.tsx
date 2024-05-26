@@ -3,8 +3,13 @@ import { Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 // --- constants ---
-import { SIDEBAR_FRAME, SIDEBAR_CONTAINER_FRAME } from 'constants/LayoutConstants';
+import {
+  SIDEBAR_FRAME,
+  SIDEBAR_CONTAINER_FRAME,
+  BOTTOM_MENU_FRAME,
+} from 'constants/LayoutConstants';
 // --- components ---
+import BottomMenu from 'components/layout/BottomMenu';
 import EditProfilePage from 'pages/user/EditProfilePage';
 import Header from './components/layout/Header';
 import SideBar from './components/layout/SideBar';
@@ -13,6 +18,7 @@ import SignUpPopup from './components/login/SignUpPopup';
 
 // --- pages ---
 import HomePage from './pages/HomePage';
+import ExplorePage from './pages/ExplorePage';
 import SearchPage from './pages/SearchPage';
 import PostDetailPage from './pages/PostDetailPage';
 import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
@@ -79,14 +85,18 @@ function App() {
               <Routes>
                 {/* WebSite */}
                 <Route path="/" element={<HomePage />} />
+                <Route path="/explore" element={<ExplorePage />} />
                 <Route path="/search" element={<SearchPage />} />
                 {/* Post / Article */}
                 <Route path="/post/:id" element={<PostDetailPage />} />
                 <Route path="/article/:id" element={<ArticleDetailPage />} />
                 {/* User */}
-                <Route path="/profile/:userId" element={<UserProfilePage />} />
-                <Route path="/editProfile" element={<EditProfilePage />} />
+                <Route path="/user/profile/:userId" element={<UserProfilePage />} />
+                <Route path="/user/editProfile" element={<EditProfilePage />} />
               </Routes>
+            </section>
+            <section className={BOTTOM_MENU_FRAME}>
+              <BottomMenu />
             </section>
           </div>
         </main>

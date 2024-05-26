@@ -112,7 +112,7 @@ function UserProfilePage() {
         {identify && (
           <div>
             <Link
-              to="/editProfile"
+              to="/user/editProfile"
               type="button"
               className="flex items-center rounded-lg text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
             >
