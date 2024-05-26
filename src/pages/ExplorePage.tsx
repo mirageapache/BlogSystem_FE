@@ -7,8 +7,11 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
 // --- functions / types ---
-import { SearchStateType, setSearchText } from '../redux/searchSlice';
+import { FollowResultType } from 'types/followType';
+import { SearchStateType } from '../redux/searchSlice';
+
 // --- api / type ---
+import { getUserList } from '../api/user';
 import { getPartialArticles, ArticleResultType, getSearchArticle } from '../api/article';
 
 /** stateType (SearchPage) */
@@ -27,32 +30,33 @@ function ExplorePage() {
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
   let articleQueryData: ArticleResultType;
-
-  /** 預設取得文章 */
-  if (isEmpty(searchText)) {
-    articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
-  } else {
-    // 搜尋 Article 文章資料
-    articleQueryData = useQuery('aritcleList', () => getSearchArticle(searchText), {
-      enabled: false, // 禁用初始自動查詢
-    }) as ArticleResultType;
-  }
+  let userList: FollowResultType;
 
   switch (activeTab) {
     case 'popular':
+      articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
       break;
     case 'article':
       /** 取得文章資料 */
-      // articleResult = useQuery('aritcles', () => getPartialArticles(10)) as ArticleResultType;
+      if (isEmpty(searchText)) {
+        articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
+      } else {
+        // 搜尋 Article 文章資料
+        articleQueryData = useQuery('aritcleList', () => getSearchArticle(searchText), {
+          enabled: false, // 禁用初始自動查詢
+        }) as ArticleResultType;
+      }
       break;
-    case 'post':
-      break;
+    // case 'post':
+    //   break;
     case 'user':
+      /** 取得用戶清單 */
+      userList = useQuery('followList', () => getUserList()) as FollowResultType;
       break;
-    case 'tag':
-      break;
+    // case 'tag':
+    //   break;
     default:
-      // articleResult = useQuery('aritcles', () => getPartialArticles(10)) as ArticleResultType;
+      articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
       break;
   }
 
@@ -151,9 +155,36 @@ function ExplorePage() {
       </div>
 
       <div className="flex justify-center">
-        <div className="max-w-[600px] px-4">
-          <ArticleList articleQueryData={articleQueryData} />
-        </div>
+        {/* 熱門 */}
+        {activeTab === 'popular' && (
+          <div className="max-w-[600px] px-4">
+            <ArticleList articleQueryData={articleQueryData!} />
+          </div>
+        )}
+        {/* 文章 */}
+        {activeTab === 'article' && (
+          <div className="max-w-[600px] px-4">
+            <ArticleList articleQueryData={articleQueryData!} />
+          </div>
+        )}
+        {/* 貼文 */}
+        {activeTab === 'post' && (
+          <div className="max-w-[600px] px-4">
+            <div>還沒有貼文資料</div>
+          </div>
+        )}
+        {/* 用戶 */}
+        {activeTab === 'user' && (
+          <div className="max-w-[600px] px-4">
+            <div>還沒有用戶資料</div>
+          </div>
+        )}
+        {/* 標籤 */}
+        {activeTab === 'tag' && (
+          <div className="max-w-[600px] px-4">
+            <div>還沒有標籤資料</div>
+          </div>
+        )}
       </div>
     </div>
   );

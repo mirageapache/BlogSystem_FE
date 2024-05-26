@@ -7,7 +7,6 @@ export interface SysStateType {
 }
 
 const path = window.location.pathname.split('/')[1];
-console.log(path);
 /** system state 預設值 */
 const initState = {
   darkMode: localStorage.getItem('darkMode') || '', // 深色模式

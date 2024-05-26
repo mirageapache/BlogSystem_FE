@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import UserLoadingNoBorder from 'components/user/UserLoadingNoBorder';
