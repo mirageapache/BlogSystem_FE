@@ -66,17 +66,17 @@ export async function updateProfile(
 }
 
 /** 取得追蹤&粉絲資料[已登入狀態] */
-export async function getFollowList(userId: string): Promise<GetUserProfileType> {
-  const result = await axios
-    .get(`${baseUrl}/follow?userId=${userId}`)
-    .then((res) => {
-      return res;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-  return result;
-}
+// export async function getFollowList(userId: string): Promise<GetUserProfileType> {
+//   const result = await axios
+//     .get(`${baseUrl}/follow?userId=${userId}`)
+//     .then((res) => {
+//       return res;
+//     })
+//     .catch((error) => {
+//       return error.response;
+//     });
+//   return result;
+// }
 
 /** 取得用戶清單(含搜尋)
  * @searchString [搜尋字串]

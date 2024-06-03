@@ -15,7 +15,7 @@ import { UserDataType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
 import { ArticleResultType, getPartialArticles } from '../../api/article';
 import { getOwnProfile, getUserProfile } from '../../api/user';
-import { getFollowList } from '../../api/follow';
+import { getFollowingList, getFollowerList } from '../../api/follow';
 
 function UserProfilePage() {
   const [activeTab, setActiveTab] = useState('article'); // 頁籤控制
@@ -54,11 +54,11 @@ function UserProfilePage() {
     //   break;
     case 'follow':
       /** 取得追蹤資料 */
-      followList = useQuery('followList', () => getFollowList(userId!)) as FollowResultType;
+      followList = useQuery('followingList', () => getFollowingList(userId!)) as FollowResultType;
       break;
     case 'follower':
       /** 取得粉絲資料 */
-      followList = useQuery('followList', () => getFollowList(userId!)) as FollowResultType;
+      followList = useQuery('followerList', () => getFollowerList(userId!)) as FollowResultType;
       break;
     default:
       articleResult = useQuery('aritcles', () => getPartialArticles(10)) as ArticleResultType;

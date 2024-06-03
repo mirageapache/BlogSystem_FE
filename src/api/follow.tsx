@@ -9,10 +9,10 @@ interface getFollowListType extends AxResponseType {
   data: UserDataType;
 }
 
-/** 取得追蹤&粉絲資料 */
-export async function getFollowList(userId: string): Promise<getFollowListType> {
+/** 取得追蹤資料 */
+export async function getFollowingList(userId: string): Promise<getFollowListType> {
   const result = await axios
-    .get(`${baseUrl}/follow?userId=${userId}`)
+    .post(`${baseUrl}/follow/following`, { userId })
     .then((res) => {
       return res;
     })
@@ -20,4 +20,35 @@ export async function getFollowList(userId: string): Promise<getFollowListType> 
       return error.response;
     });
   return result;
+}
+
+/** 取得粉絲資料 */
+export async function getFollowerList(userId: string): Promise<getFollowListType> {
+  const result = await axios
+    .post(`${baseUrl}/follow/follower`, { userId })
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+  return result;
+}
+
+/** 追蹤/取消追蹤(其他使用者) */
+export async function handleFollowAction(
+  action: string, // 'follow' or 'unfollow'
+  userId: string, // 當前操作的使用者ID
+  targetId: string, // 目標使用者ID
+  followState: number // state為訂閱狀態 [0-追蹤(不主動推播) / 1-主動推播]
+): Promise<getFollowListType> {
+  const result = await axios
+    .patch(`${baseUrl}/follow/followAction`, { action, userId, targetId, followState })
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error.response;
+    })
+    return result;
 }
