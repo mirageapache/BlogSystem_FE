@@ -5,13 +5,14 @@ import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- api ---
-import { getPostById } from '../api/post';
+import { getAllPosts } from '../api/post';
 
 function PostDetailPage() {
-  const { id } = useParams();
+  // const { id } = useParams();
   const avatarUrl = '';
 
-  const { isLoading, error, data } = useQuery('posts', () => getPostById(id));
+  const { isLoading, error, data } = useQuery('posts', () => getAllPosts());
+  console.log(data);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;

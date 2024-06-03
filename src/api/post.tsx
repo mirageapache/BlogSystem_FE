@@ -1,8 +1,14 @@
 import axios from 'axios';
-import { DUMMYJSON_URL } from './index';
-import { PostVariablesType } from 'types/postType';
+import { API_URL } from './index';
+import { PostDataType, PostVariablesType } from '../types/postType';
+import { AxResponseType } from '../types/apiType';
 
-const baseUrl = DUMMYJSON_URL;
+const baseUrl = API_URL;
+
+/** postApi 型別 */
+export interface PostApiType extends AxResponseType {
+  data: PostDataType;
+}
 
 /** 取得所有貼文 */
 export async function getAllPosts() {
@@ -17,7 +23,6 @@ export async function getAllPosts() {
     });
   return result;
 }
-
 
 /** 取得特定貼文內容 */
 export async function getPosDetail(postId: string) {
@@ -50,7 +55,7 @@ export async function createPost(variables: PostVariablesType) {
 }
 
 /** 編輯貼文 */
-export async function updatePost(variables: PostVariablesType){
+export async function updatePost(variables: PostVariablesType) {
   console.log(variables);
 
   const result = await axios
@@ -65,11 +70,11 @@ export async function updatePost(variables: PostVariablesType){
 }
 
 /** 喜歡/取消喜歡貼文 */
-export async function handleLikePost(postId: string, userId: string, action: string){
+export async function handleLikePost(postId: string, userId: string, action: string) {
   console.log(postId, userId, action);
 
   const result = await axios
-    .patch(`${baseUrl}/post/like`, {postId, userId, action})
+    .patch(`${baseUrl}/post/like`, { postId, userId, action })
     .then((res) => {
       console.log(res);
       return res.data;

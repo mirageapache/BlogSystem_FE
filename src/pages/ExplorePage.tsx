@@ -6,13 +6,17 @@ import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
+import PostList from 'components/post/PostList';
+
 // --- functions / types ---
 import { FollowResultType } from 'types/followType';
 import { SearchStateType } from '../redux/searchSlice';
 
 // --- api / type ---
+import { getAllPosts } from '../api/post';
 import { getUserList } from '../api/user';
 import { getPartialArticles, ArticleResultType, getSearchArticle } from '../api/article';
+import { postResultType } from '../types/postType';
 
 /** stateType (SearchPage) */
 interface stateType {
@@ -30,6 +34,7 @@ function ExplorePage() {
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
   let articleQueryData: ArticleResultType;
+  let postQueryData: postResultType;
   let userList: FollowResultType;
 
   switch (activeTab) {
@@ -47,8 +52,9 @@ function ExplorePage() {
         }) as ArticleResultType;
       }
       break;
-    // case 'post':
-    //   break;
+    case 'post':
+      postQueryData = useQuery('post', () => getAllPosts()) as postResultType;
+      break;
     case 'user':
       /** 取得用戶清單 */
       userList = useQuery('followList', () => getUserList()) as FollowResultType;
@@ -170,7 +176,7 @@ function ExplorePage() {
         {/* 貼文 */}
         {activeTab === 'post' && (
           <div className="max-w-[600px] px-4">
-            <div>還沒有貼文資料</div>
+            <PostList postQueryData={postQueryData!} />
           </div>
         )}
         {/* 用戶 */}

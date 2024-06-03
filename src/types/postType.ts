@@ -1,3 +1,4 @@
+import { RqResponseType } from './apiType';
 
 /** post API接收資料型別 */
 export interface PostDataType {
@@ -29,3 +30,6 @@ export interface PostVariablesType {
   hashTags: string[];
 }
 
+export interface postResultType extends RqResponseType {
+  data: PostDataType | null;
+}

@@ -83,4 +83,3 @@ export async function updateProfile(
     });
   return result;
 }
-

@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 // --- api ---
-import { getPostById } from '../../api/post';
+import { getAllPosts } from '../../api/post';
 // --- components ---
 import UserInfoPanel from '../../components/user/UserInfoPanel';
 import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
@@ -12,7 +12,7 @@ function ArticleDetailPage() {
   const { id } = useParams();
   const avatarUrl = '';
 
-  const { isLoading, error, data } = useQuery('posts', () => getPostById(id));
+  const { isLoading, error, data } = useQuery('posts', () => getAllPosts());
 
   if (isLoading) return <Spinner />;
   if (error) return <p>Error</p>;

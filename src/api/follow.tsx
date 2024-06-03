@@ -49,6 +49,6 @@ export async function handleFollowAction(
     })
     .catch((error) => {
       return error.response;
-    })
-    return result;
+    });
+  return result;
 }

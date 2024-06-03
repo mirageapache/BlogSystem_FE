@@ -47,7 +47,7 @@ function Header() {
         <div id="brand" className="">
           <a className="flex flex-row items-center w-fit" href="/">
             <img className="w-11 h-11 mr-2.5" src={brand} alt="logo" />
-            <h3 className="font-mono text-3xl font-semibold">MyBlog</h3>
+            <h3 className="font-mono text-3xl font-semibold">ReactBlog</h3>
           </a>
         </div>
         <nav className="flex items-center text-lg">

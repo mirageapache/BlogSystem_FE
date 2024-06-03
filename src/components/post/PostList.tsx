@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 import { get } from 'lodash';
 import PostItem from './PostItem';
-import { getPostByLimit } from '../../api/post';
+import { postResultType } from '../../types/postType';
 
 interface PostType {
   body: string;
@@ -12,8 +12,11 @@ interface PostType {
   userId: number;
 }
 
-function PostList() {
-  const { isLoading, error, data } = useQuery('posts', () => getPostByLimit(5));
+function PostList(props: { postQueryData: postResultType }) {
+  const { postQueryData } = props;
+  const { isLoading, error, data } = postQueryData;
+
+  console.log(data);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
