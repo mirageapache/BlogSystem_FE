@@ -9,6 +9,25 @@ interface GetUserProfileType extends AxResponseType {
   data: UserDataType;
 }
 
+/** 取得使用者清單(含追蹤資料)
+ * @searchString [搜尋字串]
+ * @userId [當前登入的使用者Id] - 用來判斷追踨與否
+ */
+export async function getUserList(
+  searchString?: string,
+  userId?: string
+): Promise<GetUserProfileType> {
+  const result = await axios
+    .post(`${baseUrl}/userFollowList`, { searchString, userId })
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+  return result;
+}
+
 /** 取得自己的使用者資料
  * 須帶authToken做驗證
  */
@@ -65,34 +84,3 @@ export async function updateProfile(
   return result;
 }
 
-/** 取得追蹤&粉絲資料[已登入狀態] */
-// export async function getFollowList(userId: string): Promise<GetUserProfileType> {
-//   const result = await axios
-//     .get(`${baseUrl}/follow?userId=${userId}`)
-//     .then((res) => {
-//       return res;
-//     })
-//     .catch((error) => {
-//       return error.response;
-//     });
-//   return result;
-// }
-
-/** 取得用戶清單(含搜尋)
- * @searchString [搜尋字串]
- * @userId [當前登入的使用者Id] - 用來判斷追踨與否
- */
-export async function getUserList(
-  searchString?: string,
-  userId?: string
-): Promise<GetUserProfileType> {
-  const result = await axios
-    .get(`${baseUrl}/follow?userId=${userId}`)
-    .then((res) => {
-      return res;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-  return result;
-}
