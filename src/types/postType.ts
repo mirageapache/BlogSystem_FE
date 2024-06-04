@@ -1,9 +1,10 @@
-import { RqResponseType } from './apiType';
+import { RqResponseType, errorMsgType } from './apiType';
+import { userInfoPanelType } from './userType';
 
 /** post API接收資料型別 */
-export interface PostDataType {
+export interface PostDataType extends errorMsgType {
   _id: string;
-  author: string[];
+  author: userInfoPanelType;
   title: string;
   content: string;
   image: string;

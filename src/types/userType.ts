@@ -23,6 +23,14 @@ export interface UserSettingType {
   mobilePrompt: Boolean;
 }
 
+/** 使用者資訊版型別 */
+export interface userInfoPanelType {
+  account: string;
+  name: string;
+  avatar: string;
+  bgColor: string;
+}
+
 /** 使用者個人資訊
  * [包含 userDataType 及 userSettingType ]
  * */

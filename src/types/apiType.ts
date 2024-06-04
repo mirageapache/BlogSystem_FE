@@ -20,6 +20,12 @@ export interface RqResponseType {
   isError: boolean;
   isSuccess: boolean;
   error: { message: string } | null;
-  data: unknown | null;
+  data: { code: string; message: string } | unknown | null;
   refetch: () => void;
+}
+
+/** api fetch 錯誤訊息 */
+export interface errorMsgType {
+  code: string;
+  message: string;
 }

@@ -19,7 +19,7 @@ export async function getAllPosts() {
       return postData;
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
   return result;
 }
@@ -33,7 +33,7 @@ export async function getPosDetail(postId: string) {
       return postData;
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
   return result;
 }
