@@ -26,7 +26,7 @@ interface stateType {
 function ExplorePage() {
   // 探索頁包含 文章、貼文、用戶等資料可瀏覽，並結合搜尋功能
   // 類別：熱門、文章、貼文、用戶(帳號)、標籤(文章或貼文)
-  const [activeTab, setActiveTab] = useState('popular'); // 頁籤控制
+  const [activeTab, setActiveTab] = useState('post'); // 頁籤控制
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
   const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
@@ -163,31 +163,31 @@ function ExplorePage() {
       <div className="flex justify-center">
         {/* 熱門 */}
         {activeTab === 'popular' && (
-          <div className="max-w-[600px] px-4">
+          <div className="w-full max-w-[600px] px-4">
             <ArticleList articleQueryData={articleQueryData!} />
           </div>
         )}
         {/* 文章 */}
         {activeTab === 'article' && (
-          <div className="max-w-[600px] px-4">
+          <div className="w-full max-w-[600px] px-4">
             <ArticleList articleQueryData={articleQueryData!} />
           </div>
         )}
         {/* 貼文 */}
         {activeTab === 'post' && (
-          <div className="max-w-[600px] px-4">
+          <div className="w-full max-w-[600px] px-4">
             <PostList postQueryData={postQueryData!} />
           </div>
         )}
         {/* 用戶 */}
         {activeTab === 'user' && (
-          <div className="max-w-[600px] px-4">
+          <div className="w-full max-w-[600px] px-4">
             <div>還沒有用戶資料</div>
           </div>
         )}
         {/* 標籤 */}
         {activeTab === 'tag' && (
-          <div className="max-w-[600px] px-4">
+          <div className="w-full max-w-[600px] px-4">
             <div>還沒有標籤資料</div>
           </div>
         )}

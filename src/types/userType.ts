@@ -25,6 +25,7 @@ export interface UserSettingType {
 
 /** 使用者資訊版型別 */
 export interface userInfoPanelType {
+  _id: string;
   account: string;
   name: string;
   avatar: string;

@@ -27,7 +27,7 @@ export const calcTimeDiff = (currentTime: number, inputTime: number) => {
 
 /**
  * 文章、貼文顯示日期時間轉換
- * @param datetime 日期時間
+ * @param datetime (時間戳)日期時間
  */
 export const formatDateTime = (datetime: string) => {
   let datetimeString = datetime;
@@ -42,6 +42,9 @@ export const formatDateTime = (datetime: string) => {
     parseInt(datetimeString.substring(8, 10), 10), // 時
     parseInt(datetimeString.substring(10, 12), 10) // 分
   );
+
+  console.log(datetime);
+  console.log(currentDate);
 
   const diffDays = Math.abs(currentDate.getDate() - inputDate.getDate());
 

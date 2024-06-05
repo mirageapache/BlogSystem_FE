@@ -131,6 +131,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                 <UserLoadingNoBorder />
               ) : (
                 <UserInfoPanel
+                  userId={userData._id}
                   account={userData.account}
                   name={userData.name}
                   avatarUrl={userData.avatar}

@@ -39,6 +39,7 @@ function FollowList({ type, followList }: PropsType) {
       return (
         <div className="flex justify-between" key={item._id}>
           <UserInfoPanel
+            userId={item._id}
             account={item.account}
             name={item.name}
             avatarUrl={item.avatar}
@@ -46,7 +47,11 @@ function FollowList({ type, followList }: PropsType) {
             className="my-2"
           />
           <div className="flex items-center">
-            <button type="button" className="py-1 px-4 rounded-lg bg-green-600" onClick={() => {}}>
+            <button
+              type="button"
+              className="py-1 px-4 rounded-lg text-white bg-green-600"
+              onClick={() => {}}
+            >
               追蹤
             </button>
           </div>
@@ -61,6 +66,7 @@ function FollowList({ type, followList }: PropsType) {
       return (
         <div className="flex justify-between" key={item.user._id}>
           <UserInfoPanel
+            userId={item.user._id}
             account={item.user.account}
             name={item.user.name}
             avatarUrl={item.user.avatar}

@@ -1,16 +1,22 @@
 /* eslint-disable react/require-default-props */
-import React from 'react';
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+// --- functions ---
+import { scrollToTop } from '../../utils/common';
+import { setActivePage } from '../../redux/sysSlice';
 // --- components ---
 import Avatar from './Avatar';
 
 function UserInfoPanel(props: {
+  userId: string;
   account: string;
   name: string;
   avatarUrl: string;
   bgColor: string;
   className?: string;
 }) {
-  const { account, name, avatarUrl, bgColor, className } = props;
+  const { userId, account, name, avatarUrl, bgColor, className } = props;
+  const dispatch = useDispatch();
   return (
     <div className={`flex items-center ${className}`}>
       <div className="flex justify-center items-center mr-4">
@@ -23,8 +29,16 @@ function UserInfoPanel(props: {
         />
       </div>
       <div>
-        <p className="font-semibold">{name}</p>
-        <p className="text-gray-700 dark:text-gray-400">@{account}</p>
+        <p className="font-semibold text-lg">{name}</p>
+        <Link
+          to={`/user/profile/${userId}`}
+          onClick={() => {
+            dispatch(setActivePage('user'));
+            scrollToTop();
+          }}
+        >
+          <p className="text-gray-700 dark:text-gray-400 hover:text-orange-500">@{account}</p>
+        </Link>
       </div>
     </div>
   );

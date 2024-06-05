@@ -3,6 +3,7 @@ import { get, isEmpty } from 'lodash';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import PostItem from './PostItem';
 import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
+import ArticleLoading from '../article/ArticleLoading';
 // --- types ---
 import { PostDataType, postResultType } from '../../types/postType';
 
@@ -20,9 +21,7 @@ function PostList(props: { postQueryData: postResultType }) {
   const { isLoading, data } = postQueryData;
   const postDataList: PostDataType[] | null = data as PostDataType[] | null;
 
-  console.log(data);
-
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <ArticleLoading />;
   if (data!.code === 'ERR_NETWORK') return <BasicErrorPanel errorMsg="網路似乎沒有連線！" />;
   if (isEmpty(postDataList))
     return <NoSearchResult msgOne="找不到任何貼文！!" msgTwo=" " type="post" />;
