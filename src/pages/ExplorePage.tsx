@@ -163,31 +163,31 @@ function ExplorePage() {
       <div className="flex justify-center">
         {/* 熱門 */}
         {activeTab === 'popular' && (
-          <div className="w-full max-w-[600px] px-4">
+          <div className="w-full max-w-[600px]">
             <ArticleList articleQueryData={articleQueryData!} />
           </div>
         )}
         {/* 文章 */}
         {activeTab === 'article' && (
-          <div className="w-full max-w-[600px] px-4">
+          <div className="w-full max-w-[600px]">
             <ArticleList articleQueryData={articleQueryData!} />
           </div>
         )}
         {/* 貼文 */}
         {activeTab === 'post' && (
-          <div className="w-full max-w-[600px] px-4">
+          <div className="w-full max-w-[600px]">
             <PostList postQueryData={postQueryData!} />
           </div>
         )}
         {/* 用戶 */}
         {activeTab === 'user' && (
-          <div className="w-full max-w-[600px] px-4">
+          <div className="w-full max-w-[600px]">
             <div>還沒有用戶資料</div>
           </div>
         )}
         {/* 標籤 */}
         {activeTab === 'tag' && (
-          <div className="w-full max-w-[600px] px-4">
+          <div className="w-full max-w-[600px]">
             <div>還沒有標籤資料</div>
           </div>
         )}

@@ -28,8 +28,8 @@ function UserInfoPanel(props: {
           bgColor={bgColor}
         />
       </div>
-      <div>
-        <p className="font-semibold text-lg">{name}</p>
+      <div className="flex flex-col">
+        <p className="font-semibold text-lg leading-6">{name}</p>
         <Link
           to={`/user/profile/${userId}`}
           onClick={() => {
@@ -37,7 +37,9 @@ function UserInfoPanel(props: {
             scrollToTop();
           }}
         >
-          <p className="text-gray-700 dark:text-gray-400 hover:text-orange-500">@{account}</p>
+          <p className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 leading-4">
+            @{account}
+          </p>
         </Link>
       </div>
     </div>

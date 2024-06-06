@@ -10,9 +10,9 @@ import { formatDateTime } from 'utils/dateTime';
 function PostTag(props: { text: string }) {
   const { text } = props;
   return (
-    <span className="mr-3">
-      <a href="/" className="font-bold">
-        {text.toUpperCase()}
+    <span className="mr-1">
+      <a href="/" className="text-sky-600">
+        #{text}
       </a>
     </span>
   );
@@ -28,30 +28,28 @@ function PostItem(props: { postData: PostDataType }) {
   ));
 
   return (
-    <div className="text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
-      <div className="flex">
-        <div className="w-full">
-          <div className="flex justify-between">
-            <UserInfoPanel
-              userId={postData.author._id}
-              account={postData.author.account}
-              name={postData.author.name}
-              avatarUrl={postData.author.avatar}
-              bgColor={postData.author.bgColor}
-              className="my-2"
-            />
-            <p className="text-gray-600 dark:text-gray-300 my-1">
-              {/* {formatDateTime(moment(postData.createdAt).unix().toString())} */}
-              {formatDateTime(postData.createdAt)}
-            </p>
-          </div>
-          <div className="ml-[60px]">
-            <h2 className="font-semibold text-2xl xl:text-3xl">
+    <div className="flex text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+      <div className="w-full">
+        <div className="flex justify-between">
+          <UserInfoPanel
+            userId={postData.author._id}
+            account={postData.author.account}
+            name={postData.author.name}
+            avatarUrl={postData.author.avatar}
+            bgColor={postData.author.bgColor}
+            className="my-2"
+          />
+          <p className="text-gray-600 dark:text-gray-300 my-1">
+            {/* {formatDateTime(moment(postData.createdAt).unix().toString())} */}
+            {formatDateTime(postData.createdAt)}
+          </p>
+        </div>
+        <div className="ml-[60px]">
+          {/* <h2 className="font-semibold text-2xl xl:text-3xl">
               <Link to={`/post/${postData._id}`}>{postData.title}</Link>
-            </h2>
-            <div className="text-orange-500">{tagsList}</div>
-            <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
-          </div>
+            </h2> */}
+          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
+          <div>{tagsList}</div>
         </div>
       </div>
     </div>

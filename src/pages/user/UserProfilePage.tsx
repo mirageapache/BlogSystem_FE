@@ -103,7 +103,7 @@ function UserProfilePage() {
               bgColor={userData.bgColor}
             />
           </div>
-          <div className="">
+          <div className="flex flex-col justify-center">
             <p className="text-3xl font-semibold">{userData.name}</p>
             <p className="text-gray-500">@{userData.account}</p>
           </div>

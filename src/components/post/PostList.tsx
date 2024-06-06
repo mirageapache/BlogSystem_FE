@@ -30,7 +30,7 @@ function PostList(props: { postQueryData: postResultType }) {
     return <PostItem key={post._id} postData={post} />;
   });
 
-  return <div className="flex-grow px-8 md:px-0">{postItems}</div>;
+  return <div className="flex-grow">{postItems}</div>;
 }
 
 export default PostList;
