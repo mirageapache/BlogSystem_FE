@@ -38,23 +38,25 @@ interface StateType {
 /** MainMenu Item 元件 */
 function MenuItem({ href, text, count, activeItem, children, handleClick }: ItemPropsType) {
   return (
-    <Link
-      to={href}
-      className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
-        activeItem ? 'text-orange-500' : ''
-      }`}
-      onClick={handleClick}
-    >
-      <span className="flex items-center">{children}</span>
-      <span className="ml-3 font-bold">
-        {text}
-        {!isEmpty(count) && (
-          <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
-            {count}
-          </span>
-        )}
-      </span>
-    </Link>
+    <li>
+      <Link
+        to={href}
+        className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
+          activeItem ? 'text-orange-500' : ''
+        }`}
+        onClick={handleClick}
+      >
+        <span className="flex items-center">{children}</span>
+        <span className="ml-3 font-bold">
+          {text}
+          {!isEmpty(count) && (
+            <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+              {count}
+            </span>
+          )}
+        </span>
+      </Link>
+    </li>
   );
 }
 
@@ -90,7 +92,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   };
 
   return (
-    <div className="fixed">
+    <nav className="fixed">
       <button
         type="button"
         className={`w-full h-full top-0 left-0 text-transparent ${
@@ -144,7 +146,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         )}
         <div className="h-full py-2 px-8 opacity-100">
           <div className="text-left h-fit sm:px-1 px-5">
-            <div className="ml-2.5">
+            <ul className="ml-2.5">
               <MenuItem
                 href="/"
                 text="首頁"
@@ -227,7 +229,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                   </MenuItem>
                 </>
               )}
-            </div>
+            </ul>
           </div>
         </div>
         <div className="flex justify-between items-center p-5 border-t-[1px] border-gray-300 dark:border-gray-700">
@@ -258,7 +260,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
           </button>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 export default MainMenu;

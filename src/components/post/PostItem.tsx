@@ -6,6 +6,7 @@ import { PostDataType } from 'types/postType';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import { formatDateTime } from 'utils/dateTime';
+import PostInfoPanel from './PostInfoPanel';
 
 function PostTag(props: { text: string }) {
   const { text } = props;
@@ -40,16 +41,17 @@ function PostItem(props: { postData: PostDataType }) {
             className="my-2"
           />
           <p className="text-gray-600 dark:text-gray-300 my-1">
-            {/* {formatDateTime(moment(postData.createdAt).unix().toString())} */}
             {formatDateTime(postData.createdAt)}
           </p>
         </div>
         <div className="ml-[60px]">
-          {/* <h2 className="font-semibold text-2xl xl:text-3xl">
-              <Link to={`/post/${postData._id}`}>{postData.title}</Link>
-            </h2> */}
+          {/* image */}
+          {/* content */}
           <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
+          {/* hash tags */}
           <div>{tagsList}</div>
+          {/* info panel */}
+          <PostInfoPanel />
         </div>
       </div>
     </div>
