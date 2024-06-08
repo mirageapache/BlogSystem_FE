@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useQuery } from 'react-query';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
 import PostList from 'components/post/PostList';
+import FollowList from 'components/user/FollowList';
 
 // --- functions / types ---
+import { getCookies } from 'utils/common';
 import { FollowResultType } from 'types/followType';
 import { SearchStateType } from '../redux/searchSlice';
 
@@ -28,9 +30,9 @@ function ExplorePage() {
   // 類別：熱門、文章、貼文、用戶(帳號)、標籤(文章或貼文)
   const [activeTab, setActiveTab] = useState('post'); // 頁籤控制
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
-  const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState; // 搜尋字串
+  const userId = getCookies('uid'); // 使用者id (判斷是否登入)
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
   let articleQueryData: ArticleResultType;
@@ -57,7 +59,7 @@ function ExplorePage() {
       break;
     case 'user':
       /** 取得用戶清單 */
-      userList = useQuery('followList', () => getUserList()) as FollowResultType;
+      userList = useQuery('followList', () => getUserList(searchText, userId)) as FollowResultType;
       break;
     // case 'tag':
     //   break;
@@ -182,7 +184,7 @@ function ExplorePage() {
         {/* 用戶 */}
         {activeTab === 'user' && (
           <div className="w-full max-w-[600px]">
-            <div>還沒有用戶資料</div>
+            <FollowList type="userList" followList={userList!} />
           </div>
         )}
         {/* 標籤 */}

@@ -13,7 +13,7 @@ export const getCookies = (name: string) => {
       return decodeURIComponent(cookieValue);
     }
   }
-  return null; // 若找不到指定的cookie則返回null
+  return undefined; // 若找不到指定的cookie則返回undefined
 };
 
 /**

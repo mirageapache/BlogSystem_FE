@@ -3,7 +3,7 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 
 function PostInfoPanel() {
   return (
-    <div className="py-2 mb-5 flex justify-between">
+    <div className="flex justify-between">
       <div className="flex">
         {/* 喜歡 */}
         <span className="mr-5 flex justify-center items-center cursor-pointer">

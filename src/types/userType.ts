@@ -13,6 +13,7 @@ export interface UserDataType {
   userRole: number;
   createdAt: string;
   status: number;
+  isFollow?: boolean; // 判斷是否追蹤
 }
 
 /** 使用者設定資料型別 */

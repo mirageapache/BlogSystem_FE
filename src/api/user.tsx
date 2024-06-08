@@ -18,7 +18,7 @@ export async function getUserList(
   userId?: string
 ): Promise<GetUserProfileType> {
   const result = await axios
-    .post(`${baseUrl}/userFollowList`, { searchString, userId })
+    .post(`${baseUrl}/user/userFollowList`, { searchString, userId })
     .then((res) => {
       return res;
     })
@@ -38,7 +38,6 @@ export async function getOwnProfile(
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };
-
   const result = await axios
     .post(`${baseUrl}/user/own/${userId}`, null, config)
     .then((res) => {
