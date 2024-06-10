@@ -14,8 +14,9 @@ function UserInfoPanel(props: {
   avatarUrl: string;
   bgColor: string;
   className?: string;
+  menuLink?: boolean; // 判斷是否為主選單的連結
 }) {
-  const { userId, account, name, avatarUrl, bgColor, className } = props;
+  const { userId, account, name, avatarUrl, bgColor, className, menuLink = false } = props;
   const dispatch = useDispatch();
   return (
     <div className={`flex items-center ${className}`}>
@@ -30,17 +31,21 @@ function UserInfoPanel(props: {
       </div>
       <div className="flex flex-col">
         <p className="font-semibold text-lg leading-6">{name}</p>
-        <Link
-          to={`/user/profile/${userId}`}
-          onClick={() => {
-            dispatch(setActivePage('user'));
-            scrollToTop();
-          }}
-        >
-          <p className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 leading-4">
-            @{account}
-          </p>
-        </Link>
+        {menuLink ? (
+          <p className="text-[14px] text-gray-700 dark:text-gray-400">@{account}</p>
+        ) : (
+          <Link
+            to={`/user/profile/${userId}`}
+            onClick={() => {
+              dispatch(setActivePage('user'));
+              scrollToTop();
+            }}
+          >
+            <p className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 leading-4">
+              @{account}
+            </p>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -1,12 +1,13 @@
 import React, { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
 function IconLink(props: { label: string; href: string; children: ReactNode }) {
   const { label, href, children } = props;
 
   return (
-    <a className="px-2" aria-label={label} href={href} target="_blank" rel="noreferrer">
+    <Link className="px-2" aria-label={label} to={href} target="_blank" rel="noreferrer">
       {children}
-    </a>
+    </Link>
   );
 }
 

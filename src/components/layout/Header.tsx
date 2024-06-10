@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- images ---
@@ -45,10 +45,10 @@ function Header() {
     <header className="fixed z-10 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
       <div className="w-full flex justify-between py-2 px-4">
         <div id="brand" className="">
-          <a className="flex flex-row items-center w-fit" href="/">
+          <Link className="flex flex-row items-center w-fit" to="/">
             <img className="w-11 h-11 mr-2.5" src={brand} alt="logo" />
             <h3 className="font-mono text-3xl font-semibold">ReactBlog</h3>
-          </a>
+          </Link>
         </div>
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}

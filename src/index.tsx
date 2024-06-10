@@ -4,9 +4,13 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
-import './index.css';
+
+// --- components ---
 import App from './App';
 import store from './redux/configStore';
+// --- styles ---
+import './custom-bootstrap.scss';
+import './index.css';
 // import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

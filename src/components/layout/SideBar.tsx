@@ -58,7 +58,7 @@ function SideBar() {
   const userId = getCookies('uid');
 
   return (
-    <div className="text-left h-fit sm:px-1 px-5">
+    <div className="text-left h-fit sm:px-1">
       <div className="ml-2.5">
         <SideBarItem
           href="/"

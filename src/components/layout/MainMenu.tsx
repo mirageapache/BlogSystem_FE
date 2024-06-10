@@ -120,7 +120,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
           </button>
         </div>
         {checkLogin() && (
-          <div className="mx-5 border-b-[1px] border-gray-400 dark:border-gray-700">
+          <div className="px-3 border-b-[1px] border-gray-400 dark:border-gray-70">
             <Link
               to={`/user/profile/${userData.userId}`}
               onClick={() => {
@@ -138,14 +138,15 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                   name={userData.name}
                   avatarUrl={userData.avatar}
                   bgColor={userData.bgColor}
-                  className="my-4"
+                  className="my-2 py-2 px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+                  menuLink
                 />
               )}
             </Link>
           </div>
         )}
         <div className="h-full py-2 px-8 opacity-100">
-          <div className="text-left h-fit sm:px-1 px-5">
+          <div className="text-left h-fit sm:px-1">
             <ul className="ml-2.5">
               <MenuItem
                 href="/"
@@ -232,7 +233,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             </ul>
           </div>
         </div>
-        <div className="flex justify-between items-center p-5 border-t-[1px] border-gray-300 dark:border-gray-700">
+        <div className="flex justify-between items-center p-3 border-t-[1px] border-gray-300 dark:border-gray-700">
           {/* 深色模式切換 */}
           <button
             aria-label="darkMode"
