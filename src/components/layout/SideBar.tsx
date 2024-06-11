@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { get, isEmpty } from 'lodash';
@@ -6,6 +6,7 @@ import { checkLogin, getCookies, scrollToTop } from 'utils/common';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { SysStateType, setActivePage } from '../../redux/sysSlice';
+import PostCreateModal from 'components/post/PostCreateModal';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -56,6 +57,11 @@ function SideBar() {
   const systemState = useSelector((state: StateType) => state.system);
   const activePage = get(systemState, 'activePage');
   const userId = getCookies('uid');
+  const [showModal, setShowModal] = useState(false);
+
+  const closeModal = (value: boolean) => {
+    setShowModal(value);
+  }
 
   return (
     <div className="text-left h-fit sm:px-1">
@@ -116,9 +122,33 @@ function SideBar() {
             >
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
             </SideBarItem>
+            <SideBarItem
+              href="/article"
+              text="撰寫文章"
+              count={0}
+              activeItem={activePage === 'activity'}
+              changeItem={() => sliceDispatch(setActivePage('activity'))}
+            >
+              <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
+            </SideBarItem>
+            <button 
+              type="button"
+              className={`flex my-1.5 text-xl cursor-pointer py-4 ${normalStyle}`}
+              onClick={() => {setShowModal(true)}}
+            >
+              <div className="flex items-center">
+                <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+              </div>
+              <span className="ml-3 font-bold hidden lg:block">
+                建立貼文
+              </span>
+            </button>
           </>
         )}
       </div>
+      {showModal &&
+        <PostCreateModal setShowModal={setShowModal} />
+      }
     </div>
   );
 }

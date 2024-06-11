@@ -20,7 +20,6 @@ function BottomMenu() {
   const systemState = useSelector((state: StateType) => state.system);
   const [cookies] = useCookies(['uid']);
   const userId = cookies.uid; // 設定userId，判斷有沒有登入
-  // const [activeTab, setActiveTab] = useState('home');
   const activePage = get(systemState, 'activePage');
 
   return (

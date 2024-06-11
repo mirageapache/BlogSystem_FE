@@ -226,7 +226,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                       scrollToTop();
                     }}
                   >
-                    <FontAwesomeIcon icon={icon({ name: 'pen', style: 'solid' })} />
+                    <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
                   </MenuItem>
                 </>
               )}
