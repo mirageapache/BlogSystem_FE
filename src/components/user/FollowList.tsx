@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import { get, isEmpty } from 'lodash';
+import { useMutation } from 'react-query';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 
 // --- types ---
 import { FollowResultType } from 'types/followType';
@@ -9,7 +12,9 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 import UserLoading from './UserLoading';
 import UserInfoPanel from './UserInfoPanel';
 // --- functions ---
+import { changeFollowState, handleFollowAction } from '../../api/follow';
 import { getCookies } from '../../utils/common';
+import { errorAlert } from '../../utils/fetchError';
 
 interface PropsType {
   type: string;
@@ -22,13 +27,11 @@ interface followerItemType {
 }
 
 function FollowList({ type, followList }: PropsType) {
-  const { isLoading, data } = followList;
-
   let listData; // 清單資料
+  const { isLoading, data, refetch } = followList;
   const userList: UserDataType[] = get(data, 'data', []);
   const followingData: UserDataType[] = get(data, 'data.following', []);
   const followerData: followerItemType[] = get(data, 'data.follower', []);
-  const userId = getCookies('uid');
 
   if (isLoading) return <UserLoading />;
   if (type === 'following' && isEmpty(followingData))
@@ -38,12 +41,41 @@ function FollowList({ type, followList }: PropsType) {
   if (type === 'follower' && isEmpty(followerData))
     return <NoSearchResult msgOne="你還沒有粉絲喔!" msgTwo="快去拓展你的粉絲圈吧" type="user" />;
 
+  const [activeDropdown, setActiveDropdown] = useState('');
+  const userId = getCookies('uid');
+
+  /** 控制下拉選單 */
+  const toggleDropdown = (userId: string) => {
+    setActiveDropdown((prevActiveDropdown) => (prevActiveDropdown === userId ? '' : userId));
+  };
+
+  /** 追蹤/取消追蹤 功能 mutation */
+  const followMutation = useMutation(
+    ({ action, targetId }: { action: string; targetId: string }) =>
+      handleFollowAction(action, userId!, targetId),
+    {
+      onSuccess: (res) => { if (res.status === 200) refetch(); }, // refetch list data
+      onError: () => errorAlert(),
+    }
+  );
+
+  /** 更改訂閱狀態 */
+  const changeState = useMutation(
+    ({ targetId, state }: { targetId: string; state: number }) =>
+      changeFollowState(userId!, targetId, state),
+    {
+      onSuccess: (res) => { if (res.status === 200) refetch(); },
+      onError: () => errorAlert(),
+    }
+  );
+
+  /** 建立追蹤清單元素 */
   const generateList = (dataList: UserDataType[]) => {
     return dataList.map((user) => {
       if (user._id === userId) return null;
       return (
         <div
-          className="flex justify-between px-3 hover:bg-gray-100 dark:hover:bg-gray-900"
+          className="flex justify-between px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
           key={user._id}
         >
           <UserInfoPanel
@@ -54,23 +86,56 @@ function FollowList({ type, followList }: PropsType) {
             bgColor={user.bgColor}
             className="my-2"
           />
-          <div className="flex items-center">
+          <div className="relative flex items-center">
             {user.isFollow ? (
               <button
                 type="button"
                 className="py-1 px-3 rounded-lg text-white bg-gray-500"
-                onClick={() => {}}
+                onClick={() => toggleDropdown(user._id)}
               >
                 追蹤中
+                <FontAwesomeIcon icon={icon({ name: 'caret-down', style: 'solid' })} className="ml-1" />
               </button>
             ) : (
               <button
                 type="button"
                 className="py-1 px-3 rounded-lg text-white bg-green-600"
-                onClick={() => {}}
+                onClick={() => followMutation.mutate({ action: 'follow', targetId: user._id })}
               >
                 追蹤
               </button>
+            )}
+            {/* 追蹤中下拉選單 */}
+            {activeDropdown === user._id && (
+              <Fragment>
+                <div className="absolute w-28 border rounded-lg py-2 px-1 top-12 right-0 bg-white dark:bg-gray-950 dark:border-gray-600 z-50">
+                  {user.followState === 1?
+                    <button
+                      type="button"
+                      className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      onClick={() => {changeState.mutate({ targetId: user._id, state: 0 })}}
+                    >
+                      關閉通知
+                    </button>
+                  :
+                    <button
+                      type="button"
+                      className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                      onClick={() => {changeState.mutate({ targetId: user._id, state: 1 })}}
+                    >
+                      開啟通知
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    onClick={() => {followMutation.mutate({ action: 'unfollow', targetId: user._id })}}
+                  >
+                    取消追蹤
+                  </button>
+                </div>
+                <div className="fixed z-40 top-0 left-0 w-full h-full" onClick={() => {toggleDropdown('')}}/> 
+              </Fragment>
             )}
           </div>
         </div>
@@ -80,10 +145,8 @@ function FollowList({ type, followList }: PropsType) {
 
   // 使用者清單
   if (type === 'userList') listData = generateList(userList);
-
   // 追蹤
   if (type === 'following') listData = generateList(followingData);
-
   // 粉絲
   if (type === 'follower') {
     listData = followerData.map((item) => {
@@ -97,16 +160,16 @@ function FollowList({ type, followList }: PropsType) {
             bgColor={item.user.bgColor}
             className="my-2"
           />
-          <div className="flex items-center">
-            <button type="button" className="py-1 px-4 rounded-lg bg-green-600" onClick={() => {}}>
-              追蹤
-            </button>
-          </div>
         </div>
       );
     });
   }
-  return <div>{listData}</div>;
+
+  return (
+    <div>
+      {listData}
+    </div>
+  );
 }
 
 export default FollowList;

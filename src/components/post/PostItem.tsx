@@ -12,9 +12,9 @@ function PostTag(props: { text: string }) {
   const { text } = props;
   return (
     <span className="mr-1">
-      <a href="/" className="text-sky-600">
+      <Link to="/" className="text-sky-600">
         #{text}
-      </a>
+      </Link>
     </span>
   );
 }

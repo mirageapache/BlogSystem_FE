@@ -26,9 +26,7 @@ interface stateType {
 }
 
 function ExplorePage() {
-  // 探索頁包含 文章、貼文、用戶等資料可瀏覽，並結合搜尋功能
-  // 類別：熱門、文章、貼文、用戶(帳號)、標籤(文章或貼文)
-  const [activeTab, setActiveTab] = useState('post'); // 頁籤控制
+  const [activeTab, setActiveTab] = useState('user'); // 頁籤控制
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState; // 搜尋字串
@@ -165,33 +163,33 @@ function ExplorePage() {
       <div className="flex justify-center">
         {/* 熱門 */}
         {activeTab === 'popular' && (
-          <div className="w-full max-w-[600px]">
+          <section className="w-full max-w-[600px]">
             <ArticleList articleQueryData={articleQueryData!} />
-          </div>
+          </section>
         )}
         {/* 文章 */}
         {activeTab === 'article' && (
-          <div className="w-full max-w-[600px]">
+          <section className="w-full max-w-[600px]">
             <ArticleList articleQueryData={articleQueryData!} />
-          </div>
+          </section>
         )}
         {/* 貼文 */}
         {activeTab === 'post' && (
-          <div className="w-full max-w-[600px]">
+          <section className="w-full max-w-[600px]">
             <PostList postQueryData={postQueryData!} />
-          </div>
+          </section>
         )}
         {/* 用戶 */}
         {activeTab === 'user' && (
-          <div className="w-full max-w-[600px]">
+          <section className="w-full max-w-[600px]">
             <FollowList type="userList" followList={userList!} />
-          </div>
+          </section>
         )}
         {/* 標籤 */}
         {activeTab === 'tag' && (
-          <div className="w-full max-w-[600px]">
+          <section className="w-full max-w-[600px]">
             <div>還沒有標籤資料</div>
-          </div>
+          </section>
         )}
       </div>
     </div>
