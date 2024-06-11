@@ -5,8 +5,11 @@ import { get, isEmpty } from 'lodash';
 import { checkLogin, getCookies, scrollToTop } from 'utils/common';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { SysStateType, setActivePage } from '../../redux/sysSlice';
+
+// --- components ---
 import PostCreateModal from 'components/post/PostCreateModal';
+// --- functions ---
+import { SysStateType, setActivePage } from '../../redux/sysSlice';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -58,10 +61,6 @@ function SideBar() {
   const activePage = get(systemState, 'activePage');
   const userId = getCookies('uid');
   const [showModal, setShowModal] = useState(false);
-
-  const closeModal = (value: boolean) => {
-    setShowModal(value);
-  }
 
   return (
     <div className="text-left h-fit sm:px-1">
@@ -131,24 +130,22 @@ function SideBar() {
             >
               <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
             </SideBarItem>
-            <button 
+            <button
               type="button"
               className={`flex my-1.5 text-xl cursor-pointer py-4 ${normalStyle}`}
-              onClick={() => {setShowModal(true)}}
+              onClick={() => {
+                setShowModal(true);
+              }}
             >
               <div className="flex items-center">
                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
               </div>
-              <span className="ml-3 font-bold hidden lg:block">
-                建立貼文
-              </span>
+              <span className="ml-3 font-bold hidden lg:block">建立貼文</span>
             </button>
           </>
         )}
       </div>
-      {showModal &&
-        <PostCreateModal setShowModal={setShowModal} />
-      }
+      {showModal && <PostCreateModal setShowModal={setShowModal} />}
     </div>
   );
 }

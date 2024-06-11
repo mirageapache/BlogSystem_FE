@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { Fragment, useState } from 'react';
 import { get, isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
@@ -45,8 +47,8 @@ function FollowList({ type, followList }: PropsType) {
   const userId = getCookies('uid');
 
   /** 控制下拉選單 */
-  const toggleDropdown = (userId: string) => {
-    setActiveDropdown((prevActiveDropdown) => (prevActiveDropdown === userId ? '' : userId));
+  const toggleDropdown = (id: string) => {
+    setActiveDropdown((prevActiveDropdown) => (prevActiveDropdown === id ? '' : id));
   };
 
   /** 追蹤/取消追蹤 功能 mutation */
@@ -54,7 +56,9 @@ function FollowList({ type, followList }: PropsType) {
     ({ action, targetId }: { action: string; targetId: string }) =>
       handleFollowAction(action, userId!, targetId),
     {
-      onSuccess: (res) => { if (res.status === 200) refetch(); }, // refetch list data
+      onSuccess: (res) => {
+        if (res.status === 200) refetch();
+      }, // refetch list data
       onError: () => errorAlert(),
     }
   );
@@ -64,7 +68,9 @@ function FollowList({ type, followList }: PropsType) {
     ({ targetId, state }: { targetId: string; state: number }) =>
       changeFollowState(userId!, targetId, state),
     {
-      onSuccess: (res) => { if (res.status === 200) refetch(); },
+      onSuccess: (res) => {
+        if (res.status === 200) refetch();
+      },
       onError: () => errorAlert(),
     }
   );
@@ -94,7 +100,10 @@ function FollowList({ type, followList }: PropsType) {
                 onClick={() => toggleDropdown(user._id)}
               >
                 追蹤中
-                <FontAwesomeIcon icon={icon({ name: 'caret-down', style: 'solid' })} className="ml-1" />
+                <FontAwesomeIcon
+                  icon={icon({ name: 'caret-down', style: 'solid' })}
+                  className="ml-1"
+                />
               </button>
             ) : (
               <button
@@ -107,35 +116,46 @@ function FollowList({ type, followList }: PropsType) {
             )}
             {/* 追蹤中下拉選單 */}
             {activeDropdown === user._id && (
-              <Fragment>
+              <>
                 <div className="absolute w-28 border rounded-lg py-2 px-1 top-12 right-0 bg-white dark:bg-gray-950 dark:border-gray-600 z-50">
-                  {user.followState === 1?
+                  {user.followState === 1 ? (
                     <button
                       type="button"
                       className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      onClick={() => {changeState.mutate({ targetId: user._id, state: 0 })}}
+                      onClick={() => {
+                        changeState.mutate({ targetId: user._id, state: 0 });
+                      }}
                     >
                       關閉通知
                     </button>
-                  :
+                  ) : (
                     <button
                       type="button"
                       className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      onClick={() => {changeState.mutate({ targetId: user._id, state: 1 })}}
+                      onClick={() => {
+                        changeState.mutate({ targetId: user._id, state: 1 });
+                      }}
                     >
                       開啟通知
                     </button>
-                  }
+                  )}
                   <button
                     type="button"
                     className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    onClick={() => {followMutation.mutate({ action: 'unfollow', targetId: user._id })}}
+                    onClick={() => {
+                      followMutation.mutate({ action: 'unfollow', targetId: user._id });
+                    }}
                   >
                     取消追蹤
                   </button>
                 </div>
-                <div className="fixed z-40 top-0 left-0 w-full h-full" onClick={() => {toggleDropdown('')}}/> 
-              </Fragment>
+                <div
+                  className="fixed z-40 top-0 left-0 w-full h-full"
+                  onClick={() => {
+                    toggleDropdown('');
+                  }}
+                />
+              </>
             )}
           </div>
         </div>
@@ -165,11 +185,7 @@ function FollowList({ type, followList }: PropsType) {
     });
   }
 
-  return (
-    <div>
-      {listData}
-    </div>
-  );
+  return <div>{listData}</div>;
 }
 
 export default FollowList;

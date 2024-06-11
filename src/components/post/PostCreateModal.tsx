@@ -1,6 +1,6 @@
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 
 interface PropsType {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,7 +28,7 @@ function PostCreateModal({ setShowModal }: PropsType) {
         <div>footer</div>
       </div>
     </div>
-  )
+  );
 }
 
-export default PostCreateModal
+export default PostCreateModal;

@@ -60,10 +60,14 @@ export async function handleFollowAction(
 }
 
 /** 更改訂閱狀態 */
-export async function changeFollowState(userId: string, targetId: string, state: number): Promise<getFollowListType>{
+export async function changeFollowState(
+  userId: string,
+  targetId: string,
+  state: number
+): Promise<getFollowListType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
-  }
+  };
 
   const result = await axios
     .patch(`${baseUrl}/follow/changeFollowState`, { userId, targetId, state }, config)
