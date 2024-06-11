@@ -42,7 +42,7 @@ function Header() {
   window.addEventListener('resize', screenWidthChange);
 
   return (
-    <header className="fixed z-10 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
+    <header className="fixed z-40 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
       <div className="w-full flex justify-between py-2 px-4">
         <div id="brand" className="">
           <Link className="flex flex-row items-center w-fit" to="/">

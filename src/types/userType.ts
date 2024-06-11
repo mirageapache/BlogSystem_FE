@@ -14,6 +14,7 @@ export interface UserDataType {
   createdAt: string;
   status: number;
   isFollow?: boolean; // 判斷是否追蹤
+  followState?: number; // 判斷追蹤狀態
 }
 
 /** 使用者設定資料型別 */

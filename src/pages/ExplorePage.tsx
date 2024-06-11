@@ -26,9 +26,7 @@ interface stateType {
 }
 
 function ExplorePage() {
-  // 探索頁包含 文章、貼文、用戶等資料可瀏覽，並結合搜尋功能
-  // 類別：熱門、文章、貼文、用戶(帳號)、標籤(文章或貼文)
-  const [activeTab, setActiveTab] = useState('post'); // 頁籤控制
+  const [activeTab, setActiveTab] = useState('user'); // 頁籤控制
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState; // 搜尋字串

@@ -9,7 +9,6 @@ import { CookiesProvider } from 'react-cookie';
 import App from './App';
 import store from './redux/configStore';
 // --- styles ---
-import './custom-bootstrap.scss';
 import './index.css';
 // import reportWebVitals from "./reportWebVitals";
 
