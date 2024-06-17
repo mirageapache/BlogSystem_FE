@@ -16,7 +16,7 @@ import { SearchStateType } from '../redux/searchSlice';
 
 // --- api / type ---
 import { getAllPosts } from '../api/post';
-import { getUserList } from '../api/user';
+import { getRecommendUserList, getSearchUserList } from '../api/user';
 import { getPartialArticles, ArticleResultType, getSearchArticle } from '../api/article';
 import { postResultType } from '../types/postType';
 
@@ -57,7 +57,12 @@ function ExplorePage() {
       break;
     case 'user':
       /** 取得用戶清單 */
-      userList = useQuery('followList', () => getUserList(searchText, userId)) as FollowResultType;
+      if(isEmpty(searchText)){
+        userList = useQuery('followList', () => getRecommendUserList(userId)) as FollowResultType;
+      } else {
+        userList = useQuery('followList', () => getSearchUserList(searchText, userId)) as FollowResultType;
+      }
+
       break;
     // case 'tag':
     //   break;

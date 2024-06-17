@@ -18,7 +18,7 @@ const sysSlice = createSlice({
   name: 'system',
   initialState: initState,
   reducers: {
-    /** 設定作用中頁籤 */
+    /** 設定SideBar、MainMenu、ButtonMenu選單作用中頁籤 */
     setActivePage(state: SysStateType, action: PayloadAction<string>) {
       state.activePage = action.payload;
     },
