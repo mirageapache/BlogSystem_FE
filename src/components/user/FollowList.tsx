@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { get, isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,7 +14,7 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 import UserLoading from './UserLoading';
 import UserInfoPanel from './UserInfoPanel';
 // --- functions ---
-import { changeFollowState, handleFollowAction } from '../../api/follow';
+import { changeFollowState, followUser, unfollowUser } from '../../api/follow';
 import { getCookies } from '../../utils/common';
 import { errorAlert } from '../../utils/fetchError';
 
@@ -51,14 +51,27 @@ function FollowList({ type, followList }: PropsType) {
     setActiveDropdown((prevActiveDropdown) => (prevActiveDropdown === id ? '' : id));
   };
 
-  /** 追蹤/取消追蹤 功能 mutation */
+  /** 追蹤 mutation */
   const followMutation = useMutation(
-    ({ action, targetId }: { action: string; targetId: string }) =>
-      handleFollowAction(action, userId!, targetId),
+    ({ targetId }: { targetId: string }) => followUser(userId!, targetId),
     {
       onSuccess: (res) => {
         if (res.status === 200) refetch();
-      }, // refetch list data
+      },
+      onError: () => errorAlert(),
+    }
+  );
+
+  /** 取消追蹤 mutation */
+  const unfollowMutation = useMutation(
+    ({ targetId }: { targetId: string }) => unfollowUser(userId!, targetId),
+    {
+      onSuccess: (res) => {
+        if (res.status === 200) {
+          toggleDropdown('');
+          refetch();
+        }
+      },
       onError: () => errorAlert(),
     }
   );
@@ -69,7 +82,10 @@ function FollowList({ type, followList }: PropsType) {
       changeFollowState(userId!, targetId, state),
     {
       onSuccess: (res) => {
-        if (res.status === 200) refetch();
+        if (res.status === 200) {
+          toggleDropdown('');
+          refetch();
+        }
       },
       onError: () => errorAlert(),
     }
@@ -78,86 +94,88 @@ function FollowList({ type, followList }: PropsType) {
   /** 建立追蹤清單元素 */
   const generateList = (dataList: UserDataType[]) => {
     return dataList.map((user) => {
-      if (user._id === userId) return null;
+      if (user.userId === userId) return null;
       return (
         <div
           className="flex justify-between px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-          key={user._id}
+          key={user.userId}
         >
           <UserInfoPanel
-            userId={user._id}
+            userId={user.userId}
             account={user.account}
             name={user.name}
             avatarUrl={user.avatar}
             bgColor={user.bgColor}
             className="my-2"
           />
-          <div className="relative flex items-center">
-            {user.isFollow ? (
-              <button
-                type="button"
-                className="py-1 px-3 rounded-lg text-white bg-gray-500"
-                onClick={() => toggleDropdown(user._id)}
-              >
-                追蹤中
-                <FontAwesomeIcon
-                  icon={icon({ name: 'caret-down', style: 'solid' })}
-                  className="ml-1"
-                />
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="py-1 px-3 rounded-lg text-white bg-green-600"
-                onClick={() => followMutation.mutate({ action: 'follow', targetId: user._id })}
-              >
-                追蹤
-              </button>
-            )}
-            {/* 追蹤中下拉選單 */}
-            {activeDropdown === user._id && (
-              <>
-                <div className="absolute w-28 border rounded-lg py-2 px-1 top-12 right-0 bg-white dark:bg-gray-950 dark:border-gray-600 z-50">
-                  {user.followState === 1 ? (
+          {!isEmpty(userId) && (
+            <div className="relative flex items-center">
+              {user.isFollow ? (
+                <button
+                  type="button"
+                  className="py-1 px-3 rounded-lg text-white bg-gray-500"
+                  onClick={() => toggleDropdown(user.userId)}
+                >
+                  追蹤中
+                  <FontAwesomeIcon
+                    icon={icon({ name: 'caret-down', style: 'solid' })}
+                    className="ml-1"
+                  />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="py-1 px-3 rounded-lg text-white bg-green-600"
+                  onClick={() => followMutation.mutate({ targetId: user.userId })}
+                >
+                  追蹤
+                </button>
+              )}
+              {/* 追蹤中下拉選單 */}
+              {activeDropdown === user.userId && (
+                <>
+                  <div className="absolute w-28 border rounded-lg py-2 px-1 top-12 right-0 bg-white dark:bg-gray-950 dark:border-gray-600 z-50">
+                    {user.followState === 1 ? (
+                      <button
+                        type="button"
+                        className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        onClick={() => {
+                          changeState.mutate({ targetId: user.userId, state: 0 });
+                        }}
+                      >
+                        關閉通知
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        onClick={() => {
+                          changeState.mutate({ targetId: user.userId, state: 1 });
+                        }}
+                      >
+                        開啟通知
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
                       onClick={() => {
-                        changeState.mutate({ targetId: user._id, state: 0 });
+                        unfollowMutation.mutate({ targetId: user.userId });
                       }}
                     >
-                      關閉通知
+                      取消追蹤
                     </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      onClick={() => {
-                        changeState.mutate({ targetId: user._id, state: 1 });
-                      }}
-                    >
-                      開啟通知
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  </div>
+                  <div
+                    className="fixed z-40 top-0 left-0 w-full h-full"
                     onClick={() => {
-                      followMutation.mutate({ action: 'unfollow', targetId: user._id });
+                      toggleDropdown('');
                     }}
-                  >
-                    取消追蹤
-                  </button>
-                </div>
-                <div
-                  className="fixed z-40 top-0 left-0 w-full h-full"
-                  onClick={() => {
-                    toggleDropdown('');
-                  }}
-                />
-              </>
-            )}
-          </div>
+                  />
+                </>
+              )}
+            </div>
+          )}
         </div>
       );
     });

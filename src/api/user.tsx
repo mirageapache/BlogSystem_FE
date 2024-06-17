@@ -25,8 +25,11 @@ export async function getAllUserList(): Promise<GetUserProfileType> {
 /** 取得搜尋使用者清單(含follow資料)
  * @searchString [搜尋字串]
  * @userId [當前登入的使用者Id] - 用來判斷isFollow
-*/
-export async function getSearchUserList(searchText?: string, userId?: string): Promise<GetUserProfileType> {
+ */
+export async function getSearchUserList(
+  searchText?: string,
+  userId?: string
+): Promise<GetUserProfileType> {
   const result = await axios
     .post(`${baseUrl}/user/getSearchUserList`, { searchText, userId })
     .then((res) => {
@@ -52,7 +55,6 @@ export async function getRecommendUserList(userId?: string): Promise<GetUserProf
     });
   return result;
 }
-
 
 /** 取得自己的使用者資料(須帶authToken做驗證) */
 export async function getOwnProfile(

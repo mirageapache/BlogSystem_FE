@@ -57,10 +57,12 @@ function ExplorePage() {
       break;
     case 'user':
       /** 取得用戶清單 */
-      if(isEmpty(searchText)){
+      if (isEmpty(searchText)) {
         userList = useQuery('followList', () => getRecommendUserList(userId)) as FollowResultType;
       } else {
-        userList = useQuery('followList', () => getSearchUserList(searchText, userId)) as FollowResultType;
+        userList = useQuery('followList', () =>
+          getSearchUserList(searchText, userId)
+        ) as FollowResultType;
       }
 
       break;

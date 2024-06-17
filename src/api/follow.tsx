@@ -36,21 +36,32 @@ export async function getFollowerList(userId: string): Promise<getFollowListType
   return result;
 }
 
-/** 追蹤/取消追蹤(其他使用者) */
-export async function handleFollowAction(
-  action: string, // 'follow' or 'unfollow'
-  userId: string, // 當前操作的使用者ID
-  targetId: string // 目標使用者ID
-  // followState: number // state為訂閱狀態 [0-追蹤(不主動推播) / 1-主動推播]
-): Promise<getFollowListType> {
+/** 追蹤 */
+export async function followUser(userId: string, targetId: string): Promise<getFollowListType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };
 
   const result = await axios
-    .patch(`${baseUrl}/follow/followAction`, { action, userId, targetId }, config)
+    .post(`${baseUrl}/follow/follow`, { userId, targetId }, config)
     .then((res) => {
-      console.log(res);
+      return res;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+  return result;
+}
+
+/** 取消追蹤 */
+export async function unfollowUser(userId: string, targetId: string): Promise<getFollowListType> {
+  const config = {
+    headers: { Authorization: `Bearer ${authToken}` },
+  };
+
+  const result = await axios
+    .post(`${baseUrl}/follow/unfollow`, { userId, targetId }, config)
+    .then((res) => {
       return res;
     })
     .catch((error) => {
@@ -68,11 +79,9 @@ export async function changeFollowState(
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };
-
   const result = await axios
-    .patch(`${baseUrl}/follow/changeFollowState`, { userId, targetId, state }, config)
+    .patch(`${baseUrl}/follow/changeState`, { userId, targetId, state }, config)
     .then((res) => {
-      console.log(res);
       return res;
     })
     .catch((error) => {
