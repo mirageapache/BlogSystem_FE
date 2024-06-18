@@ -4,6 +4,7 @@ import sysSlice from './sysSlice';
 import searchSlice from './searchSlice';
 import loginSlice from './loginSlice';
 import userSlice from './userSlice';
+import postSlice from './postSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     search: searchSlice,
     login: loginSlice,
     user: userSlice,
+    post: postSlice,
   },
 });
 export default store;

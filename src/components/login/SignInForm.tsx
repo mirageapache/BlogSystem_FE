@@ -15,7 +15,6 @@ import {
   change,
   // InjectedFormProps,
 } from 'redux-form';
-import { useNavigate } from 'react-router-dom';
 // --- componetns ---
 import FormInput from '../form/FormInput';
 // --- api / types ---
@@ -44,7 +43,6 @@ function SignInForm(props: any) {
   const [isLoading, setIsLoading] = useState(false);
   const swal = withReactContent(Swal);
   const [cookies, setCookie, removeCookie] = useCookies(['uid']);
-  const navigate = useNavigate();
 
   /** 清除表單資料 */
   const cleanForm = () => {
@@ -94,7 +92,6 @@ function SignInForm(props: any) {
             if (pathname === '/user/editProfile') {
               location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
             }
-            // navigate('/');
             handleClose();
           });
       } else if (!isEmpty(get(res, 'response.data.message', ''))) {

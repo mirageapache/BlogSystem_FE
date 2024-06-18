@@ -6,10 +6,9 @@ import { checkLogin, getCookies, scrollToTop } from 'utils/common';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-// --- components ---
-import PostCreateModal from 'components/post/PostCreateModal';
 // --- functions ---
 import { SysStateType, setActivePage } from '../../redux/sysSlice';
+import { setShowCreateModal } from '../../redux/postSlice';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -60,7 +59,6 @@ function SideBar() {
   const systemState = useSelector((state: StateType) => state.system);
   const activePage = get(systemState, 'activePage');
   const userId = getCookies('uid');
-  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="text-left h-fit sm:px-1">
@@ -133,9 +131,7 @@ function SideBar() {
             <button
               type="button"
               className={`flex my-1.5 text-xl cursor-pointer py-4 ${normalStyle}`}
-              onClick={() => {
-                setShowModal(true);
-              }}
+              onClick={() => sliceDispatch(setShowCreateModal(true))}
             >
               <div className="flex items-center">
                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
@@ -145,7 +141,6 @@ function SideBar() {
           </>
         )}
       </div>
-      {showModal && <PostCreateModal setShowModal={setShowModal} />}
     </div>
   );
 }

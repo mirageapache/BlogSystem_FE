@@ -31,6 +31,7 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
+import ModalSection from 'components/layout/ModalSection';
 
 /** stateType  */
 interface StateType {
@@ -97,10 +98,11 @@ function App() {
             </section>
             <section className={BOTTOM_MENU_FRAME}>
               <BottomMenu />
-            </section>
+            </section> 
           </div>
         </main>
 
+        <ModalSection />
         {/* 登入&註冊 Popup */}
         {loginState.showSignInPop && <SignInPopup />}
         {loginState.showSignUpPop && <SignUpPopup />}
