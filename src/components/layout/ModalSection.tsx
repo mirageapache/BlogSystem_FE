@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 // --- components ---
@@ -16,13 +16,7 @@ interface StateType {
 function ModalSection() {
   const postState = useSelector((state: StateType) => state.post);
 
-  return (
-    <div id="modalSection">
-      {postState.showCreateModal && <PostCreateModal /> }
-      
-
-    </div>
-  )
+  return <div id="modalSection">{postState.showCreateModal && <PostCreateModal />}</div>;
 }
 
-export default ModalSection
+export default ModalSection;

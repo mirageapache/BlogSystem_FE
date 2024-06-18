@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { connect, useDispatch } from 'react-redux';
@@ -24,13 +26,7 @@ function SignUpPopup(props: any) {
 
   return (
     <div className="fixed w-screen h-screen z-30 flex justify-center items-center">
-      <button
-        type="button"
-        className="fixed w-full h-full bg-gray-950 opacity-80"
-        onClick={handleClose}
-      >
-        <p className="hidden">p</p>
-      </button>
+      <div className="fixed w-full h-full bg-black opacity-40" onClick={handleClose} />
       <div className="absolute z-10 w-4/5 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
         {/* popup header */}
         <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">

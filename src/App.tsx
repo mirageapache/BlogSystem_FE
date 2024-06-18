@@ -11,6 +11,7 @@ import {
 // --- components ---
 import BottomMenu from 'components/layout/BottomMenu';
 import EditProfilePage from 'pages/user/EditProfilePage';
+import ModalSection from 'components/layout/ModalSection';
 import Header from './components/layout/Header';
 import SideBar from './components/layout/SideBar';
 import SignInPopup from './components/login/SignInPopup';
@@ -31,7 +32,6 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
-import ModalSection from 'components/layout/ModalSection';
 
 /** stateType  */
 interface StateType {
@@ -98,7 +98,7 @@ function App() {
             </section>
             <section className={BOTTOM_MENU_FRAME}>
               <BottomMenu />
-            </section> 
+            </section>
           </div>
         </main>
 
