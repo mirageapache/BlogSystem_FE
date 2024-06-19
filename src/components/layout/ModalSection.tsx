@@ -5,8 +5,6 @@ import { useSelector } from 'react-redux';
 import PostCreateModal from 'components/post/PostCreateModal';
 
 // --- functions / types ---
-import { LoginStateType } from '../../redux/loginSlice';
-import { SysStateType } from '../../redux/sysSlice';
 import { PostStateType } from '../../redux/postSlice';
 
 interface StateType {
