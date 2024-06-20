@@ -5,7 +5,6 @@ import { userInfoPanelType } from './userType';
 export interface PostDataType extends errorMsgType {
   _id: string;
   author: userInfoPanelType;
-  title: string;
   content: string;
   image: string;
   status: number;
@@ -21,14 +20,12 @@ export interface PostDataType extends errorMsgType {
 
 /** post API參數型別 */
 export interface PostVariablesType {
-  postId: string;
+  postId?: string;
   author: string;
-  title: string;
   content: string;
-  image: string;
+  image?: string;
   status: number;
-  subject: string;
-  hashTags: string[];
+  hashTags?: string[];
 }
 
 export interface postResultType extends RqResponseType {

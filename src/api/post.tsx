@@ -4,6 +4,7 @@ import { PostDataType, PostVariablesType } from '../types/postType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
+const authToken = localStorage.getItem('authToken');
 
 /** postApi 型別 */
 export interface PostApiType extends AxResponseType {
@@ -40,10 +41,14 @@ export async function getPosDetail(postId: string) {
 
 /** 新增貼文 */
 export async function createPost(variables: PostVariablesType) {
+  const config = {
+    headers: { Authorization: `Bearer ${authToken}` },
+  };
   console.log(variables);
+  // author, content, image, status, hashTags
 
   const result = await axios
-    .post(`${baseUrl}/post/create`, variables)
+    .post(`${baseUrl}/post/create`, variables, config)
     .then((res) => {
       console.log(res);
       return res.data;
