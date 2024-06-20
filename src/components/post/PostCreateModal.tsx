@@ -4,12 +4,12 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setShowCreateModal } from '../../redux/postSlice';
 import { getCookies } from 'utils/common';
 import { useMutation } from 'react-query';
 import { createPost } from 'api/post';
 import { PostVariablesType } from 'types/postType';
 import { errorAlert } from 'utils/fetchError';
+import { setShowCreateModal } from '../../redux/postSlice';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -21,15 +21,12 @@ function PostCreateModal() {
   };
 
   /** 新增貼文 mutation */
-  const createPostMutation = useMutation(
-    (variables: PostVariablesType) => createPost(variables),
-    {
-      onSuccess: (res) => {
-        if (res.status === 200) console.log(res);
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const createPostMutation = useMutation((variables: PostVariablesType) => createPost(variables), {
+    onSuccess: (res) => {
+      if (res.status === 200) console.log(res);
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 發佈貼文 */
   const handleSubmit = () => {
@@ -38,17 +35,17 @@ function PostCreateModal() {
       author: userId,
       content,
       status: 1,
-    }
+    };
 
     console.log(variables);
     createPostMutation.mutate(variables);
-  }
+  };
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-30">
-      <div className="fixed w-full h-full rounded-lg sm:max-w-[600px] sm:h-auto sm:max-h-[600px] bg-white dark:bg-gray-950 z-40">
+      <div className="fixed w-full h-full rounded-lg sm:max-w-[600px] sm:h-auto sm:max-h-[600px] bg-white dark:bg-gray-800 z-40">
         {/* modal header */}
-        <div className="flex justify-between items-center w-full  py-2 px-5">
+        <div className="flex justify-between items-center w-full py-2 px-5 border-b-[1px] border-gray-300 dark:border-gray-700">
           <h3 className="text-xl font-bold">建立貼文</h3>
           <button
             aria-label="close"
@@ -64,10 +61,10 @@ function PostCreateModal() {
         </div>
 
         {/* modal body */}
-        <div className="p-5 h-80 border-y-[1px] border-gray-300 dark:border-gray-700">
+        <div className="p-5 h-4/5 sm:h-88">
           <textarea
             name="content"
-            className="w-full h-80 resize-none outline-none border border-red-500"
+            className="w-full h-full sm:h-80 resize-none outline-none dark:bg-gray-800"
             placeholder="告訴大家你的想法..."
             rows={10}
             value={content}
@@ -76,11 +73,19 @@ function PostCreateModal() {
         </div>
 
         {/* modal footer */}
-        <div className="fixed bottom-0 sm:relative sm:bottom-auto py-3 px-5 text-right">
-          <button type="button" className="w-24 py-1.5 mr-6 text-white rounded-md bg-gray-500" onClick={handleClose}>
+        <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto py-3 px-5 text-right border-t-[1px] border-gray-300 dark:border-gray-700">
+          <button
+            type="button"
+            className="w-24 py-1.5 hidden sm:inline-block mr-6 text-white rounded-md bg-gray-500"
+            onClick={handleClose}
+          >
             取消
           </button>
-          <button type="button" className="w-24 py-1.5 text-white rounded-md bg-green-600" onClick={handleSubmit}>
+          <button
+            type="button"
+            className="w-full sm:w-24 py-1.5 text-white rounded-md bg-green-600"
+            onClick={handleSubmit}
+          >
             發佈貼文
           </button>
         </div>

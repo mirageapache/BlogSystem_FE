@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { get, isEmpty } from 'lodash';
@@ -29,27 +29,59 @@ const normalStyle = 'text-gray-700 dark:text-gray-300 hover:text-orange-500';
 
 /** SideBar Item 元件 */
 function SideBarItem({ href, text, count, children, activeItem, changeItem }: ItemProps) {
+  const [showTip, setShowTip] = useState(false);
+  const sliceDispatch = useDispatch();
+  const tooltip = useRef(null);
+
   return (
-    <Link
-      to={href}
-      className={`flex my-1.5 text-xl cursor-pointer py-4 ${
-        activeItem ? activeStyle : normalStyle
-      }`}
-      onClick={() => {
-        changeItem();
-        scrollToTop();
-      }}
-    >
-      <span className="flex items-center">{children}</span>
-      <span className="ml-3 font-bold hidden lg:block">
-        {text}
-        {!isEmpty(count) && (
-          <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
-            {count}
+    <div className="relative">
+      {text === '建立貼文' ? (
+        <button
+          type="button"
+          ref={tooltip}
+          className={`flex my-1.5 ml-3 text-xl cursor-pointer py-4 ${normalStyle}`}
+          onClick={() => sliceDispatch(setShowCreateModal(true))}
+          onMouseEnter={() => setShowTip(true)}
+          onMouseLeave={() => setShowTip(false)}
+        >
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+          </div>
+          <span className="ml-3 font-bold hidden lg:block">建立貼文</span>
+        </button>
+      ) : (
+        <Link
+          to={href}
+          className={`flex my-1.5 ml-3 text-xl cursor-pointer py-4 ${
+            activeItem ? activeStyle : normalStyle
+          }`}
+          ref={tooltip}
+          onClick={() => {
+            changeItem();
+            scrollToTop();
+          }}
+          onMouseEnter={() => setShowTip(true)}
+          onMouseLeave={() => setShowTip(false)}
+        >
+          <span className="flex items-center">{children}</span>
+          <span className="ml-3 font-bold hidden lg:block">
+            {text}
+            {!isEmpty(count) && (
+              <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+                {count}
+              </span>
+            )}
           </span>
-        )}
-      </span>
-    </Link>
+        </Link>
+      )}
+      <div
+        className={`absolute text-center top-3 text-sm left-10 w-16 py-1 px-1 opacity-90 bg-black text-white rounded-md ${
+          showTip ? 'block' : 'hidden'
+        } lg:hidden dark:bg-white  dark:text-black dark:font-bold`}
+      >
+        {text}
+      </div>
+    </div>
   );
 }
 
@@ -62,7 +94,7 @@ function SideBar() {
 
   return (
     <div className="text-left h-fit sm:px-1">
-      <div className="ml-2.5">
+      <div>
         <SideBarItem
           href="/"
           text="首頁"
@@ -128,7 +160,16 @@ function SideBar() {
             >
               <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
             </SideBarItem>
-            <button
+            <SideBarItem
+              href=""
+              text="建立貼文"
+              count={0}
+              activeItem={activePage === 'activity'}
+              changeItem={() => sliceDispatch(setActivePage('activity'))}
+            >
+              <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+            </SideBarItem>
+            {/* <button
               type="button"
               className={`flex my-1.5 text-xl cursor-pointer py-4 ${normalStyle}`}
               onClick={() => sliceDispatch(setShowCreateModal(true))}
@@ -137,7 +178,7 @@ function SideBar() {
                 <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
               </div>
               <span className="ml-3 font-bold hidden lg:block">建立貼文</span>
-            </button>
+            </button> */}
           </>
         )}
       </div>
