@@ -4,7 +4,7 @@ import { userInfoPanelType } from './userType';
 /** post API接收資料型別 */
 export interface PostDataType extends errorMsgType {
   _id: string;
-  author: userInfoPanelType;
+  author: userInfoPanelType; // userId
   content: string;
   image: string;
   status: number;
@@ -21,7 +21,7 @@ export interface PostDataType extends errorMsgType {
 /** post API參數型別 */
 export interface PostVariablesType {
   postId?: string;
-  author: string;
+  userId: string; // author
   content: string;
   image?: string;
   status: number;

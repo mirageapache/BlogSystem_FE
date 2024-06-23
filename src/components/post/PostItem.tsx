@@ -51,7 +51,7 @@ function PostItem(props: { postData: PostDataType }) {
           {/* hash tags */}
           <div>{tagsList}</div>
           {/* info panel */}
-          <PostInfoPanel />
+          <PostInfoPanel postData={postData} />
         </div>
       </div>
     </div>
