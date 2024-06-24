@@ -45,12 +45,10 @@ export async function createPost(userId: string, formData: FormData): Promise<Po
     headers: { Authorization: `Bearer ${authToken}` },
   };
 
-  console.log(formData);
-
   const result = await axios
-    .post(`${baseUrl}/post/create/${userId}`, { formData }, config)
+    .post(`${baseUrl}/post/create/${userId}`, formData, config)
     .then((res) => {
-      return res.data;
+      return res;
     })
     .catch((error) => {
       return error;

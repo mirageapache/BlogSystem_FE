@@ -33,7 +33,6 @@ function PostCreateModal() {
     ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
     {
       onSuccess: (res) => {
-        console.log(res);
         if (res.status === 200) {
           const swal = withReactContent(Swal);
           swal.fire({
@@ -57,17 +56,13 @@ function PostCreateModal() {
     }
     const userId = getCookies('uid') as string;
 
-    console.log(userId, content);
-    console.log(imageFile);
-
     const formData = new FormData();
     formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
-    // formData.set('hashTags', JSON.stringify([]));
+    formData.set('hashTags', JSON.stringify([]));
     if (imageFile) formData.set('postImage', imageFile);
 
-    console.log(formData);
     createPostMutation.mutate({ userId, formData });
   };
 
