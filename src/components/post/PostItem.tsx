@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { PostDataType } from 'types/postType';
@@ -7,6 +7,10 @@ import { PostDataType } from 'types/postType';
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import { formatDateTime } from 'utils/dateTime';
 import PostInfoPanel from './PostInfoPanel';
+import { isEmpty } from 'lodash';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { getCookies } from 'utils/common';
 
 function PostTag(props: { text: string }) {
   const { text } = props;
@@ -21,6 +25,8 @@ function PostTag(props: { text: string }) {
 
 function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
+  const userId = getCookies('uid');
+  const [showEditTip, setShowEditTip] = useState(false);
 
   // console.log(moment(postData.createdAt).unix().toString());
 
@@ -40,16 +46,40 @@ function PostItem(props: { postData: PostDataType }) {
             bgColor={postData.author.bgColor}
             className="my-2"
           />
-          <p className="text-gray-600 dark:text-gray-300 my-1">
-            {formatDateTime(postData.createdAt)}
-          </p>
+          <div className="flex gap-4 py-1">
+            <p className="text-gray-600 dark:text-gray-300">
+              {formatDateTime(postData.createdAt)}
+            </p>
+
+            {userId === postData.author._id && 
+              <span className="relative my-0.5"
+                onMouseEnter={()=>setShowEditTip(true)}
+                onMouseLeave={()=>setShowEditTip(false)}
+              >
+                <button 
+                  className="text-gray-500 hover:text-orange-500 rounded-md"
+                >
+                  <FontAwesomeIcon icon={icon({name: 'square-pen', style:'solid'})} className="w-5 h-5" />
+                </button>
+                <span className={`absolute right-0 w-20 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${showEditTip? 'block' : 'hidden'}`}>編輯貼文</span>
+              </span>
+            }
+          </div>
         </div>
         <div className="ml-[60px]">
           {/* image */}
+          {!isEmpty(postData.image) && 
+            <div>
+              <img src={postData.image} alt='post image' />
+            </div>
+          }
+
           {/* content */}
           <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
+
           {/* hash tags */}
           <div>{tagsList}</div>
+
           {/* info panel */}
           <PostInfoPanel postData={postData} />
         </div>

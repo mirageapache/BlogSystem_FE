@@ -12,6 +12,8 @@ import { createPost } from 'api/post';
 import { PostVariablesType } from 'types/postType';
 import { errorAlert } from 'utils/fetchError';
 import { setShowCreateModal } from '../../redux/postSlice';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -25,26 +27,43 @@ function PostCreateModal() {
   };
 
   /** 新增貼文 mutation */
-  const createPostMutation = useMutation((variables: PostVariablesType) => createPost(variables), {
+  const createPostMutation = useMutation(({userId, formData}: {userId: string, formData: FormData}) => createPost(userId, formData), {
     onSuccess: (res) => {
+      console.log(res);
       if (res.status === 200) {
-        console.log(res);
+        const swal = withReactContent(Swal);
+        swal.fire({
+          title: '貼文已發佈',
+          icon: 'success',
+          confirmButtonText: '確認',
+        });
         handleClose();
       }
     },
     onError: () => errorAlert(),
+    // error type:未登入、沒有內容
   });
 
   /** 發佈貼文 */
   const handleSubmit = () => {
+    // validate form data
+    if(isEmpty(content) || content.length === 0) {
+      return;
+    }
     const userId = getCookies('uid') as string;
-    const variables: PostVariablesType = {
-      userId,
-      content,
-      status: 1,
-    };
-    console.log(variables);
-    createPostMutation.mutate(variables);
+
+    console.log(userId, content);
+    console.log(imageFile);
+
+    const formData = new FormData();
+    formData.set('author', userId);
+    formData.set('content', content);
+    formData.set('status', '1');
+    // formData.set('hashTags', JSON.stringify([]));
+    if(imageFile) formData.set('postImage', imageFile);
+
+    console.log(formData);
+    createPostMutation.mutate({userId, formData});
   };
 
   /** 處理上傳圖片檔 */
@@ -59,7 +78,8 @@ function PostCreateModal() {
 
   /** 刪除圖片檔 */
   const handleDeleteImage = () => {
-    console.log('delete image');
+    setImage('');
+    setImageFile('');
   };
 
   // 測試contenteditable功能
@@ -144,7 +164,7 @@ function PostCreateModal() {
                 <img src={image} alt="" className="h-24 object-cover" />
                 <button aria-label="close" type="button" onClick={handleDeleteImage}>
                   <FontAwesomeIcon
-                    className="absolute top-1 right-1 w-5 h-5 text-gray-700 hover:text-red-500"
+                    className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
                     icon={icon({ name: 'circle-xmark', style: 'solid' })}
                   />
                 </button>
@@ -171,20 +191,30 @@ function PostCreateModal() {
             />
           </div>
           <div>
-            <button
+            {/* <button
               type="button"
               className="w-24 py-1.5 hidden sm:inline-block mr-6 text-white rounded-md bg-gray-500"
               onClick={handleClose}
             >
               取消
-            </button>
-            <button
-              type="button"
-              className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
-              onClick={handleSubmit}
-            >
-              發佈貼文
-            </button>
+            </button> */}
+            {!isEmpty(content) || content.length !== 0 ? 
+              <button
+                type="button"
+                className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
+                onClick={handleSubmit}
+              >
+                發佈貼文
+              </button>
+            : 
+            
+              <button
+                type="button"
+                className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-gray-600"
+              >
+                發佈貼文
+              </button>
+            } 
           </div>
         </div>
       </div>

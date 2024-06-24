@@ -12,14 +12,14 @@ function ArticleDetailPage() {
   const { id } = useParams();
   const avatarUrl = '';
 
-  const { isLoading, error, data } = useQuery('posts', () => getAllPosts());
+  // const { isLoading, error, data } = useQuery('posts', () => getAllPosts());
 
-  if (isLoading) return <Spinner />;
-  if (error) return <p>Error</p>;
+  // if (isLoading) return <Spinner />;
+  // if (error) return <p>Error</p>;
   return (
     <div className="flex justify-center">
       <div className="flex flex-col max-w-[750px] m-5">
-        <h2 className="text-4xl border-b-[1px] dark:border-gray-700 pb-4">{data.title}</h2>
+        <h2 className="text-4xl border-b-[1px] dark:border-gray-700 pb-4">文章標題</h2>
         <div className="flex flex-col w-full">
           <div className="w-full">
             {/* 作者資訊 */}
@@ -35,7 +35,7 @@ function ArticleDetailPage() {
             <ArticleInfoPanel />
           </div>
           {/* 文章內文 */}
-          <ContentSection content={data.body} />
+          <ContentSection content="文章內容" />
         </div>
       </div>
     </div>

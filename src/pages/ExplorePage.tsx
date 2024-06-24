@@ -26,7 +26,7 @@ interface stateType {
 }
 
 function ExplorePage() {
-  const [activeTab, setActiveTab] = useState('popular'); // 頁籤控制
+  const [activeTab, setActiveTab] = useState('post'); // 頁籤控制
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState; // 搜尋字串

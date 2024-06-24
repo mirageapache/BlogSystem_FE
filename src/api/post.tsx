@@ -7,12 +7,12 @@ const baseUrl = API_URL;
 const authToken = localStorage.getItem('authToken');
 
 /** postApi 型別 */
-export interface PostApiType extends AxResponseType {
+interface PostApiType extends AxResponseType {
   data: PostDataType;
 }
 
 /** 取得所有貼文 */
-export async function getAllPosts() {
+export async function getAllPosts(): Promise<PostApiType> {
   const result = await axios
     .get(`${baseUrl}/post/all`)
     .then((res) => {
@@ -26,7 +26,7 @@ export async function getAllPosts() {
 }
 
 /** 取得特定貼文內容 */
-export async function getPosDetail(postId: string) {
+export async function getPosDetail(postId: string): Promise<PostApiType> {
   const result = await axios
     .post(`${baseUrl}/post/detail`, { postId })
     .then((res) => {
@@ -40,17 +40,16 @@ export async function getPosDetail(postId: string) {
 }
 
 /** 新增貼文 */
-export async function createPost(variables: PostVariablesType) {
+export async function createPost(userId: string, formData: FormData): Promise<PostApiType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };
-  console.log(variables);
-  // author, content, image, status, hashTags
+
+  console.log(formData);
 
   const result = await axios
-    .post(`${baseUrl}/post/create`, variables, config)
+    .post(`${baseUrl}/post/create/${userId}`, {formData}, config)
     .then((res) => {
-      console.log(res);
       return res.data;
     })
     .catch((error) => {

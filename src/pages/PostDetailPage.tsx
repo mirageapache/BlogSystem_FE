@@ -1,75 +1,63 @@
 import React from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { isEmpty } from 'lodash';
+import _, { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+// --- components ---
+import NoSearchResult from 'components/tips/NoSearchResult';
+import UserInfoPanel from 'components/user/UserInfoPanel';
 // --- api ---
 import { getAllPosts } from '../api/post';
+import { formatDateTime } from 'utils/dateTime';
+import PostInfoPanel from 'components/post/PostInfoPanel';
 
 function PostDetailPage() {
-  // const { id } = useParams();
-  const avatarUrl = '';
-
   const { isLoading, error, data } = useQuery('posts', () => getAllPosts());
-  console.log(data);
+  const postData = _.get(data, 'data');
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
+  if (isEmpty(postData)) return <NoSearchResult msgOne='該貼文資料不存在或已刪除' msgTwo='無法瀏覽內容，請重新操作' type='post' />;
+
   return (
     <div className="flex flex-col w-full my-5">
-      <h2 className="text-4xl border-b-[1px] dark:border-gray-700 pb-4">{data.title}</h2>
       <div className="flex flex-col w-full">
         <div className="w-full">
           {/* Author Info */}
-          <div className="flex my-4">
-            <div className="flex justify-center items-center mr-4">
-              {isEmpty(avatarUrl) ? (
-                <span className="w-11 h-11 rounded-full flex justify-center items-center bg-sky-600 font-semibold">
-                  <p className="text-xl text-center text-white">A</p>
-                </span>
-              ) : (
-                <img className="w-11 h-11 rounded-full" src="" alt="author avatar" />
-              )}
-            </div>
-            <div>
-              <span className="flex">
-                <p className="font-semibold">Author Name</p>｜
-                <button type="button" className="hover:font-bold">
-                  Follow
-                </button>
-              </span>
-              <span className="flex text-sm text-gray-400">
-                <p>5min read</p>｜<p>January 15, 2023</p>
-              </span>
-            </div>
+          <div className="flex justify-between">
+            <UserInfoPanel
+              userId={postData.author._id}
+              account={postData.author.account}
+              name={postData.author.name}
+              avatarUrl={postData.author.avatar}
+              bgColor={postData.author.bgColor}
+              className="my-2"
+            />
+            <p className="text-gray-600 dark:text-gray-300 my-1">
+              {formatDateTime(postData.createdAt)}
+            </p>
           </div>
           {/* Post Info */}
           <div className="py-2 mb-5 flex justify-between border-b-[1px] dark:border-gray-700">
-            <div className="flex">
-              <span className="mr-5 flex justify-center items-center cursor-pointer fill-gray-400 hover:fill-red-400">
-                <FontAwesomeIcon
-                  icon={icon({ name: 'heart', style: 'regular' })}
-                  className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-red-500"
-                />
-                <p className="text-md pl-2 font-bold text-center text-gray-400 dark:text-gray-100">
-                  5
-                </p>
-              </span>
-              <span className="flex justify-center items-center cursor-pointer fill-gray-400 hover:fill-amber-400">
-                <FontAwesomeIcon
-                  icon={icon({ name: 'comment', style: 'regular' })}
-                  className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-green-500"
-                />
-                <p className="text-md pl-2 font-bold text-center text-gray-400 dark:text-gray-100">
-                  2
-                </p>
-              </span>
-            </div>
-            <div className="flex border border-red-500">right icon</div>
+            {/* image */}
+            {!isEmpty(postData.image) && 
+              <div>
+                <img src={postData.image} alt='post image' />
+              </div>
+            }
+
+            {/* content */}
+            <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
+
+            {/* hash tags */}
+            {/* <div>{tagsList}</div> */}
+            
+            {/* info panel */}
+            <PostInfoPanel postData={postData} />
           </div>
         </div>
-        <div className="w-full">{data.body}</div>
+        <div className="w-full">{postData.content}</div>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import UserLoadingNoBorder from 'components/user/UserLoadingNoBorder';
 // --- functions / types ---
 import { SysStateType, setActivePage, setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
+import { setShowCreateModal } from '../../redux/postSlice';
 import { checkLogin, scrollToTop } from '../../utils/common';
 
 /** Toggle Menu 參數型別 */
@@ -39,25 +40,45 @@ interface StateType {
 
 /** MainMenu Item 元件 */
 function MenuItem({ href, text, count, activeItem, children, handleClick }: ItemPropsType) {
+  const sliceDispatch = useDispatch();
+
   return (
     <li>
-      <Link
-        to={href}
-        className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
-          activeItem ? 'text-orange-500' : ''
-        }`}
-        onClick={handleClick}
-      >
-        <span className="flex items-center">{children}</span>
-        <span className="ml-3 font-bold">
-          {text}
-          {!isEmpty(count) && (
-            <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
-              {count}
-            </span>
-          )}
-        </span>
-      </Link>
+      {text === "建立貼文"?
+          <button
+            type="button"
+            className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
+              activeItem ? 'text-orange-500' : ''
+            }`}
+            onClick={() => {
+              handleClick(); // 關閉選單
+              sliceDispatch(setShowCreateModal(true));
+            }}
+          >
+            <div className="flex items-center">
+              <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+            </div>
+            <span className="ml-3 font-bold ">{text}</span>
+          </button>
+        :
+        <Link
+          to={href}
+          className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
+            activeItem ? 'text-orange-500' : ''
+          }`}
+          onClick={handleClick}
+        >
+          <span className="flex items-center">{children}</span>
+          <span className="ml-3 font-bold">
+            {text}
+            {!isEmpty(count) && (
+              <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+                {count}
+              </span>
+            )}
+          </span>
+        </Link>
+      }
     </li>
   );
 }
@@ -227,6 +248,15 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     }}
                   >
                     <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
+                  </MenuItem>
+                  <MenuItem
+                    href=""
+                    text="建立貼文"
+                    count={0}
+                    activeItem={false}
+                    handleClick={closeMenu}
+                  >
+                    <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
                   </MenuItem>
                 </>
               )}
