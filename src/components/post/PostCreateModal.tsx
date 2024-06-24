@@ -4,16 +4,18 @@
 import React, { useState } from 'react';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { isEmpty } from 'lodash';
-import { useDispatch } from 'react-redux';
-import { getCookies } from 'utils/common';
-import { useMutation } from 'react-query';
-import { createPost } from 'api/post';
-import { PostVariablesType } from 'types/postType';
-import { errorAlert } from 'utils/fetchError';
-import { setShowCreateModal } from '../../redux/postSlice';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
+import { isEmpty } from 'lodash';
+import { useMutation } from 'react-query';
+// --- api ---
+import { createPost } from 'api/post';
+// --- functions / types ---
+import { useDispatch } from 'react-redux';
+import { getCookies } from 'utils/common';
+import { errorAlert } from 'utils/fetchError';
+// --- components ---
+import { setShowCreateModal } from '../../redux/postSlice';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -27,27 +29,30 @@ function PostCreateModal() {
   };
 
   /** 新增貼文 mutation */
-  const createPostMutation = useMutation(({userId, formData}: {userId: string, formData: FormData}) => createPost(userId, formData), {
-    onSuccess: (res) => {
-      console.log(res);
-      if (res.status === 200) {
-        const swal = withReactContent(Swal);
-        swal.fire({
-          title: '貼文已發佈',
-          icon: 'success',
-          confirmButtonText: '確認',
-        });
-        handleClose();
-      }
-    },
-    onError: () => errorAlert(),
-    // error type:未登入、沒有內容
-  });
+  const createPostMutation = useMutation(
+    ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
+    {
+      onSuccess: (res) => {
+        console.log(res);
+        if (res.status === 200) {
+          const swal = withReactContent(Swal);
+          swal.fire({
+            title: '貼文已發佈',
+            icon: 'success',
+            confirmButtonText: '確認',
+          });
+          handleClose();
+        }
+      },
+      onError: () => errorAlert(),
+      // error type:未登入、沒有內容
+    }
+  );
 
   /** 發佈貼文 */
   const handleSubmit = () => {
     // validate form data
-    if(isEmpty(content) || content.length === 0) {
+    if (isEmpty(content) || content.length === 0) {
       return;
     }
     const userId = getCookies('uid') as string;
@@ -60,10 +65,10 @@ function PostCreateModal() {
     formData.set('content', content);
     formData.set('status', '1');
     // formData.set('hashTags', JSON.stringify([]));
-    if(imageFile) formData.set('postImage', imageFile);
+    if (imageFile) formData.set('postImage', imageFile);
 
     console.log(formData);
-    createPostMutation.mutate({userId, formData});
+    createPostMutation.mutate({ userId, formData });
   };
 
   /** 處理上傳圖片檔 */
@@ -198,7 +203,7 @@ function PostCreateModal() {
             >
               取消
             </button> */}
-            {!isEmpty(content) || content.length !== 0 ? 
+            {!isEmpty(content) || content.length !== 0 ? (
               <button
                 type="button"
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
@@ -206,15 +211,14 @@ function PostCreateModal() {
               >
                 發佈貼文
               </button>
-            : 
-            
+            ) : (
               <button
                 type="button"
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-gray-600"
               >
                 發佈貼文
               </button>
-            } 
+            )}
           </div>
         </div>
       </div>

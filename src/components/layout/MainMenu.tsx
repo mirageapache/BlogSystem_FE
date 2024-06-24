@@ -44,23 +44,23 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
 
   return (
     <li>
-      {text === "建立貼文"?
-          <button
-            type="button"
-            className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
-              activeItem ? 'text-orange-500' : ''
-            }`}
-            onClick={() => {
-              handleClick(); // 關閉選單
-              sliceDispatch(setShowCreateModal(true));
-            }}
-          >
-            <div className="flex items-center">
-              <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
-            </div>
-            <span className="ml-3 font-bold ">{text}</span>
-          </button>
-        :
+      {text === '建立貼文' ? (
+        <button
+          type="button"
+          className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
+            activeItem ? 'text-orange-500' : ''
+          }`}
+          onClick={() => {
+            handleClick(); // 關閉選單
+            sliceDispatch(setShowCreateModal(true));
+          }}
+        >
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+          </div>
+          <span className="ml-3 font-bold ">{text}</span>
+        </button>
+      ) : (
         <Link
           to={href}
           className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
@@ -78,7 +78,7 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
             )}
           </span>
         </Link>
-      }
+      )}
     </li>
   );
 }

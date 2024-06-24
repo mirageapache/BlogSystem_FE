@@ -1,16 +1,18 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
-import { PostDataType } from 'types/postType';
-// --- components ---
-import UserInfoPanel from 'components/user/UserInfoPanel';
-import { formatDateTime } from 'utils/dateTime';
-import PostInfoPanel from './PostInfoPanel';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+// --- components ---
+import PostInfoPanel from 'components/post/PostInfoPanel';
+import UserInfoPanel from 'components/user/UserInfoPanel';
+// --- functions / types ---
+import { formatDateTime } from 'utils/dateTime';
 import { getCookies } from 'utils/common';
+import { PostDataType } from 'types/postType';
 
 function PostTag(props: { text: string }) {
   const { text } = props;
@@ -47,32 +49,38 @@ function PostItem(props: { postData: PostDataType }) {
             className="my-2"
           />
           <div className="flex gap-4 py-1">
-            <p className="text-gray-600 dark:text-gray-300">
-              {formatDateTime(postData.createdAt)}
-            </p>
+            <p className="text-gray-600 dark:text-gray-300">{formatDateTime(postData.createdAt)}</p>
 
-            {userId === postData.author._id && 
-              <span className="relative my-0.5"
-                onMouseEnter={()=>setShowEditTip(true)}
-                onMouseLeave={()=>setShowEditTip(false)}
+            {userId === postData.author._id && (
+              <span
+                className="relative my-0.5"
+                onMouseEnter={() => setShowEditTip(true)}
+                onMouseLeave={() => setShowEditTip(false)}
               >
-                <button 
-                  className="text-gray-500 hover:text-orange-500 rounded-md"
-                >
-                  <FontAwesomeIcon icon={icon({name: 'square-pen', style:'solid'})} className="w-5 h-5" />
+                <button type="button" className="text-gray-500 hover:text-orange-500 rounded-md">
+                  <FontAwesomeIcon
+                    icon={icon({ name: 'square-pen', style: 'solid' })}
+                    className="w-5 h-5"
+                  />
                 </button>
-                <span className={`absolute right-0 w-20 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${showEditTip? 'block' : 'hidden'}`}>編輯貼文</span>
+                <span
+                  className={`absolute right-0 w-20 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
+                    showEditTip ? 'block' : 'hidden'
+                  }`}
+                >
+                  編輯貼文
+                </span>
               </span>
-            }
+            )}
           </div>
         </div>
         <div className="ml-[60px]">
           {/* image */}
-          {!isEmpty(postData.image) && 
+          {!isEmpty(postData.image) && (
             <div>
-              <img src={postData.image} alt='post image' />
+              <img src={postData.image} alt="postImage" />
             </div>
-          }
+          )}
 
           {/* content */}
           <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>

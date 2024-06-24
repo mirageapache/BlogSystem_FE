@@ -8,7 +8,7 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import UserInfoPanel from 'components/user/UserInfoPanel';
 // --- api ---
-import { getAllPosts } from '../api/post';
+import { getAllPosts } from 'api/post';
 import { formatDateTime } from 'utils/dateTime';
 import PostInfoPanel from 'components/post/PostInfoPanel';
 
@@ -18,7 +18,14 @@ function PostDetailPage() {
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
-  if (isEmpty(postData)) return <NoSearchResult msgOne='該貼文資料不存在或已刪除' msgTwo='無法瀏覽內容，請重新操作' type='post' />;
+  if (isEmpty(postData))
+    return (
+      <NoSearchResult
+        msgOne="該貼文資料不存在或已刪除"
+        msgTwo="無法瀏覽內容，請重新操作"
+        type="post"
+      />
+    );
 
   return (
     <div className="flex flex-col w-full my-5">
@@ -41,18 +48,18 @@ function PostDetailPage() {
           {/* Post Info */}
           <div className="py-2 mb-5 flex justify-between border-b-[1px] dark:border-gray-700">
             {/* image */}
-            {!isEmpty(postData.image) && 
+            {!isEmpty(postData.image) && (
               <div>
-                <img src={postData.image} alt='post image' />
+                <img src={postData.image} alt="postImage" />
               </div>
-            }
+            )}
 
             {/* content */}
             <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
 
             {/* hash tags */}
             {/* <div>{tagsList}</div> */}
-            
+
             {/* info panel */}
             <PostInfoPanel postData={postData} />
           </div>

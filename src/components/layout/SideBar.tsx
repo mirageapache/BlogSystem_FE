@@ -160,13 +160,7 @@ function SideBar() {
             >
               <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
             </SideBarItem>
-            <SideBarItem
-              href=""
-              text="建立貼文"
-              count={0}
-              activeItem={false}
-              changeItem={() => {}}
-            >
+            <SideBarItem href="" text="建立貼文" count={0} activeItem={false} changeItem={() => {}}>
               <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
             </SideBarItem>
           </>
