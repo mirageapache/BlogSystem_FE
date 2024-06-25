@@ -12,7 +12,7 @@ function PostList(props: { postQueryData: postResultType }) {
   const { isLoading, data } = postQueryData;
   const postDataList: PostDataType[] | null = data as PostDataType[] | null;
 
-  if (isLoading) return <ArticleLoading />;
+  if (true) return <ArticleLoading />;
   if (data!.code === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
   if (isEmpty(postDataList))
