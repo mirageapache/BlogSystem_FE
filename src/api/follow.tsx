@@ -13,7 +13,7 @@ interface getFollowListType extends AxResponseType {
 /** 取得追蹤資料 */
 export async function getFollowingList(userId: string): Promise<getFollowListType> {
   const result = await axios
-    .post(`${baseUrl}/follow/following`, { userId })
+    .post(`${baseUrl}/follow/getfollowing`, { userId })
     .then((res) => {
       return res;
     })
@@ -26,7 +26,7 @@ export async function getFollowingList(userId: string): Promise<getFollowListTyp
 /** 取得粉絲資料 */
 export async function getFollowerList(userId: string): Promise<getFollowListType> {
   const result = await axios
-    .post(`${baseUrl}/follow/follower`, { userId })
+    .post(`${baseUrl}/follow/getfollower`, { userId })
     .then((res) => {
       return res;
     })

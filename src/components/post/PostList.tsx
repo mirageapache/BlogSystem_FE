@@ -1,4 +1,4 @@
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
 import PostItem from './PostItem';
@@ -12,7 +12,7 @@ function PostList(props: { postQueryData: postResultType }) {
   const { isLoading, data } = postQueryData;
   const postDataList: PostDataType[] | null = data as PostDataType[] | null;
 
-  if (true) return <ArticleLoading />;
+  if (isLoading) return <ArticleLoading />;
   if (data!.code === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
   if (isEmpty(postDataList))

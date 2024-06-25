@@ -23,17 +23,12 @@ interface PropsType {
   followList: FollowResultType;
 }
 
-interface followerItemType {
-  user: UserDataType;
-  state: number;
-}
-
 function FollowList({ type, followList }: PropsType) {
   let listData; // 清單資料
   const { isLoading, data, refetch } = followList;
   const userList: UserDataType[] = get(data, 'data', []);
-  const followingData: UserDataType[] = get(data, 'data.following', []);
-  const followerData: followerItemType[] = get(data, 'data.follower', []);
+  const followingData: UserDataType[] = get(data, 'data', []);
+  const followerData: UserDataType[] = get(data, 'data', []);
 
   if (isLoading) return <UserLoading />;
   if (type === 'following' && isEmpty(followingData))
@@ -189,13 +184,13 @@ function FollowList({ type, followList }: PropsType) {
   if (type === 'follower') {
     listData = followerData.map((item) => {
       return (
-        <div className="flex justify-between" key={item.user._id}>
+        <div className="flex justify-between" key={item._id}>
           <UserInfoPanel
-            userId={item.user._id}
-            account={item.user.account}
-            name={item.user.name}
-            avatarUrl={item.user.avatar}
-            bgColor={item.user.bgColor}
+            userId={item._id}
+            account={item.account}
+            name={item.name}
+            avatarUrl={item.avatar}
+            bgColor={item.bgColor}
             className="my-2"
           />
         </div>

@@ -77,13 +77,15 @@ function PostItem(props: { postData: PostDataType }) {
         <div className="ml-[60px]">
           {/* image */}
           {!isEmpty(postData.image) && (
-            <div>
-              <img src={postData.image} alt="postImage" />
+            <div className="w-full">
+              <img className="w-full rounded-md" src={postData.image} alt="postImage" />
             </div>
           )}
 
           {/* content */}
-          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
+          <div className="my-2">
+            <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
+          </div>
 
           {/* hash tags */}
           <div>{tagsList}</div>
