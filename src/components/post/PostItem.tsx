@@ -13,6 +13,8 @@ import UserInfoPanel from 'components/user/UserInfoPanel';
 import { formatDateTime } from 'utils/dateTime';
 import { getCookies } from 'utils/common';
 import { PostDataType } from 'types/postType';
+import { useDispatch } from 'react-redux';
+import { setPostId, setShowEditModal } from 'redux/postSlice';
 
 function PostTag(props: { text: string }) {
   const { text } = props;
@@ -29,12 +31,18 @@ function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
   const userId = getCookies('uid');
   const [showEditTip, setShowEditTip] = useState(false);
-
-  // console.log(moment(postData.createdAt).unix().toString());
+  const dispatchSlice = useDispatch();
+  console.log(moment(postData.createdAt).unix().toString());
 
   const tagsList = postData.hashTags.map((tag) => (
     <PostTag key={`${tag}_${postData._id}`} text={tag} />
   ));
+
+  /** 處理編輯貼文按鈕 */
+  const handleClickEdit = () => {
+    dispatchSlice(setPostId(postData._id));
+    dispatchSlice(setShowEditModal(true));
+  }
 
   return (
     <div className="flex text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
@@ -67,6 +75,7 @@ function PostItem(props: { postData: PostDataType }) {
                   className={`absolute right-0 w-20 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
                     showEditTip ? 'block' : 'hidden'
                   }`}
+                  onClick={handleClickEdit}
                 >
                   編輯貼文
                 </span>
@@ -74,7 +83,7 @@ function PostItem(props: { postData: PostDataType }) {
             )}
           </div>
         </div>
-        <div className="ml-[60px]">
+        <div className="sm:ml-[60px]">
           {/* image */}
           {!isEmpty(postData.image) && (
             <div className="w-full">
@@ -84,7 +93,7 @@ function PostItem(props: { postData: PostDataType }) {
 
           {/* content */}
           <div className="my-2">
-            <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
+            <div className="text-gray-600 dark:text-gray-300 line-clamp-[10]" dangerouslySetInnerHTML={{ __html: postData.content }} ></div>
           </div>
 
           {/* hash tags */}

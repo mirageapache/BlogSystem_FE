@@ -7,37 +7,53 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { isEmpty } from 'lodash';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 // --- api ---
 import { createPost } from 'api/post';
 // --- functions / types ---
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 // --- components ---
-import { setShowCreateModal } from '../../redux/postSlice';
+import { PostStateType, setShowEditModal } from '../../redux/postSlice';
+// --- api / type ---
+import { postResultType } from 'types/postType';
+import { getPostDetail } from 'api/post';
 
-function PostCreateModal() {
+interface stateType {
+  post: PostStateType;
+}
+
+function PostEditModal() {
   const dispatchSlice = useDispatch();
   const [content, setContent] = useState(''); // 內容
   const [image, setImage] = useState(''); // 處理 image preview
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
+  const postState = useSelector((state: stateType) => state.post);
+  const { postId } = postState;
+
+  /** 取得貼文資料 */
+  const postQueryData = useQuery('post', () => getPostDetail(postId)) as postResultType;
+  const { isLoading, data } = postQueryData;
+  console.log(data);
+
+  setContent(data!.content);
 
   /** 關閉modal */
   const handleClose = () => {
-    dispatchSlice(setShowCreateModal(false));
+    dispatchSlice(setShowEditModal(false));
   };
 
-  /** 新增貼文 mutation */
-  const createPostMutation = useMutation(
+  /** 編輯貼文 mutation */
+  const editPostMutation = useMutation(
     ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
           const swal = withReactContent(Swal);
           swal.fire({
-            title: '貼文已發佈',
+            title: '貼文已修改',
             icon: 'success',
             confirmButtonText: '確認',
           });
@@ -50,7 +66,7 @@ function PostCreateModal() {
     }
   );
 
-  /** 發佈貼文 */
+  /** 編輯貼文 */
   const handleSubmit = () => {
     // validate form data
     if (isEmpty(content) || content.length === 0) {
@@ -65,7 +81,7 @@ function PostCreateModal() {
     formData.set('hashTags', JSON.stringify([]));
     if (imageFile) formData.set('postImage', imageFile);
 
-    createPostMutation.mutate({ userId, formData });
+    editPostMutation.mutate({ userId, formData });
   };
 
   /** 處理上傳圖片檔 */
@@ -99,7 +115,7 @@ function PostCreateModal() {
       <div className="fixed w-full h-dvh rounded-lg sm:max-w-[600px] sm:h-auto sm:max-h-[600px] bg-white dark:bg-gray-800 z-40">
         {/* modal header */}
         <div className="flex justify-between items-center w-full py-2 px-5 border-b-[1px] border-gray-300 dark:border-gray-700">
-          <h3 className="text-xl font-bold">建立貼文</h3>
+          <h3 className="text-xl font-bold">編輯貼文</h3>
           <button
             aria-label="close"
             type="button"
@@ -113,42 +129,40 @@ function PostCreateModal() {
           </button>
         </div>
 
-        {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
-        <div className="relative py-2 px-5 h-minus120 sm:h-auto">
-          {/* <textarea
-            name="content"
-            className="w-full h-minus240 sm:h-80 resize-none outline-none dark:bg-gray-800"
-            placeholder="告訴大家你的想法..."
-            rows={10}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          /> */}
-
-          {/* contenteditable功能 */}
-          <div
-            contentEditable
-            ref={contentRef}
-            id="postContentInput"
-            className="w-full h-full sm:h-80 outline-none"
-            onInput={handleOnInput}
-          >
-          </div>
-
-          {/* image preview */}
-          {!isEmpty(image) && (
-            <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
-              <div className="relative">
-                <img src={image} alt="" className="h-24 object-cover" />
-                <button aria-label="close" type="button" onClick={handleDeleteImage}>
-                  <FontAwesomeIcon
-                    className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
-                    icon={icon({ name: 'circle-xmark', style: 'solid' })}
-                  />
-                </button>
-              </div>
+        {isLoading?
+          <>
+            <p>載入中</p>
+          </>
+        :
+          <>
+            {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
+            <div className="relative py-2 px-5 h-minus120 sm:h-auto">
+            <div
+              contentEditable
+              ref={contentRef}
+              id="postContentInput"
+              className="w-full h-full sm:h-80 outline-none"
+              onInput={handleOnInput}
+            >
             </div>
-          )}
-        </div>
+
+              {/* image preview */}
+              {!isEmpty(image) && (
+                <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
+                  <div className="relative">
+                    <img src={image} alt="" className="h-24 object-cover" />
+                    <button aria-label="close" type="button" onClick={handleDeleteImage}>
+                      <FontAwesomeIcon
+                        className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
+                        icon={icon({ name: 'circle-xmark', style: 'solid' })}
+                      />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        }
 
         {/* modal footer */}
         <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto flex justify-between py-3 px-5 text-right border-t-[1px] border-gray-300 dark:border-gray-700">
@@ -174,14 +188,14 @@ function PostCreateModal() {
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
                 onClick={handleSubmit}
               >
-                發佈
+                確認
               </button>
             ) : (
               <button
                 type="button"
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-gray-600"
               >
-                發佈
+                確認
               </button>
             )}
           </div>
@@ -192,4 +206,4 @@ function PostCreateModal() {
   );
 }
 
-export default PostCreateModal;
+export default PostEditModal;

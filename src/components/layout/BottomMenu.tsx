@@ -10,6 +10,7 @@ import { useCookies } from 'react-cookie';
 import { scrollToTop } from 'utils/common';
 import { SysStateType, setActivePage } from '../../redux/sysSlice';
 import { setSignInPop } from '../../redux/loginSlice';
+import { setShowCreateModal } from '../../redux/postSlice';
 
 interface StateType {
   system: SysStateType;
@@ -56,7 +57,7 @@ function BottomMenu() {
         />
       </Link>
 
-      {isEmpty(localStorage.getItem('authToken')) ? (
+      {isEmpty(localStorage.getItem('authToken')) && isEmpty(userId) ? (
         // 未登入狀態 => 登入功能
         <button
           aria-label="user"
@@ -72,20 +73,33 @@ function BottomMenu() {
           />
         </button>
       ) : (
-        // 已登入狀態 => 個人頁面
-        <Link
-          to={`/user/profile/${userId}`}
-          className="w-1/3 flex justify-center py-3 cursor-pointer"
-          onClick={() => {
-            sliceDispatch(setActivePage('user'));
-            scrollToTop();
-          }}
-        >
-          <FontAwesomeIcon
-            icon={icon({ name: 'user', style: 'solid' })}
-            className={`w-5 h-5 text-gray-500 ${activePage === 'user' ? 'text-orange-500' : ''}`}
-          />
-        </Link>
+        // 已登入狀態 => 顯示建立(文章、貼文)&個人頁面
+        <>
+          <button
+            aria-label="user"
+            type="button"
+            className="w-1/3 flex justify-center py-3 cursor-pointer"
+            onClick={() => sliceDispatch(setShowCreateModal(true))}
+          >
+            <FontAwesomeIcon
+              icon={icon({ name: 'square-plus', style: 'solid' })}
+              className="w-5 h-5 text-gray-500"
+            />
+          </button>
+          <Link
+            to={`/user/profile/${userId}`}
+            className="w-1/3 flex justify-center py-3 cursor-pointer"
+            onClick={() => {
+              sliceDispatch(setActivePage('user'));
+              scrollToTop();
+            }}
+          >
+            <FontAwesomeIcon
+              icon={icon({ name: 'user', style: 'solid' })}
+              className={`w-5 h-5 text-gray-500 ${activePage === 'user' ? 'text-orange-500' : ''}`}
+            />
+          </Link>
+        </>
       )}
     </div>
   );

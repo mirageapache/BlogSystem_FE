@@ -26,7 +26,7 @@ export async function getAllPosts(): Promise<PostApiType> {
 }
 
 /** 取得特定貼文內容 */
-export async function getPosDetail(postId: string): Promise<PostApiType> {
+export async function getPostDetail(postId: string): Promise<PostApiType> {
   const result = await axios
     .post(`${baseUrl}/post/detail`, { postId })
     .then((res) => {
