@@ -16,7 +16,6 @@ function ModalSection() {
   const postState = useSelector((state: StateType) => state.post);
 
   return (
-
     <div id="modalSection">
       {/* 建立貼文 */}
       {postState.showCreateModal && <PostCreateModal />}
@@ -24,7 +23,7 @@ function ModalSection() {
       {/* 編輯貼文 */}
       {postState.showEditModal && <PostEditModal />}
     </div>
-  )
+  );
 }
 
 export default ModalSection;

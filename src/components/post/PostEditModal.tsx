@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useRef, useState } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { isEmpty } from 'lodash';
 import { useMutation, useQuery } from 'react-query';
 // --- api ---
-import { createPost } from 'api/post';
+import { createPost, getPostDetail } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
@@ -17,8 +17,7 @@ import { errorAlert } from 'utils/fetchError';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 // --- api / type ---
-import { postResultType } from 'types/postType';
-import { getPostDetail } from 'api/post';
+import { postResultType } from '../../types/postType';
 
 interface stateType {
   post: PostStateType;
@@ -102,10 +101,10 @@ function PostEditModal() {
 
   /** 處理div輸入行為 */
   const handleOnInput = (e: React.ChangeEvent<HTMLDivElement>) => {
-    if(contentRef.current){
+    if (contentRef.current) {
       // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
       const lines = contentRef.current.innerText.split('\n');
-      const formattedContent = lines.map(line => `<div>${line}</div>`).join('');
+      const formattedContent = lines.map((line) => `<div>${line}</div>`).join('');
       setContent(formattedContent);
     }
   };
@@ -129,22 +128,19 @@ function PostEditModal() {
           </button>
         </div>
 
-        {isLoading?
-          <>
-            <p>載入中</p>
-          </>
-        :
+        {isLoading ? (
+          <p>載入中</p>
+        ) : (
           <>
             {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
             <div className="relative py-2 px-5 h-minus120 sm:h-auto">
-            <div
-              contentEditable
-              ref={contentRef}
-              id="postContentInput"
-              className="w-full h-full sm:h-80 outline-none"
-              onInput={handleOnInput}
-            >
-            </div>
+              <div
+                contentEditable
+                ref={contentRef}
+                id="postContentInput"
+                className="w-full h-full sm:h-80 outline-none"
+                onInput={handleOnInput}
+              />
 
               {/* image preview */}
               {!isEmpty(image) && (
@@ -162,7 +158,7 @@ function PostEditModal() {
               )}
             </div>
           </>
-        }
+        )}
 
         {/* modal footer */}
         <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto flex justify-between py-3 px-5 text-right border-t-[1px] border-gray-300 dark:border-gray-700">

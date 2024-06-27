@@ -14,7 +14,6 @@ import { createPost } from 'api/post';
 import { useDispatch } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
-// --- components ---
 import { setShowCreateModal } from '../../redux/postSlice';
 
 function PostCreateModal() {
@@ -86,10 +85,10 @@ function PostCreateModal() {
 
   /** 處理div輸入行為 */
   const handleOnInput = (e: React.ChangeEvent<HTMLDivElement>) => {
-    if(contentRef.current){
+    if (contentRef.current) {
       // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
       const lines = contentRef.current.innerText.split('\n');
-      const formattedContent = lines.map(line => `<div>${line}</div>`).join('');
+      const formattedContent = lines.map((line) => `<div>${line}</div>`).join('');
       setContent(formattedContent);
     }
   };
@@ -131,8 +130,7 @@ function PostCreateModal() {
             id="postContentInput"
             className="w-full h-full sm:h-80 outline-none"
             onInput={handleOnInput}
-          >
-          </div>
+          />
 
           {/* image preview */}
           {!isEmpty(image) && (

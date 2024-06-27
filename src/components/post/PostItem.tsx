@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -14,7 +16,7 @@ import { formatDateTime } from 'utils/dateTime';
 import { getCookies } from 'utils/common';
 import { PostDataType } from 'types/postType';
 import { useDispatch } from 'react-redux';
-import { setPostId, setShowEditModal } from 'redux/postSlice';
+import { setPostId, setShowEditModal } from '../../redux/postSlice';
 
 function PostTag(props: { text: string }) {
   const { text } = props;
@@ -42,7 +44,7 @@ function PostItem(props: { postData: PostDataType }) {
   const handleClickEdit = () => {
     dispatchSlice(setPostId(postData._id));
     dispatchSlice(setShowEditModal(true));
-  }
+  };
 
   return (
     <div className="flex text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
@@ -93,7 +95,10 @@ function PostItem(props: { postData: PostDataType }) {
 
           {/* content */}
           <div className="my-2">
-            <div className="text-gray-600 dark:text-gray-300 line-clamp-[10]" dangerouslySetInnerHTML={{ __html: postData.content }} ></div>
+            <div
+              className="text-gray-600 dark:text-gray-300 line-clamp-[10]"
+              dangerouslySetInnerHTML={{ __html: postData.content }}
+            />
           </div>
 
           {/* hash tags */}
