@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { get, isEmpty } from 'lodash';
@@ -28,6 +28,8 @@ function UserProfilePage() {
   let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
   let articleResult: ArticleResultType;
   let followList: FollowResultType;
+
+  if (userId === undefined) window.location.href = '/';
 
   /** 取得個人資料 */
   if (cookies.uid === userId && !isEmpty(authToken)) {

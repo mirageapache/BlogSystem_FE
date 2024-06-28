@@ -8,6 +8,10 @@ module.exports = {
         minus120: 'calc(100dvh - 120px)',
         minus240: 'calc(100dvh - 240px)',
       },
+      maxHeight: {
+        '70vh': '70vh',
+        '80vh': '80vh',
+      }
     },
   },
   plugins: [],

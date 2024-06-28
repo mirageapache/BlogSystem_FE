@@ -95,7 +95,7 @@ function PostCreateModal() {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-30">
-      <div className="fixed w-full h-dvh rounded-lg sm:max-w-[600px] sm:h-auto sm:max-h-[600px] bg-white dark:bg-gray-800 z-40">
+      <div className="fixed w-full h-dvh rounded-lg sm:max-w-[600px] sm:h-auto bg-white dark:bg-gray-800 z-40">
         {/* modal header */}
         <div className="flex justify-between items-center w-full py-2 px-5 border-b-[1px] border-gray-300 dark:border-gray-700">
           <h3 className="text-xl font-bold">建立貼文</h3>
@@ -114,21 +114,11 @@ function PostCreateModal() {
 
         {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
         <div className="relative py-2 px-5 h-minus120 sm:h-auto">
-          {/* <textarea
-            name="content"
-            className="w-full h-minus240 sm:h-80 resize-none outline-none dark:bg-gray-800"
-            placeholder="告訴大家你的想法..."
-            rows={10}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          /> */}
-
           {/* contenteditable功能 */}
           <div
             contentEditable
             ref={contentRef}
-            id="postContentInput"
-            className="w-full h-full sm:h-80 outline-none"
+            className="w-full h-full sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
             onInput={handleOnInput}
           />
 

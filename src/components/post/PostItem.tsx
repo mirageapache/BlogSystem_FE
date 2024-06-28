@@ -32,9 +32,12 @@ function PostTag(props: { text: string }) {
 function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
   const userId = getCookies('uid');
-  const [showEditTip, setShowEditTip] = useState(false);
+  const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文"提示
+  const contentArr = postData.content.match(/<div>.*?<\/div>/g); // 將字串內容轉換成陣列
+  const contentLength = isEmpty(contentArr) ? 0 : contentArr!.length; // 貼文內容長度(行數)
+  const [hiddenContent, setHiddenContent] = useState(contentLength > 10 || false); // 是否隱藏貼文內容(預設顯示10行，過長的部分先隱藏)
   const dispatchSlice = useDispatch();
-  console.log(moment(postData.createdAt).unix().toString());
+  // console.log(moment(postData.createdAt).unix().toString()); // 日期格式轉換
 
   const tagsList = postData.hashTags.map((tag) => (
     <PostTag key={`${tag}_${postData._id}`} text={tag} />
@@ -67,7 +70,11 @@ function PostItem(props: { postData: PostDataType }) {
                 onMouseEnter={() => setShowEditTip(true)}
                 onMouseLeave={() => setShowEditTip(false)}
               >
-                <button type="button" className="text-gray-500 hover:text-orange-500 rounded-md">
+                <button 
+                  type="button" 
+                  className="text-gray-500 hover:text-orange-500 rounded-md" 
+                  onClick={handleClickEdit}
+                >
                   <FontAwesomeIcon
                     icon={icon({ name: 'square-pen', style: 'solid' })}
                     className="w-5 h-5"
@@ -77,7 +84,6 @@ function PostItem(props: { postData: PostDataType }) {
                   className={`absolute right-0 w-20 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
                     showEditTip ? 'block' : 'hidden'
                   }`}
-                  onClick={handleClickEdit}
                 >
                   編輯貼文
                 </span>
@@ -96,9 +102,12 @@ function PostItem(props: { postData: PostDataType }) {
           {/* content */}
           <div className="my-2">
             <div
-              className="text-gray-600 dark:text-gray-300 line-clamp-[10]"
+              className={`text-gray-600 dark:text-gray-300 ${hiddenContent? 'line-clamp-[10]' : ''}`}
               dangerouslySetInnerHTML={{ __html: postData.content }}
-            />
+              />
+              {hiddenContent &&
+                <button onClick={() => setHiddenContent(false)}>顯示更多</button>
+              }
           </div>
 
           {/* hash tags */}

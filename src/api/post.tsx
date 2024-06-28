@@ -30,8 +30,7 @@ export async function getPostDetail(postId: string): Promise<PostApiType> {
   const result = await axios
     .post(`${baseUrl}/post/detail`, { postId })
     .then((res) => {
-      const postData = res.data;
-      return postData;
+      return res;
     })
     .catch((error) => {
       return error;
@@ -57,11 +56,15 @@ export async function createPost(userId: string, formData: FormData): Promise<Po
 }
 
 /** 編輯貼文 */
-export async function updatePost(variables: PostVariablesType) {
+export async function updatePost(userId: string, formData: FormData): Promise<PostApiType>  {
+  const config = {
+    headers: { Authorization: `Bearer ${authToken}` },
+  };
+
   const result = await axios
-    .patch(`${baseUrl}/post/update`, variables)
+    .patch(`${baseUrl}/post/update/${userId}`, formData, config)
     .then((res) => {
-      return res.data;
+      return res;
     })
     .catch((error) => {
       return error;

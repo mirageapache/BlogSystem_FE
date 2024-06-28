@@ -1,23 +1,21 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { Fragment, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { isEmpty } from 'lodash';
-import { useMutation, useQuery } from 'react-query';
+import { get, isEmpty } from 'lodash';
+import { useMutation } from 'react-query';
 // --- api ---
-import { createPost, getPostDetail } from 'api/post';
+import { getPostDetail, updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
-// --- api / type ---
-import { postResultType } from '../../types/postType';
 
 interface stateType {
   post: PostStateType;
@@ -25,6 +23,7 @@ interface stateType {
 
 function PostEditModal() {
   const dispatchSlice = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState(''); // 內容
   const [image, setImage] = useState(''); // 處理 image preview
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
@@ -33,11 +32,19 @@ function PostEditModal() {
   const { postId } = postState;
 
   /** 取得貼文資料 */
-  const postQueryData = useQuery('post', () => getPostDetail(postId)) as postResultType;
-  const { isLoading, data } = postQueryData;
-  console.log(data);
+  const PostDetail = async () => {
+    setIsLoading(true);
+    const res = await getPostDetail(postId);
+    if(res.status === 200){
+      const postDetail = get(res, 'data');
+      if(contentRef.current) contentRef.current.innerHTML = postDetail.content;
+      setContent(postDetail.content);
+      setImage(postDetail.image);
+    }
+    setIsLoading(false);
+  };
 
-  setContent(data!.content);
+  useEffect(() => { PostDetail(); }, []);
 
   /** 關閉modal */
   const handleClose = () => {
@@ -46,7 +53,7 @@ function PostEditModal() {
 
   /** 編輯貼文 mutation */
   const editPostMutation = useMutation(
-    ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
+    ({ userId, formData }: { userId: string; formData: FormData }) => updatePost(userId, formData),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
@@ -111,7 +118,7 @@ function PostEditModal() {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-30">
-      <div className="fixed w-full h-dvh rounded-lg sm:max-w-[600px] sm:h-auto sm:max-h-[600px] bg-white dark:bg-gray-800 z-40">
+      <div className="fixed w-full h-dvh rounded-lg sm:max-w-[600px] sm:h-auto bg-white dark:bg-gray-800 z-40">
         {/* modal header */}
         <div className="flex justify-between items-center w-full py-2 px-5 border-b-[1px] border-gray-300 dark:border-gray-700">
           <h3 className="text-xl font-bold">編輯貼文</h3>
@@ -128,37 +135,34 @@ function PostEditModal() {
           </button>
         </div>
 
-        {isLoading ? (
-          <p>載入中</p>
-        ) : (
-          <>
-            {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
-            <div className="relative py-2 px-5 h-minus120 sm:h-auto">
-              <div
-                contentEditable
-                ref={contentRef}
-                id="postContentInput"
-                className="w-full h-full sm:h-80 outline-none"
-                onInput={handleOnInput}
-              />
+        {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
+        <div className="relative py-2 px-5 h-minus120 sm:h-auto">
+          {isLoading ? (
+            <div className="w-full h-full sm:h-80 outline-none">資料載入中</div>
+          ) : (
+            <div
+              contentEditable
+              ref={contentRef}
+              className="w-full h-full sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+              onInput={handleOnInput}
+            />
+          )}
 
-              {/* image preview */}
-              {!isEmpty(image) && (
-                <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
-                  <div className="relative">
-                    <img src={image} alt="" className="h-24 object-cover" />
-                    <button aria-label="close" type="button" onClick={handleDeleteImage}>
-                      <FontAwesomeIcon
-                        className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
-                        icon={icon({ name: 'circle-xmark', style: 'solid' })}
-                      />
-                    </button>
-                  </div>
-                </div>
-              )}
+          {/* image preview */}
+          {!isEmpty(image) && (
+            <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
+              <div className="relative">
+                <img src={image} alt="" className="h-24 object-cover" />
+                <button aria-label="close" type="button" onClick={handleDeleteImage}>
+                  <FontAwesomeIcon
+                    className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
+                    icon={icon({ name: 'circle-xmark', style: 'solid' })}
+                  />
+                </button>
+              </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
 
         {/* modal footer */}
         <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto flex justify-between py-3 px-5 text-right border-t-[1px] border-gray-300 dark:border-gray-700">
