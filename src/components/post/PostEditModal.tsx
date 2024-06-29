@@ -24,27 +24,33 @@ interface stateType {
 function PostEditModal() {
   const dispatchSlice = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const [authorId, setAuthorId] = useState('');
   const [content, setContent] = useState(''); // 內容
   const [image, setImage] = useState(''); // 處理 image preview
+  const [removeImage, setRemoveImage] = useState(false); // 判斷是否移除圖片檔
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
   const postState = useSelector((state: stateType) => state.post);
   const { postId } = postState;
+  const swal = withReactContent(Swal);
 
   /** 取得貼文資料 */
   const PostDetail = async () => {
     setIsLoading(true);
     const res = await getPostDetail(postId);
-    if(res.status === 200){
+    if (res.status === 200) {
       const postDetail = get(res, 'data');
-      if(contentRef.current) contentRef.current.innerHTML = postDetail.content;
+      if (contentRef.current) contentRef.current.innerHTML = postDetail.content;
+      setAuthorId(postDetail.author._id);
       setContent(postDetail.content);
       setImage(postDetail.image);
     }
     setIsLoading(false);
   };
 
-  useEffect(() => { PostDetail(); }, []);
+  useEffect(() => {
+    PostDetail();
+  }, []);
 
   /** 關閉modal */
   const handleClose = () => {
@@ -57,7 +63,6 @@ function PostEditModal() {
     {
       onSuccess: (res) => {
         if (res.status === 200) {
-          const swal = withReactContent(Swal);
           swal.fire({
             title: '貼文已修改',
             icon: 'success',
@@ -79,12 +84,21 @@ function PostEditModal() {
       return;
     }
     const userId = getCookies('uid') as string;
+    if (userId !== authorId) {
+      swal.fire({
+        title: '操作異常!',
+        icon: 'warning',
+        confirmButtonText: '確認',
+      });
+      return;
+    }
 
     const formData = new FormData();
-    formData.set('author', userId);
+    formData.set('postId', postId);
     formData.set('content', content);
     formData.set('status', '1');
     formData.set('hashTags', JSON.stringify([]));
+    formData.set('removeImage', removeImage.toString());
     if (imageFile) formData.set('postImage', imageFile);
 
     editPostMutation.mutate({ userId, formData });
@@ -97,6 +111,7 @@ function PostEditModal() {
       const file = fileList[0];
       setImage(URL.createObjectURL(file));
       setImageFile(file);
+      setRemoveImage(false);
     }
   };
 
@@ -104,6 +119,7 @@ function PostEditModal() {
   const handleDeleteImage = () => {
     setImage('');
     setImageFile('');
+    setRemoveImage(true);
   };
 
   /** 處理div輸入行為 */

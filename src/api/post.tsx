@@ -56,7 +56,7 @@ export async function createPost(userId: string, formData: FormData): Promise<Po
 }
 
 /** 編輯貼文 */
-export async function updatePost(userId: string, formData: FormData): Promise<PostApiType>  {
+export async function updatePost(userId: string, formData: FormData): Promise<PostApiType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
   };

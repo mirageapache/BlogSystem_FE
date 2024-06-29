@@ -70,9 +70,9 @@ function PostItem(props: { postData: PostDataType }) {
                 onMouseEnter={() => setShowEditTip(true)}
                 onMouseLeave={() => setShowEditTip(false)}
               >
-                <button 
-                  type="button" 
-                  className="text-gray-500 hover:text-orange-500 rounded-md" 
+                <button
+                  type="button"
+                  className="text-gray-500 hover:text-orange-500 rounded-md"
                   onClick={handleClickEdit}
                 >
                   <FontAwesomeIcon
@@ -102,12 +102,16 @@ function PostItem(props: { postData: PostDataType }) {
           {/* content */}
           <div className="my-2">
             <div
-              className={`text-gray-600 dark:text-gray-300 ${hiddenContent? 'line-clamp-[10]' : ''}`}
+              className={`text-gray-600 dark:text-gray-300 ${
+                hiddenContent ? 'line-clamp-[10]' : ''
+              }`}
               dangerouslySetInnerHTML={{ __html: postData.content }}
-              />
-              {hiddenContent &&
-                <button onClick={() => setHiddenContent(false)}>顯示更多</button>
-              }
+            />
+            {hiddenContent && (
+              <button type="button" onClick={() => setHiddenContent(false)}>
+                顯示更多
+              </button>
+            )}
           </div>
 
           {/* hash tags */}
