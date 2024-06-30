@@ -54,7 +54,17 @@ function PostEditModal() {
 
   /** 關閉modal */
   const handleClose = () => {
-    dispatchSlice(setShowEditModal(false));
+    swal
+      .fire({
+        title: '要離開編輯嗎?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: '確定',
+        cancelButtonText: `取消`,
+      })
+      .then((result) => {
+        if (result.isConfirmed) dispatchSlice(setShowEditModal(false));
+      });
   };
 
   /** 編輯貼文 mutation */

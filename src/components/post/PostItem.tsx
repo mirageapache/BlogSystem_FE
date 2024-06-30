@@ -32,7 +32,8 @@ function PostTag(props: { text: string }) {
 function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
   const userId = getCookies('uid');
-  const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文"提示
+  const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
+  const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
   const contentArr = postData.content.match(/<div>.*?<\/div>/g); // 將字串內容轉換成陣列
   const contentLength = isEmpty(contentArr) ? 0 : contentArr!.length; // 貼文內容長度(行數)
   const [hiddenContent, setHiddenContent] = useState(contentLength > 10 || false); // 是否隱藏貼文內容(預設顯示10行，過長的部分先隱藏)
@@ -61,31 +62,36 @@ function PostItem(props: { postData: PostDataType }) {
             bgColor={postData.author.bgColor}
             className="my-2"
           />
-          <div className="flex gap-4 py-1">
-            <p className="text-gray-600 dark:text-gray-300">{formatDateTime(postData.createdAt)}</p>
-
-            {userId === postData.author._id && (
+          <div className="flex flex-col justify-center items-end">
+            <span
+              className="relative my-0.5"
+              onMouseEnter={() => setShowCreateTip(true)}
+              onMouseLeave={() => setShowCreateTip(false)}
+            >
+              <p className="text-gray-600 dark:text-gray-300">
+                {formatDateTime(postData.createdAt)}
+              </p>
+              <span
+                className={`absolute top-[-25px] right-0 w-40 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
+                  showCreateTip ? 'block' : 'hidden'
+                }`}
+              >
+                Created at {moment(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
+              </span>
+            </span>
+            {!isEmpty(postData.editedAt) && (
               <span
                 className="relative my-0.5"
                 onMouseEnter={() => setShowEditTip(true)}
                 onMouseLeave={() => setShowEditTip(false)}
               >
-                <button
-                  type="button"
-                  className="text-gray-500 hover:text-orange-500 rounded-md"
-                  onClick={handleClickEdit}
-                >
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'square-pen', style: 'solid' })}
-                    className="w-5 h-5"
-                  />
-                </button>
+                <small className="text-gray-400">(已編輯)</small>
                 <span
-                  className={`absolute right-0 w-20 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
+                  className={`absolute right-0 w-40 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
                     showEditTip ? 'block' : 'hidden'
                   }`}
                 >
-                  編輯貼文
+                  Edited at {moment(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
                 </span>
               </span>
             )}
