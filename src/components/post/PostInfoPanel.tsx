@@ -1,13 +1,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useDispatch } from 'react-redux';
 import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
-import { faHeart as faHeartRegular, faComment, faBookmark } from '@fortawesome/free-regular-svg-icons';
-// --- components ---
-import PostInfoItem from './PostInfoItem';
+import {
+  faHeart as faHeartRegular,
+  faComment,
+  faBookmark,
+} from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
 import { PostDataType } from 'types/postType';
 import { getCookies } from 'utils/common';
 import { setPostId, setShowEditModal } from '../../redux/postSlice';
+// --- components ---
+import PostInfoItem from './PostInfoItem';
 
 function PostInfoPanel(props: { postData: PostDataType }) {
   const { postData } = props;
