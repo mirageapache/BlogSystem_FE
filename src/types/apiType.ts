@@ -11,13 +11,21 @@ export interface AxResponseType {
   status: number;
 }
 
-
 /** React Query Response 通用型別
  * 適用於使用ReactQuery Fetch API 資料時
  * 將客製的 Type 賦予於 @data
  */
 export interface RqResponseType {
   isLoading: boolean;
+  isError: boolean;
+  isSuccess: boolean;
   error: { message: string } | null;
-  data: unknown;
+  data: { code: string; message: string } | unknown | null;
+  refetch: () => void;
+}
+
+/** api fetch 錯誤訊息 */
+export interface errorMsgType {
+  code: string;
+  message: string;
 }

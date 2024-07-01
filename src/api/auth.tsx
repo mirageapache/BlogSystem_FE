@@ -8,7 +8,7 @@ const authToken = localStorage.getItem('authToken');
 /** 註冊 */
 export async function SignUp(param: SignUpParamType) {
   const result = await axios
-    .post(`${baseUrl}/login/signup`, param)
+    .post(`${baseUrl}/auth/signup`, param)
     .then((res) => {
       return res;
     })
@@ -21,7 +21,7 @@ export async function SignUp(param: SignUpParamType) {
 /** 登入 */
 export async function SignIn(param: SignInParamType) {
   const result = await axios
-    .post(`${baseUrl}/login/signin`, param)
+    .post(`${baseUrl}/auth/signin`, param)
     .then((res) => {
       return res;
     })
@@ -39,7 +39,7 @@ export async function Auth(userId: string) {
     headers: { Authorization: `Bearer ${authToken}` },
   };
   const result = await axios
-    .post(`${baseUrl}/login/auth`, { id: userId }, config)
+    .post(`${baseUrl}/auth/checkAuth`, { id: userId }, config)
     .then((res) => {
       return res;
     })

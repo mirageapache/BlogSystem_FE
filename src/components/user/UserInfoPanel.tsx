@@ -1,16 +1,25 @@
-import React from 'react';
+/* eslint-disable react/require-default-props */
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+// --- functions ---
+import { scrollToTop } from '../../utils/common';
+import { setActivePage } from '../../redux/sysSlice';
 // --- components ---
 import Avatar from './Avatar';
 
 function UserInfoPanel(props: {
+  userId: string;
   account: string;
   name: string;
   avatarUrl: string;
   bgColor: string;
+  className?: string;
+  menuLink?: boolean; // 判斷是否為主選單的連結
 }) {
-  const { account, name, avatarUrl, bgColor } = props;
+  const { userId, account, name, avatarUrl, bgColor, className, menuLink = false } = props;
+  const dispatch = useDispatch();
   return (
-    <div className="flex items-center my-4">
+    <div className={`flex items-center ${className}`}>
       <div className="flex justify-center items-center mr-4">
         <Avatar
           name={name}
@@ -20,9 +29,23 @@ function UserInfoPanel(props: {
           bgColor={bgColor}
         />
       </div>
-      <div>
-        <p className="font-semibold">{name}</p>
-        <p className="text-gray-700 dark:text-gray-400">@{account}</p>
+      <div className="flex flex-col">
+        <p className="font-semibold text-lg leading-6">{name}</p>
+        {menuLink ? (
+          <p className="text-[14px] text-gray-700 dark:text-gray-400">@{account}</p>
+        ) : (
+          <Link
+            to={`/user/profile/${userId}`}
+            onClick={() => {
+              dispatch(setActivePage('user'));
+              scrollToTop();
+            }}
+          >
+            <p className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 leading-4">
+              @{account}
+            </p>
+          </Link>
+        )}
       </div>
     </div>
   );

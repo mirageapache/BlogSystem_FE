@@ -16,8 +16,8 @@ export interface AritcleApiType {
   limit: number;
 }
 
-/** API Result 型別 */
-export interface ApiResultType extends RqResponseType {
+/** article Result 型別 */
+export interface ArticleResultType extends RqResponseType {
   data: AritcleApiType | null;
 }
 
@@ -65,15 +65,10 @@ export async function getArticleById<T>(id: T) {
 
 /** 取得單一使用者文章 */
 export async function getArticleByUser<T>(id: T) {
-  const result = await axios
-    .get(`${baseUrl}/posts?user=${id}`)
-    .then((res) => {
-      const postData = res.data;
-      return postData;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const result = await axios.get(`${baseUrl}/posts?user=${id}`).then((res) => {
+    const postData = res.data;
+    return postData;
+  });
   return result;
 }
 

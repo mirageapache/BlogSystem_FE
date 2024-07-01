@@ -1,26 +1,31 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
+import UserLoadingNoBorder from 'components/user/UserLoadingNoBorder';
 // --- functions / types ---
-import { setDarkMode } from '../../redux/sysSlice';
+import { SysStateType, setActivePage, setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
-import { checkLogin } from '../../utils/common';
+import { setShowCreateModal } from '../../redux/postSlice';
+import { checkLogin, scrollToTop } from '../../utils/common';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
   href: string;
   text: string;
   count: number;
+  activeItem: boolean;
   children: ReactNode;
-  closeMenu: () => void;
+  handleClick: () => void;
 };
 
 interface MainMenuType {
@@ -30,37 +35,63 @@ interface MainMenuType {
 
 interface StateType {
   user: UserStateType;
+  system: SysStateType;
 }
 
 /** MainMenu Item 元件 */
-function MenuItem({ href, text, count, children, closeMenu }: ItemPropsType) {
+function MenuItem({ href, text, count, activeItem, children, handleClick }: ItemPropsType) {
+  const sliceDispatch = useDispatch();
+
   return (
-    <Link
-      to={href}
-      className="flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3"
-      onClick={closeMenu}
-    >
-      <span className="flex items-center">{children}</span>
-      <span className="ml-3 font-bold">
-        {text}
-        {!isEmpty(count) && (
-          <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
-            {count}
+    <li>
+      {text === '建立貼文' ? (
+        <button
+          type="button"
+          className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
+            activeItem ? 'text-orange-500' : ''
+          }`}
+          onClick={() => {
+            handleClick(); // 關閉選單
+            sliceDispatch(setShowCreateModal(true));
+          }}
+        >
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+          </div>
+          <span className="ml-3 font-bold ">{text}</span>
+        </button>
+      ) : (
+        <Link
+          to={href}
+          className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
+            activeItem ? 'text-orange-500' : ''
+          }`}
+          onClick={handleClick}
+        >
+          <span className="flex items-center">{children}</span>
+          <span className="ml-3 font-bold">
+            {text}
+            {!isEmpty(count) && (
+              <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+                {count}
+              </span>
+            )}
           </span>
-        )}
-      </span>
-    </Link>
+        </Link>
+      )}
+    </li>
   );
 }
 
 /** MainMenu 元件 */
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
   const dispatch = useDispatch();
+  const systemState = useSelector((state: StateType) => state.system);
+  const activePage = get(systemState, 'activePage');
   const swal = withReactContent(Swal);
   const [cookies, setCookie, removeCookie] = useCookies(['uid']);
   const userState = useSelector((state: StateType) => state.user);
   const { userData } = userState;
-  const navigate = useNavigate();
 
   /** 關閉選單(Menu) */
   const closeMenu = () => {
@@ -79,23 +110,21 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       })
       .then(() => {
         closeMenu();
-        navigate('/');
+        // navigate('/');
       });
   };
 
   return (
-    <div className="fixed">
+    <nav className="fixed">
       <button
         type="button"
         className={`w-full h-full top-0 left-0 text-transparent ${
           toggleMenuAnimation === 'translate-x-full' ? 'none' : 'fixed'
         }`}
         onClick={closeMenu}
-      >
-        x
-      </button>
+      />
       <div
-        className={`fixed z-30 top-0 right-0 w-full sm:max-w-[300px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-95 dark:bg-gray-950 dark:opacity-[0.98] border-l-[1px] border-gray-300 dark:border-gray-700`}
+        className={`fixed z-50 top-0 right-0 w-full sm:max-w-[300px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-[0.98] dark:bg-gray-950 dark:opacity-[0.98] border-l-[1px] border-gray-300 dark:border-gray-700`}
       >
         <div className="z-10 w-full flex justify-end py-2 px-4">
           {/* 關閉選單 */}
@@ -112,46 +141,129 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
           </button>
         </div>
         {checkLogin() && (
-          <div className="mx-5 border-b-[1px] border-gray-400 dark:border-gray-700">
-            <Link to={`/profile/${userData.userId}`} onClick={closeMenu}>
-              <UserInfoPanel
-                account={userData.account}
-                name={userData.name}
-                avatarUrl={userData.avatar}
-                bgColor={userData.bgColor}
-              />
+          <div className="px-3 border-b-[1px] border-gray-400 dark:border-gray-70">
+            <Link
+              to={`/user/profile/${userData.userId}`}
+              onClick={() => {
+                closeMenu();
+                dispatch(setActivePage('user'));
+                scrollToTop();
+              }}
+            >
+              {isEmpty(userData) ? (
+                <UserLoadingNoBorder />
+              ) : (
+                <UserInfoPanel
+                  userId={userData._id}
+                  account={userData.account}
+                  name={userData.name}
+                  avatarUrl={userData.avatar}
+                  bgColor={userData.bgColor}
+                  className="my-2 py-2 px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+                  menuLink
+                />
+              )}
             </Link>
           </div>
         )}
-        <div className="h-full py-5 px-8 opacity-100">
-          <div className="text-left h-fit sm:px-1 px-5">
-            <div className="ml-2.5">
-              <MenuItem href="/" text="首頁" count={0} closeMenu={closeMenu}>
+        <div className="h-full py-2 px-8 opacity-100">
+          <div className="text-left h-fit sm:px-1">
+            <ul className="ml-2.5">
+              <MenuItem
+                href="/"
+                text="首頁"
+                count={0}
+                activeItem={activePage === '' || activePage === 'home'}
+                handleClick={() => {
+                  closeMenu();
+                  dispatch(setActivePage('home'));
+                  scrollToTop();
+                }}
+              >
                 <FontAwesomeIcon icon={icon({ name: 'home' })} />
               </MenuItem>
-              <MenuItem href="/explore" text="探索" count={0} closeMenu={closeMenu}>
+              <MenuItem
+                href="/explore"
+                text="探索"
+                count={0}
+                activeItem={activePage === 'explore'}
+                handleClick={() => {
+                  closeMenu();
+                  dispatch(setActivePage('explore'));
+                  scrollToTop();
+                }}
+              >
                 <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
               </MenuItem>
-              <MenuItem href="/search" text="搜尋" count={0} closeMenu={closeMenu}>
+              <MenuItem
+                href="/search"
+                text="搜尋"
+                count={0}
+                activeItem={activePage === 'search'}
+                handleClick={() => {
+                  closeMenu();
+                  dispatch(setActivePage('search'));
+                  scrollToTop();
+                }}
+              >
                 <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
               </MenuItem>
               {checkLogin() && (
                 <>
-                  <MenuItem href="/inbox" text="訊息匣" count={0} closeMenu={closeMenu}>
+                  <MenuItem
+                    href="/inbox"
+                    text="訊息匣"
+                    count={0}
+                    activeItem={activePage === 'inbox'}
+                    handleClick={() => {
+                      closeMenu();
+                      dispatch(setActivePage('inbox'));
+                      scrollToTop();
+                    }}
+                  >
                     <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
                   </MenuItem>
-                  <MenuItem href="/activity" text="動態" count={0} closeMenu={closeMenu}>
+                  <MenuItem
+                    href="/activity"
+                    text="動態"
+                    count={0}
+                    activeItem={activePage === 'activity'}
+                    handleClick={() => {
+                      closeMenu();
+                      dispatch(setActivePage('activity'));
+                      scrollToTop();
+                    }}
+                  >
                     <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
                   </MenuItem>
-                  <MenuItem href="/write" text="撰寫文章" count={0} closeMenu={closeMenu}>
-                    <FontAwesomeIcon icon={icon({ name: 'pen', style: 'solid' })} />
+                  <MenuItem
+                    href="/write"
+                    text="撰寫文章"
+                    count={0}
+                    activeItem={activePage === 'write'}
+                    handleClick={() => {
+                      closeMenu();
+                      dispatch(setActivePage('write'));
+                      scrollToTop();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
+                  </MenuItem>
+                  <MenuItem
+                    href=""
+                    text="建立貼文"
+                    count={0}
+                    activeItem={false}
+                    handleClick={closeMenu}
+                  >
+                    <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
                   </MenuItem>
                 </>
               )}
-            </div>
+            </ul>
           </div>
         </div>
-        <div className="flex justify-between p-5 border-t-[1px] border-gray-300 dark:border-gray-700">
+        <div className="flex justify-between items-center p-3 border-t-[1px] border-gray-300 dark:border-gray-700">
           {/* 深色模式切換 */}
           <button
             aria-label="darkMode"
@@ -179,7 +291,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
           </button>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 export default MainMenu;

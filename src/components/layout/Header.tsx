@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- images ---
@@ -42,13 +42,13 @@ function Header() {
   window.addEventListener('resize', screenWidthChange);
 
   return (
-    <header className="fixed z-10 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
+    <header className="fixed z-20 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
       <div className="w-full flex justify-between py-2 px-4">
         <div id="brand" className="">
-          <a className="flex flex-row items-center w-fit" href="/">
+          <Link className="flex flex-row items-center w-fit" to="/">
             <img className="w-11 h-11 mr-2.5" src={brand} alt="logo" />
-            <h3 className="font-mono text-3xl font-semibold">MyBlog</h3>
-          </a>
+            <h3 className="font-mono text-3xl font-semibold">ReactBlog</h3>
+          </Link>
         </div>
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}
@@ -60,7 +60,7 @@ function Header() {
                 placeholder="搜尋..."
                 onChange={(e) => dispatch(setSearchText(e.target.value))}
                 onKeyUp={(e) => handleSearch(e.key)}
-                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-76 outline-none"
+                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
               />
               <FontAwesomeIcon
                 icon={icon({ name: 'search', style: 'solid' })}

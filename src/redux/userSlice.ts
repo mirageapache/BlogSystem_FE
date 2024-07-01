@@ -14,6 +14,7 @@ export interface UserStateType {
 /** user state 預設值 */
 const initState = {
   userData: {
+    _id: '',
     userId: '',
     email: '',
     account: '',

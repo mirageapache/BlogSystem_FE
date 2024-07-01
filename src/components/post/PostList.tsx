@@ -1,28 +1,28 @@
-import { useQuery } from 'react-query';
-import { get } from 'lodash';
+import { isEmpty } from 'lodash';
+// --- components ---
+import NoSearchResult from 'components/tips/NoSearchResult';
 import PostItem from './PostItem';
-import { getPostByLimit } from '../../api/post';
+import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
+import ArticleLoading from '../article/ArticleLoading';
+// --- types ---
+import { PostDataType, postResultType } from '../../types/postType';
 
-interface PostType {
-  body: string;
-  id: number;
-  reactions: number;
-  tags: string[];
-  title: string;
-  userId: number;
-}
+function PostList(props: { postQueryData: postResultType }) {
+  const { postQueryData } = props;
+  const { isLoading, data } = postQueryData;
+  const postDataList: PostDataType[] | null = data as PostDataType[] | null;
 
-function PostList() {
-  const { isLoading, error, data } = useQuery('posts', () => getPostByLimit(5));
+  if (isLoading) return <ArticleLoading />;
+  if (data!.code === 'ERR_NETWORK')
+    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+  if (isEmpty(postDataList))
+    return <NoSearchResult msgOne="找不到任何貼文！!" msgTwo=" " type="post" />;
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error</p>;
-  const postList: PostType[] = get(data, 'posts', []);
-  const postItems = postList.map((post) => (
-    <PostItem key={post.id} id={post.id} title={post.title} body={post.body} tags={post.tags} />
-  ));
+  const postItems = postDataList!.map((post) => {
+    return <PostItem key={post._id} postData={post} />;
+  });
 
-  return <div className="flex-grow px-8 md:px-0">{postItems}</div>;
+  return <section className="flex-grow">{postItems}</section>;
 }
 
 export default PostList;

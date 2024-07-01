@@ -27,21 +27,11 @@ export const calcTimeDiff = (currentTime: number, inputTime: number) => {
 
 /**
  * 文章、貼文顯示日期時間轉換
- * @param datetime 日期時間
+ * @param datetime (時間戳)日期時間
  */
 export const formatDateTime = (datetime: string) => {
-  let datetimeString = datetime;
-  if (datetime.length <= 8) {
-    datetimeString += '0000';
-  }
   const currentDate = new Date();
-  const inputDate = new Date( // 輸入時間
-    parseInt(datetimeString.substring(0, 4), 10), // 年
-    parseInt(datetimeString.substring(4, 6), 10) - 1, // 月
-    parseInt(datetimeString.substring(6, 8), 10), // 日
-    parseInt(datetimeString.substring(8, 10), 10), // 時
-    parseInt(datetimeString.substring(10, 12), 10) // 分
-  );
+  const inputDate = new Date(datetime);
 
   const diffDays = Math.abs(currentDate.getDate() - inputDate.getDate());
 

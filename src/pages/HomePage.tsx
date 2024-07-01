@@ -1,17 +1,18 @@
 import { useQuery } from 'react-query';
 // --- components ---
-import ArticleList from 'components/article/ArticleList';
-
+import PostList from 'components/post/PostList';
 // --- api / type ---
-import { ApiResultType, getPartialArticles } from '../api/article';
+import { postResultType } from 'types/postType';
+import { getAllPosts } from 'api/post';
 
 function HomePage() {
   /** 取得文章 */
-  const apiResult = useQuery('articles', () => getPartialArticles(5)) as ApiResultType;
+
+  const postQueryData = useQuery('post', () => getAllPosts()) as postResultType;
 
   return (
-    <div className="max-w-[600px] p-4 sm:p-0">
-      <ArticleList apiResult={apiResult} />
+    <div className="w-full max-w-[600px] p-4 sm:p-0">
+      <PostList postQueryData={postQueryData} />
     </div>
   );
 }

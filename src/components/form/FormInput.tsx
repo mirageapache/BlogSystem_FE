@@ -3,6 +3,7 @@ import { isEmpty } from 'lodash';
 import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { FORM_CONTROL } from 'constants/LayoutConstants';
 
 /** FormInputProps 型別 */
 interface FormInputPropsType {
@@ -30,8 +31,6 @@ function FormInput({
   const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
   const pwdtype = hidePassword ? 'password' : 'text'; // 控制密碼顯示/隱藏的input type
   const inputType = ispwd ? pwdtype : type;
-  const inputStyle =
-    'w-full text-lg outline-none mt-2 px-2 py-1 focus:border-blue-500 focus:border-b-2';
   const normalizedValue = normalize ? normalize(input.value) : input.value; // normalize 用來對輸入的值進行格式化或轉換
 
   // 顯示/隱藏密碼控制
@@ -71,7 +70,7 @@ function FormInput({
               name={name}
               type={inputType}
               placeholder={placeholder}
-              className={`${inputStyle} border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950 ${classname} `}
+              className={`${FORM_CONTROL} border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950 focus:border-b-2 ${classname} `}
               onBlur={onBlur}
               onFocus={onFocus}
               onChange={input.onChange}
@@ -87,7 +86,7 @@ function FormInput({
             name={name}
             type={inputType}
             placeholder={placeholder}
-            className={`${inputStyle} border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 ${classname} `}
+            className={`${FORM_CONTROL} border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 focus:border-b-2 ${classname} `}
             onBlur={onBlur}
             onFocus={onFocus}
             onChange={input.onChange}

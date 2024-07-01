@@ -25,7 +25,7 @@ function Avatar(props: {
       </span>
     );
   }
-  return <img className={`${size} border rounded-full`} src={avatarUrl} alt="avatar" />;
+  return <img className={`${size} rounded-full`} src={avatarUrl} alt="avatar" />;
 }
 
 export default Avatar;
