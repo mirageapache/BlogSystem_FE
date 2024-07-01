@@ -1,18 +1,18 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { useDispatch } from 'react-redux';
+import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as faHeartRegular, faComment, faBookmark } from '@fortawesome/free-regular-svg-icons';
+// --- components ---
+import PostInfoItem from './PostInfoItem';
+// --- functions / types ---
 import { PostDataType } from 'types/postType';
 import { getCookies } from 'utils/common';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { setPostId, setShowEditModal } from '../../redux/postSlice';
-import PostInfoItem from './PostInfoItem';
 
 function PostInfoPanel(props: { postData: PostDataType }) {
   const { postData } = props;
   const likeCount = postData.likedByUsers.length; // 喜歡數
   const commentCount = postData.comments.length; // 留言數
-  const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文"提示
   const userId = getCookies('uid');
   const dispatchSlice = useDispatch();
 
@@ -24,79 +24,52 @@ function PostInfoPanel(props: { postData: PostDataType }) {
 
   return (
     <div className="flex justify-between">
-      <div className="flex">
+      <div className="flex gap-4">
         {/* 喜歡 */}
-        <span className="mr-5 flex justify-center items-center cursor-pointer">
-          <FontAwesomeIcon
-            icon={icon({ name: 'heart', style: 'regular' })}
-            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-red-500"
-          />
-          <p className="text-md font-bold text-center text-gray-400 dark:text-gray-100">
-            {likeCount}
-          </p>
-        </span>
+        <PostInfoItem
+          iconName={faHeartRegular}
+          tipText="喜歡"
+          count={likeCount || 0}
+          faClass="text-gray-400 dark:text-gray-100 hover:text-red-500"
+          handleClick={() => {}}
+        />
+
         {/* 留言 */}
-        <span className="mr-5 flex justify-center items-center cursor-pointer">
-          <FontAwesomeIcon
-            icon={icon({ name: 'comment', style: 'regular' })}
-            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-green-500"
-          />
-          <p className="text-md font-bold text-center text-gray-400 dark:text-gray-100">
-            {commentCount}
-          </p>
-        </span>
+        <PostInfoItem
+          iconName={faComment}
+          tipText="留言"
+          count={commentCount || 0}
+          faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500"
+          handleClick={() => {}}
+        />
       </div>
-      <div className="flex gap-5">
+
+      <div className="flex gap-4">
         {/* 分享 */}
-        <span className="flex justify-center items-center cursor-pointer">
-          <FontAwesomeIcon
-            icon={icon({ name: 'share', style: 'solid' })}
-            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-orange-500"
-          />
-          <p className="text-md font-bold text-center text-gray-400 dark:text-gray-100">
-            {postData.shareCount !== 0 && postData.shareCount}
-          </p>
-        </span>
+        <PostInfoItem
+          iconName={faShare}
+          tipText="分享"
+          count={postData.shareCount || undefined}
+          faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          handleClick={() => {}}
+        />
+
         {/* 收藏 */}
-        <span className="flex justify-center items-center cursor-pointer">
-          <FontAwesomeIcon
-            icon={icon({ name: 'bookmark', style: 'regular' })}
-            className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-orange-500"
-          />
-          <p className="text-md font-bold text-center text-gray-400 dark:text-gray-100">
-            {postData.collectionCount !== 0 && postData.collectionCount}
-          </p>
-        </span>
+        <PostInfoItem
+          iconName={faBookmark}
+          tipText="收藏"
+          count={postData.collectionCount || undefined}
+          faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          handleClick={() => {}}
+        />
 
         {/* 編輯 */}
         {userId === postData.author._id && (
-          // <span
-          //   className="relative"
-          //   onMouseEnter={() => setShowEditTip(true)}
-          //   onMouseLeave={() => setShowEditTip(false)}
-          // >
-          //   <button
-          //     type="button"
-          //     className="flex justify-center items-center text-gray-500 hover:text-orange-500"
-          //     onClick={handleClickEdit}
-          //   >
-          //     <FontAwesomeIcon
-          //       icon={icon({ name: 'square-pen', style: 'solid' })}
-          //       className="w-5 h-5 m-1.5"
-          //     />
-          //   </button>
-          //   <span
-          //     className={`absolute top-[-25px] right-0 w-20 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
-          //       showEditTip ? 'block' : 'hidden'
-          //     }`}
-          //   >
-          //     編輯貼文
-          //   </span>
-          // </span>
           <PostInfoItem
-            iconName="square-pen"
-            iconStyle="solid"
-            tipText="編輯貼文"
+            iconName={faSquarePen} // 透過props傳遞icon名稱
+            tipText="編輯"
+            count={undefined}
+            faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
             handleClick={handleClickEdit}
           />
         )}

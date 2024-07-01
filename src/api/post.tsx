@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './index';
-import { PostDataType, PostVariablesType } from '../types/postType';
+import { PostDataType } from '../types/postType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;

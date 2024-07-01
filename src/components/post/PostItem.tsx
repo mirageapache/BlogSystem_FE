@@ -6,8 +6,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import PostInfoPanel from 'components/post/PostInfoPanel';
 import UserInfoPanel from 'components/user/UserInfoPanel';
@@ -38,7 +36,6 @@ function PostItem(props: { postData: PostDataType }) {
   const contentLength = isEmpty(contentArr) ? 0 : contentArr!.length; // 貼文內容長度(行數)
   const [hiddenContent, setHiddenContent] = useState(contentLength > 10 || false); // 是否隱藏貼文內容(預設顯示10行，過長的部分先隱藏)
   const dispatchSlice = useDispatch();
-  // console.log(moment(postData.createdAt).unix().toString()); // 日期格式轉換
 
   const tagsList = postData.hashTags.map((tag) => (
     <PostTag key={`${tag}_${postData._id}`} text={tag} />
