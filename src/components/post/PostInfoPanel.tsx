@@ -1,12 +1,14 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useDispatch } from 'react-redux';
 import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
+import { isEmpty } from 'lodash';
 import {
   faHeart as faHeartRegular,
   faComment,
   faBookmark,
 } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
+import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
 import { getCookies } from 'utils/common';
 import { setPostId, setShowEditModal } from '../../redux/postSlice';
@@ -16,13 +18,22 @@ import PostInfoItem from './PostInfoItem';
 function PostInfoPanel(props: { postData: PostDataType }) {
   const dispatchSlice = useDispatch();
   const userId = getCookies('uid');
+  const authToken = localStorage.getItem('authToken');
   const { postData } = props;
   const isLike = postData.likedByUsers.find((item) => item._id === userId); // 顯示是否喜歡該貼文
   const likeCount = postData.likedByUsers.length; // 喜歡數
   const commentCount = postData.comments.length; // 留言數
 
+  /** 檢查是否登入 */
+  const checkLogin = () => {
+    if (isEmpty(userId) || isEmpty(authToken)) {
+      dispatchSlice(setSignInPop(true));
+    }
+  };
+
   /** 喜歡/取消喜歡貼文 */
   const toggleLikePost = () => {
+    checkLogin();
     console.log(!isLike);
   };
 
@@ -51,6 +62,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             tipText="喜歡"
             count={likeCount || 0}
             faClass="text-gray-400 dark:text-gray-100 hover:text-red-500"
+            tipClass="w-12"
             handleClick={toggleLikePost}
           />
         )}
@@ -61,6 +73,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           tipText="留言"
           count={commentCount || 0}
           faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500"
+          tipClass="w-12"
           handleClick={() => {}}
         />
       </div>
@@ -72,6 +85,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           tipText="分享"
           count={postData.shareCount || undefined}
           faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          tipClass="w-12"
           handleClick={() => {}}
         />
 
@@ -81,6 +95,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           tipText="收藏"
           count={postData.collectionCount || undefined}
           faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          tipClass="w-12"
           handleClick={() => {}}
         />
 
@@ -91,6 +106,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             tipText="編輯"
             count={undefined}
             faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+            tipClass="w-12"
             handleClick={handleClickEdit}
           />
         )}
