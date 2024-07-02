@@ -12,7 +12,7 @@ export interface PostDataType extends errorMsgType {
   hashTags: string[];
   collectionCount: number;
   shareCount: number;
-  likedByUsers: string[];
+  likedByUsers: userInfoPanelType[];
   comments: string[];
   createdAt: string;
   editedAt: string;

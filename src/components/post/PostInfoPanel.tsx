@@ -14,11 +14,17 @@ import { setPostId, setShowEditModal } from '../../redux/postSlice';
 import PostInfoItem from './PostInfoItem';
 
 function PostInfoPanel(props: { postData: PostDataType }) {
+  const dispatchSlice = useDispatch();
+  const userId = getCookies('uid');
   const { postData } = props;
+  const isLike = postData.likedByUsers.find((item) => item._id === userId); // 顯示是否喜歡該貼文
   const likeCount = postData.likedByUsers.length; // 喜歡數
   const commentCount = postData.comments.length; // 留言數
-  const userId = getCookies('uid');
-  const dispatchSlice = useDispatch();
+
+  /** 喜歡/取消喜歡貼文 */
+  const toggleLikePost = () => {
+    console.log(!isLike);
+  };
 
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = () => {
@@ -30,13 +36,24 @@ function PostInfoPanel(props: { postData: PostDataType }) {
     <div className="flex justify-between">
       <div className="flex gap-4">
         {/* 喜歡 */}
-        <PostInfoItem
-          iconName={faHeartRegular}
-          tipText="喜歡"
-          count={likeCount || 0}
-          faClass="text-gray-400 dark:text-gray-100 hover:text-red-500"
-          handleClick={() => {}}
-        />
+        {isLike ? (
+          <PostInfoItem
+            iconName={faHeartSolid}
+            tipText="取消喜歡"
+            count={likeCount || 0}
+            faClass="text-red-500 hover:text-gray-400"
+            tipClass="w-20"
+            handleClick={toggleLikePost}
+          />
+        ) : (
+          <PostInfoItem
+            iconName={faHeartRegular}
+            tipText="喜歡"
+            count={likeCount || 0}
+            faClass="text-gray-400 dark:text-gray-100 hover:text-red-500"
+            handleClick={toggleLikePost}
+          />
+        )}
 
         {/* 留言 */}
         <PostInfoItem
