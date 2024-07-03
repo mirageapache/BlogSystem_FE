@@ -26,7 +26,7 @@ export interface UserSettingType {
 }
 
 /** 使用者資訊版型別 */
-export interface userInfoPanelType {
+export interface UserInfoPanelType {
   _id: string;
   account: string;
   name: string;
@@ -37,7 +37,7 @@ export interface userInfoPanelType {
 /** 使用者個人資訊
  * [包含 userDataType 及 userSettingType ]
  * */
-export interface userProfileType extends UserDataType, UserSettingType {}
+export interface UserProfileType extends UserDataType, UserSettingType {}
 
 /** user react-query Result 型別 */
 export interface UserResultType extends RqResponseType {

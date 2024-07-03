@@ -23,40 +23,31 @@ interface stateType {
 
 function PostEditModal() {
   const dispatchSlice = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
-  const [authorId, setAuthorId] = useState('');
-  const [content, setContent] = useState(''); // 內容
-  const [image, setImage] = useState(''); // 處理 image preview
+  const postState = useSelector((state: stateType) => state.post);
+  const [firstLoad, setFirstLoad] = useState(true);
+  const { postId, postData } = postState;
+  const [content, setContent] = useState(postData.content); // 內容
+  const [image, setImage] = useState(postData.image); // 處理 image preview
   const [removeImage, setRemoveImage] = useState(false); // 判斷是否移除圖片檔
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
-  const postState = useSelector((state: stateType) => state.post);
-  const { postId } = postState;
   const swal = withReactContent(Swal);
-
-  /** 取得貼文資料 */
-  const PostDetail = async () => {
-    setIsLoading(true);
-    const res = await getPostDetail(postId);
-    if (res.status === 200) {
-      const postDetail = get(res, 'data');
-      if (contentRef.current) contentRef.current.innerHTML = postDetail.content;
-      setAuthorId(postDetail.author._id);
-      setContent(postDetail.content);
-      setImage(postDetail.image);
-    }
-    setIsLoading(false);
-  };
+  const authorId = postData.author._id;
 
   useEffect(() => {
-    PostDetail();
+    if(firstLoad) {
+      if (contentRef.current) contentRef.current.innerHTML = postData.content;
+      setFirstLoad(false);
+    }
   }, []);
 
   /** 關閉modal */
-  const handleClose = () => {
-    swal
+  const handleClose = (showAlert: boolean) => {
+    if(showAlert){
+      swal
       .fire({
         title: '要離開編輯嗎?',
+        text: '系統將不會儲存及修改貼文',
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: '確定',
@@ -65,6 +56,9 @@ function PostEditModal() {
       .then((result) => {
         if (result.isConfirmed) dispatchSlice(setShowEditModal(false));
       });
+    } else {
+      dispatchSlice(setShowEditModal(false));
+    }
   };
 
   /** 編輯貼文 mutation */
@@ -78,7 +72,7 @@ function PostEditModal() {
             icon: 'success',
             confirmButtonText: '確認',
           });
-          handleClose();
+          handleClose(false);
           window.location.reload();
         }
       },
@@ -102,7 +96,6 @@ function PostEditModal() {
       });
       return;
     }
-
     const formData = new FormData();
     formData.set('postId', postId);
     formData.set('content', content);
@@ -152,7 +145,7 @@ function PostEditModal() {
             aria-label="close"
             type="button"
             className="flex jsutify-center m-1"
-            onClick={handleClose}
+            onClick={() => handleClose(true)}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'xmark', style: 'solid' })}
@@ -163,16 +156,12 @@ function PostEditModal() {
 
         {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
         <div className="relative py-2 px-5 h-minus120 sm:h-auto">
-          {isLoading ? (
-            <div className="w-full h-full sm:h-80 outline-none">資料載入中</div>
-          ) : (
             <div
               contentEditable
               ref={contentRef}
-              className="w-full h-full sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+              className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
               onInput={handleOnInput}
             />
-          )}
 
           {/* image preview */}
           {!isEmpty(image) && (
@@ -227,7 +216,7 @@ function PostEditModal() {
           </div>
         </div>
       </div>
-      <div className="fixed w-full h-full bg-black opacity-40" onClick={handleClose} />
+      <div className="fixed w-full h-full bg-black opacity-40" onClick={() => handleClose(true)} />
     </div>
   );
 }

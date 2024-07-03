@@ -118,7 +118,7 @@ function PostCreateModal() {
           <div
             contentEditable
             ref={contentRef}
-            className="w-full h-full sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
             onInput={handleOnInput}
           />
 

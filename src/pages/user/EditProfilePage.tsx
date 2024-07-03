@@ -23,7 +23,7 @@ import FormTextArea from 'components/form/FormTextArea';
 // --- functions ---
 import { required, isEmail, maxLength } from 'utils/validates';
 // --- types ---
-import { userProfileType } from 'types/userType';
+import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 
@@ -52,7 +52,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
     cacheTime: 0, // 不存取快取資料
   });
   const { isLoading, isSuccess, data } = getUserData;
-  const userData = get(data, 'data') as userProfileType;
+  const userData = get(data, 'data') as UserProfileType;
 
   // 設定 Redux Form 的初始值
   useEffect(() => {
@@ -70,7 +70,7 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
   }, [isSuccess, userData, dispatch]);
 
   /** 送出編輯資料 */
-  const submitEditProfile = async (form: userProfileType) => {
+  const submitEditProfile = async (form: UserProfileType) => {
     const formData = new FormData();
     if (emailChange) formData.append('email', form.email);
     formData.append('name', form.name);

@@ -13,7 +13,7 @@ import {
 import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
 import { getCookies } from 'utils/common';
-import { setPostId, setShowEditModal } from '../../redux/postSlice';
+import { setPostId, setPostData, setShowEditModal } from '../../redux/postSlice';
 import { checkLogin } from '../../utils/common';
 import { toggleLikePost } from 'api/post';
 // --- components ---
@@ -23,7 +23,7 @@ import { errorAlert } from 'utils/fetchError';
 function PostInfoPanel(props: { postData: PostDataType }) {
   const dispatchSlice = useDispatch();
   const userId = getCookies('uid');
-  const [postData, setPostData] = useState(props.postData);
+  const [postData, setPost] = useState(props.postData);
   const isLike = !isEmpty(postData.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
   const likeCount = postData.likedByUsers.length; // 喜歡數
   const commentCount = postData.comments.length; // 留言數
@@ -31,7 +31,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   const likeMutation = useMutation((action: boolean) => toggleLikePost(postData._id, userId!, action),
     {
       onSuccess: (res) => {
-        setPostData(res.updateResult);
+        setPost(res.updateResult);
       },
       onError: () => errorAlert(),
     }
@@ -49,6 +49,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = () => {
     dispatchSlice(setPostId(postData._id));
+    dispatchSlice(setPostData(postData));
     dispatchSlice(setShowEditModal(true));
   };
 

@@ -3,49 +3,27 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 // --- components ---
 import PostInfoPanel from 'components/post/PostInfoPanel';
 import UserInfoPanel from 'components/user/UserInfoPanel';
+import HashTag from 'components/common/HashTag';
 // --- functions / types ---
 import { formatDateTime } from 'utils/dateTime';
-import { getCookies } from 'utils/common';
 import { PostDataType } from 'types/postType';
-import { useDispatch } from 'react-redux';
-import { setPostId, setShowEditModal } from '../../redux/postSlice';
-
-function PostTag(props: { text: string }) {
-  const { text } = props;
-  return (
-    <span className="mr-1">
-      <Link to="/" className="text-sky-600">
-        #{text}
-      </Link>
-    </span>
-  );
-}
 
 function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
-  const userId = getCookies('uid');
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
   const contentArr = postData.content.match(/<div>.*?<\/div>/g); // 將字串內容轉換成陣列
   const contentLength = isEmpty(contentArr) ? 0 : contentArr!.length; // 貼文內容長度(行數)
   const [hiddenContent, setHiddenContent] = useState(contentLength > 10 || false); // 是否隱藏貼文內容(預設顯示10行，過長的部分先隱藏)
-  const dispatchSlice = useDispatch();
 
   const tagsList = postData.hashTags.map((tag) => (
-    <PostTag key={`${tag}_${postData._id}`} text={tag} />
+    <HashTag key={`${tag}_${postData._id}`} text={tag} />
   ));
-
-  /** 處理編輯貼文按鈕 */
-  const handleClickEdit = () => {
-    dispatchSlice(setPostId(postData._id));
-    dispatchSlice(setShowEditModal(true));
-  };
 
   return (
     <div className="flex text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
