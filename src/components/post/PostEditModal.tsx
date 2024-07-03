@@ -127,12 +127,7 @@ function PostEditModal() {
 
   /** 處理div輸入行為 */
   const handleOnInput = () => {
-    if (contentRef.current) {
-      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const lines = contentRef.current.innerText.split('\n');
-      const formattedContent = lines.map((line) => `<div>${line}</div>`).join('');
-      setContent(formattedContent);
-    }
+    if (contentRef.current) setContent(contentRef.current.innerHTML);
   };
 
   return (
