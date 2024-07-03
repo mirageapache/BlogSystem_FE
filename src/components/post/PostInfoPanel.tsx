@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useMutation } from 'react-query';
 import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
 import { isEmpty } from 'lodash';
 import {
@@ -12,29 +14,36 @@ import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
 import { getCookies } from 'utils/common';
 import { setPostId, setShowEditModal } from '../../redux/postSlice';
+import { checkLogin } from '../../utils/common';
+import { toggleLikePost } from 'api/post';
 // --- components ---
 import PostInfoItem from './PostInfoItem';
+import { errorAlert } from 'utils/fetchError';
 
 function PostInfoPanel(props: { postData: PostDataType }) {
   const dispatchSlice = useDispatch();
   const userId = getCookies('uid');
-  const authToken = localStorage.getItem('authToken');
-  const { postData } = props;
-  const isLike = postData.likedByUsers.find((item) => item._id === userId); // 顯示是否喜歡該貼文
+  const [postData, setPostData] = useState(props.postData);
+  const isLike = !isEmpty(postData.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
   const likeCount = postData.likedByUsers.length; // 喜歡數
   const commentCount = postData.comments.length; // 留言數
 
-  /** 檢查是否登入 */
-  const checkLogin = () => {
-    if (isEmpty(userId) || isEmpty(authToken)) {
-      dispatchSlice(setSignInPop(true));
+  const likeMutation = useMutation((action: boolean) => toggleLikePost(postData._id, userId!, action),
+    {
+      onSuccess: (res) => {
+        setPostData(res.updateResult);
+      },
+      onError: () => errorAlert(),
     }
-  };
+  );
 
   /** 喜歡/取消喜歡貼文 */
-  const toggleLikePost = () => {
-    checkLogin();
-    console.log(!isLike);
+  const handleLikePost = () => {
+    if(!checkLogin()) {
+      dispatchSlice(setSignInPop(true));
+      return;
+    }
+    likeMutation.mutate(!isLike);
   };
 
   /** 處理編輯貼文按鈕 */
@@ -54,7 +63,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             count={likeCount || 0}
             faClass="text-red-500 hover:text-gray-400"
             tipClass="w-20"
-            handleClick={toggleLikePost}
+            handleClick={handleLikePost}
           />
         ) : (
           <PostInfoItem
@@ -63,7 +72,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             count={likeCount || 0}
             faClass="text-gray-400 dark:text-gray-100 hover:text-red-500"
             tipClass="w-12"
-            handleClick={toggleLikePost}
+            handleClick={handleLikePost}
           />
         )}
 

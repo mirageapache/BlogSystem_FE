@@ -11,6 +11,10 @@ interface PostApiType extends AxResponseType {
   data: PostDataType;
 }
 
+const config = {
+  headers: { Authorization: `Bearer ${authToken}` },
+};
+
 /** 取得所有貼文 */
 export async function getAllPosts(): Promise<PostApiType> {
   const result = await axios
@@ -40,10 +44,6 @@ export async function getPostDetail(postId: string): Promise<PostApiType> {
 
 /** 新增貼文 */
 export async function createPost(userId: string, formData: FormData): Promise<PostApiType> {
-  const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-  };
-
   const result = await axios
     .post(`${baseUrl}/post/create/${userId}`, formData, config)
     .then((res) => {
@@ -57,10 +57,6 @@ export async function createPost(userId: string, formData: FormData): Promise<Po
 
 /** 編輯貼文 */
 export async function updatePost(userId: string, formData: FormData): Promise<PostApiType> {
-  const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-  };
-
   const result = await axios
     .patch(`${baseUrl}/post/update/${userId}`, formData, config)
     .then((res) => {
@@ -73,9 +69,9 @@ export async function updatePost(userId: string, formData: FormData): Promise<Po
 }
 
 /** 喜歡/取消喜歡貼文 */
-export async function handleLikePost(postId: string, userId: string, action: string) {
+export async function toggleLikePost(postId: string, userId: string, action: boolean) {
   const result = await axios
-    .patch(`${baseUrl}/post/like`, { postId, userId, action })
+    .patch(`${baseUrl}/post/toggleLikeAction/${userId}`, { postId, userId, action }, config)
     .then((res) => {
       return res.data;
     })
