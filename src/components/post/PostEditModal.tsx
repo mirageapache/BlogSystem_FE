@@ -6,10 +6,10 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
 // --- api ---
-import { getPostDetail, updatePost } from 'api/post';
+import { updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
@@ -35,7 +35,7 @@ function PostEditModal() {
   const authorId = postData.author._id;
 
   useEffect(() => {
-    if(firstLoad) {
+    if (firstLoad) {
       if (contentRef.current) contentRef.current.innerHTML = postData.content;
       setFirstLoad(false);
     }
@@ -43,19 +43,19 @@ function PostEditModal() {
 
   /** 關閉modal */
   const handleClose = (showAlert: boolean) => {
-    if(showAlert){
+    if (showAlert) {
       swal
-      .fire({
-        title: '要離開編輯嗎?',
-        text: '系統將不會儲存及修改貼文',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: '確定',
-        cancelButtonText: `取消`,
-      })
-      .then((result) => {
-        if (result.isConfirmed) dispatchSlice(setShowEditModal(false));
-      });
+        .fire({
+          title: '要離開編輯嗎?',
+          text: '系統將不會儲存及修改貼文',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: '確定',
+          cancelButtonText: `取消`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) dispatchSlice(setShowEditModal(false));
+        });
     } else {
       dispatchSlice(setShowEditModal(false));
     }
@@ -156,12 +156,12 @@ function PostEditModal() {
 
         {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
         <div className="relative py-2 px-5 h-minus120 sm:h-auto">
-            <div
-              contentEditable
-              ref={contentRef}
-              className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
-              onInput={handleOnInput}
-            />
+          <div
+            contentEditable
+            ref={contentRef}
+            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+            onInput={handleOnInput}
+          />
 
           {/* image preview */}
           {!isEmpty(image) && (

@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 function HashTag(props: { text: string }) {
   const { text } = props;
@@ -9,7 +9,7 @@ function HashTag(props: { text: string }) {
         #{text}
       </Link>
     </span>
-  )
+  );
 }
 
-export default HashTag
+export default HashTag;

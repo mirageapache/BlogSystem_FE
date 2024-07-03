@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-prop-types */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -10,36 +11,35 @@ import {
   faBookmark,
 } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
+import { toggleLikePost } from 'api/post';
 import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
+import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import { setPostId, setPostData, setShowEditModal } from '../../redux/postSlice';
 import { checkLogin } from '../../utils/common';
-import { toggleLikePost } from 'api/post';
 // --- components ---
 import PostInfoItem from './PostInfoItem';
-import { errorAlert } from 'utils/fetchError';
 
 function PostInfoPanel(props: { postData: PostDataType }) {
+  const { postData } = props;
   const dispatchSlice = useDispatch();
   const userId = getCookies('uid');
-  const [postData, setPost] = useState(props.postData);
-  const isLike = !isEmpty(postData.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
-  const likeCount = postData.likedByUsers.length; // 喜歡數
-  const commentCount = postData.comments.length; // 留言數
+  const [post, setPost] = useState(postData);
+  const isLike = !isEmpty(post.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
+  const likeCount = post.likedByUsers.length; // 喜歡數
+  const commentCount = post.comments.length; // 留言數
 
-  const likeMutation = useMutation((action: boolean) => toggleLikePost(postData._id, userId!, action),
-    {
-      onSuccess: (res) => {
-        setPost(res.updateResult);
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const likeMutation = useMutation((action: boolean) => toggleLikePost(post._id, userId!, action), {
+    onSuccess: (res) => {
+      setPost(res.updateResult);
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 喜歡/取消喜歡貼文 */
   const handleLikePost = () => {
-    if(!checkLogin()) {
+    if (!checkLogin()) {
       dispatchSlice(setSignInPop(true));
       return;
     }
@@ -48,8 +48,8 @@ function PostInfoPanel(props: { postData: PostDataType }) {
 
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = () => {
-    dispatchSlice(setPostId(postData._id));
-    dispatchSlice(setPostData(postData));
+    dispatchSlice(setPostId(post._id));
+    dispatchSlice(setPostData(post));
     dispatchSlice(setShowEditModal(true));
   };
 
@@ -93,7 +93,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
         <PostInfoItem
           iconName={faShare}
           tipText="分享"
-          count={postData.shareCount || undefined}
+          count={post.shareCount || undefined}
           faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
           tipClass="w-12"
           handleClick={() => {}}
@@ -103,14 +103,14 @@ function PostInfoPanel(props: { postData: PostDataType }) {
         <PostInfoItem
           iconName={faBookmark}
           tipText="收藏"
-          count={postData.collectionCount || undefined}
+          count={post.collectionCount || undefined}
           faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
           tipClass="w-12"
           handleClick={() => {}}
         />
 
         {/* 編輯 */}
-        {userId === postData.author._id && (
+        {userId === post.author._id && (
           <PostInfoItem
             iconName={faSquarePen} // 透過props傳遞icon名稱
             tipText="編輯"
