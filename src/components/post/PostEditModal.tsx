@@ -127,7 +127,21 @@ function PostEditModal() {
 
   /** 處理div輸入行為 */
   const handleOnInput = () => {
-    if (contentRef.current) setContent(contentRef.current.innerHTML);
+    if (contentRef.current) {
+      // const inputDiv = contentRef.current;
+      // const hashTagArr = inputDiv.innerHTML.split('#');
+
+      // const hashTagPattern = /#\S+(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
+      // const hashTags = inputDiv.innerHTML.match(hashTagPattern);
+      // const reviseHashTag = hashTags?.map(item => {
+      //   item.includes("</div>");
+      //   return item.substring(0, item.length-6);
+      // })
+
+      let inputContent = contentRef.current.innerHTML;
+      inputContent = inputContent.replace(/(#\w+)/g, '<span>$1</span>');
+      setContent(inputContent);
+    }
   };
 
   return (
