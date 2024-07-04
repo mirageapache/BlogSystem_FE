@@ -128,19 +128,23 @@ function PostEditModal() {
   /** 處理div輸入行為 */
   const handleOnInput = () => {
     if (contentRef.current) {
-      // const inputDiv = contentRef.current;
-      // const hashTagArr = inputDiv.innerHTML.split('#');
+      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
+      const hashTags = [];
+      // const regex = /#(\w+)(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
+      const regex = /\s#(\w+)\s/g; // 正規表達式判斷"空白#"開頭"空白"結尾的字串
+      const inputDiv = contentRef.current;
+      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n');
 
-      // const hashTagPattern = /#\S+(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
-      // const hashTags = inputDiv.innerHTML.match(hashTagPattern);
-      // const reviseHashTag = hashTags?.map(item => {
-      //   item.includes("</div>");
-      //   return item.substring(0, item.length-6);
-      // })
+      const hashTagArr = phaseArr.map((phase) => {
+        if (phase.includes('#')) {
+          return phase.replace(regex, ' <a class="text-blue-500" href="/search?tag=$1">#$1</a> ');
+        }
+        return phase;
+      });
+      const formattedContent = hashTagArr.map((line) => `<div class="h-6">${line}</div>`).join('');
+      console.log(formattedContent);
 
-      let inputContent = contentRef.current.innerHTML;
-      inputContent = inputContent.replace(/(#\w+)/g, '<span>$1</span>');
-      setContent(inputContent);
+      setContent(formattedContent);
     }
   };
 
