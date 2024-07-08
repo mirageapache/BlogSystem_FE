@@ -16,6 +16,7 @@ import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
+import '../../scss/post.scss';
 
 interface stateType {
   post: PostStateType;
@@ -26,6 +27,9 @@ function PostEditModal() {
   const postState = useSelector((state: stateType) => state.post);
   const [firstLoad, setFirstLoad] = useState(true);
   const { postId, postData } = postState;
+
+  // console.log('render = \n', postData.content);
+
   const [content, setContent] = useState(postData.content); // 內容
   const [image, setImage] = useState(postData.image); // 處理 image preview
   const [removeImage, setRemoveImage] = useState(false); // 判斷是否移除圖片檔
@@ -61,6 +65,78 @@ function PostEditModal() {
     }
   };
 
+  /** 處理上傳圖片檔 */
+  const handleFileChange = (event: React.ChangeEvent<any>) => {
+    const fileList = event.target.files; // 獲取選擇的檔案列表
+    if (!isEmpty(fileList) && fileList?.length) {
+      const file = fileList[0];
+      setImage(URL.createObjectURL(file));
+      setImageFile(file);
+      setRemoveImage(false);
+    }
+  };
+
+  /** 刪除圖片檔 */
+  const handleDeleteImage = () => {
+    setImage('');
+    setImageFile('');
+    setRemoveImage(true);
+  };
+
+  /** 處理div輸入行為 */
+  const handleOnInput = () => {
+    // if (contentRef.current) setContent(contentRef.current.innerHTML);
+
+    if (contentRef.current) {
+      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
+      const hashTags = [];
+      const regex = /#(\w+)(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
+      // const regex = /\s#(\w+)\s/g; // 正規表達式判斷"空白#"開頭"空白"結尾的字串
+      const inputDiv = contentRef.current;
+      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n');
+
+      const hashTagArr = phaseArr.map((phase) => {
+        if (phase.includes('#')) {
+          return phase.replace(regex, ' <a class="text-blue-500" href="/search?tag=$1">#$1</a> ');
+        }
+        return phase;
+      });
+
+      console.log(hashTagArr);
+
+      const formattedContent = hashTagArr
+        .map((line) => `<div class="paragraph-div">${line}</div>`)
+        .join('');
+      // console.log(formattedContent);
+      setContent(formattedContent);
+    }
+  };
+
+  /** 處理內容分段 及 hash tag判斷 */
+  const handleHashTag = () => {
+    if (contentRef.current) {
+      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
+      const hashTags = [];
+      const regex = /#(\w+)(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
+      // const regex = /\s#(\w+)\s/g; // 正規表達式判斷"空白#"開頭"空白"結尾的字串
+      const inputDiv = contentRef.current;
+      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n');
+
+      const hashTagArr = phaseArr.map((phase) => {
+        if (phase.includes('#')) {
+          return phase.replace(regex, ' <a class="text-blue-500" href="/search?tag=$1">#$1</a> ');
+        }
+        return phase;
+      });
+
+      console.log(hashTagArr);
+
+      const formattedContent = hashTagArr.map((line) => `<div class="h-6">${line}</div>`).join('');
+      // console.log(formattedContent);
+      setContent(formattedContent);
+    }
+  };
+
   /** 編輯貼文 mutation */
   const editPostMutation = useMutation(
     ({ userId, formData }: { userId: string; formData: FormData }) => updatePost(userId, formData),
@@ -83,10 +159,12 @@ function PostEditModal() {
 
   /** 編輯貼文 */
   const handleSubmit = () => {
-    // validate form data
+    // 驗證content內容
     if (isEmpty(content) || content.length === 0) {
       return;
     }
+
+    // 判斷登入操作者與作者id是否相同
     const userId = getCookies('uid') as string;
     if (userId !== authorId) {
       swal.fire({
@@ -96,6 +174,8 @@ function PostEditModal() {
       });
       return;
     }
+
+    // 建立FormData
     const formData = new FormData();
     formData.set('postId', postId);
     formData.set('content', content);
@@ -105,47 +185,6 @@ function PostEditModal() {
     if (imageFile) formData.set('postImage', imageFile);
 
     editPostMutation.mutate({ userId, formData });
-  };
-
-  /** 處理上傳圖片檔 */
-  const handleFileChange = (event: React.ChangeEvent<any>) => {
-    const fileList = event.target.files; // 獲取選擇的檔案列表
-    if (!isEmpty(fileList) && fileList?.length) {
-      const file = fileList[0];
-      setImage(URL.createObjectURL(file));
-      setImageFile(file);
-      setRemoveImage(false);
-    }
-  };
-
-  /** 刪除圖片檔 */
-  const handleDeleteImage = () => {
-    setImage('');
-    setImageFile('');
-    setRemoveImage(true);
-  };
-
-  /** 處理div輸入行為 */
-  const handleOnInput = () => {
-    if (contentRef.current) {
-      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const hashTags = [];
-      // const regex = /#(\w+)(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
-      const regex = /\s#(\w+)\s/g; // 正規表達式判斷"空白#"開頭"空白"結尾的字串
-      const inputDiv = contentRef.current;
-      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n');
-
-      const hashTagArr = phaseArr.map((phase) => {
-        if (phase.includes('#')) {
-          return phase.replace(regex, ' <a class="text-blue-500" href="/search?tag=$1">#$1</a> ');
-        }
-        return phase;
-      });
-      const formattedContent = hashTagArr.map((line) => `<div class="h-6">${line}</div>`).join('');
-      console.log(formattedContent);
-
-      setContent(formattedContent);
-    }
   };
 
   return (
@@ -170,6 +209,7 @@ function PostEditModal() {
         {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
         <div className="relative py-2 px-5 h-minus120 sm:h-auto">
           <div
+            id="edit-container"
             contentEditable
             ref={contentRef}
             className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
