@@ -1,14 +1,18 @@
 
-
+// 輸入框div
 #edit-container {
-
   .paragraph {
-    border: 1px solid red;
+    word-wrap: break-word;
+  }
+}
+
+// 顯示div
+#post-container {
+  .paragraph {
     word-wrap: break-word;
     
     .hash-tag {
-      color: blue;
-      text-decoration: underline;
+      color: rgb(65, 120, 241);
     }
 
   }

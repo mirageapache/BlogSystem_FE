@@ -28,11 +28,9 @@ function PostEditModal() {
   const [firstLoad, setFirstLoad] = useState(true);
   const { postId, postData } = postState;
 
-  // console.log('render = \n', postData.content);
-
   const [content, setContent] = useState(postData.content); // 內容
+  const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
   const [image, setImage] = useState(postData.image); // 處理 image preview
-  const [removeImage, setRemoveImage] = useState(false); // 判斷是否移除圖片檔
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
   const swal = withReactContent(Swal);
@@ -73,7 +71,6 @@ function PostEditModal() {
       const file = fileList[0];
       setImage(URL.createObjectURL(file));
       setImageFile(file);
-      setRemoveImage(false);
     }
   };
 
@@ -81,65 +78,33 @@ function PostEditModal() {
   const handleDeleteImage = () => {
     setImage('');
     setImageFile('');
-    setRemoveImage(true);
   };
 
   /** 處理div輸入行為 */
   const handleOnInput = () => {
-    // if (contentRef.current) setContent(contentRef.current.innerHTML);
-
-    // 區分段落，將"\n"換行標示拆解
-    // 處理hashTag，加入連結
-    // 用<div>組合段落
-
     if (contentRef.current) {
       // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const hashTags = []; // 儲存hashTag，後續存到DB供搜尋使用
-      const regex = /#(\w+)(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
-      // const regex = /\s#(\w+)\s/g; // 正規表達式判斷"空白#"開頭"空白"結尾的字串
+      const hashTags: string[] = []; // 儲存hashTag，後續存到DB供搜尋使用
+      const regex = /#([\p{L}\p{N}]+)(?=\s|$)/gu; // 正規表達式判斷"#"開頭"空白"結尾的字串(包含中文字)
       const inputDiv = contentRef.current;
       const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n'); // 拆解段落
 
-      const hashTagArr = phaseArr.map((phase) => {
+      // 處理hash tag
+      const hashTag = phaseArr.map((phase) => {
         if (phase.includes('#')) {
-          console.log(phase);
-          return phase.replace(regex, '<a class="hash-tag" href="/search?tag=$1">#$1</a>');
+          return phase.replace(regex, (match, p1) => {
+            hashTags.push(match.substring(1));
+            return `<a class="hash-tag" href="/search?tag=${p1}">${match}</a>`;
+          });
         }
         return phase;
       });
 
-      console.log(hashTagArr);
-
-      const formattedContent = hashTagArr
-        .map((line) => `<div class="paragraph-div">${line}</div>`)
+      const formattedContent = hashTag
+        .map((line) => `<div class="paragraph">${line}</div>`) // 重組段落
         .join('');
-      // console.log(formattedContent);
       setContent(formattedContent);
-    }
-  };
-
-  /** 處理內容分段 及 hash tag判斷 */
-  const handleHashTag = () => {
-    if (contentRef.current) {
-      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const hashTags = [];
-      const regex = /#(\w+)(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
-      // const regex = /\s#(\w+)\s/g; // 正規表達式判斷"空白#"開頭"空白"結尾的字串
-      const inputDiv = contentRef.current;
-      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n');
-
-      const hashTagArr = phaseArr.map((phase) => {
-        if (phase.includes('#')) {
-          return phase.replace(regex, ' <a class="text-blue-500" href="/search?tag=$1">#$1</a> ');
-        }
-        return phase;
-      });
-
-      console.log(hashTagArr);
-
-      const formattedContent = hashTagArr.map((line) => `<div class="h-6">${line}</div>`).join('');
-      // console.log(formattedContent);
-      setContent(formattedContent);
+      setHashTagArr(hashTags);
     }
   };
 
@@ -186,8 +151,8 @@ function PostEditModal() {
     formData.set('postId', postId);
     formData.set('content', content);
     formData.set('status', '1');
-    formData.set('hashTags', JSON.stringify([]));
-    formData.set('removeImage', removeImage.toString());
+    formData.set('hashTags', JSON.stringify(hashTagArr));
+    formData.set('imagePath', image);
     if (imageFile) formData.set('postImage', imageFile);
 
     editPostMutation.mutate({ userId, formData });
