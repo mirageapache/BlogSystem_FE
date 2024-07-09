@@ -1,0 +1,15 @@
+
+
+#edit-container {
+
+  .paragraph {
+    border: 1px solid red;
+    word-wrap: break-word;
+    
+    .hash-tag {
+      color: blue;
+      text-decoration: underline;
+    }
+
+  }
+}

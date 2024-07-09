@@ -16,7 +16,7 @@ import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
-import '../../scss/post.scss';
+import '../../styles/post.scss';
 
 interface stateType {
   post: PostStateType;
@@ -39,6 +39,7 @@ function PostEditModal() {
   const authorId = postData.author._id;
 
   useEffect(() => {
+    // 首次載入設定初始資料
     if (firstLoad) {
       if (contentRef.current) contentRef.current.innerHTML = postData.content;
       setFirstLoad(false);
@@ -87,17 +88,22 @@ function PostEditModal() {
   const handleOnInput = () => {
     // if (contentRef.current) setContent(contentRef.current.innerHTML);
 
+    // 區分段落，將"\n"換行標示拆解
+    // 處理hashTag，加入連結
+    // 用<div>組合段落
+
     if (contentRef.current) {
       // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const hashTags = [];
+      const hashTags = []; // 儲存hashTag，後續存到DB供搜尋使用
       const regex = /#(\w+)(?=\s|$)/g; // 正規表達式判斷"#"開頭"空白"結尾的字串
       // const regex = /\s#(\w+)\s/g; // 正規表達式判斷"空白#"開頭"空白"結尾的字串
       const inputDiv = contentRef.current;
-      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n');
+      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n'); // 拆解段落
 
       const hashTagArr = phaseArr.map((phase) => {
         if (phase.includes('#')) {
-          return phase.replace(regex, ' <a class="text-blue-500" href="/search?tag=$1">#$1</a> ');
+          console.log(phase);
+          return phase.replace(regex, '<a class="hash-tag" href="/search?tag=$1">#$1</a>');
         }
         return phase;
       });
