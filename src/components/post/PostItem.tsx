@@ -5,10 +5,10 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
+import '../../styles/post.scss';
 // --- components ---
 import PostInfoPanel from 'components/post/PostInfoPanel';
 import UserInfoPanel from 'components/user/UserInfoPanel';
-import HashTag from 'components/common/HashTag';
 // --- functions / types ---
 import { formatDateTime } from 'utils/dateTime';
 import { PostDataType } from 'types/postType';
@@ -17,13 +17,9 @@ function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
-  const contentArr = postData.content.match(/<div>.*?<\/div>/g); // 將字串內容轉換成陣列
+  const contentArr = postData.content.match(/<div.*?<\/div>/g); // 將字串內容轉換成陣列
   const contentLength = isEmpty(contentArr) ? 0 : contentArr!.length; // 貼文內容長度(行數)
   const [hiddenContent, setHiddenContent] = useState(contentLength > 10 || false); // 是否隱藏貼文內容(預設顯示10行，過長的部分先隱藏)
-
-  const tagsList = postData.hashTags.map((tag) => (
-    <HashTag key={`${tag}_${postData._id}`} text={tag} />
-  ));
 
   return (
     <div className="flex text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
@@ -83,6 +79,7 @@ function PostItem(props: { postData: PostDataType }) {
           {/* content */}
           <div className="my-2">
             <div
+              id="post-container"
               className={`text-gray-600 dark:text-gray-300 ${
                 hiddenContent ? 'line-clamp-[10]' : ''
               }`}
@@ -94,9 +91,6 @@ function PostItem(props: { postData: PostDataType }) {
               </button>
             )}
           </div>
-
-          {/* hash tags */}
-          <div>{tagsList}</div>
 
           {/* info panel */}
           <PostInfoPanel postData={postData} />

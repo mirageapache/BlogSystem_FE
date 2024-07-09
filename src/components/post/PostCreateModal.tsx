@@ -19,6 +19,7 @@ import { setShowCreateModal } from '../../redux/postSlice';
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
   const [content, setContent] = useState(''); // 內容
+  const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
   const [image, setImage] = useState(''); // 處理 image preview
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
@@ -26,6 +27,50 @@ function PostCreateModal() {
   /** 關閉modal */
   const handleClose = () => {
     dispatchSlice(setShowCreateModal(false));
+  };
+
+  /** 處理上傳圖片檔 */
+  const handleFileChange = (event: React.ChangeEvent<any>) => {
+    const fileList = event.target.files; // 獲取選擇的檔案列表
+    if (!isEmpty(fileList) && fileList?.length) {
+      const file = fileList[0];
+      setImage(URL.createObjectURL(file));
+      setImageFile(file);
+    }
+  };
+
+  /** 刪除圖片檔 */
+  const handleDeleteImage = () => {
+    setImage('');
+    setImageFile('');
+  };
+
+  /** 處理div輸入行為 */
+  const handleOnInput = () => {
+    if (contentRef.current) {
+      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
+      const hashTags: string[] = []; // 儲存hashTag，後續存到DB供搜尋使用
+      const regex = /#([\p{L}\p{N}]+)(?=\s|$)/gu; // 正規表達式判斷"#"開頭"空白"結尾的字串(包含中文字)
+      const inputDiv = contentRef.current;
+      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n'); // 拆解段落
+
+      // 處理hash tag
+      const hashTag = phaseArr.map((phase) => {
+        if (phase.includes('#')) {
+          return phase.replace(regex, (match, p1) => {
+            hashTags.push(match.substring(1));
+            return `<a class="hash-tag" href="/search?tag=${p1}">${match}</a>`;
+          });
+        }
+        return phase;
+      });
+
+      const formattedContent = hashTag
+        .map((line) => `<div class="paragraph">${line}</div>`) // 重組段落
+        .join('');
+      setContent(formattedContent);
+      setHashTagArr(hashTags);
+    }
   };
 
   /** 新增貼文 mutation */
@@ -61,31 +106,10 @@ function PostCreateModal() {
     formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
-    formData.set('hashTags', JSON.stringify([]));
+    formData.set('hashTags', JSON.stringify(hashTagArr));
     if (imageFile) formData.set('postImage', imageFile);
 
     createPostMutation.mutate({ userId, formData });
-  };
-
-  /** 處理上傳圖片檔 */
-  const handleFileChange = (event: React.ChangeEvent<any>) => {
-    const fileList = event.target.files; // 獲取選擇的檔案列表
-    if (!isEmpty(fileList) && fileList?.length) {
-      const file = fileList[0];
-      setImage(URL.createObjectURL(file));
-      setImageFile(file);
-    }
-  };
-
-  /** 刪除圖片檔 */
-  const handleDeleteImage = () => {
-    setImage('');
-    setImageFile('');
-  };
-
-  /** 處理div輸入行為 */
-  const handleOnInput = () => {
-    if (contentRef.current) setContent(contentRef.current.innerHTML);
   };
 
   return (
@@ -111,6 +135,7 @@ function PostCreateModal() {
         <div className="relative py-2 px-5 h-minus120 sm:h-auto">
           {/* contenteditable功能 */}
           <div
+            id="edit-container"
             contentEditable
             ref={contentRef}
             className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
