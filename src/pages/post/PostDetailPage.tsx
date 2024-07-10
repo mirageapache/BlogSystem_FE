@@ -24,10 +24,9 @@ function PostDetailPage() {
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
 
   // const { id } = useParams();
-  const postId = get(window, 'location.pathname', '').split('/')[2]; // 
+  const postId = get(window, 'location.pathname', '').split('/')[2]; //
   const { isLoading, error, data } = useQuery('posts', () => getPostDetail(postId));
   const postData = _.get(data, 'data');
-  console.log(postData);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
@@ -41,8 +40,8 @@ function PostDetailPage() {
     );
 
   return (
-    <div className="flex text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
-      <div className="w-full">
+    <div className="flex text-left border-b-[1px] dark:border-gray-700 cursor-default">
+      <div className="w-minus50 sm:w-full">
         <div className="flex justify-between">
           <UserInfoPanel
             userId={postData.author._id}
@@ -99,7 +98,7 @@ function PostDetailPage() {
           <div className="my-2">
             <div
               id="post-container"
-              className={"text-gray-600 dark:text-gray-300"}
+              className="text-gray-600 dark:text-gray-300"
               dangerouslySetInnerHTML={{ __html: postData.content }}
             />
           </div>

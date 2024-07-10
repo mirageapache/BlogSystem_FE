@@ -9,11 +9,15 @@
 // 顯示div
 #post-container {
   .paragraph {
+    max-width: 540px;
     word-wrap: break-word;
+
+    @media (min-width: 640px) {
+      width: calc(100vw - 210px);
+    }
     
     .hash-tag {
       color: rgb(65, 120, 241);
     }
-
   }
 }

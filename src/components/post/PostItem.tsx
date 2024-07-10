@@ -34,8 +34,8 @@ function PostItem(props: { postData: PostDataType }) {
   };
 
   return (
-    <div className="flex text-left border-b-[1px] dark:border-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
-      <div className="w-full" onClick={handleClickPost} >
+    <div className="flex text-left border-b-[1px] dark:border-gray-700 py-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+      <div className="w-full sm:w-minus150" onClick={handleClickPost}>
         <div className="flex justify-between">
           <UserInfoPanel
             userId={postData.author._id}
