@@ -21,7 +21,7 @@ import SignUpPopup from './components/login/SignUpPopup';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import SearchPage from './pages/SearchPage';
-import PostDetailPage from './pages/PostDetailPage';
+import PostDetailPage from './pages/post/PostDetailPage';
 import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
 import UserProfilePage from './pages/user/UserProfilePage';
 

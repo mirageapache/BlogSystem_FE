@@ -94,7 +94,7 @@ function PostEditModal() {
         if (phase.includes('#')) {
           return phase.replace(regex, (match, p1) => {
             hashTags.push(match.substring(1));
-            return `<a class="hash-tag" href="/search?tag=${p1}">${match}</a>`;
+            return `<a class="hash-tag" href="/search?tag=${p1}" onclick="event.stopPropagation();">${match}</a>`;
           });
         }
         return phase;

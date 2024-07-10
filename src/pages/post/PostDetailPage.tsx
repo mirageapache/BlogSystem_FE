@@ -57,14 +57,10 @@ function PostDetailPage() {
             {/* content */}
             <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{postData.content}</p>
 
-            {/* hash tags */}
-            {/* <div>{tagsList}</div> */}
-
             {/* info panel */}
             <PostInfoPanel postData={postData} />
           </div>
         </div>
-        <div className="w-full">{postData.content}</div>
       </div>
     </div>
   );

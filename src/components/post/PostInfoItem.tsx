@@ -10,7 +10,7 @@ interface PropsType {
   tipText: string; // 提示內容
   tipClass: string; // 提示樣式
   faClass: string; // icon樣式
-  handleClick: () => void;
+  handleClick: (event: any) => void;
 }
 
 function PostInfoItem(props: PropsType) {
@@ -27,7 +27,7 @@ function PostInfoItem(props: PropsType) {
         <button
           type="button"
           className={`flex justify-center items-center ${faClass}`}
-          onClick={handleClick}
+          onClick={(e) => handleClick(e)}
         >
           <FontAwesomeIcon icon={iconName} className="w-5 h-5 m-1.5" />
         </button>

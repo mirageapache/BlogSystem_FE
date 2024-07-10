@@ -38,7 +38,8 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   });
 
   /** 喜歡/取消喜歡貼文 */
-  const handleLikePost = () => {
+  const handleLikePost = (e: any) => {
+    e.stopPropagation();
     if (!checkLogin()) {
       dispatchSlice(setSignInPop(true));
       return;
@@ -47,7 +48,8 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   };
 
   /** 處理編輯貼文按鈕 */
-  const handleClickEdit = () => {
+  const handleClickEdit = (e: any) => {
+    e.stopPropagation();
     dispatchSlice(setPostId(post._id));
     dispatchSlice(setPostData(post));
     dispatchSlice(setShowEditModal(true));
