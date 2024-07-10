@@ -30,7 +30,7 @@ function PostItem(props: { postData: PostDataType }) {
   const handleClickPost = () => {
     dispatchSlice(setPostId(postData._id));
     dispatchSlice(setPostData(postData));
-    navigate(`/post/${postData._id}`);
+    navigate(`/post/${postData._id}`); // 導到詳細頁
   };
 
   return (
