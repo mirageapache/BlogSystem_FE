@@ -30,7 +30,7 @@ function ArticleInfoPanel() {
         {/* 分享 */}
         <span className="flex justify-center items-center cursor-pointer">
           <FontAwesomeIcon
-            icon={icon({ name: 'share', style: 'solid' })}
+            icon={icon({ name: 'share-from-square', style: 'solid' })}
             className="h-5 w-5 m-1.5 text-gray-400 dark:text-gray-100 hover:text-orange-500"
           />
         </span>

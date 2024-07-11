@@ -1,34 +1,28 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import _, { get, isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
+import moment from 'moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
 import UserInfoPanel from 'components/user/UserInfoPanel';
+import PostLoading from 'components/post/PostLoading';
 // --- api ---
-import { getAllPosts, getPostDetail } from 'api/post';
+import { getPostDetail } from 'api/post';
 import { formatDateTime } from 'utils/dateTime';
 import PostInfoPanel from 'components/post/PostInfoPanel';
-import { useSelector } from 'react-redux';
-import { PostStateType } from 'redux/postSlice';
-import moment from 'moment';
-
-interface stateType {
-  post: PostStateType;
-}
 
 function PostDetailPage() {
-  // const postState = useSelector((state: stateType) => state.post);
-  // const { postData } = postState;
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
 
-  // const { id } = useParams();
-  const postId = get(window, 'location.pathname', '').split('/')[2]; //
-  const { isLoading, error, data } = useQuery('posts', () => getPostDetail(postId));
-  const postData = _.get(data, 'data');
+  const { id } = useParams();
+  const { isLoading, error, data } = useQuery('posts', () => getPostDetail(id!));
+  const postData = get(data, 'data');
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <PostLoading withBorder={false} />;
   if (error) return <p>Error</p>;
   if (isEmpty(postData))
     return (
@@ -40,7 +34,16 @@ function PostDetailPage() {
     );
 
   return (
-    <div className="flex text-left border-b-[1px] dark:border-gray-700 cursor-default">
+    <div className="border-b-[1px] dark:border-gray-700 cursor-default">
+      <div className='flex items-center my-3'>
+        <button 
+          type="button"
+          className="flex justify-center items-center p-2 border border-gray-500 rounded-md text-gray-500"
+          onClick={() => history.back()}
+        >
+          <FontAwesomeIcon icon={icon({ name: 'left-long', style: 'solid'})} className='w-5 h-5' />
+        </button>
+      </div>
       <div className="w-minus50 sm:w-full">
         <div className="flex justify-between">
           <UserInfoPanel

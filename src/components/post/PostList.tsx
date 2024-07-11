@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import PostItem from './PostItem';
 import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
-import ArticleLoading from '../article/ArticleLoading';
+import PostListLoading from './PostListLoading';
 // --- types ---
 import { PostDataType, postResultType } from '../../types/postType';
 
@@ -12,7 +12,7 @@ function PostList(props: { postQueryData: postResultType }) {
   const { isLoading, data } = postQueryData;
   const postDataList: PostDataType[] | null = data as PostDataType[] | null;
 
-  if (isLoading) return <ArticleLoading />;
+  if (isLoading) return <PostListLoading />;
   if (data!.code === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
   if (isEmpty(postDataList))

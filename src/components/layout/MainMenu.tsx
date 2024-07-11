@@ -11,7 +11,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { Link } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
-import UserLoadingNoBorder from 'components/user/UserLoadingNoBorder';
+import UserLoading from 'components/user/UserLoading';
 // --- functions / types ---
 import { SysStateType, setActivePage, setDarkMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
@@ -151,7 +151,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               }}
             >
               {isEmpty(userData) ? (
-                <UserLoadingNoBorder />
+                <UserLoading withBorder={false} />
               ) : (
                 <UserInfoPanel
                   userId={userData._id}

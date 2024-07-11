@@ -32,6 +32,7 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
+import NotFoundPage from 'pages/NotFoundPage';
 
 /** stateType  */
 interface StateType {
@@ -94,6 +95,8 @@ function App() {
                 {/* User */}
                 <Route path="/user/profile/:userId" element={<UserProfilePage />} />
                 <Route path="/user/editProfile" element={<EditProfilePage />} />
+
+                <Route path="/*" element={<NotFoundPage />} />
               </Routes>
             </section>
             <section className={BOTTOM_MENU_FRAME}>
