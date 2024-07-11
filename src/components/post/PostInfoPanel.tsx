@@ -73,7 +73,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             iconName={faHeartRegular}
             tipText="喜歡"
             count={likeCount || 0}
-            faClass="text-gray-400 dark:text-gray-100 hover:text-red-500"
+            faClass="text-gray-400 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500"
             tipClass="w-12"
             handleClick={handleLikePost}
           />
@@ -84,7 +84,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           iconName={faComment}
           tipText="留言"
           count={commentCount || 0}
-          faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500"
+          faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-500"
           tipClass="w-12"
           handleClick={() => {}}
         />
@@ -96,7 +96,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           iconName={faShare}
           tipText="分享"
           count={post.shareCount || undefined}
-          faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
           tipClass="w-12"
           handleClick={() => {}}
         />
@@ -106,7 +106,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           iconName={faBookmark}
           tipText="收藏"
           count={post.collectionCount || undefined}
-          faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+          faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
           tipClass="w-12"
           handleClick={() => {}}
         />
@@ -117,7 +117,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             iconName={faSquarePen} // 透過props傳遞icon名稱
             tipText="編輯"
             count={undefined}
-            faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500"
+            faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
             tipClass="w-12"
             handleClick={handleClickEdit}
           />

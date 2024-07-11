@@ -10,7 +10,6 @@ import {
 } from 'constants/LayoutConstants';
 // --- components ---
 import BottomMenu from 'components/layout/BottomMenu';
-import EditProfilePage from 'pages/user/EditProfilePage';
 import ModalSection from 'components/layout/ModalSection';
 import Header from './components/layout/Header';
 import SideBar from './components/layout/SideBar';
@@ -24,6 +23,8 @@ import SearchPage from './pages/SearchPage';
 import PostDetailPage from './pages/post/PostDetailPage';
 import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
 import UserProfilePage from './pages/user/UserProfilePage';
+import EditProfilePage from './pages/user/EditProfilePage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // --- functions / types ---
 import { SysStateType } from './redux/sysSlice';
@@ -32,7 +33,6 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
-import NotFoundPage from 'pages/NotFoundPage';
 
 /** stateType  */
 interface StateType {

@@ -3,7 +3,9 @@ import React from 'react';
 function Loading({ withBorder = true }: { withBorder: boolean }) {
   return (
     <div className="w-[90vw] sm:w-[80vw] md:w-[600px]">
-      <div className={`w-full my-4 ${withBorder? 'border border-blue-400 shadow' : ''} rounded-md p-4`}>
+      <div
+        className={`w-full my-4 ${withBorder ? 'border border-blue-400 shadow' : ''} rounded-md p-4`}
+      >
         <div className="animate-pulse flex space-x-4">
           <div className="rounded-full bg-slate-300 h-10 w-10" />
           <div className="flex-1 space-y-3 py-1">

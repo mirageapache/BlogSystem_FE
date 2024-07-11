@@ -30,7 +30,7 @@ function FollowList({ type, followList }: PropsType) {
   const followingData: UserDataType[] = get(data, 'data', []);
   const followerData: UserDataType[] = get(data, 'data', []);
 
-  if (isLoading) return <UserLoading withBorder={true} />;
+  if (isLoading) return <UserLoading withBorder />;
   if (type === 'following' && isEmpty(followingData))
     return (
       <NoSearchResult msgOne="你還沒有追蹤其他人喔!" msgTwo="快去尋找有趣的人吧" type="user" />

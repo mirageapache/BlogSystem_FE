@@ -38,7 +38,10 @@ function UserInfoPanel(props: {
         {menuLink ? (
           <p className="text-[14px] text-gray-700 dark:text-gray-400">@{account}</p>
         ) : (
-          <span
+          <button
+            aria-label="account"
+            type="button"
+            className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500 leading-4"
             onClick={(e) => {
               e.stopPropagation(); // 防止冒泡事件
               dispatch(setActivePage('user'));
@@ -46,10 +49,8 @@ function UserInfoPanel(props: {
               navigate(`/user/profile/${userId}`);
             }}
           >
-            <p className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 leading-4">
-              @{account}
-            </p>
-          </span>
+            <p>@{account}</p>
+          </button>
         )}
       </div>
     </div>

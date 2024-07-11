@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
@@ -35,13 +36,17 @@ function PostDetailPage() {
 
   return (
     <div className="border-b-[1px] dark:border-gray-700 cursor-default">
-      <div className='flex items-center my-3'>
-        <button 
+      <div className="flex items-center my-3">
+        <button
+          aria-label="back"
           type="button"
-          className="flex justify-center items-center p-2 border border-gray-500 rounded-md text-gray-500"
+          className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500"
           onClick={() => history.back()}
         >
-          <FontAwesomeIcon icon={icon({ name: 'left-long', style: 'solid'})} className='w-5 h-5' />
+          <FontAwesomeIcon
+            icon={icon({ name: 'circle-left', style: 'solid' })}
+            className="w-7 h-7"
+          />
         </button>
       </div>
       <div className="w-minus50 sm:w-full">
@@ -89,7 +94,7 @@ function PostDetailPage() {
             )}
           </div>
         </div>
-        <div className="sm:ml-[60px]">
+        <div className="sm:ml-[60px] border-b-[1px] border-gray-300 dark:border-gray-700 pb-3">
           {/* image */}
           {!isEmpty(postData.image) && (
             <div className="w-full">
@@ -108,6 +113,21 @@ function PostDetailPage() {
 
           {/* info panel */}
           <PostInfoPanel postData={postData} />
+
+          <div className="flex justify-between mt-3">
+            <input
+              type="text"
+              className="w-full mr-2 px-2 outline-none bg-gray-100 dark:bg-gray-800"
+              placeholder="留言..."
+            />
+            <button
+              aria-label="reply"
+              type="button"
+              className="w-16 p-0.5 bg-green-600 rounded-md text-white"
+            >
+              回覆
+            </button>
+          </div>
         </div>
       </div>
     </div>
