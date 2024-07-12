@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
-import React, { useState } from 'react';
-import { useQuery } from 'react-query';
+import React, { useRef, useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import { get, isEmpty } from 'lodash';
 import moment from 'moment';
@@ -14,10 +14,17 @@ import PostLoading from 'components/post/PostLoading';
 import { getPostDetail } from 'api/post';
 import { formatDateTime } from 'utils/dateTime';
 import PostInfoPanel from 'components/post/PostInfoPanel';
+import { handleHashTag } from 'utils/input';
+import { createComment } from 'api/comment';
+import { errorAlert } from 'utils/fetchError';
+import { getCookies } from 'utils/common';
 
 function PostDetailPage() {
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
+  const [commentContent, setCommentContent] = useState(''); // 留言內容
+  const [showPlaceholder, setShowPlaceholder] = useState(isEmpty(commentContent)); // placeholder 顯示控制
+  const commentInput = useRef<HTMLDivElement>(null); // 輸入框div
 
   const { id } = useParams();
   const { isLoading, error, data } = useQuery('posts', () => getPostDetail(id!));
@@ -33,6 +40,40 @@ function PostDetailPage() {
         type="post"
       />
     );
+
+  /** 處理div輸入 */
+  const handleCommentInput = () => {
+    if (commentInput.current) {
+      const { formattedContent } = handleHashTag(commentInput.current.innerText);
+      setCommentContent(formattedContent);
+    }
+  };
+
+  /** 回覆貼文 mutation */
+  const CommentMutation = useMutation(
+    ({ postId, userId, content }: { postId: string, userId: string; content: string }) => createComment(postId, userId, content),
+    {
+      onSuccess: (res) => {
+        if (res.status === 200) {
+          console.log(res);
+        }
+      },
+      onError: () => errorAlert(),
+      // error type:未登入、沒有內容
+    }
+  );
+
+  /** 回覆貼文 */
+  const submitComment = () => {
+    if(commentContent.trim().length !== 0 ) return; // 檢查有沒有留言內容
+
+    if(!isEmpty(id)){
+      const userId = getCookies('uid') as string;
+      CommentMutation.mutate({ postId:id!, userId, content: commentContent });
+    }
+
+
+  }
 
   return (
     <div className="border-b-[1px] dark:border-gray-700 cursor-default">
@@ -114,19 +155,41 @@ function PostDetailPage() {
           {/* info panel */}
           <PostInfoPanel postData={postData} />
 
+          {/* reply input */}
           <div className="flex justify-between mt-3">
-            <input
+            {/* <input
               type="text"
               className="w-full mr-2 px-2 outline-none bg-gray-100 dark:bg-gray-800"
               placeholder="留言..."
+            /> */}
+            <div
+              id="commentInput"
+              ref={commentInput}
+              contentEditable
+              aria-placeholder="留言"
+              className="w-full mr-2 py-1.5 px-2 rounded-md outline-none bg-gray-100 dark:bg-gray-800"
+              onInput={handleCommentInput}
+              onFocus={() => {
+                setShowPlaceholder(false);
+              }}
+              onBlur={() => {
+                if(isEmpty(commentContent)) setShowPlaceholder(true);
+              }}
             />
-            <button
-              aria-label="reply"
-              type="button"
-              className="w-16 p-0.5 bg-green-600 rounded-md text-white"
+            <label
+              aria-label="commentInput"
+              className={`absolute mr-2 py-1.5 px-2 text-gray-500 ${showPlaceholder? 'block' : 'hidden' }`}
             >
-              回覆
-            </button>
+              留言...
+            </label>
+              <button
+                aria-label="reply"
+                type="button"
+                className={`w-16 h-9 p-0.5 rounded-md text-white ${commentContent.length > 0 ? 'bg-green-600' : 'bg-gray-500'}`}
+                onClick={submitComment}
+              >
+                回覆
+              </button>
           </div>
         </div>
       </div>

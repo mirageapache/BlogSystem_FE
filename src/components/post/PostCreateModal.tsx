@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 import { setShowCreateModal } from '../../redux/postSlice';
+import { handleHashTag } from 'utils/input';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -48,26 +49,7 @@ function PostCreateModal() {
   /** 處理div輸入行為 */
   const handleOnInput = () => {
     if (contentRef.current) {
-      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const hashTags: string[] = []; // 儲存hashTag，後續存到DB供搜尋使用
-      const regex = /#([\p{L}\p{N}]+)(?=\s|$)/gu; // 正規表達式判斷"#"開頭"空白"結尾的字串(包含中文字)
-      const inputDiv = contentRef.current;
-      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n'); // 拆解段落
-
-      // 處理hash tag
-      const hashTag = phaseArr.map((phase) => {
-        if (phase.includes('#')) {
-          return phase.replace(regex, (match, p1) => {
-            hashTags.push(match.substring(1));
-            return `<a class="hash-tag" href="/search?tag=${p1}">${match}</a>`;
-          });
-        }
-        return phase;
-      });
-
-      const formattedContent = hashTag
-        .map((line) => `<div class="paragraph">${line}</div>`) // 重組段落
-        .join('');
+      const { formattedContent, hashTags } = handleHashTag(contentRef.current.innerText);
       setContent(formattedContent);
       setHashTagArr(hashTags);
     }

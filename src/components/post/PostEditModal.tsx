@@ -17,6 +17,7 @@ import { errorAlert } from 'utils/fetchError';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
+import { handleHashTag } from 'utils/input';
 
 interface stateType {
   post: PostStateType;
@@ -83,26 +84,7 @@ function PostEditModal() {
   /** 處理div輸入行為 */
   const handleOnInput = () => {
     if (contentRef.current) {
-      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const hashTags: string[] = []; // 儲存hashTag，後續存到DB供搜尋使用
-      const regex = /#([\p{L}\p{N}]+)(?=\s|$)/gu; // 正規表達式判斷"#"開頭"空白"結尾的字串(包含中文字)
-      const inputDiv = contentRef.current;
-      const phaseArr = inputDiv.innerText.split('\n\n').join('\n').split('\n'); // 拆解段落
-
-      // 處理hash tag
-      const hashTag = phaseArr.map((phase) => {
-        if (phase.includes('#')) {
-          return phase.replace(regex, (match, p1) => {
-            hashTags.push(match.substring(1));
-            return `<a class="hash-tag" href="/search?tag=${p1}" onclick="event.stopPropagation();">${match}</a>`;
-          });
-        }
-        return phase;
-      });
-
-      const formattedContent = hashTag
-        .map((line) => `<div class="paragraph">${line}</div>`) // 重組段落
-        .join('');
+      const { formattedContent, hashTags } = handleHashTag(contentRef.current.innerText);
       setContent(formattedContent);
       setHashTagArr(hashTags);
     }
@@ -131,9 +113,7 @@ function PostEditModal() {
   /** 編輯貼文 */
   const handleSubmit = () => {
     // 驗證content內容
-    if (isEmpty(content) || content.length === 0) {
-      return;
-    }
+    if (isEmpty(content) || content.length === 0) return;
 
     // 判斷登入操作者與作者id是否相同
     const userId = getCookies('uid') as string;
