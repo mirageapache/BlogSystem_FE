@@ -21,6 +21,8 @@ import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import { useDispatch } from 'react-redux';
 import { setSignInPop } from 'redux/loginSlice';
+import CommentList from 'components/comment/CommentList';
+import { CommentDataType } from 'types/commentType';
 
 function PostDetailPage() {
   const dispatch = useDispatch();
@@ -31,8 +33,11 @@ function PostDetailPage() {
   const commentInput = useRef<HTMLDivElement>(null); // 輸入框div
 
   const { id } = useParams();
-  const { isLoading, error, data } = useQuery(['postDetail', id], () => getPostDetail(id!));
+  const { isLoading, error, data, refetch } = useQuery(['postDetail', id], () =>
+    getPostDetail(id!)
+  );
   const postData = get(data, 'data');
+  const commentList = get(postData, 'comments', []) as CommentDataType[];
 
   /** 處理div輸入 */
   const handleCommentInput = () => {
@@ -51,6 +56,7 @@ function PostDetailPage() {
         if (res.status === 200) {
           commentInput.current!.innerText = '';
           setCommentContent('');
+          refetch();
         }
       },
       onError: () => errorAlert(),
@@ -165,11 +171,6 @@ function PostDetailPage() {
 
           {/* reply input */}
           <div className="flex justify-between mt-3">
-            {/* <input
-              type="text"
-              className="w-full mr-2 px-2 outline-none bg-gray-100 dark:bg-gray-800"
-              placeholder="留言..."
-            /> */}
             <div
               ref={commentInput}
               contentEditable
@@ -197,6 +198,11 @@ function PostDetailPage() {
               回覆
             </button>
           </div>
+        </div>
+
+        {/* comments Section */}
+        <div className="mt-3 sm:ml-[60px]">
+          <CommentList commentListData={commentList} />
         </div>
       </div>
     </div>
