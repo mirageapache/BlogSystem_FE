@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -34,8 +35,8 @@ function PostItem(props: { postData: PostDataType }) {
   };
 
   return (
-    <div className="flex text-left border-b-[1px] dark:border-gray-700 py-4 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
-      <div className="w-full sm:w-minus150" onClick={handleClickPost}>
+    <div className="flex text-left border-b-[1px] dark:border-gray-700 py-4 px-2 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+      <div className="w-full sm:w-minus150 max-w-[580px]" onClick={handleClickPost}>
         <div className="flex justify-between">
           <UserInfoPanel
             userId={postData.author._id}

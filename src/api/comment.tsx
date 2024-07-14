@@ -1,19 +1,14 @@
 import axios from 'axios';
-import { API_URL } from './index';
+import { API_URL, config } from './index';
 import { CommentDataType } from '../types/commentType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
-const authToken = localStorage.getItem('authToken');
 
 /** commentApi 型別 */
 interface CommentApiType extends AxResponseType {
   data: CommentDataType;
 }
-
-const config = {
-  headers: { Authorization: `Bearer ${authToken}` },
-};
 
 /** 取得貼文留言 */
 export async function getPostComment(): Promise<CommentApiType> {
@@ -30,7 +25,11 @@ export async function getPostComment(): Promise<CommentApiType> {
 }
 
 /** 新增留言 */
-export async function createComment(postId: string, userId: string, content: string): Promise<CommentApiType> {
+export async function createComment(
+  postId: string,
+  userId: string,
+  content: string
+): Promise<CommentApiType> {
   const result = await axios
     .post(`${baseUrl}/comment/create/${userId}`, { postId, userId, content }, config)
     .then((res) => {

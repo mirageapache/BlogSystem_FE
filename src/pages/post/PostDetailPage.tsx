@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
@@ -18,8 +19,11 @@ import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
 import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
+import { useDispatch } from 'react-redux';
+import { setSignInPop } from 'redux/loginSlice';
 
 function PostDetailPage() {
+  const dispatch = useDispatch();
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
   const [commentContent, setCommentContent] = useState(''); // 留言內容
@@ -27,19 +31,8 @@ function PostDetailPage() {
   const commentInput = useRef<HTMLDivElement>(null); // 輸入框div
 
   const { id } = useParams();
-  const { isLoading, error, data } = useQuery('posts', () => getPostDetail(id!));
+  const { isLoading, error, data } = useQuery(['postDetail', id], () => getPostDetail(id!));
   const postData = get(data, 'data');
-
-  if (isLoading) return <PostLoading withBorder={false} />;
-  if (error) return <p>Error</p>;
-  if (isEmpty(postData))
-    return (
-      <NoSearchResult
-        msgOne="該貼文資料不存在或已刪除"
-        msgTwo="無法瀏覽內容，請重新操作"
-        type="post"
-      />
-    );
 
   /** 處理div輸入 */
   const handleCommentInput = () => {
@@ -51,11 +44,13 @@ function PostDetailPage() {
 
   /** 回覆貼文 mutation */
   const CommentMutation = useMutation(
-    ({ postId, userId, content }: { postId: string, userId: string; content: string }) => createComment(postId, userId, content),
+    ({ postId, userId, content }: { postId: string; userId: string; content: string }) =>
+      createComment(postId, userId, content),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
-          console.log(res);
+          commentInput.current!.innerText = '';
+          setCommentContent('');
         }
       },
       onError: () => errorAlert(),
@@ -65,14 +60,27 @@ function PostDetailPage() {
 
   /** 回覆貼文 */
   const submitComment = () => {
-    if(commentContent.trim().length !== 0 ) return; // 檢查有沒有留言內容
+    if (commentContent.trim().length === 0) return; // 檢查有沒有留言內容
+    const userId = getCookies('uid') as string;
 
-    if(!isEmpty(id)){
-      const userId = getCookies('uid') as string;
-      CommentMutation.mutate({ postId:id!, userId, content: commentContent });
+    if (isEmpty(userId)) {
+      dispatch(setSignInPop(true));
+      return;
     }
 
+    CommentMutation.mutate({ postId: id!, userId, content: commentContent });
+  };
 
+  if (isLoading) return <PostLoading withBorder={false} />;
+  if (error) return <p>Error</p>;
+  if (isEmpty(postData)) {
+    return (
+      <NoSearchResult
+        msgOne="該貼文資料不存在或已刪除"
+        msgTwo="無法瀏覽內容，請重新操作"
+        type="post"
+      />
+    );
   }
 
   return (
@@ -163,7 +171,6 @@ function PostDetailPage() {
               placeholder="留言..."
             /> */}
             <div
-              id="commentInput"
               ref={commentInput}
               contentEditable
               aria-placeholder="留言"
@@ -173,23 +180,22 @@ function PostDetailPage() {
                 setShowPlaceholder(false);
               }}
               onBlur={() => {
-                if(isEmpty(commentContent)) setShowPlaceholder(true);
+                if (isEmpty(commentContent)) setShowPlaceholder(true);
               }}
             />
-            <label
-              aria-label="commentInput"
-              className={`absolute mr-2 py-1.5 px-2 text-gray-500 ${showPlaceholder? 'block' : 'hidden' }`}
+            <span
+              className={`absolute mr-2 py-1.5 px-2 text-gray-500 ${showPlaceholder ? 'block' : 'hidden'}`}
             >
               留言...
-            </label>
-              <button
-                aria-label="reply"
-                type="button"
-                className={`w-16 h-9 p-0.5 rounded-md text-white ${commentContent.length > 0 ? 'bg-green-600' : 'bg-gray-500'}`}
-                onClick={submitComment}
-              >
-                回覆
-              </button>
+            </span>
+            <button
+              aria-label="reply"
+              type="button"
+              className={`w-16 h-9 p-0.5 rounded-md text-white ${commentContent.length > 0 ? 'bg-green-600' : 'bg-gray-500'}`}
+              onClick={submitComment}
+            >
+              回覆
+            </button>
           </div>
         </div>
       </div>

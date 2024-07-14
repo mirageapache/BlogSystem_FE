@@ -1,19 +1,14 @@
 import axios from 'axios';
-import { API_URL } from './index';
+import { API_URL, config } from './index';
 import { PostDataType } from '../types/postType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
-const authToken = localStorage.getItem('authToken');
 
 /** postApi 型別 */
 interface PostApiType extends AxResponseType {
   data: PostDataType;
 }
-
-const config = {
-  headers: { Authorization: `Bearer ${authToken}` },
-};
 
 /** 取得所有貼文 */
 export async function getAllPosts(): Promise<PostApiType> {

@@ -14,10 +14,10 @@ import { updatePost } from 'api/post';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
+import { handleHashTag } from 'utils/input';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
-import { handleHashTag } from 'utils/input';
 
 interface stateType {
   post: PostStateType;

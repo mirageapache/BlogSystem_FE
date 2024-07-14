@@ -30,7 +30,7 @@ export async function getArticles() {
       return postData;
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
   return result;
 }
@@ -44,7 +44,7 @@ export async function getPartialArticles(limit: number) {
       return postData;
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
   return result;
 }
@@ -58,7 +58,7 @@ export async function getArticleById<T>(id: T) {
       return postData;
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
   return result;
 }
@@ -83,7 +83,7 @@ export async function getSearchArticle(searchString: string) {
       return res.data;
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
   return result;
 }
