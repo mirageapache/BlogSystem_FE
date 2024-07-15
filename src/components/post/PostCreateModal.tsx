@@ -8,14 +8,14 @@ import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
+import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
 // --- functions / types ---
-import { useDispatch } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
+import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { handleHashTag } from 'utils/input';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();

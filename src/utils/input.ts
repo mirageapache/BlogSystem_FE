@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import { isEmpty } from 'lodash';
 
 /** 處理 hash tag */
 export const handleHashTag = (inputContent: string) => {
@@ -18,8 +18,8 @@ export const handleHashTag = (inputContent: string) => {
     }
     return phase;
   });
-  
-  if((hashTag.length <= 1 && isEmpty(hashTag[0])) || hashTag.join('').trim().length === 0) {
+
+  if ((hashTag.length <= 1 && isEmpty(hashTag[0])) || hashTag.join('').trim().length === 0) {
     formattedContent = '';
   } else {
     formattedContent = hashTag
@@ -28,4 +28,4 @@ export const handleHashTag = (inputContent: string) => {
   }
 
   return { formattedContent, hashTags };
-}
+};
