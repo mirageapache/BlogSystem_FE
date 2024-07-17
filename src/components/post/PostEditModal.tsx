@@ -18,6 +18,7 @@ import { handleHashTag } from 'utils/input';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
+import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
 
 interface stateType {
   post: PostStateType;
@@ -220,7 +221,7 @@ function PostEditModal() {
           </div>
         </div>
       </div>
-      <div className="fixed w-full h-full bg-black opacity-40" onClick={() => handleClose(true)} />
+      <div className={GRAY_BG_PANEL} onClick={() => handleClose(true)} />
     </div>
   );
 }

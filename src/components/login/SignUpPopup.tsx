@@ -8,6 +8,7 @@ import { reduxForm, change, getFormValues, FormState } from 'redux-form';
 import SignUpForm from './SignUpForm';
 // --- functions / types ---
 import { setSignUpPop } from '../../redux/loginSlice';
+import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('signin')(state),
@@ -26,7 +27,7 @@ function SignUpPopup(props: any) {
 
   return (
     <div className="fixed w-screen h-screen z-30 flex justify-center items-center">
-      <div className="fixed w-full h-full bg-black opacity-40" onClick={handleClose} />
+      <div className={GRAY_BG_PANEL} onClick={handleClose} />
       <div className="absolute z-10 w-4/5 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
         {/* popup header */}
         <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">
