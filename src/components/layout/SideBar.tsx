@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // --- functions ---
 import { SysStateType, setActivePage } from '../../redux/sysSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
+import { HINT_LABEL } from 'constants/LayoutConstants';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -75,9 +76,7 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
         </Link>
       )}
       <div
-        className={`absolute text-center top-3 text-sm left-10 w-16 py-1 px-1 opacity-90 bg-black text-white rounded-md ${
-          showTip ? 'block' : 'hidden'
-        } lg:hidden dark:bg-white dark:text-black dark:font-bold`}
+        className={`top-3 left-10 w-16 ${HINT_LABEL} ${showTip ? 'block' : 'hidden'} lg:hidden dark:font-bold`}
       >
         {text}
       </div>

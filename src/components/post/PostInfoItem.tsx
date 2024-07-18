@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { isEmpty } from 'lodash';
+import { HINT_LABEL } from 'constants/LayoutConstants';
 
 interface PropsType {
   iconName: IconDefinition; // 透過props傳遞icon名稱的寫法
@@ -38,9 +39,7 @@ function PostInfoItem(props: PropsType) {
             </p>
           ))}
         <span
-          className={`absolute top-[-25px] right-0 ${tipClass} text-center text-sm p-1 rounded-md opacity-90 bg-black text-white dark:bg-white dark:text-black ${
-            showTip ? 'block' : 'hidden'
-          }`}
+          className={`top-[-25px] right-0 ${tipClass} ${HINT_LABEL} ${showTip ? 'block' : 'hidden'}`}
         >
           {tipText}
         </span>

@@ -16,6 +16,7 @@ import UserInfoPanel from 'components/user/UserInfoPanel';
 import { formatDateTime } from 'utils/dateTime';
 import { PostDataType } from 'types/postType';
 import { setPostData, setPostId } from 'redux/postSlice';
+import { HINT_LABEL } from 'constants/LayoutConstants';
 
 function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
@@ -56,9 +57,7 @@ function PostItem(props: { postData: PostDataType }) {
                 {formatDateTime(postData.createdAt)}
               </p>
               <span
-                className={`absolute top-[-25px] right-0 w-40 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
-                  showCreateTip ? 'block' : 'hidden'
-                }`}
+                className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
               >
                 Created at {moment(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
               </span>
@@ -70,11 +69,7 @@ function PostItem(props: { postData: PostDataType }) {
                 onMouseLeave={() => setShowEditTip(false)}
               >
                 <small className="text-gray-400">(已編輯)</small>
-                <span
-                  className={`absolute right-0 w-40 text-center text-sm p-1 rounded-lg opacity-90 bg-black text-white dark:bg-white dark:text-black ${
-                    showEditTip ? 'block' : 'hidden'
-                  }`}
-                >
+                <span className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}>
                   Edited at {moment(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
                 </span>
               </span>
