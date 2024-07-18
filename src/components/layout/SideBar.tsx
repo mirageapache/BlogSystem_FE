@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // --- functions ---
 import { SysStateType, setActivePage } from '../../redux/sysSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { HINT_LABEL } from 'constants/LayoutConstants';
+import { HINT_LABEL } from '../../constants/LayoutConstants';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {

@@ -19,4 +19,5 @@ export const FORM_CONTROL = 'w-full text-lg outline-none mt-2 px-2 py-1 focus:bo
 /** Gray Panel 灰底背景 */
 export const GRAY_BG_PANEL = 'fixed w-full h-full bg-black opacity-40';
 /** Tip Label 提示標籤 */
-export const HINT_LABEL = 'absolute text-center text-sm p-1 rounded-md opacity-90 bg-black text-white dark:bg-white dark:text-black';
+export const HINT_LABEL =
+  'absolute text-center text-sm p-1 rounded-md opacity-90 bg-black text-white dark:bg-white dark:text-black';
