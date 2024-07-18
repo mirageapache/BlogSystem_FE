@@ -9,11 +9,7 @@ import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import {
-  faHeart as faHeartRegular,
-  faComment,
-  faBookmark,
-} from '@fortawesome/free-regular-svg-icons';
+import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
 import { toggleLikePost } from 'api/post';
 import { setSignInPop } from 'redux/loginSlice';
@@ -188,15 +184,15 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           )}
         </div>
 
-        {/* 收藏 */}
-        <PostInfoItem
+        {/* 收藏 -- 暫時不開發，待後續納入新版規劃 */}
+        {/* <PostInfoItem
           iconName={faBookmark}
           tipText="收藏"
           count={post.collectionCount || undefined}
           faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
           tipClass="w-12"
           handleClick={() => {}}
-        />
+        /> */}
 
         {/* 編輯 */}
         {userId === post.author._id && (
