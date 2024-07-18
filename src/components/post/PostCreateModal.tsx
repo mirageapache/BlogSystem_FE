@@ -16,7 +16,7 @@ import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
+import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();

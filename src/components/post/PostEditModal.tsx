@@ -18,7 +18,7 @@ import { handleHashTag } from 'utils/input';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
-import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
+import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
 
 interface stateType {
   post: PostStateType;

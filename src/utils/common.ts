@@ -9,7 +9,7 @@ export const getCookies = (name: string) => {
 
   for (let i = 0; i < cookies.length; i++) {
     const [cookieName, cookieValue] = cookies[i].split('=');
-    if (cookieName === name) {
+    if (cookieName.trim() === name) {
       return decodeURIComponent(cookieValue);
     }
   }
@@ -22,6 +22,7 @@ export const getCookies = (name: string) => {
 export const checkLogin = () => {
   const id = getCookies('uid');
   const token = localStorage.getItem('authToken');
+
   if (!isEmpty(id) && !isEmpty(token)) {
     return true;
   }

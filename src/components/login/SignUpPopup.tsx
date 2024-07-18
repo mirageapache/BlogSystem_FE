@@ -8,7 +8,7 @@ import { reduxForm, change, getFormValues, FormState } from 'redux-form';
 import SignUpForm from './SignUpForm';
 // --- functions / types ---
 import { setSignUpPop } from '../../redux/loginSlice';
-import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
+import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('signin')(state),

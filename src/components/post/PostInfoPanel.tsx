@@ -1,10 +1,12 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation } from 'react-query';
 import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
-import _, { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import {
@@ -20,7 +22,7 @@ import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import { setPostId, setPostData, setShowEditModal } from '../../redux/postSlice';
 import { checkLogin } from '../../utils/common';
-import { HINT_LABEL } from 'constants/LayoutConstants';
+import { HINT_LABEL } from '../../constants/LayoutConstants';
 // --- components ---
 import PostInfoItem from './PostInfoItem';
 
@@ -62,20 +64,20 @@ function PostInfoPanel(props: { postData: PostDataType }) {
         setShowCopyHint(false);
       }, 2000);
     });
-  }
+  };
 
   /** 分享至FB */
   const shareToFB = () => {
     const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
     window.open(shareUrl, '_blank');
-  }
+  };
 
   /** 分享至Line */
   const shareToLine = () => {
     const shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=與你分享一則Blog貼文}`;
     window.open(shareUrl, '_blank');
-  }
-  
+  };
+
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
@@ -130,45 +132,52 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             tipClass="w-12"
             handleClick={() => setShowShareInfo(!showShareInfo)}
           />
-          {showShareInfo && 
+          {showShareInfo && (
             <div className="relative z-30">
-              <div className="fixed w-dvw h-dvh top-0 left-0 " onClick={() => setShowShareInfo(false)} />
-              <ul className="absolute top-[-180px] right-0 bg-white dark:bg-gray-950 z-40 w-[200px] shadow border rounded-md p-2 text-gray-500">
-                <li className="relative p-1 hover:bg-gray-300">
+              <div
+                className="fixed w-dvw h-dvh top-0 left-0"
+                onClick={() => setShowShareInfo(false)}
+              />
+              <ul className="absolute top-[-180px] right-0 bg-white dark:bg-gray-900 z-40 w-[200px] shadow border border-gray-400 rounded-md p-2 text-gray-700 dark:text-gray-300">
+                <li className="relative p-1 hover:bg-gray-300 dark:hover:bg-gray-700">
                   <button
                     type="button"
                     className="flex items-center gap-2 w-full p-1"
                     onClick={copyLink}
                   >
-                    <FontAwesomeIcon 
-                      icon={icon({ name: 'link', style: 'solid'})} 
+                    <FontAwesomeIcon
+                      icon={icon({ name: 'link', style: 'solid' })}
                       className="w-6 h-6 text-orange-500"
                     />
                     <p>複製連結</p>
                   </button>
-                  <span className={`${HINT_LABEL} w-20 top-[-36px] left-12 ${showCopyHint? 'block' : 'hidden' }`}>已複製！</span>
+                  <span
+                    className={`${HINT_LABEL} w-20 top-[-36px] left-12 ${showCopyHint ? 'block' : 'hidden'}`}
+                  >
+                    已複製！
+                  </span>
                 </li>
-                <li className="p-1 hover:bg-gray-300">
+                <li className="p-1 hover:bg-gray-300 dark:hover:bg-gray-700 ">
                   <button
                     type="button"
                     className="flex items-center gap-2 w-full p-1"
                     onClick={shareToFB}
                   >
-                    <FontAwesomeIcon 
-                      icon={icon({ name: 'facebook', style: 'brands'})} 
+                    <FontAwesomeIcon
+                      icon={icon({ name: 'facebook', style: 'brands' })}
                       className="w-6 h-6 text-blue-600"
                     />
                     <p>分享至FaceBook</p>
                   </button>
                 </li>
-                <li className="p-1 hover:bg-gray-300">
+                <li className="p-1 hover:bg-gray-300 dark:hover:bg-gray-700">
                   <button
                     type="button"
                     className="flex items-center gap-2 w-full p-1"
                     onClick={shareToLine}
                   >
-                    <FontAwesomeIcon 
-                      icon={icon({ name: 'line', style: 'brands'})} 
+                    <FontAwesomeIcon
+                      icon={icon({ name: 'line', style: 'brands' })}
                       className="w-6 h-6 text-green-600"
                     />
                     <p>分享至Line</p>
@@ -176,7 +185,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                 </li>
               </ul>
             </div>
-          }
+          )}
         </div>
 
         {/* 收藏 */}
