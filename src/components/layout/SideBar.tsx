@@ -151,7 +151,7 @@ function SideBar() {
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
             </SideBarItem>
             <SideBarItem
-              href="/write"
+              href="/article/create"
               text="撰寫文章"
               count={0}
               activeItem={activePage === 'write'}

@@ -237,7 +237,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
                   </MenuItem>
                   <MenuItem
-                    href="/write"
+                    href="/article/create"
                     text="撰寫文章"
                     count={0}
                     activeItem={activePage === 'write'}
