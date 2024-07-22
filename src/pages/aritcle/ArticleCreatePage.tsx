@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import React, { useState } from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import { isEmpty } from 'lodash';
@@ -58,7 +59,7 @@ function ArticleCreatePage() {
 
         {/* 文章內容 */}
         <Editor
-          editorState={editorState} 
+          editorState={editorState}
           onChange={setEditorState}
           placeholder="從這裡開始你的故事..."
           blockStyleFn={() => ''}

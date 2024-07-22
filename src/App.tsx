@@ -25,6 +25,7 @@ import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
 import UserProfilePage from './pages/user/UserProfilePage';
 import EditProfilePage from './pages/user/EditProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
+import ArticleCreatePage from './pages/aritcle/ArticleCreatePage';
 
 // --- functions / types ---
 import { SysStateType } from './redux/sysSlice';
@@ -33,7 +34,6 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
-import ArticleCreatePage from 'pages/aritcle/ArticleCreatePage';
 
 /** stateType  */
 interface StateType {
@@ -90,11 +90,11 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/explore" element={<ExplorePage />} />
                 <Route path="/search" element={<SearchPage />} />
-                
+
                 {/* Article */}
                 <Route path="/article/:id" element={<ArticleDetailPage />} />
                 <Route path="/article/create" element={<ArticleCreatePage />} />
-                
+
                 {/* Post */}
                 <Route path="/post/:id" element={<PostDetailPage />} />
 
