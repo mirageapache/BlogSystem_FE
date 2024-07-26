@@ -5,21 +5,25 @@ import { HINT_LABEL } from 'constants/LayoutConstants';
 
 interface ToolItemPropsType {
   text: string;
+  btnStyle?: string;
   tipText: string;
   tipStyle: string;
-  iconStyle?: string;
   iconName: IconDefinition; // 透過props傳遞icon名稱的寫法
+  iconStyle?: string;
   handleShowFontColor?: () => void;
+  handleShowBgColor?: () => void;
   toggleInlineStyle?: (style: string) => void;
 }
 
 function EditorToolItem({
   text,
+  btnStyle,
   tipText,
   tipStyle,
-  iconStyle,
   iconName,
+  iconStyle,
   handleShowFontColor,
+  handleShowBgColor,
   toggleInlineStyle,
 }: ToolItemPropsType) {
   const [showTip, setShowTip] = useState(false);
@@ -27,11 +31,14 @@ function EditorToolItem({
     <button
       type="button"
       aria-label={text}
-      className="relative my-1 p-1 w-8 h-8 text-gray-500 hover:text-orange-500 hover:bg-gray-300"
-      onClick={(e) => {
-        e.preventDefault();
-        if (handleShowFontColor !== undefined) handleShowFontColor();
+      className={`relative my-1 p-1 w-8 h-8 text-gray-500 ${text.substring(0,2) === 'bg'? '' : 'hover:text-orange-500'} hover:bg-sky-100 dark:hover:bg-sky-900 ${btnStyle}`}
+      onClick={() => {
         if (toggleInlineStyle !== undefined) toggleInlineStyle(text.toUpperCase());
+      }}
+      onMouseDown={(e) => {
+        e.preventDefault(); // 這個preventDefault()主要功能是防止選取文字的反白失焦(停留在反白效果的狀態)
+        if (handleShowFontColor !== undefined) handleShowFontColor();
+        if (handleShowBgColor !== undefined) handleShowBgColor();
       }}
       onMouseEnter={() => setShowTip(true)}
       onMouseLeave={() => setShowTip(false)}
@@ -48,8 +55,10 @@ function EditorToolItem({
 
 // 設定默認值
 EditorToolItem.defaultProps = {
+  btnStyle: '',
   iconStyle: '',
   handleShowFontColor: () => {},
+  handleShowBgColor: () => {},
   toggleInlineStyle: () => {},
 };
 

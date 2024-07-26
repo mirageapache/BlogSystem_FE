@@ -7,6 +7,7 @@ import {
   faFont,
   faHighlighter,
   faItalic,
+  faSquare,
   faStrikethrough,
   faUnderline,
 } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +19,7 @@ interface ToolBarPropsType {
 
 function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
   const [showFontColor, setShowFontColor] = useState(false); // 顯示文字顏色選擇
-  const [showBgColor, setShowBgColor] = useState(false); // 顯示標識顏色選擇
+  const [showBgColor, setShowBgColor] = useState(false); // 顯示標示顏色選擇
 
   const dropdownStyle =
     'absolute bg-white dark:bg-gray-900 z-40 w-[200px] shadow border border-gray-400 rounded-md p-1 text-gray-700 dark:text-gray-300';
@@ -26,6 +27,11 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
   /** 處理文字顏色 dropdown 顯示 */
   const handleShowFontColor = (value: boolean) => {
     setShowFontColor(value);
+  };
+
+  /** 處理標示顏色 dropdown 顯示 */
+  const handleShowBgColor = (value: boolean) => {
+    setShowBgColor(value);
   };
 
   return (
@@ -88,12 +94,102 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
                 handleShowFontColor(false);
               }}
             />
-            <div className={dropdownStyle}>
+            <div className={`w-[210px] right-[-50px] sm:left-0 ${dropdownStyle}`}>
+              <EditorToolItem
+                text="text-black"
+                btnStyle="dark:bg-gray-700"
+                tipText="預設"
+                tipStyle="w-12"
+                iconStyle="text-black"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-deepgray"
+                tipText="深灰色"
+                tipStyle="w-14"
+                iconStyle="text-gray-700"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-gray"
+                tipText="灰色"
+                tipStyle="w-12"
+                iconStyle="text-gray-500"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-lightgray"
+                tipText="淺灰色"
+                tipStyle="w-14"
+                iconStyle="text-gray-300"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-white"
+                btnStyle="bg-gray-200 dark:bg-inherit"
+                tipText="白色"
+                tipStyle="w-12"
+                iconStyle="text-white"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
               <EditorToolItem
                 text="text-red"
                 tipText="紅色"
-                tipStyle="w-16"
+                tipStyle="w-12"
                 iconStyle="text-red-500"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-orange"
+                tipText="橙色"
+                tipStyle="w-12"
+                iconStyle="text-orange-500"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-yellow"
+                tipText="黃色"
+                tipStyle="w-12"
+                iconStyle="text-yellow-500"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-green"
+                tipText="綠色"
+                tipStyle="w-12"
+                iconStyle="text-green-500"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-blue"
+                tipText="藍色"
+                tipStyle="w-12"
+                iconStyle="text-blue-500"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-indigo"
+                tipText="靛藍色"
+                tipStyle="w-14"
+                iconStyle="text-indigo-500"
+                iconName={faFont}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="text-purple"
+                tipText="紫色"
+                tipStyle="w-12"
+                iconStyle="text-purple-500"
                 iconName={faFont}
                 toggleInlineStyle={toggleInlineStyle}
               />
@@ -102,14 +198,103 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
         )}
       </div>
 
-      {/* 標識顏色(background color) */}
-      <EditorToolItem
-        text="highlight"
-        tipText="標識顏色"
-        tipStyle="w-16"
-        iconName={faHighlighter}
-        toggleInlineStyle={toggleInlineStyle}
-      />
+      {/* 標示顏色(background color) */}
+      <div className="relative">
+        <EditorToolItem
+          text="highlight"
+          tipText="標示顏色"
+          tipStyle="w-16"
+          iconName={faHighlighter}
+          handleShowBgColor={() => handleShowBgColor(!showBgColor)}
+        />
+        {showBgColor && (
+          <div className="relative z-30">
+            <div
+              className="fixed w-dvw h-dvh top-0 left-0"
+              onClick={(e) => {
+                e.preventDefault();
+                handleShowBgColor(false);
+              }}
+            />
+            <div className={`w-[300px] right-[-80px] sm:left-0 ${dropdownStyle}`}>
+              <EditorToolItem
+                text="bg-default"
+                tipText="預設"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-white"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-gray"
+                tipText="灰色"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-gray-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-red"
+                tipText="紅色"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-red-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-orange"
+                tipText="橙色"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-orange-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-yellow"
+                tipText="黃色"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-yellow-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-green"
+                tipText="綠色"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-green-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-blue"
+                tipText="藍色"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-blue-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-indigo"
+                tipText="靛藍色"
+                tipStyle="w-14"
+                iconStyle="border rounded-md w-6 h-6 text-indigo-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+              <EditorToolItem
+                text="bg-purple"
+                tipText="紫色"
+                tipStyle="w-12"
+                iconStyle="border rounded-md w-6 h-6 text-purple-500"
+                iconName={faSquare}
+                toggleInlineStyle={toggleInlineStyle}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+
     </div>
   );
 }
