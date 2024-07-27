@@ -32,7 +32,7 @@ function ArticleCreatePage() {
     <div className="w-full md:max-w-[600px]">
       {/* header */}
       <div className="flex justify-between items-center p-2">
-        <div className="w-20 sm:w-28">
+        <div className="w-10 sm:w-24">
           <button
             aria-label="back"
             type="button"
@@ -46,29 +46,35 @@ function ArticleCreatePage() {
           </button>
         </div>
         <p className="text-2xl font-bold">建立文章</p>
-        <div className="">
-          {hasContent ? (
-            <button
-              type="button"
-              className="w-20 sm:w-28 py-1.5 text-white rounded-md bg-green-600"
-              onClick={handleSubmit}
-            >
-              發佈
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="w-20 sm:w-28 py-1.5 text-white rounded-md bg-gray-600 cursor-default"
-            >
-              發佈
-            </button>
-          )}
-        </div>
+        {hasContent ? (
+          <button
+            type="button"
+            className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
+            onClick={handleSubmit}
+          >
+            <FontAwesomeIcon
+              icon={icon({ name: 'file-circle-check', style: 'solid' })}
+              className="w-6 h-6 sm:hidden"
+            />
+            <p className="hidden sm:block">發佈</p>
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
+          >
+            <FontAwesomeIcon
+              icon={icon({ name: 'file-circle-check', style: 'solid' })}
+              className="w-6 h-6 sm:hidden"
+            />
+            <p className="hidden sm:block">發佈</p>
+          </button>
+        )}
       </div>
 
       {/* 文字編輯工具列 */}
       {/* 字體、粗體、斜體、底線、刪除線、文字顏色、醒目提示顏色、對齊(左中右) */}
-      <EditorToolBar toggleInlineStyle={toggleInlineStyle} />
+      <EditorToolBar toggleInlineStyle={toggleInlineStyle} toggleBlockType={toggleBlockType} />
       <div
         className="relative max-h-minus180 h-minus180 overflow-y-auto"
         onClick={() => {

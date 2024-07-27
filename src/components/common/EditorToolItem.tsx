@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -31,7 +32,7 @@ function EditorToolItem({
     <button
       type="button"
       aria-label={text}
-      className={`relative my-1 p-1 w-8 h-8 text-gray-500 ${text.substring(0,2) === 'bg'? '' : 'hover:text-orange-500'} hover:bg-sky-100 dark:hover:bg-sky-900 ${btnStyle}`}
+      className={`relative p-1 w-8 h-8 text-gray-500 ${text.substring(0, 2) === 'bg' ? '' : 'hover:text-orange-500'} hover:bg-sky-100 dark:hover:bg-sky-900 ${btnStyle}`}
       onClick={() => {
         if (toggleInlineStyle !== undefined) toggleInlineStyle(text.toUpperCase());
       }}

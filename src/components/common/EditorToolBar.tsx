@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from 'react';
@@ -15,9 +16,10 @@ import EditorToolItem from 'components/common/EditorToolItem';
 
 interface ToolBarPropsType {
   toggleInlineStyle: (style: string) => void;
+  toggleBlockType: (style: string) => void;
 }
 
-function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
+function EditorToolBar({ toggleInlineStyle, toggleBlockType }: ToolBarPropsType) {
   const [showFontColor, setShowFontColor] = useState(false); // 顯示文字顏色選擇
   const [showBgColor, setShowBgColor] = useState(false); // 顯示標示顏色選擇
 
@@ -35,7 +37,23 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
   };
 
   return (
-    <div className="flex h-10 mb-4 border-y-[1px] border-gray-300 dark:border-gray-700">
+    <div className="flex items-center h-10 mb-4 border-y-[1px] border-gray-300 dark:border-gray-700">
+      {/* 字體大小 */}
+      <select
+        name="fontSize"
+        className="h-8 mr-2 border border-gray-500 rounded-md px-3 bg-inherit dark:bg-gray-900"
+        onChange={(e) => {
+          toggleBlockType(e.target.value);
+        }}
+      >
+        <option value="unstyled">一般文字</option>
+        <option value="header-one">標題一</option>
+        <option value="header-two">標題二</option>
+        <option value="header-three">標題三</option>
+        <option value="header-four">標題四</option>
+        <option value="header-five">標題五</option>
+        <option value="header-six">標題六</option>
+      </select>
       {/* 粗體 */}
       <EditorToolItem
         text="bold"
@@ -64,7 +82,7 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
       <EditorToolItem
         text="strikethrough"
         tipText="刪除線"
-        tipStyle="w-12"
+        tipStyle="w-14"
         iconName={faStrikethrough}
         toggleInlineStyle={toggleInlineStyle}
       />
@@ -72,7 +90,7 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
       <EditorToolItem
         text="code"
         tipText="程式碼"
-        tipStyle="w-12"
+        tipStyle="w-14"
         iconName={faCode}
         toggleInlineStyle={toggleInlineStyle}
       />
@@ -105,7 +123,7 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
                 toggleInlineStyle={toggleInlineStyle}
               />
               <EditorToolItem
-                text="text-deepgray"
+                text="text-darkgray"
                 tipText="深灰色"
                 tipStyle="w-14"
                 iconStyle="text-gray-700"
@@ -221,7 +239,7 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
                 text="bg-default"
                 tipText="預設"
                 tipStyle="w-12"
-                iconStyle="border rounded-md w-6 h-6 text-white"
+                iconStyle="border rounded-md w-6 h-6 text-transparent"
                 iconName={faSquare}
                 toggleInlineStyle={toggleInlineStyle}
               />
@@ -253,7 +271,7 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
                 text="bg-yellow"
                 tipText="黃色"
                 tipStyle="w-12"
-                iconStyle="border rounded-md w-6 h-6 text-yellow-500"
+                iconStyle="border rounded-md w-6 h-6 text-yellow-400"
                 iconName={faSquare}
                 toggleInlineStyle={toggleInlineStyle}
               />
@@ -294,7 +312,13 @@ function EditorToolBar({ toggleInlineStyle }: ToolBarPropsType) {
         )}
       </div>
 
-
+      {/* 
+          blockquote - 引用塊
+          unordered-list-item - 無序列表項
+          ordered-list-item - 有序列表項
+          code-block - 代碼塊
+          atomic - 原子塊（用於嵌入其他內容，如圖像、視頻等） 
+      */}
     </div>
   );
 }
