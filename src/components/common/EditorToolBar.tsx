@@ -311,7 +311,14 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType }: ToolBarPropsType)
           </div>
         )}
       </div>
-
+      {/* 程式區塊 */}
+      <EditorToolItem
+        text="code-block"
+        tipText="程式區塊"
+        tipStyle="w-16"
+        iconName={faCode}
+        toggleBlockType={toggleBlockType}
+      />
       {/* 
           blockquote - 引用塊
           unordered-list-item - 無序列表項

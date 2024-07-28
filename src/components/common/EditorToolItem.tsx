@@ -14,6 +14,7 @@ interface ToolItemPropsType {
   handleShowFontColor?: () => void;
   handleShowBgColor?: () => void;
   toggleInlineStyle?: (style: string) => void;
+  toggleBlockType?: (style: string) => void;
 }
 
 function EditorToolItem({
@@ -26,6 +27,7 @@ function EditorToolItem({
   handleShowFontColor,
   handleShowBgColor,
   toggleInlineStyle,
+  toggleBlockType,
 }: ToolItemPropsType) {
   const [showTip, setShowTip] = useState(false);
   return (
@@ -35,6 +37,7 @@ function EditorToolItem({
       className={`relative p-1 w-8 h-8 text-gray-500 ${text.substring(0, 2) === 'bg' ? '' : 'hover:text-orange-500'} hover:bg-sky-100 dark:hover:bg-sky-900 ${btnStyle}`}
       onClick={() => {
         if (toggleInlineStyle !== undefined) toggleInlineStyle(text.toUpperCase());
+        if (toggleBlockType !== undefined) toggleBlockType(text);
       }}
       onMouseDown={(e) => {
         e.preventDefault(); // 這個preventDefault()主要功能是防止選取文字的反白失焦(停留在反白效果的狀態)
@@ -61,6 +64,7 @@ EditorToolItem.defaultProps = {
   handleShowFontColor: () => {},
   handleShowBgColor: () => {},
   toggleInlineStyle: () => {},
+  toggleBlockType: () => {},
 };
 
 export default EditorToolItem;

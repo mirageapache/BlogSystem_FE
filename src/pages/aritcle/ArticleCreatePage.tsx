@@ -29,7 +29,7 @@ function ArticleCreatePage() {
   const handleSubmit = () => {};
 
   return (
-    <div className="w-full md:max-w-[600px]">
+    <div className="w-full md:max-w-[600px] mx-2 sm:m-0">
       {/* header */}
       <div className="flex justify-between items-center p-2">
         <div className="w-10 sm:w-24">
