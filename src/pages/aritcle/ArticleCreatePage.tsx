@@ -5,15 +5,34 @@ import React, { useRef, useState } from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import EditorToolBar from 'components/common/EditorToolBar';
+import PrismDecorator from 'draft-js-prism';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
+import 'prismjs/components/prism-javascript';
+import '../../styles/editor.scss';
 import { customStyleMap } from 'constants/CustomStyleMap';
+import EditorToolBar from 'components/common/EditorToolBar';
+
+const decorator = new PrismDecorator({
+  prism: Prism,
+  defaultLanguage: 'javascript',
+});
 
 function ArticleCreatePage() {
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty(decorator));
   const editorRef = useRef<Editor>(null);
   const hasContent =
     editorState.getCurrentContent().hasText() || // hasTest() 判斷Editor內是否有內容
     editorState.getCurrentContent().getBlockMap().first().getType() !== 'unstyled'; // .getBlockMap().first().getType() 判斷第一段內容的類型是否有被定義
+
+  const handleKeyCommand = (command: string, state: EditorState) => {
+    const newState = RichUtils.handleKeyCommand(state, command);
+    if (newState) {
+      setEditorState(newState);
+      return 'handled';
+    }
+    return 'not-handled';
+  };
 
   /** 字型樣式設定 */
   const toggleInlineStyle = (style: string) => {
@@ -95,6 +114,7 @@ function ArticleCreatePage() {
           customStyleMap={customStyleMap}
           blockStyleFn={() => ''}
           ref={editorRef}
+          handleKeyCommand={handleKeyCommand}
         />
       </div>
     </div>
