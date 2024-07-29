@@ -7,19 +7,25 @@ import {
   faCode,
   faFont,
   faHighlighter,
+  faImage,
   faItalic,
+  faListDots,
+  faListNumeric,
+  faQuoteLeft,
   faSquare,
   faStrikethrough,
   faUnderline,
 } from '@fortawesome/free-solid-svg-icons';
 import EditorToolItem from 'components/common/EditorToolItem';
+import { faFileCode } from '@fortawesome/free-regular-svg-icons';
 
 interface ToolBarPropsType {
   toggleInlineStyle: (style: string) => void;
   toggleBlockType: (style: string) => void;
+  handleFileInput: (e: any) => void;
 }
 
-function EditorToolBar({ toggleInlineStyle, toggleBlockType }: ToolBarPropsType) {
+function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: ToolBarPropsType) {
   const [showFontColor, setShowFontColor] = useState(false); // 顯示文字顏色選擇
   const [showBgColor, setShowBgColor] = useState(false); // 顯示標示顏色選擇
 
@@ -37,11 +43,11 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType }: ToolBarPropsType)
   };
 
   return (
-    <div className="flex items-center h-10 mb-4 border-y-[1px] border-gray-300 dark:border-gray-700">
+    <div className="flex items-center min-h-10 mb-4 border-y-[1px] border-gray-300 dark:border-gray-700 flex-wrap">
       {/* 字體大小 */}
       <select
         name="fontSize"
-        className="h-8 mr-2 border border-gray-500 rounded-md px-3 bg-inherit dark:bg-gray-900"
+        className="h-8 my-1 mr-2 border border-gray-500 rounded-md px-3 bg-inherit dark:bg-gray-900"
         onChange={(e) => {
           toggleBlockType(e.target.value);
         }}
@@ -215,7 +221,6 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType }: ToolBarPropsType)
           </div>
         )}
       </div>
-
       {/* 標示顏色(background color) */}
       <div className="relative">
         <EditorToolItem
@@ -316,16 +321,43 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType }: ToolBarPropsType)
         text="code-block"
         tipText="程式區塊"
         tipStyle="w-16"
-        iconName={faCode}
+        iconName={faFileCode}
+        iconStyle='w-5 h-5 mt-0.5'
         toggleBlockType={toggleBlockType}
       />
-      {/* 
-          blockquote - 引用塊
-          unordered-list-item - 無序列表項
-          ordered-list-item - 有序列表項
-          code-block - 代碼塊
-          atomic - 原子塊（用於嵌入其他內容，如圖像、視頻等） 
-      */}
+      {/* 引用 */}
+      <EditorToolItem
+        text="blockquote"
+        tipText="引用"
+        tipStyle="w-12"
+        iconName={faQuoteLeft}
+        toggleBlockType={toggleBlockType}
+      />
+      {/* 項目清單 */}
+      <EditorToolItem
+        text="unordered-list-item"
+        tipText="項目清單"
+        tipStyle="w-16"
+        iconName={faListDots}
+        toggleBlockType={toggleBlockType}
+      />
+      {/* 編號清單 */}
+      <EditorToolItem
+        text="ordered-list-item"
+        tipText="編號清單"
+        tipStyle="w-16"
+        iconName={faListNumeric}
+        toggleBlockType={toggleBlockType}
+      />
+      {/* 插入圖片 */}
+      <EditorToolItem
+        text="insert-image"
+        tipText="插入圖片"
+        tipStyle="w-16"
+        iconName={faImage}
+        iconStyle='w-5 h-5 mt-0.5'
+        handleFileInput={handleFileInput}
+      />
     </div>
   );
 }

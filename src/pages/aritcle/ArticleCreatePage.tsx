@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
-import { Editor, EditorState, RichUtils } from 'draft-js';
+import { Editor, EditorState, RichUtils, AtomicBlockUtils } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import PrismDecorator from 'draft-js-prism';
@@ -12,6 +12,8 @@ import 'prismjs/components/prism-javascript';
 import '../../styles/editor.scss';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import EditorToolBar from 'components/common/EditorToolBar';
+import AtomicBlock from 'components/common/AtomicBlock';
+import { isEmpty } from 'lodash';
 
 const decorator = new PrismDecorator({
   prism: Prism,
@@ -25,6 +27,7 @@ function ArticleCreatePage() {
     editorState.getCurrentContent().hasText() || // hasTest() 判斷Editor內是否有內容
     editorState.getCurrentContent().getBlockMap().first().getType() !== 'unstyled'; // .getBlockMap().first().getType() 判斷第一段內容的類型是否有被定義
 
+  /** code block 新增程式區塊相關function */
   const handleKeyCommand = (command: string, state: EditorState) => {
     const newState = RichUtils.handleKeyCommand(state, command);
     if (newState) {
@@ -32,6 +35,40 @@ function ArticleCreatePage() {
       return 'handled';
     }
     return 'not-handled';
+  };
+
+  // 渲染 Atomic 區塊
+  const blockRendererFn = (contentBlock: any) => {
+    const type = contentBlock.getType();
+    if (type === 'atomic') {
+      return {
+        component: AtomicBlock,
+        editable: false,
+      };
+    }
+    return null;
+  };
+
+  // 在Editor 中插入 Atomic 區塊
+  const insertAtomicBlock = (src: string | ArrayBuffer | null) => {
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity('image', 'IMMUTABLE', { src });
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, ' ');
+    return EditorState.forceSelection(newEditorState, newEditorState.getCurrentContent().getSelectionAfter());
+  };
+
+  /** 處理上傳圖片 */
+  const handleFileInput = (e: any) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if(event.target && event.target.result) {
+        const src = event.target.result as string;
+        setEditorState(insertAtomicBlock(src));
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   /** 字型樣式設定 */
@@ -93,7 +130,7 @@ function ArticleCreatePage() {
 
       {/* 文字編輯工具列 */}
       {/* 字體、粗體、斜體、底線、刪除線、文字顏色、醒目提示顏色、對齊(左中右) */}
-      <EditorToolBar toggleInlineStyle={toggleInlineStyle} toggleBlockType={toggleBlockType} />
+      <EditorToolBar toggleInlineStyle={toggleInlineStyle} toggleBlockType={toggleBlockType} handleFileInput={handleFileInput} />
       <div
         className="relative max-h-minus180 h-minus180 overflow-y-auto"
         onClick={() => {
@@ -115,6 +152,7 @@ function ArticleCreatePage() {
           blockStyleFn={() => ''}
           ref={editorRef}
           handleKeyCommand={handleKeyCommand}
+          blockRendererFn={blockRendererFn}
         />
       </div>
     </div>

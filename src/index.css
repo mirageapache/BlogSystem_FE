@@ -39,7 +39,3 @@ h5 {
 h6 {
   @apply text-base font-medium;
 }
-
-pre {
-  @apply bg-gray-300 text-gray-800 p-4 rounded-md overflow-x-auto;
-}
