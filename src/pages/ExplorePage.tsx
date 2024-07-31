@@ -18,7 +18,7 @@ import { SearchStateType } from '../redux/searchSlice';
 import { getAllPosts } from '../api/post';
 import { getRecommendUserList, getSearchUserList } from '../api/user';
 import { getPartialArticles, ArticleResultType, getSearchArticle } from '../api/article';
-import { postResultType } from '../types/postType';
+import { PostResultType } from '../types/postType';
 
 /** stateType (SearchPage) */
 interface stateType {
@@ -34,7 +34,7 @@ function ExplorePage() {
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
   let articleQueryData: ArticleResultType;
-  let postQueryData: postResultType;
+  let postQueryData: PostResultType;
   let userList: FollowResultType;
 
   switch (activeTab) {
@@ -53,7 +53,7 @@ function ExplorePage() {
       }
       break;
     case 'post':
-      postQueryData = useQuery('post', () => getAllPosts()) as postResultType;
+      postQueryData = useQuery('post', () => getAllPosts()) as PostResultType;
       break;
     case 'user':
       /** 取得用戶清單 */

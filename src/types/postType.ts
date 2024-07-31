@@ -28,6 +28,6 @@ export interface PostVariablesType {
   hashTags?: string[];
 }
 
-export interface postResultType extends RqResponseType {
+export interface PostResultType extends RqResponseType {
   data: PostDataType | null;
 }

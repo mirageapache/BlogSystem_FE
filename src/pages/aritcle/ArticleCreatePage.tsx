@@ -13,7 +13,12 @@ import '../../styles/editor.scss';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/AtomicBlock';
-import { isEmpty } from 'lodash';
+import { useMutation } from 'react-query';
+import { createArticle } from 'api/article';
+import { errorAlert } from 'utils/fetchError';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
+import { getCookies } from 'utils/common';
 
 const decorator = new PrismDecorator({
   prism: Prism,
@@ -81,8 +86,34 @@ function ArticleCreatePage() {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
+  /** 新增文章 mutation */
+  const createArticleMutation = useMutation(
+    ({userId, content}: {userId: string, content: string}) => createArticle(userId, content),
+    {
+      onSuccess: (res) => {
+        console.log(res);
+        if (res.status === 200) {
+          const swal = withReactContent(Swal);
+          swal.fire({
+            title: '文章已發佈',
+            icon: 'success',
+            confirmButtonText: '確認',
+          });
+        }
+      },
+      onError: (err) => errorAlert(),
+    }
+  )
+
   /** 發佈文章 */
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    const contentState = editorState.getCurrentContent();
+    console.log(contentState);
+
+
+    const userId = getCookies('uid') as string;
+    // createArticleMutation.mutate({ userId, content});
+  };
 
   return (
     <div className="w-full md:max-w-[600px] mx-2 sm:m-0">

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { isEmpty, get } from 'lodash';
-import { DUMMYJSON_URL } from './index';
-import { ArticleListType } from '../types/articleType';
-import { RqResponseType } from '../types/apiType';
+import { DUMMYJSON_URL, config } from './index';
+import { ArticleDataType, ArticleListType } from '../types/articleType';
+import { AxResponseType, RqResponseType } from '../types/apiType';
 
 const baseUrl = DUMMYJSON_URL;
 
@@ -21,10 +21,14 @@ export interface ArticleResultType extends RqResponseType {
   data: AritcleApiType | null;
 }
 
+interface ArticleApiType extends AxResponseType {
+  data: ArticleDataType;
+}
+
 /** 取得所有文章 */
 export async function getArticles() {
   const result = await axios
-    .get(`${baseUrl}/posts`)
+    .get(`${baseUrl}/article`)
     .then((res) => {
       const postData = res.data;
       return postData;
@@ -81,6 +85,19 @@ export async function getSearchArticle(searchString: string) {
         return { mssage: '搜尋不到相關結果!!' };
       }
       return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}
+
+/** 新增文章 */
+export async function createArticle(userId: string, formData: string): Promise<ArticleApiType> {
+  const result = await axios
+    .post(`${baseUrl}/article/create/${userId}`, formData, config)
+    .then((res) => {
+      return res;
     })
     .catch((error) => {
       return error;

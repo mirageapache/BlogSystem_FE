@@ -5,9 +5,9 @@ import PostItem from './PostItem';
 import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
 import PostListLoading from './PostListLoading';
 // --- types ---
-import { PostDataType, postResultType } from '../../types/postType';
+import { PostDataType, PostResultType } from '../../types/postType';
 
-function PostList(props: { postQueryData: postResultType }) {
+function PostList(props: { postQueryData: PostResultType }) {
   const { postQueryData } = props;
   const { isLoading, data } = postQueryData;
   const postDataList: PostDataType[] | null = data as PostDataType[] | null;

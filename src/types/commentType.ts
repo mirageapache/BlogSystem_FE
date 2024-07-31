@@ -19,6 +19,6 @@ export interface PostVariablesType {
   content: string;
 }
 
-export interface postResultType extends RqResponseType {
+export interface PostResultType extends RqResponseType {
   data: CommentDataType | null;
 }
