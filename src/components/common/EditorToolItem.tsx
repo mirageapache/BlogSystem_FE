@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable no-unused-vars */
 import React, { Fragment, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,7 +37,7 @@ function EditorToolItem({
   const imgUpload = useRef<HTMLInputElement>(null);
 
   return (
-    <Fragment>
+    <>
       <button
         type="button"
         aria-label={text}
@@ -44,7 +45,7 @@ function EditorToolItem({
         onClick={() => {
           if (toggleInlineStyle !== undefined) toggleInlineStyle(text.toUpperCase());
           if (toggleBlockType !== undefined) toggleBlockType(text);
-          if(text === 'insert-image' && imgUpload.current !== null) {
+          if (text === 'insert-image' && imgUpload.current !== null) {
             imgUpload.current.click();
           }
         }}
@@ -63,10 +64,17 @@ function EditorToolItem({
           {tipText}
         </span>
       </button>
-      {text === 'insert-image' &&
-        <input ref={imgUpload} className="hidden" type="file" onChange={(e) => {handleFileInput(e)}} />
-      }
-    </Fragment>
+      {text === 'insert-image' && (
+        <input
+          ref={imgUpload}
+          className="hidden"
+          type="file"
+          onChange={(e) => {
+            handleFileInput(e);
+          }}
+        />
+      )}
+    </>
   );
 }
 

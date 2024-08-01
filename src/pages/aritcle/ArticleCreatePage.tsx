@@ -60,7 +60,10 @@ function ArticleCreatePage() {
     const contentStateWithEntity = contentState.createEntity('image', 'IMMUTABLE', { src });
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
     const newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, ' ');
-    return EditorState.forceSelection(newEditorState, newEditorState.getCurrentContent().getSelectionAfter());
+    return EditorState.forceSelection(
+      newEditorState,
+      newEditorState.getCurrentContent().getSelectionAfter()
+    );
   };
 
   /** 處理上傳圖片 */
@@ -68,7 +71,7 @@ function ArticleCreatePage() {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = (event) => {
-      if(event.target && event.target.result) {
+      if (event.target && event.target.result) {
         const src = event.target.result as string;
         setEditorState(insertAtomicBlock(src));
       }
@@ -88,7 +91,7 @@ function ArticleCreatePage() {
 
   /** 新增文章 mutation */
   const createArticleMutation = useMutation(
-    ({userId, content}: {userId: string, content: string}) => createArticle(userId, content),
+    ({ userId, content }: { userId: string; content: string }) => createArticle(userId, content),
     {
       onSuccess: (res) => {
         console.log(res);
@@ -103,13 +106,12 @@ function ArticleCreatePage() {
       },
       onError: (err) => errorAlert(),
     }
-  )
+  );
 
   /** 發佈文章 */
   const handleSubmit = () => {
     const contentState = editorState.getCurrentContent();
     console.log(contentState);
-
 
     const userId = getCookies('uid') as string;
     // createArticleMutation.mutate({ userId, content});
@@ -161,7 +163,11 @@ function ArticleCreatePage() {
 
       {/* 文字編輯工具列 */}
       {/* 字體、粗體、斜體、底線、刪除線、文字顏色、醒目提示顏色、對齊(左中右) */}
-      <EditorToolBar toggleInlineStyle={toggleInlineStyle} toggleBlockType={toggleBlockType} handleFileInput={handleFileInput} />
+      <EditorToolBar
+        toggleInlineStyle={toggleInlineStyle}
+        toggleBlockType={toggleBlockType}
+        handleFileInput={handleFileInput}
+      />
       <div
         className="relative max-h-minus180 h-minus180 overflow-y-auto"
         onClick={() => {
