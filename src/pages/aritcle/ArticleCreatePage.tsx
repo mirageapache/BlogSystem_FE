@@ -2,22 +2,24 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
-import { Editor, EditorState, RichUtils, AtomicBlockUtils } from 'draft-js';
+import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw  } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 import PrismDecorator from 'draft-js-prism';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import 'prismjs/components/prism-javascript';
 import '../../styles/editor.scss';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dark, coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/AtomicBlock';
 import { useMutation } from 'react-query';
 import { createArticle } from 'api/article';
 import { errorAlert } from 'utils/fetchError';
-import withReactContent from 'sweetalert2-react-content';
-import Swal from 'sweetalert2';
 import { getCookies } from 'utils/common';
 
 const decorator = new PrismDecorator({
@@ -41,6 +43,11 @@ function ArticleCreatePage() {
     }
     return 'not-handled';
   };
+  const contentState = editorState.getCurrentContent();
+  const rawContentState = convertToRaw(contentState);
+  const blocks = rawContentState.blocks;
+  const codeBlocks = blocks.filter(block => block.type === 'code-block');
+
 
   // 渲染 Atomic 區塊
   const blockRendererFn = (contentBlock: any) => {
@@ -111,6 +118,8 @@ function ArticleCreatePage() {
   /** 發佈文章 */
   const handleSubmit = () => {
     const contentState = editorState.getCurrentContent();
+    // const rawContentState = convertToRaw(contentState);
+
     console.log(contentState);
 
     const userId = getCookies('uid') as string;
@@ -191,6 +200,17 @@ function ArticleCreatePage() {
           handleKeyCommand={handleKeyCommand}
           blockRendererFn={blockRendererFn}
         />
+        <div>
+          {codeBlocks.map(block => (
+            <SyntaxHighlighter
+              language="javascript"
+              style={coy}
+              key={block.key}
+            >
+              {block.text}
+            </SyntaxHighlighter>
+          ))}
+        </div>
       </div>
     </div>
   );
