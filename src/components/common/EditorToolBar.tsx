@@ -322,7 +322,7 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
         tipText="程式區塊"
         tipStyle="w-16"
         iconName={faFileCode}
-        iconStyle='w-5 h-5 mt-0.5'
+        iconStyle="w-5 h-5 mt-0.5"
         toggleBlockType={toggleBlockType}
       />
       {/* 引用 */}
@@ -355,7 +355,7 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
         tipText="插入圖片"
         tipStyle="w-16"
         iconName={faImage}
-        iconStyle='w-5 h-5 mt-0.5'
+        iconStyle="w-5 h-5 mt-0.5"
         handleFileInput={handleFileInput}
       />
     </div>

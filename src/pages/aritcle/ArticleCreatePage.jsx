@@ -2,57 +2,33 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
-import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw  } from 'draft-js';
+import { Editor, EditorState, RichUtils, AtomicBlockUtils } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import PrismDecorator from 'draft-js-prism';
-import Prism from 'prismjs';
-import 'prismjs/themes/prism.css';
-import 'prismjs/components/prism-javascript';
 import '../../styles/editor.scss';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dark, coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import EditorToolBar from 'components/common/EditorToolBar';
-import AtomicBlock from 'components/common/AtomicBlock';
+import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
 import { useMutation } from 'react-query';
 import { createArticle } from 'api/article';
 import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 
-const decorator = new PrismDecorator({
-  prism: Prism,
-  defaultLanguage: 'javascript',
-});
-
 function ArticleCreatePage() {
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty(decorator));
-  const editorRef = useRef<Editor>(null);
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const contentState = editorState.getCurrentContent();
+  const editorRef = useRef(null);
   const hasContent =
     editorState.getCurrentContent().hasText() || // hasTest() 判斷Editor內是否有內容
     editorState.getCurrentContent().getBlockMap().first().getType() !== 'unstyled'; // .getBlockMap().first().getType() 判斷第一段內容的類型是否有被定義
 
-  /** code block 新增程式區塊相關function */
-  const handleKeyCommand = (command: string, state: EditorState) => {
-    const newState = RichUtils.handleKeyCommand(state, command);
-    if (newState) {
-      setEditorState(newState);
-      return 'handled';
-    }
-    return 'not-handled';
-  };
-  const contentState = editorState.getCurrentContent();
-  const rawContentState = convertToRaw(contentState);
-  const blocks = rawContentState.blocks;
-  const codeBlocks = blocks.filter(block => block.type === 'code-block');
-
-
-  // 渲染 Atomic 區塊
-  const blockRendererFn = (contentBlock: any) => {
+  /** 渲染 Atomic 區塊 */
+  const blockRendererFn = (contentBlock) => {
     const type = contentBlock.getType();
     if (type === 'atomic') {
+      // 插入圖片
       return {
         component: AtomicBlock,
         editable: false,
@@ -62,8 +38,7 @@ function ArticleCreatePage() {
   };
 
   // 在Editor 中插入 Atomic 區塊
-  const insertAtomicBlock = (src: string | ArrayBuffer | null) => {
-    const contentState = editorState.getCurrentContent();
+  const insertAtomicBlock = (src) => {
     const contentStateWithEntity = contentState.createEntity('image', 'IMMUTABLE', { src });
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
     const newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, ' ');
@@ -73,13 +48,13 @@ function ArticleCreatePage() {
     );
   };
 
-  /** 處理上傳圖片 */
-  const handleFileInput = (e: any) => {
+  /** 觸發上傳圖片input */
+  const handleFileInput = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = (event) => {
       if (event.target && event.target.result) {
-        const src = event.target.result as string;
+        const src = event.target.result;
         setEditorState(insertAtomicBlock(src));
       }
     };
@@ -87,18 +62,18 @@ function ArticleCreatePage() {
   };
 
   /** 字型樣式設定 */
-  const toggleInlineStyle = (style: string) => {
+  const toggleInlineStyle = (style) => {
     setEditorState(RichUtils.toggleInlineStyle(editorState, style));
   };
 
   /** 字體類型設定 */
-  const toggleBlockType = (blockType: string) => {
+  const toggleBlockType = (blockType) => {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
   /** 新增文章 mutation */
   const createArticleMutation = useMutation(
-    ({ userId, content }: { userId: string; content: string }) => createArticle(userId, content),
+    ({ userId, content }) => createArticle(userId, content),
     {
       onSuccess: (res) => {
         console.log(res);
@@ -117,12 +92,11 @@ function ArticleCreatePage() {
 
   /** 發佈文章 */
   const handleSubmit = () => {
-    const contentState = editorState.getCurrentContent();
     // const rawContentState = convertToRaw(contentState);
 
     console.log(contentState);
 
-    const userId = getCookies('uid') as string;
+    const userId = getCookies('uid');
     // createArticleMutation.mutate({ userId, content});
   };
 
@@ -195,22 +169,9 @@ function ArticleCreatePage() {
           editorState={editorState}
           onChange={setEditorState}
           customStyleMap={customStyleMap}
-          blockStyleFn={() => ''}
           ref={editorRef}
-          handleKeyCommand={handleKeyCommand}
           blockRendererFn={blockRendererFn}
         />
-        <div>
-          {codeBlocks.map(block => (
-            <SyntaxHighlighter
-              language="javascript"
-              style={coy}
-              key={block.key}
-            >
-              {block.text}
-            </SyntaxHighlighter>
-          ))}
-        </div>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 
 function AtomicBlock(props: any) {
-  const contentState = props.contentState;
-  const entity = contentState.getEntity(props.block.getEntityAt(0));
+  const { block, contentState } = props;
+  const entity = contentState.getEntity(block.getEntityAt(0));
   const { src } = entity.getData();
   const type = entity.getType();
 
@@ -13,4 +13,4 @@ function AtomicBlock(props: any) {
   return null;
 }
 
-export default AtomicBlock
+export default AtomicBlock;
