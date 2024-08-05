@@ -5,16 +5,17 @@ import React, { useRef, useState } from 'react';
 import { Editor, EditorState, RichUtils, AtomicBlockUtils } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { useMutation } from 'react-query';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import '../../styles/editor.scss';
+import { stateToHTML } from 'draft-js-export-html';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
-import { useMutation } from 'react-query';
 import { createArticle } from 'api/article';
 import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
+import '../../styles/editor.scss';
 
 function ArticleCreatePage() {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
@@ -92,9 +93,8 @@ function ArticleCreatePage() {
 
   /** 發佈文章 */
   const handleSubmit = () => {
-    // const rawContentState = convertToRaw(contentState);
-
-    console.log(contentState);
+    const htmlContent = stateToHTML(contentState);
+    console.log(htmlContent);
 
     const userId = getCookies('uid');
     // createArticleMutation.mutate({ userId, content});
