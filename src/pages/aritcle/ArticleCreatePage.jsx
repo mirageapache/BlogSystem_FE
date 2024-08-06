@@ -16,9 +16,11 @@ import { createArticle } from 'api/article';
 import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import '../../styles/editor.scss';
+import { isEmpty } from 'lodash';
 
 function ArticleCreatePage() {
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const [title, setTitle] = useState('');
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty()); // 編輯內容
   const contentState = editorState.getCurrentContent();
   const editorRef = useRef(null);
   const hasContent =
@@ -74,7 +76,7 @@ function ArticleCreatePage() {
 
   /** 新增文章 mutation */
   const createArticleMutation = useMutation(
-    ({ userId, content }) => createArticle(userId, content),
+    ({ userId, title, content }) => createArticle(userId, title, content),
     {
       onSuccess: (res) => {
         console.log(res);
@@ -97,7 +99,7 @@ function ArticleCreatePage() {
     console.log(htmlContent);
 
     const userId = getCookies('uid');
-    // createArticleMutation.mutate({ userId, content});
+    createArticleMutation.mutate({ userId, title, content:htmlContent});
   };
 
   return (
@@ -118,7 +120,7 @@ function ArticleCreatePage() {
           </button>
         </div>
         <p className="text-2xl font-bold">建立文章</p>
-        {hasContent ? (
+        {!isEmpty(title) && hasContent ? (
           <button
             type="button"
             className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
@@ -151,6 +153,15 @@ function ArticleCreatePage() {
         toggleBlockType={toggleBlockType}
         handleFileInput={handleFileInput}
       />
+      <div className="mb-2">
+        <input
+          type="text"
+          name="title"
+          placeholder="文章標題"
+          className="w-full text-2xl outline-none dark:text-white dark:bg-gray-950"
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
       <div
         className="relative max-h-minus180 h-minus180 overflow-y-auto"
         onClick={() => {

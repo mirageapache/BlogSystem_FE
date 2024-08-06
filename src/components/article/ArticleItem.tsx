@@ -1,6 +1,7 @@
 import { isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
 import { formatDateTime } from '../../utils/dateTime';
+import { ArticleDataType } from 'types/articleType';
 
 /** Article Tags 元件 */
 function ArticleTag(props: { text: string }) {
@@ -14,17 +15,12 @@ function ArticleTag(props: { text: string }) {
   );
 }
 
-/** ArticleItem 參數型別 */
-interface ArticleItemPropsType {
-  id: number;
-  title: string;
-  tags: string[];
-  body: string;
-}
 
 /** ArticleItem 元件 */
-function ArticleItem({ id, title, body, tags }: ArticleItemPropsType) {
-  const tagsList = tags.map((tag) => <ArticleTag key={`${tag}-${id}`} text={tag} />);
+function ArticleItem(props: {articleData: ArticleDataType}) {
+  const { articleData } = props;
+  const { _id, title, content, subject, hashTags } = articleData;
+  const tagsList = hashTags.map((tag) => <ArticleTag key={`${tag}-${_id}`} text={tag} />);
 
   return (
     <div className="text-left border-b-[1px] p-1 sm:p-2 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-default">
@@ -50,12 +46,12 @@ function ArticleItem({ id, title, body, tags }: ArticleItemPropsType) {
         </div>
         <div>
           <h2 className="font-semibold text-2xl xl:text-3xl">
-            <Link to={`/article/${id}`} className="hover:underline">
+            <Link to={`/article/${_id}`} className="hover:underline">
               {title}
             </Link>
           </h2>
           <div className="text-orange-500">{tagsList}</div>
-          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{body}</p>
+          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{content}</p>
         </div>
       </div>
     </div>

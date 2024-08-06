@@ -15,6 +15,7 @@ export interface ArticleListType {
 export interface ArticleDataType extends errorMsgType {
   _id: string;
   author: UserInfoPanelType; // userId
+  title: string;
   content: string;
   image: string;
   status: number;

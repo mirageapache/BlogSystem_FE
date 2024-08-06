@@ -17,7 +17,8 @@ import { SearchStateType } from '../redux/searchSlice';
 // --- api / type ---
 import { getAllPosts } from '../api/post';
 import { getRecommendUserList, getSearchUserList } from '../api/user';
-import { getPartialArticles, ArticleResultType, getSearchArticle } from '../api/article';
+import { getPartialArticles, getSearchArticle, getArticles } from '../api/article';
+import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';
 
 /** stateType (SearchPage) */
@@ -39,7 +40,7 @@ function ExplorePage() {
 
   switch (activeTab) {
     case 'popular':
-      articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
+      articleQueryData = useQuery('articles', () => getArticles()) as ArticleResultType;
       break;
     case 'article':
       /** 取得文章資料 */
