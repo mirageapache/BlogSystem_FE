@@ -13,7 +13,8 @@ import FollowList from 'components/user/FollowList';
 // --- api / type ---
 import { UserDataType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
-import { ArticleResultType, getPartialArticles } from '../../api/article';
+import { ArticleResultType } from 'types/articleType';
+import { getPartialArticles } from '../../api/article';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
 

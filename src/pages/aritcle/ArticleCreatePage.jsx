@@ -17,6 +17,7 @@ import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import '../../styles/editor.scss';
 import { isEmpty } from 'lodash';
+import { useNavigate } from 'react-router-dom';
 
 function ArticleCreatePage() {
   const [title, setTitle] = useState('');
@@ -26,6 +27,7 @@ function ArticleCreatePage() {
   const hasContent =
     editorState.getCurrentContent().hasText() || // hasTest() 判斷Editor內是否有內容
     editorState.getCurrentContent().getBlockMap().first().getType() !== 'unstyled'; // .getBlockMap().first().getType() 判斷第一段內容的類型是否有被定義
+  const navigate = useNavigate();
 
   /** 渲染 Atomic 區塊 */
   const blockRendererFn = (contentBlock) => {
@@ -79,13 +81,15 @@ function ArticleCreatePage() {
     ({ userId, title, content }) => createArticle(userId, title, content),
     {
       onSuccess: (res) => {
-        console.log(res);
         if (res.status === 200) {
           const swal = withReactContent(Swal);
           swal.fire({
             title: '文章已發佈',
             icon: 'success',
             confirmButtonText: '確認',
+          })
+          .then((result) => {
+            if (result.isConfirmed) navigate('/');
           });
         }
       },
@@ -96,8 +100,6 @@ function ArticleCreatePage() {
   /** 發佈文章 */
   const handleSubmit = () => {
     const htmlContent = stateToHTML(contentState);
-    console.log(htmlContent);
-
     const userId = getCookies('uid');
     createArticleMutation.mutate({ userId, title, content:htmlContent});
   };

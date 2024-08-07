@@ -6,33 +6,30 @@ import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
 
-/** aritcleApi 型別
- * 目前使用dummyjson的資料，所以建立這個型別(以符合資料結構)
- */
-// export interface AritcleApiType {
-//   post: ArticleListType[];
-//   total: number;
-//   skip: number;
-//   limit: number;
-// }
-
-/** article Result 型別 */
-// export interface ArticleResultType extends RqResponseType {
-//   data: AritcleApiType | null;
-// }
-
 interface ArticleApiType extends AxResponseType {
   data: ArticleDataType;
 }
 
 /** 取得所有文章 */
-export async function getArticles() {
+export async function getArticles(): Promise<ArticleApiType> {
   const result = await axios
     .get(`${baseUrl}/article`)
     .then((res) => {
-      console.log(res);
       const postData = res.data;
       return postData;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}
+
+/** 取得特定文章內容 */
+export async function getArticleDetail(articleId: string): Promise<ArticleApiType> {
+  const result = await axios
+    .post(`${baseUrl}/article/detail`, { articleId })
+    .then((res) => {
+      return res;
     })
     .catch((error) => {
       return error;

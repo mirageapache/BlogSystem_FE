@@ -10,7 +10,8 @@ import PageBanner from 'components/layout/PageBanner';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../redux/searchSlice';
 // --- api / type ---
-import { getPartialArticles, ArticleResultType, getSearchArticle } from '../api/article';
+import { getPartialArticles, getSearchArticle } from '../api/article';
+import { ArticleResultType } from '../types/articleType';
 
 /** stateType (SearchPage) */
 interface stateType {
