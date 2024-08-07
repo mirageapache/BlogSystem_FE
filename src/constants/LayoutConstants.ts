@@ -9,7 +9,7 @@ export const BOTTOM_MENU_FRAME =
   'fixed bottom-0 flex justify-center items-center w-full h-12 bg-white dark:bg-gray-950 sm:hidden border-gray-200 dark:border-gray-700 border-t-[1px]';
 /** Container 搭配 SideBar */
 export const SIDEBAR_CONTAINER_FRAME =
-  'w-full flex justify-center sm:ml-20 mb-12 sm:mb-0 lg:ml-60 px-1.5 sm:px-5 border-l-[1px] border-gray-200 dark:border-gray-700';
+  'relative w-full flex justify-center sm:ml-20 mb-12 sm:mb-0 lg:ml-60 px-1.5 sm:px-5 border-l-[1px] border-gray-200 dark:border-gray-700';
 /** 滿版 Container */
 export const FULL_CONTAINER_FRAME = '';
 

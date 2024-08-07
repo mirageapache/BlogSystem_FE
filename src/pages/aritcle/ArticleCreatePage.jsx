@@ -78,19 +78,20 @@ function ArticleCreatePage() {
 
   /** 新增文章 mutation */
   const createArticleMutation = useMutation(
-    ({ userId, title, content }) => createArticle(userId, title, content),
+    ({ userId, content }) => createArticle(userId, title, content),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
           const swal = withReactContent(Swal);
-          swal.fire({
-            title: '文章已發佈',
-            icon: 'success',
-            confirmButtonText: '確認',
-          })
-          .then((result) => {
-            if (result.isConfirmed) navigate('/');
-          });
+          swal
+            .fire({
+              title: '文章已發佈',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then((result) => {
+              if (result.isConfirmed) navigate('/');
+            });
         }
       },
       onError: (err) => errorAlert(),
@@ -101,7 +102,7 @@ function ArticleCreatePage() {
   const handleSubmit = () => {
     const htmlContent = stateToHTML(contentState);
     const userId = getCookies('uid');
-    createArticleMutation.mutate({ userId, title, content:htmlContent});
+    createArticleMutation.mutate({ userId, content: htmlContent });
   };
 
   return (

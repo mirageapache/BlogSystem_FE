@@ -91,7 +91,11 @@ export async function getSearchArticle(searchString: string) {
 }
 
 /** 新增文章 */
-export async function createArticle(userId: string, title: string, content: string): Promise<ArticleApiType> {
+export async function createArticle(
+  userId: string,
+  title: string,
+  content: string
+): Promise<ArticleApiType> {
   const variables = { userId, title, content };
 
   const result = await axios

@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 // --- components / functions ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
-import { formatDateTime } from '../../utils/dateTime';
+import { formatDateTime } from 'utils/dateTime';
 import { ArticleDataType } from 'types/articleType';
 import { HINT_LABEL } from 'constants/LayoutConstants';
 
@@ -20,7 +20,7 @@ function ArticleTag(props: { text: string }) {
 }
 
 /** ArticleItem 元件 */
-function ArticleItem(props: {articleData: ArticleDataType}) {
+function ArticleItem(props: { articleData: ArticleDataType }) {
   const [showCreateTip, setShowCreateTip] = useState(false);
   const { articleData } = props;
   const { _id, title, content, author, subject, hashTags, createdAt } = articleData;
@@ -31,22 +31,20 @@ function ArticleItem(props: {articleData: ArticleDataType}) {
       <div className="">
         <div className="flex w-full justify-between">
           <UserInfoPanel
-              userId={author._id}
-              account={author.account}
-              name={author.name}
-              avatarUrl={author.avatar}
-              bgColor={author.bgColor}
-              className="my-2"
-            />
+            userId={author._id}
+            account={author.account}
+            name={author.name}
+            avatarUrl={author.avatar}
+            bgColor={author.bgColor}
+            className="my-2"
+          />
           <div className="flex flex-col justify-center items-end">
             <span
               className="relative my-0.5"
               onMouseEnter={() => setShowCreateTip(true)}
               onMouseLeave={() => setShowCreateTip(false)}
             >
-              <p className="text-gray-600 dark:text-gray-300">
-                {formatDateTime(createdAt)}
-              </p>
+              <p className="text-gray-600 dark:text-gray-300">{formatDateTime(createdAt)}</p>
               <span
                 className={`top-[-50px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
               >

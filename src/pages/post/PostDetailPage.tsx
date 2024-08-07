@@ -91,8 +91,8 @@ function PostDetailPage() {
   }
 
   return (
-    <div className="border-b-[1px] dark:border-gray-700 cursor-default">
-      <div className="flex items-center my-3">
+    <div className="border-b-[1px] dark:border-gray-700 w-full md:w-[600px] cursor-default">
+      <div className="flex items-center my-3 w-full">
         <button
           aria-label="back"
           type="button"

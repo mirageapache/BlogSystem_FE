@@ -14,7 +14,7 @@ function ArticleList(props: { articleQueryData: ArticleResultType }) {
 
   const articleList: ArticleDataType[] | null = data as ArticleDataType[] | null;
   const errorMsg = get(articleQueryData, 'data.mssage', '');
-  
+
   if (isLoading) return <Loading />;
   if (!isEmpty(error) || !isEmpty(errorMsg)) {
     return <BasicErrorPanel errorMsg={errorMsg} />;
