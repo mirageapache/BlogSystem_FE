@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useQuery } from 'react-query';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
@@ -17,20 +17,24 @@ import { SearchStateType } from '../redux/searchSlice';
 // --- api / type ---
 import { getAllPosts } from '../api/post';
 import { getRecommendUserList, getSearchUserList } from '../api/user';
-import { getPartialArticles, getSearchArticle, getArticles } from '../api/article';
+import { getSearchArticle, getArticles } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';
+import { SysStateType, setExploreTag } from 'redux/sysSlice';
 
 /** stateType (SearchPage) */
 interface stateType {
   search: SearchStateType;
+  system: SysStateType;
 }
 
 function ExplorePage() {
-  const [activeTab, setActiveTab] = useState('popular'); // 頁籤控制
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
+  const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState; // 搜尋字串
+  const systemState = useSelector((state: stateType) => state.system);
+  const { exploreTag } = systemState; // 紀錄作用中的頁籤
   const userId = getCookies('uid'); // 使用者id (判斷是否登入)
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
@@ -38,14 +42,14 @@ function ExplorePage() {
   let postQueryData: PostResultType;
   let userList: FollowResultType;
 
-  switch (activeTab) {
+  switch (exploreTag) {
     case 'popular':
       articleQueryData = useQuery('articles', () => getArticles()) as ArticleResultType;
       break;
     case 'article':
       /** 取得文章資料 */
       if (isEmpty(searchText)) {
-        articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
+        articleQueryData = useQuery('articles', () => getArticles()) as ArticleResultType;
       } else {
         // 搜尋 Article 文章資料
         articleQueryData = useQuery('aritcleList', () => getSearchArticle(searchText), {
@@ -65,19 +69,16 @@ function ExplorePage() {
           getSearchUserList(searchText, userId)
         ) as FollowResultType;
       }
-
       break;
     // case 'tag':
     //   break;
     default:
-      articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
+      articleQueryData = useQuery('articles', () => getArticles()) as ArticleResultType;
       break;
   }
 
-  /** 頁籤切換 */
-  const handleTabActive = (tabValue: string) => {
-    setActiveTab(tabValue);
-    switch (tabValue) {
+  useEffect(() => {
+    switch (exploreTag) {
       case 'popular':
         setActiveUnderLine('translate-x-0');
         break;
@@ -96,6 +97,11 @@ function ExplorePage() {
       default:
         setActiveUnderLine('translate-x-0');
     }
+  }, [exploreTag])
+  
+  /** 頁籤切換 */
+  const handleTabActive = (tabValue: string) => {
+    dispatch(setExploreTag(tabValue));
   };
 
   return (
@@ -112,7 +118,7 @@ function ExplorePage() {
               <p className="hidden md:inline-block">熱門</p>
               <FontAwesomeIcon
                 icon={icon({ name: 'fire', style: 'solid' })}
-                className={`${iconStyle} ${activeTab === 'popular' ? activeTabStyle : ''}`}
+                className={`${iconStyle} ${exploreTag === 'popular' ? activeTabStyle : ''}`}
               />
             </button>
             <button
@@ -123,7 +129,7 @@ function ExplorePage() {
               <p className="hidden md:inline-block">文章</p>
               <FontAwesomeIcon
                 icon={icon({ name: 'file-lines', style: 'regular' })}
-                className={`${iconStyle} ${activeTab === 'article' ? activeTabStyle : ''}`}
+                className={`${iconStyle} ${exploreTag === 'article' ? activeTabStyle : ''}`}
               />
             </button>
             <button
@@ -134,7 +140,7 @@ function ExplorePage() {
               <p className="hidden md:inline-block">貼文</p>
               <FontAwesomeIcon
                 icon={icon({ name: 'note-sticky', style: 'regular' })}
-                className={`${iconStyle} ${activeTab === 'post' ? activeTabStyle : ''}`}
+                className={`${iconStyle} ${exploreTag === 'post' ? activeTabStyle : ''}`}
               />
             </button>
             <button
@@ -145,7 +151,7 @@ function ExplorePage() {
               <p className="hidden md:inline-block">用戶</p>
               <FontAwesomeIcon
                 icon={icon({ name: 'users', style: 'solid' })}
-                className={`${iconStyle} ${activeTab === 'user' ? activeTabStyle : ''}`}
+                className={`${iconStyle} ${exploreTag === 'user' ? activeTabStyle : ''}`}
               />
             </button>
             <button
@@ -156,7 +162,7 @@ function ExplorePage() {
               <p className="hidden md:inline-block">標籤</p>
               <FontAwesomeIcon
                 icon={icon({ name: 'tag', style: 'solid' })}
-                className={`${iconStyle} ${activeTab === 'tag' ? activeTabStyle : ''}`}
+                className={`${iconStyle} ${exploreTag === 'tag' ? activeTabStyle : ''}`}
               />
             </button>
           </div>
@@ -170,32 +176,32 @@ function ExplorePage() {
 
       <div className="flex justify-center">
         {/* 熱門 */}
-        {activeTab === 'popular' && (
-          <section className="w-full max-w-[600px]">
+        {exploreTag === 'popular' && (
+          <section className="flex justify-center w-full max-w-[600px]">
             <ArticleList articleQueryData={articleQueryData!} />
           </section>
         )}
         {/* 文章 */}
-        {activeTab === 'article' && (
-          <section className="w-full max-w-[600px]">
+        {exploreTag === 'article' && (
+          <section className="flex justify-center w-full max-w-[600px]">
             <ArticleList articleQueryData={articleQueryData!} />
           </section>
         )}
         {/* 貼文 */}
-        {activeTab === 'post' && (
-          <section className="w-full max-w-[600px]">
+        {exploreTag === 'post' && (
+          <section className="flex justify-center w-full max-w-[600px]">
             <PostList postQueryData={postQueryData!} />
           </section>
         )}
         {/* 用戶 */}
-        {activeTab === 'user' && (
-          <section className="w-full max-w-[600px]">
+        {exploreTag === 'user' && (
+          <section className="flex justify-center w-full max-w-[600px]">
             <FollowList type="userList" followList={userList!} />
           </section>
         )}
         {/* 標籤 */}
-        {activeTab === 'tag' && (
-          <section className="w-full max-w-[600px]">
+        {exploreTag === 'tag' && (
+          <section className="flex justify-center w-full max-w-[600px]">
             <div>還沒有標籤資料</div>
           </section>
         )}
