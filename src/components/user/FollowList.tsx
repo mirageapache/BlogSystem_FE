@@ -198,7 +198,7 @@ function FollowList({ type, followList }: PropsType) {
     });
   }
 
-  return <div>{listData}</div>;
+  return <div className="w-full">{listData}</div>;
 }
 
 export default FollowList;

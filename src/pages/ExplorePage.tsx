@@ -20,7 +20,7 @@ import { getRecommendUserList, getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';
-import { SysStateType, setExploreTag } from 'redux/sysSlice';
+import { SysStateType, setExploreTag } from '../redux/sysSlice';
 
 /** stateType (SearchPage) */
 interface stateType {
@@ -97,8 +97,8 @@ function ExplorePage() {
       default:
         setActiveUnderLine('translate-x-0');
     }
-  }, [exploreTag])
-  
+  }, [exploreTag]);
+
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {
     dispatch(setExploreTag(tabValue));

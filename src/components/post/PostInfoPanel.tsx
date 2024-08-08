@@ -5,10 +5,10 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation } from 'react-query';
-import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
 import { toggleLikePost } from 'api/post';

@@ -15,8 +15,8 @@ export async function getArticles(): Promise<ArticleApiType> {
   const result = await axios
     .get(`${baseUrl}/article`)
     .then((res) => {
-      const postData = res.data;
-      return postData;
+      const articleData = res.data;
+      return articleData;
     })
     .catch((error) => {
       return error;
@@ -102,6 +102,19 @@ export async function createArticle(
     .post(`${baseUrl}/article/create/${userId}`, variables, config)
     .then((res) => {
       return res;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}
+
+/** 喜歡/取消喜歡文章 */
+export async function toggleLikeArticle(articleId: string, userId: string, action: boolean) {
+  const result = await axios
+    .patch(`${baseUrl}/article/toggleLikeAction/${userId}`, { articleId, userId, action }, config)
+    .then((res) => {
+      return res.data;
     })
     .catch((error) => {
       return error;
