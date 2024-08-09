@@ -11,12 +11,12 @@ interface CommentApiType extends AxResponseType {
 }
 
 /** 取得貼文留言 */
-export async function getPostComment(): Promise<CommentApiType> {
+export async function getComment(): Promise<CommentApiType> {
   const result = await axios
     .get(`${baseUrl}/comment/`)
     .then((res) => {
-      const postData = res.data;
-      return postData;
+      const data = res.data;
+      return data;
     })
     .catch((error) => {
       return error;
@@ -24,14 +24,20 @@ export async function getPostComment(): Promise<CommentApiType> {
   return result;
 }
 
-/** 新增留言 */
+/** 新增留言
+ * @id 貼文或文章 id
+ * @userId 使用者 id
+ * @content 留言內容
+ * @route 判斷post/article
+ */
 export async function createComment(
-  postId: string,
+  id: string,
   userId: string,
-  content: string
+  content: string,
+  route: string,
 ): Promise<CommentApiType> {
   const result = await axios
-    .post(`${baseUrl}/comment/create/${userId}`, { postId, userId, content }, config)
+    .post(`${baseUrl}/comment/create/${userId}`, { id, userId, content, route }, config)
     .then((res) => {
       return res;
     })

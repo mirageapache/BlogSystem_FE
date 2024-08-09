@@ -51,7 +51,7 @@ function PostDetailPage() {
   /** 回覆貼文 mutation */
   const CommentMutation = useMutation(
     ({ postId, userId, content }: { postId: string; userId: string; content: string }) =>
-      createComment(postId, userId, content),
+      createComment(postId, userId, content, "post"),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
