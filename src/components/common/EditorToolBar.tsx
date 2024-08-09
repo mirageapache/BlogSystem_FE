@@ -42,12 +42,22 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
     setShowBgColor(value);
   };
 
+  /** 處理scroll bar橫向捲動 */
+  const handleWheel = (event: any) => {
+    event.preventDefault();
+    const container = event.currentTarget;
+    container.scrollLeft += event.deltaY * 0.2;
+  };
+
   return (
-    <div className="flex items-center min-h-10 mb-4 border-y-[1px] border-gray-300 dark:border-gray-700 flex-wrap">
+    <div
+      className="flex items-center min-h-10 mb-4 border-y-[1px] border-gray-300 dark:border-gray-700 overflow-x-auto"
+      onWheel={handleWheel}
+    >
       {/* 字體大小 */}
       <select
         name="fontSize"
-        className="h-8 my-1 mr-2 border border-gray-500 rounded-md px-3 bg-inherit dark:bg-gray-900"
+        className="h-8 my-1 mr-2 border border-gray-500 rounded-md px-3 bg-inherit dark:bg-gray-900 cursor-pointer"
         onChange={(e) => {
           toggleBlockType(e.target.value);
         }}
@@ -110,7 +120,7 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
           handleShowFontColor={() => handleShowFontColor(!showFontColor)}
         />
         {showFontColor && (
-          <div className="relative z-30">
+          <div className="fixed z-30">
             <div
               className="fixed w-dvw h-dvh top-0 left-0"
               onClick={(e) => {
@@ -231,7 +241,7 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
           handleShowBgColor={() => handleShowBgColor(!showBgColor)}
         />
         {showBgColor && (
-          <div className="relative z-30">
+          <div className="fixed z-30">
             <div
               className="fixed w-dvw h-dvh top-0 left-0"
               onClick={(e) => {

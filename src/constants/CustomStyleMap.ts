@@ -42,27 +42,27 @@ export const customStyleMap = {
     backgroundColor: '',
   },
   'BG-GRAY': {
-    backgroundColor: 'gray',
+    backgroundColor: '#9ca3af',
   },
   'BG-RED': {
-    backgroundColor: 'red',
+    backgroundColor: '#f87171',
   },
   'BG-ORANGE': {
-    backgroundColor: 'orange',
+    backgroundColor: '#fb923c',
   },
   'BG-YELLOW': {
-    backgroundColor: 'yellow',
+    backgroundColor: '#fde047',
   },
   'BG-GREEN': {
-    backgroundColor: 'green',
+    backgroundColor: '#4ade80',
   },
   'BG-BLUE': {
-    backgroundColor: 'blue',
+    backgroundColor: '#60a5fa',
   },
   'BG-INDIGO': {
-    backgroundColor: 'indigo',
+    backgroundColor: '#818cf8',
   },
   'BG-PURPLE': {
-    backgroundColor: 'purple',
+    backgroundColor: '#c084fc',
   },
 };

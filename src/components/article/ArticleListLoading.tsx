@@ -1,7 +1,7 @@
 import React from 'react';
-import PostLoading from 'components/post/PostLoading';
+import ArticleLoading from 'components/article/ArticleLoading';
 
-function PostListLoading() {
+function ArticleListLoading() {
   const arr = [1, 2, 3, 4, 5];
   const loadingList = arr.map((item) => {
     return (
@@ -9,7 +9,7 @@ function PostListLoading() {
         key={`loading-${item}`}
         className="border-b-[1px] dark:border-gray-700 last:border-b-0"
       >
-        <PostLoading withBorder={false} />
+        <ArticleLoading withBorder={false} />
       </div>
     );
   });
@@ -17,4 +17,4 @@ function PostListLoading() {
   return <div>{loadingList}</div>;
 }
 
-export default PostListLoading;
+export default ArticleListLoading;

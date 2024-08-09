@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable react/no-danger */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -21,10 +21,13 @@ import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
 import NoSearchResult from '../../components/tips/NoSearchResult';
 import Spinner from '../../components/tips/Spinner';
 import CommentList from 'components/comment/CommentList';
+import { convertFromRaw, Editor, EditorState } from 'draft-js';
+import { customStyleMap } from 'constants/CustomStyleMap';
 
 function ArticleDetailPage() {
   const dispatch = useDispatch();
   const { id } = useParams();
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty()); 
   const { isLoading, error, data, refetch } = useQuery(['articleDetail', id], () => getArticleDetail(id!));
   const articleData = get(data, 'data');
   const commentList = get(articleData, 'comments', []) as CommentDataType[];
@@ -32,7 +35,15 @@ function ArticleDetailPage() {
   const [commentContent, setCommentContent] = useState(''); // 留言內容
   const [showPlaceholder, setShowPlaceholder] = useState(isEmpty(commentContent)); // placeholder 顯示控制
 
-  /** 處理div輸入 */
+  useEffect(() => {
+    if(articleData){
+      const rawContent = JSON.parse(articleData.content);
+      const contentState = convertFromRaw(rawContent);
+      setEditorState(EditorState.createWithContent(contentState));
+    }
+  }, [articleData])
+
+  /** 處理comment div輸入 */
   const handleCommentInput = () => {
     if (commentInput.current) {
       const { formattedContent } = handleHashTag(commentInput.current.innerText);
@@ -116,7 +127,13 @@ function ArticleDetailPage() {
           <h2 className="text-4xl my-4">{articleData.title}</h2>
           {/* 文章內文 */}
           <div className="">
-            <div dangerouslySetInnerHTML={{ __html: articleData.content }} />
+            <Editor
+              editorState={editorState}
+              readOnly={true}
+              onChange={() => {}}
+              customStyleMap={customStyleMap}
+            />
+            {/* <div dangerouslySetInnerHTML={{ __html: articleData.content }} /> */}
           </div>
         </div>
         {/* comments Section */}

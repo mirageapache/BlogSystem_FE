@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
-import { Editor, EditorState, RichUtils, AtomicBlockUtils } from 'draft-js';
+import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { useMutation } from 'react-query';
@@ -100,9 +100,10 @@ function ArticleCreatePage() {
 
   /** 發佈文章 */
   const handleSubmit = () => {
-    const htmlContent = stateToHTML(contentState);
+    const rawContent = convertToRaw(contentState);
+    const contentString = JSON.stringify(rawContent);
     const userId = getCookies('uid');
-    createArticleMutation.mutate({ userId, content: htmlContent });
+    createArticleMutation.mutate({ userId, content: contentString });
   };
 
   return (
@@ -166,7 +167,7 @@ function ArticleCreatePage() {
         />
       </div>
       <div
-        className="relative max-h-minus180 h-minus180 overflow-y-auto"
+        className="relative max-h-minus280 h-minus280 overflow-y-auto"
         onClick={() => {
           if (editorRef.current) {
             editorRef.current.focus();

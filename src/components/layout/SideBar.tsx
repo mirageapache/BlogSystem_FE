@@ -76,7 +76,7 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
         </Link>
       )}
       <div
-        className={`top-3 left-10 w-16 ${HINT_LABEL} ${showTip ? 'block' : 'hidden'} lg:hidden dark:font-bold`}
+        className={`absolute top-3 left-10 w-16 ${HINT_LABEL} ${showTip ? 'block' : 'hidden'} lg:hidden dark:font-bold z-50`}
       >
         {text}
       </div>

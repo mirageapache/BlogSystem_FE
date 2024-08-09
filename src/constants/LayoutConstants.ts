@@ -3,7 +3,7 @@
  */
 
 /** SideBar 外層section 樣式 */
-export const SIDEBAR_FRAME = 'fixed hidden sm:block sm:w-20 lg:w-60 p-3';
+export const SIDEBAR_FRAME = 'fixed hidden sm:block sm:w-20 lg:w-60 p-3 z-10';
 /** BottomMenu 外層section 樣式 */
 export const BOTTOM_MENU_FRAME =
   'fixed bottom-0 flex justify-center items-center w-full h-12 bg-white dark:bg-gray-950 sm:hidden border-gray-200 dark:border-gray-700 border-t-[1px]';

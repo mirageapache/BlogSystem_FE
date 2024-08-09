@@ -3,7 +3,7 @@ import { get, isEmpty } from 'lodash';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import ArticleItem from './ArticleItem';
-import Loading from './ArticleLoading';
+import ArticleListLoading from './ArticleListLoading';
 // --- api / type ---
 // import { ArticleResultType } from '../../api/article';
 import { ArticleDataType, ArticleResultType } from '../../types/articleType';
@@ -15,7 +15,7 @@ function ArticleList(props: { articleQueryData: ArticleResultType }) {
   const articleList: ArticleDataType[] | null = data as ArticleDataType[] | null;
   const errorMsg = get(articleQueryData, 'data.mssage', '');
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <ArticleListLoading />;
   if (!isEmpty(error) || !isEmpty(errorMsg)) {
     return <BasicErrorPanel errorMsg={errorMsg} />;
   }

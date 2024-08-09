@@ -12,6 +12,7 @@ module.exports = {
         minus120: 'calc(100dvh - 120px)',
         minus180: 'calc(100dvh - 180px)',
         minus240: 'calc(100dvh - 240px)',
+        minus280: 'calc(100dvh - 280px)',
       },
       maxHeight: {
         '70vh': '70vh',
