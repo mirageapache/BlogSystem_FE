@@ -22,7 +22,7 @@ function PostList(props: { postQueryData: PostResultType }) {
     return <PostItem key={post._id} postData={post} />;
   });
 
-  return <section className="flex-grow px-3 md:px-0">{postItems}</section>;
+  return <section className="w-full">{postItems}</section>;
 }
 
 export default PostList;

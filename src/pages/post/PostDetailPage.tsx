@@ -51,7 +51,7 @@ function PostDetailPage() {
   /** 回覆貼文 mutation */
   const CommentMutation = useMutation(
     ({ postId, userId, content }: { postId: string; userId: string; content: string }) =>
-      createComment(postId, userId, content, "post"),
+      createComment(postId, userId, content, 'post'),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
@@ -92,7 +92,7 @@ function PostDetailPage() {
 
   return (
     <div className="flex flex-col items-center border-b-[1px] dark:border-gray-700 w-full md:w-[600px] cursor-default">
-      <div className="flex items-center my-3 w-full">
+      <div className="hidden sm:flex items-center my-3 w-full">
         <button
           aria-label="back"
           type="button"

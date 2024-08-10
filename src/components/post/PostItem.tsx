@@ -36,7 +36,7 @@ function PostItem(props: { postData: PostDataType }) {
   };
 
   return (
-    <div className="flex text-left border-b-[1px] dark:border-gray-700 py-4 px-2 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+    <div className="flex text-left border-b-[1px] dark:border-gray-700 p-3 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
       <div className="w-full sm:w-minus150" onClick={handleClickPost}>
         <div className="flex justify-between">
           <UserInfoPanel
@@ -76,7 +76,7 @@ function PostItem(props: { postData: PostDataType }) {
             )}
           </div>
         </div>
-        <div className="sm:ml-[60px]">
+        <div className="sm:ml-[60px] px-2">
           {/* image */}
           {!isEmpty(postData.image) && (
             <div className="">

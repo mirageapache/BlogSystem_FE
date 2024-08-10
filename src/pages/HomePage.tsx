@@ -11,7 +11,7 @@ function HomePage() {
   const postQueryData = useQuery('post', () => getAllPosts()) as PostResultType;
 
   return (
-    <div className="w-full max-w-[600px] p-4 sm:p-0">
+    <div className="w-full max-w-[600px] p-1 sm:p-0">
       <PostList postQueryData={postQueryData} />
     </div>
   );

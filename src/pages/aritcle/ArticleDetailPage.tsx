@@ -7,28 +7,30 @@ import { useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { convertFromRaw, Editor, EditorState } from 'draft-js';
+import { customStyleMap } from 'constants/CustomStyleMap';
 // --- api / functions / types ---
-import { getArticleDetail } from '../../api/article';
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
 import { errorAlert } from 'utils/fetchError';
 import { CommentDataType } from 'types/commentType';
 import { setSignInPop } from 'redux/loginSlice';
 import { getCookies } from 'utils/common';
+import { getArticleDetail } from '../../api/article';
 // --- components ---
 import UserInfoPanel from '../../components/user/UserInfoPanel';
 import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
 import NoSearchResult from '../../components/tips/NoSearchResult';
 import Spinner from '../../components/tips/Spinner';
-import CommentList from 'components/comment/CommentList';
-import { convertFromRaw, Editor, EditorState } from 'draft-js';
-import { customStyleMap } from 'constants/CustomStyleMap';
+import CommentList from '../../components/comment/CommentList';
 
 function ArticleDetailPage() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty()); 
-  const { isLoading, error, data, refetch } = useQuery(['articleDetail', id], () => getArticleDetail(id!));
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const { isLoading, error, data, refetch } = useQuery(['articleDetail', id], () =>
+    getArticleDetail(id!)
+  );
   const articleData = get(data, 'data');
   const commentList = get(articleData, 'comments', []) as CommentDataType[];
   const commentInput = useRef<HTMLDivElement>(null); // 留言輸入框div
@@ -36,12 +38,12 @@ function ArticleDetailPage() {
   const [showPlaceholder, setShowPlaceholder] = useState(isEmpty(commentContent)); // placeholder 顯示控制
 
   useEffect(() => {
-    if(articleData){
+    if (articleData) {
       const rawContent = JSON.parse(articleData.content);
       const contentState = convertFromRaw(rawContent);
       setEditorState(EditorState.createWithContent(contentState));
     }
-  }, [articleData])
+  }, [articleData]);
 
   /** 處理comment div輸入 */
   const handleCommentInput = () => {
@@ -54,7 +56,7 @@ function ArticleDetailPage() {
   /** 回覆貼文 mutation */
   const CommentMutation = useMutation(
     ({ articleId, userId, content }: { articleId: string; userId: string; content: string }) =>
-      createComment(articleId, userId, content, "article"),
+      createComment(articleId, userId, content, 'article'),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
@@ -100,7 +102,7 @@ function ArticleDetailPage() {
           <button
             aria-label="back"
             type="button"
-            className="flex items-center mr-4 p-2 text-gray-500 hover:text-orange-500 xl:absolute xl:left-5"
+            className="hidden sm:flex items-center mr-4 p-2 text-gray-500 hover:text-orange-500 xl:absolute xl:left-5"
             onClick={() => history.back()}
           >
             <FontAwesomeIcon
@@ -129,11 +131,10 @@ function ArticleDetailPage() {
           <div className="">
             <Editor
               editorState={editorState}
-              readOnly={true}
+              readOnly
               onChange={() => {}}
               customStyleMap={customStyleMap}
             />
-            {/* <div dangerouslySetInnerHTML={{ __html: articleData.content }} /> */}
           </div>
         </div>
         {/* comments Section */}

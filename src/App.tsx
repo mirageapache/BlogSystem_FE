@@ -79,7 +79,7 @@ function App() {
     <div className={`font-sans ${sysState.darkMode}`}>
       <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
         <Header />
-        <main className="mb-auto mt-16 flex-grow flex justify-center">
+        <main className="mb-auto mt-[52px] sm:mt-16 flex-grow flex justify-center">
           <div className="w-full flex justify-between">
             <section className={SIDEBAR_FRAME}>
               <SideBar />

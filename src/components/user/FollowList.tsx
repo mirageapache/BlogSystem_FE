@@ -11,12 +11,12 @@ import { FollowResultType } from 'types/followType';
 import { UserDataType } from 'types/userType';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
-import UserLoading from './UserLoading';
 import UserInfoPanel from './UserInfoPanel';
 // --- functions ---
 import { changeFollowState, followUser, unfollowUser } from '../../api/follow';
 import { getCookies } from '../../utils/common';
 import { errorAlert } from '../../utils/fetchError';
+import UserListLoading from './UserListLoading';
 
 interface PropsType {
   type: string;
@@ -30,7 +30,7 @@ function FollowList({ type, followList }: PropsType) {
   const followingData: UserDataType[] = get(data, 'data', []);
   const followerData: UserDataType[] = get(data, 'data', []);
 
-  if (isLoading) return <UserLoading withBorder />;
+  if (isLoading) return <UserListLoading />;
   if (type === 'following' && isEmpty(followingData))
     return (
       <NoSearchResult msgOne="你還沒有追蹤其他人喔!" msgTwo="快去尋找有趣的人吧" type="user" />
