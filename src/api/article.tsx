@@ -91,7 +91,11 @@ export async function getSearchArticle(searchString: string) {
 }
 
 /** 新增文章 */
-export async function createArticle(userId: string, title: string, content: string): Promise<ArticleApiType> {
+export async function createArticle(
+  userId: string,
+  title: string,
+  content: string
+): Promise<ArticleApiType> {
   const variables = { userId, title, content };
   const result = await axios
     .post(`${baseUrl}/article/create/${userId}`, variables, config)
@@ -105,7 +109,11 @@ export async function createArticle(userId: string, title: string, content: stri
 }
 
 /** 編輯文章 */
-export async function updatePost(userId: string, title: string, content: string): Promise<ArticleApiType> {
+export async function updatePost(
+  userId: string,
+  title: string,
+  content: string
+): Promise<ArticleApiType> {
   const variables = { userId, title, content };
   const result = await axios
     .patch(`${baseUrl}/article/update/${userId}`, variables, config)

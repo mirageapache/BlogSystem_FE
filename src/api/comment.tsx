@@ -15,7 +15,7 @@ export async function getComment(): Promise<CommentApiType> {
   const result = await axios
     .get(`${baseUrl}/comment/`)
     .then((res) => {
-      const data = res.data;
+      const { data } = res.data;
       return data;
     })
     .catch((error) => {
@@ -34,7 +34,7 @@ export async function createComment(
   id: string,
   userId: string,
   content: string,
-  route: string,
+  route: string
 ): Promise<CommentApiType> {
   const result = await axios
     .post(`${baseUrl}/comment/create/${userId}`, { id, userId, content, route }, config)

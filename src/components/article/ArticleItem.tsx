@@ -23,21 +23,20 @@ function ArticleTag(props: { text: string }) {
 
 /** ArticleItem 元件 */
 function ArticleItem(props: { articleData: ArticleDataType }) {
+  const { articleData } = props;
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const contentState = editorState.getCurrentContent();
   const htmlContent = stateToHTML(contentState);
   const [showCreateTip, setShowCreateTip] = useState(false);
-  const { articleData } = props;
   const { _id, title, content, author, subject, hashTags, createdAt } = articleData;
   // const tagsList = hashTags.map((tag) => <ArticleTag key={`${tag}-${_id}`} text={tag} />);
 
   useEffect(() => {
-    if(articleData){
+    if (articleData) {
       const rawContent = JSON.parse(articleData.content);
-      const contentState = convertFromRaw(rawContent);
-      setEditorState(EditorState.createWithContent(contentState));
+      setEditorState(EditorState.createWithContent(convertFromRaw(rawContent)));
     }
-  }, [articleData])
+  }, [articleData]);
 
   return (
     <div className="text-left border-b-[1px] p-1 sm:p-2 dark:border-gray-700 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-default">
