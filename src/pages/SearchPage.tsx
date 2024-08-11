@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useQuery } from 'react-query';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,11 +6,10 @@ import { isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
-import PageBanner from 'components/layout/PageBanner';
 // --- functions / types ---
 import { SearchStateType, setSearchText } from '../redux/searchSlice';
 // --- api / type ---
-import { getPartialArticles, getSearchArticle } from '../api/article';
+import { getArticles, getSearchArticle } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 
 /** stateType (SearchPage) */
@@ -22,24 +21,25 @@ function SearchPage() {
   const dispatch = useDispatch();
   const searchState = useSelector((state: stateType) => state.search);
   const { searchText } = searchState;
-  let articleQueryData: ArticleResultType;
+  const [searchString, setSearchString] = useState(searchText);
+  let articleListData: ArticleResultType;
+  const queryKey = useMemo(() => ['article', searchString], [searchString]); // 使用useMemo同步state的狀態
 
-  /** 預設取得文章 */
-  if (isEmpty(searchText)) {
-    articleQueryData = useQuery('articles', () => getPartialArticles(5)) as ArticleResultType;
+  /** 預設先呈現文章 */
+  if (isEmpty(searchString)) {
+    articleListData = useQuery(queryKey, () => getArticles()) as ArticleResultType;
   } else {
     // 搜尋 Article 文章資料
-    articleQueryData = useQuery('aritcleList', () => getSearchArticle(searchText), {
+    articleListData = useQuery(queryKey, () => getSearchArticle(searchString, ''), {
       enabled: false, // 禁用初始自動查詢
     }) as ArticleResultType;
   }
 
-  const { refetch } = articleQueryData;
-  // handle search text change
-  const handleSearchTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearchText(e.target.value));
-    refetch(); // 重新發起查詢
-  };
+  const { refetch } = articleListData;
+
+  useEffect(() => {
+    refetch();
+  }, [searchString, refetch]);
 
   return (
     <div className="w-full">
@@ -49,10 +49,12 @@ function SearchPage() {
             type="text"
             name="search"
             placeholder="搜尋..."
-            value={searchText}
+            value={searchString}
             onChange={(e) => {
+              // handle search text change
+              setSearchString(e.target.value);
+              refetch();
               dispatch(setSearchText(e.target.value));
-              handleSearchTextChange(e);
             }}
             className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 outline-none"
           />
@@ -64,8 +66,9 @@ function SearchPage() {
           <FontAwesomeIcon
             icon={icon({ name: 'xmark', style: 'solid' })}
             onClick={() => {
+              setSearchString('');
+              refetch();
               dispatch(setSearchText(''));
-              refetch(); // 清除搜尋字串後重新發起查詢
             }}
             className="absolute right-0 h-5 w-5 m-1.5 mr-3 stroke-0 text-gray-500 dark:text-gray-100 cursor-pointer"
           />
@@ -74,7 +77,7 @@ function SearchPage() {
 
       <div className="flex justify-center">
         <div className="max-w-[600px]">
-          <ArticleList articleQueryData={articleQueryData} />
+          <ArticleList articleListData={articleListData} />
         </div>
       </div>
     </div>

@@ -48,27 +48,14 @@ function ExplorePage() {
       break;
     case 'article':
       /** 取得文章資料 */
-      if (isEmpty(searchText)) {
-        articleQueryData = useQuery('articles', () => getArticles()) as ArticleResultType;
-      } else {
-        // 搜尋 Article 文章資料
-        articleQueryData = useQuery('aritcleList', () => getSearchArticle(searchText), {
-          enabled: false, // 禁用初始自動查詢
-        }) as ArticleResultType;
-      }
+      articleQueryData = useQuery('articles', () => getArticles()) as ArticleResultType;
       break;
     case 'post':
       postQueryData = useQuery('post', () => getAllPosts()) as PostResultType;
       break;
     case 'user':
       /** 取得用戶清單 */
-      if (isEmpty(searchText)) {
-        userList = useQuery('followList', () => getRecommendUserList(userId)) as FollowResultType;
-      } else {
-        userList = useQuery('followList', () =>
-          getSearchUserList(searchText, userId)
-        ) as FollowResultType;
-      }
+      userList = useQuery('followList', () => getRecommendUserList(userId)) as FollowResultType;
       break;
     // case 'tag':
     //   break;
@@ -178,13 +165,13 @@ function ExplorePage() {
         {/* 熱門 */}
         {exploreTag === 'popular' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <ArticleList articleQueryData={articleQueryData!} />
+            <ArticleList articleListData={articleQueryData!} />
           </section>
         )}
         {/* 文章 */}
         {exploreTag === 'article' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <ArticleList articleQueryData={articleQueryData!} />
+            <ArticleList articleListData={articleQueryData!} />
           </section>
         )}
         {/* 貼文 */}

@@ -1,16 +1,6 @@
 import { RqResponseType, errorMsgType } from './apiType';
 import { UserInfoPanelType } from './userType';
 
-/** articleList 型別 */
-export interface ArticleListType {
-  body: string;
-  id: number;
-  reactions: number;
-  tags: string[];
-  title: string;
-  userId: number;
-}
-
 /** article API接收資料型別 */
 export interface ArticleDataType extends errorMsgType {
   _id: string;

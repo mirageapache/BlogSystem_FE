@@ -8,16 +8,20 @@ import ArticleListLoading from './ArticleListLoading';
 // import { ArticleResultType } from '../../api/article';
 import { ArticleDataType, ArticleResultType } from '../../types/articleType';
 
-function ArticleList(props: { articleQueryData: ArticleResultType }) {
-  const { articleQueryData } = props;
-  const { isLoading, error, data } = articleQueryData;
+function ArticleList(props: { articleListData: ArticleResultType }) {
+  const { articleListData } = props;
+  const { isLoading, error, data } = articleListData;
 
   const articleList: ArticleDataType[] | null = data as ArticleDataType[] | null;
-  const errorMsg = get(articleQueryData, 'data.mssage', '');
+  const apiStatus = get(articleList, 'status');
+  const errorMsg = get(articleList, 'data.message', '');
 
   if (isLoading) return <ArticleListLoading />;
-  if (!isEmpty(error) || !isEmpty(errorMsg)) {
-    return <BasicErrorPanel errorMsg={errorMsg} />;
+  if (!isEmpty(error)) {
+    return <BasicErrorPanel errorMsg="" />;
+  }
+  if ((!isEmpty(apiStatus) && apiStatus !== 200) || !isEmpty(errorMsg)) {
+    return <NoSearchResult msgOne="搜尋不到相關的文章" msgTwo="請重新搜尋" type="" />;
   }
   if (isEmpty(articleList)) return <NoSearchResult msgOne="搜尋不到相關資訊" msgTwo="" type="" />;
 
