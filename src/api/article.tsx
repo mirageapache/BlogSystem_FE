@@ -69,7 +69,7 @@ export async function createArticle(
 }
 
 /** 編輯文章 */
-export async function updatePost(
+export async function updateArticle(
   userId: string,
   title: string,
   content: string

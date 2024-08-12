@@ -28,7 +28,7 @@ function Header() {
   let showBackward = false;
   const path = window.location.pathname;
 
-  if (path.includes('/article/') || path.includes('/post/') || path.includes('/profile/')) {
+  if (path.includes('/article/') || path.includes('/post/') || path.includes('/user/')) {
     showBackward = true;
   }
 

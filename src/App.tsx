@@ -34,6 +34,7 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
+import ArticleEditPage from 'pages/aritcle/ArticleEditPage';
 
 /** stateType  */
 interface StateType {
@@ -94,6 +95,7 @@ function App() {
                 {/* Article */}
                 <Route path="/article/:id" element={<ArticleDetailPage />} />
                 <Route path="/article/create" element={<ArticleCreatePage />} />
+                <Route path="/article/edit" element={<ArticleEditPage />} />
 
                 {/* Post */}
                 <Route path="/post/:id" element={<PostDetailPage />} />

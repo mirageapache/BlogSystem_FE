@@ -5,22 +5,22 @@ import React, { useRef, useState } from 'react';
 import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { isEmpty } from 'lodash';
-import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-query';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
+import { isEmpty } from 'lodash';
+import { useNavigate } from 'react-router-dom';
 // --- components ---
 import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
 // --- functions / types --- 
-import { createArticle } from 'api/article';
+import { updateArticle } from 'api/article';
 import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import '../../styles/editor.scss';
 
-function ArticleCreatePage() {
+function ArticleEditPage() {
   const [title, setTitle] = useState('');
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty()); // 編輯內容
   const contentState = editorState.getCurrentContent();
@@ -77,16 +77,16 @@ function ArticleCreatePage() {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
-  /** 新增文章 mutation */
-  const createArticleMutation = useMutation(
-    ({ userId, content }) => createArticle(userId, title, content),
+  /** 編輯文章 mutation */
+  const editArticleMutation = useMutation(
+    ({ userId, content }) => updateArticle(userId, title, content),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
           const swal = withReactContent(Swal);
           swal
             .fire({
-              title: '文章已發佈',
+              title: '文章已更新',
               icon: 'success',
               confirmButtonText: '確認',
             })
@@ -99,12 +99,12 @@ function ArticleCreatePage() {
     }
   );
 
-  /** 發佈文章 */
+  /** 修改文章 */
   const handleSubmit = () => {
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
     const userId = getCookies('uid');
-    createArticleMutation.mutate({ userId, content: contentString });
+    editArticleMutation.mutate({ userId, content: contentString });
   };
 
   return (
@@ -124,7 +124,7 @@ function ArticleCreatePage() {
             />
           </button>
         </div>
-        <p className="text-2xl font-bold">建立文章</p>
+        <p className="text-2xl font-bold">編輯文章</p>
         {!isEmpty(title) && hasContent ? (
           <button
             type="button"
@@ -135,7 +135,7 @@ function ArticleCreatePage() {
               icon={icon({ name: 'file-circle-check', style: 'solid' })}
               className="w-6 h-6 sm:hidden"
             />
-            <p className="hidden sm:block">發佈</p>
+            <p className="hidden sm:block">更新</p>
           </button>
         ) : (
           <button
@@ -146,13 +146,12 @@ function ArticleCreatePage() {
               icon={icon({ name: 'file-circle-check', style: 'solid' })}
               className="w-6 h-6 sm:hidden"
             />
-            <p className="hidden sm:block">發佈</p>
+            <p className="hidden sm:block">更新</p>
           </button>
         )}
       </div>
 
       {/* 文字編輯工具列 */}
-      {/* 字體、粗體、斜體、底線、刪除線、文字顏色、醒目提示顏色、對齊(左中右) */}
       <EditorToolBar
         toggleInlineStyle={toggleInlineStyle}
         toggleBlockType={toggleBlockType}
@@ -190,7 +189,7 @@ function ArticleCreatePage() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default ArticleCreatePage;
+export default ArticleEditPage
