@@ -77,9 +77,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
-    dispatchSlice(setPostId(post._id));
-    dispatchSlice(setPostData(post));
-    dispatchSlice(setShowEditModal(true));
+    
   };
 
   return (

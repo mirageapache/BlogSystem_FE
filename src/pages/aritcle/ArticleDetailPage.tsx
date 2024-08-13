@@ -2,12 +2,12 @@
 /* eslint-disable react/no-danger */
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { convertFromRaw, Editor, EditorState } from 'draft-js';
+import { convertFromRaw, convertToRaw, Editor, EditorState } from 'draft-js';
 import { customStyleMap } from 'constants/CustomStyleMap';
 // --- api / functions / types ---
 import { handleHashTag } from 'utils/input';
@@ -16,34 +16,42 @@ import { errorAlert } from 'utils/fetchError';
 import { CommentDataType } from 'types/commentType';
 import { setSignInPop } from 'redux/loginSlice';
 import { getCookies } from 'utils/common';
-import { getArticleDetail } from '../../api/article';
+import { getArticleDetail, updateArticle } from '../../api/article';
 // --- components ---
 import UserInfoPanel from '../../components/user/UserInfoPanel';
 import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
 import NoSearchResult from '../../components/tips/NoSearchResult';
-import Spinner from '../../components/tips/Spinner';
+import ArticleLoading from 'components/article/ArticleLoading';
 import CommentList from '../../components/comment/CommentList';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 function ArticleDetailPage() {
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const navigate = useNavigate();
+  const userId = getCookies('uid'); // user id
+  const { id } = useParams(); // article id
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const [editMode, setEditMode] = useState(false); // 編輯模式
   const { isLoading, error, data, refetch } = useQuery(['articleDetail', id], () =>
     getArticleDetail(id!)
   );
   const articleData = get(data, 'data');
-  const commentList = get(articleData, 'comments', []) as CommentDataType[];
-  const commentInput = useRef<HTMLDivElement>(null); // 留言輸入框div
-  const [commentContent, setCommentContent] = useState(''); // 留言內容
-  const [showPlaceholder, setShowPlaceholder] = useState(isEmpty(commentContent)); // placeholder 顯示控制
-
+  const [title, setTitle] = useState(isEmpty(articleData) ? '' : articleData.title ); // article title
   useEffect(() => {
+    // init article content
     if (articleData) {
       const rawContent = JSON.parse(articleData.content);
       const contentState = convertFromRaw(rawContent);
       setEditorState(EditorState.createWithContent(contentState));
     }
   }, [articleData]);
+
+  // comment data
+  const commentList = get(articleData, 'comments', []) as CommentDataType[];
+  const commentInput = useRef<HTMLDivElement>(null); // 留言輸入框div
+  const [commentContent, setCommentContent] = useState(''); // 留言內容
+  const [showPlaceholder, setShowPlaceholder] = useState(isEmpty(commentContent)); // placeholder 顯示控制
 
   /** 處理comment div輸入 */
   const handleCommentInput = () => {
@@ -55,8 +63,8 @@ function ArticleDetailPage() {
 
   /** 回覆貼文 mutation */
   const CommentMutation = useMutation(
-    ({ articleId, userId, content }: { articleId: string; userId: string; content: string }) =>
-      createComment(articleId, userId, content, 'article'),
+    ({ articleId, content }: { articleId: string; content: string }) =>
+      createComment(articleId, userId!, content, 'article'),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
@@ -73,17 +81,46 @@ function ArticleDetailPage() {
   /** 回覆貼文 */
   const submitComment = () => {
     if (commentContent.trim().length === 0) return; // 檢查有沒有留言內容
-    const userId = getCookies('uid') as string;
 
     if (isEmpty(userId)) {
       dispatch(setSignInPop(true));
       return;
     }
 
-    CommentMutation.mutate({ articleId: id!, userId, content: commentContent });
+    CommentMutation.mutate({ articleId: id!, content: commentContent });
   };
 
-  if (isLoading) return <Spinner />;
+  /** 編輯文章 mutation */
+  const editArticleMutation = useMutation(
+    ({ content }: { content: string }) => updateArticle(userId!, title, content),
+    {
+      onSuccess: (res) => {
+        if (res.status === 200) {
+          const swal = withReactContent(Swal);
+          swal
+            .fire({
+              title: '文章已更新',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then((result) => {
+              if (result.isConfirmed) navigate('/');
+            });
+        }
+      },
+      onError: (err) => errorAlert(),
+    }
+  );
+
+  /** 修改文章 */
+  const handleSubmit = () => {
+    const contentState = editorState.getCurrentContent();
+    const rawContent = convertToRaw(contentState);
+    const contentString = JSON.stringify(rawContent);
+    editArticleMutation.mutate({ content: contentString });
+  };
+
+  if (isLoading) return <ArticleLoading withBorder={false} />;
   if (error) return <p>Error</p>;
   if (isEmpty(articleData)) {
     return (
@@ -122,7 +159,14 @@ function ArticleDetailPage() {
             />
 
             {/* 文章資訊 */}
-            <ArticleInfoPanel articleData={articleData} />
+            <ArticleInfoPanel
+              articleData={articleData}
+              editMode={editMode}
+              setEditMode={setEditMode}
+              title={articleData.title}
+              hasContent={true} // 待修改
+              handleSubmit={handleSubmit}
+            />
           </div>
         </div>
         <div className="flex flex-col w-full">

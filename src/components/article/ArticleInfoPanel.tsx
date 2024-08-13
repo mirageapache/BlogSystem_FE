@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { useDispatch } from 'react-redux';
 import { useMutation } from 'react-query';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
@@ -13,9 +15,24 @@ import { setSignInPop } from 'redux/loginSlice';
 // --- components ---
 import ArticleInfoItem from './ArticleInfoItem';
 
-function ArticleInfoPanel(props: { articleData: ArticleDataType }) {
+interface PropTypes {
+  articleData: ArticleDataType;
+  editMode: boolean;
+  setEditMode: (value: boolean) => void;
+  title: string;
+  hasContent: boolean;
+  handleSubmit: () => void;
+}
+
+function ArticleInfoPanel({
+  articleData,
+  editMode,
+  setEditMode,
+  title,
+  hasContent,
+  handleSubmit,
+}: PropTypes) {
   const userId = getCookies('uid');
-  const { articleData } = props;
   const dispatchSlice = useDispatch();
   const [article, setArticle] = useState(articleData);
   const isLike = !isEmpty(article.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
@@ -43,40 +60,95 @@ function ArticleInfoPanel(props: { articleData: ArticleDataType }) {
     likeMutation.mutate(!isLike);
   };
 
+  /** 處理編輯文章按鈕 */
+  const handleClickEdit = (e: any) => {
+    e.stopPropagation();
+    setEditMode(true);
+  };
+
   return (
     <div className="flex items-center">
-      <div className="flex gap-4">
-        {/* 喜歡 */}
-        {isLike ? (
-          <ArticleInfoItem
-            iconName={faHeartSolid}
-            tipText="取消喜歡"
-            count={likeCount || 0}
-            faClass="text-red-500 hover:text-gray-400"
-            tipClass="w-20"
-            handleClick={handleLikeArticle}
-          />
-        ) : (
-          <ArticleInfoItem
-            iconName={faHeartRegular}
-            tipText="喜歡"
-            count={likeCount || 0}
-            faClass="text-gray-400 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500"
-            tipClass="w-12"
-            handleClick={handleLikeArticle}
-          />
-        )}
+      {editMode ? (
+        <div>
+          <button>
+            <FontAwesomeIcon
+              icon={icon({ name: 'circle-xmark', style: 'solid' })}
+              className="w-6 h-6 sm:hidden"
+            />
+            <p className="hidden sm:block">取消</p>
+          </button>
+          {!isEmpty(title) && hasContent ? (
+            <button
+              type="button"
+              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
+              onClick={handleSubmit}
+            >
+              <FontAwesomeIcon
+                icon={icon({ name: 'circle-check', style: 'solid' })}
+                className="w-6 h-6 sm:hidden"
+              />
+              <p className="hidden sm:block">更新</p>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
+            >
+              <FontAwesomeIcon
+                icon={icon({ name: 'circle-check', style: 'solid' })}
+                className="w-6 h-6 sm:hidden"
+              />
+              <p className="hidden sm:block">更新</p>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="flex gap-4">
+          {/* 喜歡 */}
+          {isLike ? (
+            <ArticleInfoItem
+              iconName={faHeartSolid}
+              tipText="取消喜歡"
+              count={likeCount || 0}
+              faClass="text-red-500 hover:text-gray-400"
+              tipClass="w-20"
+              handleClick={handleLikeArticle}
+            />
+          ) : (
+            <ArticleInfoItem
+              iconName={faHeartRegular}
+              tipText="喜歡"
+              count={likeCount || 0}
+              faClass="text-gray-400 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500"
+              tipClass="w-12"
+              handleClick={handleLikeArticle}
+            />
+          )}
 
-        {/* 留言 */}
-        <ArticleInfoItem
-          iconName={faComment}
-          tipText="留言"
-          count={commentCount || 0}
-          faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-500"
-          tipClass="w-12"
-          handleClick={() => {}}
-        />
-      </div>
+          {/* 留言 */}
+          <ArticleInfoItem
+            iconName={faComment}
+            tipText="留言"
+            count={commentCount || 0}
+            faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-500"
+            tipClass="w-12"
+            handleClick={() => {}}
+          />
+
+          {/* 編輯 */}
+          {userId === article.author._id && (
+            <ArticleInfoItem
+              iconName={faSquarePen} // 透過props傳遞icon名稱
+              tipText="編輯"
+              count={undefined}
+              faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
+              tipClass="w-12"
+              handleClick={handleClickEdit}
+            />
+          )}
+        </div>
+      )}
+
       {/* <div className="flex gap-5"> */}
       {/* 閱讀時間 */}
       {/* <span className="hidden md:flex justify-center items-center text-gray-400 dark:text-gray-100 cursor-default">
