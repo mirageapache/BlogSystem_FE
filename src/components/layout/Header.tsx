@@ -27,10 +27,7 @@ function Header() {
   const { searchText } = searchState;
   let showBackward = false;
   const path = window.location.pathname;
-
-  if (path.includes('/article/') || path.includes('/post/') || path.includes('/user/')) {
-    showBackward = true;
-  }
+  if (path.includes('/article/') || path.includes('/post/') || path.includes('/user/')) showBackward = true;
 
   /** 跳轉至搜尋頁 */
   const handleSearch = (key: string) => {

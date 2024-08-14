@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus */
 import { isEmpty } from 'lodash';
+import Swal from 'sweetalert2';
 
 /**
  * 取得Cookies
@@ -86,3 +87,21 @@ export const scrollToTop = () => {
     window.scrollTo(0, 0); // 其他情況，簡單直接移動
   }
 };
+
+/** 判斷是否確定取消編輯 */
+export const checkCancelEdit = async () => {
+  let res = false;
+  await Swal
+    .fire({
+      title: '要取消編輯嗎?',
+      text: '系統將不會儲存及修改',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: '確定',
+      cancelButtonText: `取消`,
+    })
+    .then((result) => {
+      if (result.isConfirmed) res=true;
+    });
+  return res;
+}

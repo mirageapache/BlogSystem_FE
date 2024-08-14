@@ -3,6 +3,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export interface SysStateType {
   darkMode: string;
+  editMode: boolean;
   activePage: string;
   exploreTag: string;
 }
@@ -11,6 +12,7 @@ const path = window.location.pathname.split('/')[1];
 /** system state 預設值 */
 const initState = {
   darkMode: localStorage.getItem('darkMode') || '', // 深色模式
+  editMode: false, // 文章或貼文的編輯狀態
   activePage: path, // 當前頁面路徑，用來判斷作用中的頁籤
   exploreTag: 'popular', // 紀錄"探索頁"使用中的tag頁籤
 };
@@ -28,6 +30,10 @@ const sysSlice = createSlice({
     setExploreTag(state: SysStateType, action: PayloadAction<string>) {
       state.exploreTag = action.payload;
     },
+    /** 編輯模式切換 */
+    setEditMode(state: SysStateType, action: PayloadAction<boolean>) {
+      state.editMode = action.payload;
+    },
     /** 深色模式切換 */
     setDarkMode(state) {
       let newState = '';
@@ -40,5 +46,5 @@ const sysSlice = createSlice({
   },
 });
 
-export const { setActivePage, setExploreTag, setDarkMode } = sysSlice.actions;
+export const { setActivePage, setExploreTag, setEditMode, setDarkMode } = sysSlice.actions;
 export default sysSlice.reducer;

@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import UserLoading from 'components/user/UserLoading';
 // --- functions / types ---
-import { SysStateType, setActivePage, setDarkMode } from '../../redux/sysSlice';
+import { SysStateType, setActivePage, setDarkMode, setEditMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { checkLogin, scrollToTop } from '../../utils/common';
@@ -244,6 +244,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     handleClick={() => {
                       closeMenu();
                       dispatch(setActivePage('write'));
+                      dispatch(setEditMode(true));
                       scrollToTop();
                     }}
                   >

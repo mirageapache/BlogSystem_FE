@@ -51,7 +51,7 @@ function PostEditModal() {
     if (showAlert) {
       swal
         .fire({
-          title: '要離開編輯嗎?',
+          title: '要取消編輯嗎?',
           text: '系統將不會儲存及修改貼文',
           icon: 'info',
           showCancelButton: true,

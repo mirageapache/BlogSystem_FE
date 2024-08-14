@@ -16,7 +16,7 @@ import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
 // --- functions / types --- 
 import { createArticle } from 'api/article';
 import { errorAlert } from 'utils/fetchError';
-import { getCookies } from 'utils/common';
+import { checkCancelEdit, getCookies } from 'utils/common';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import '../../styles/editor.scss';
 
@@ -111,12 +111,15 @@ function ArticleCreatePage() {
     <div className="w-full md:max-w-[600px] mx-2 sm:m-0">
       {/* header */}
       <div className="flex justify-between items-center p-2">
-        <div className="w-10 sm:w-24">
+        <div className="hidden sm:block w-10 sm:w-24">
           <button
             aria-label="back"
             type="button"
-            className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500"
-            onClick={() => history.back()}
+            className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500 hidden sm:block"
+            onClick={async () => {
+              const isClose = await checkCancelEdit();
+              if (isClose) window.history.back();
+            }}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'circle-left', style: 'solid' })}
@@ -125,30 +128,32 @@ function ArticleCreatePage() {
           </button>
         </div>
         <p className="text-2xl font-bold">建立文章</p>
-        {!isEmpty(title) && hasContent ? (
-          <button
-            type="button"
-            className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
-            onClick={handleSubmit}
-          >
-            <FontAwesomeIcon
-              icon={icon({ name: 'file-circle-check', style: 'solid' })}
-              className="w-6 h-6 sm:hidden"
-            />
-            <p className="hidden sm:block">發佈</p>
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
-          >
-            <FontAwesomeIcon
-              icon={icon({ name: 'file-circle-check', style: 'solid' })}
-              className="w-6 h-6 sm:hidden"
-            />
-            <p className="hidden sm:block">發佈</p>
-          </button>
-        )}
+        <div className="flex gap-2">
+          {!isEmpty(title) && hasContent ? (
+            <button
+              type="button"
+              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
+              onClick={handleSubmit}
+            >
+              <FontAwesomeIcon
+                icon={icon({ name: 'file-circle-check', style: 'solid' })}
+                className="w-6 h-6 sm:hidden"
+              />
+              <p className="hidden sm:block">發佈</p>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
+            >
+              <FontAwesomeIcon
+                icon={icon({ name: 'file-circle-check', style: 'solid' })}
+                className="w-6 h-6 sm:hidden"
+              />
+              <p className="hidden sm:block">發佈</p>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 文字編輯工具列 */}

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { isEmpty } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from 'react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as faHeartSolid, faSquarePen } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
 import { ArticleDataType } from 'types/articleType';
@@ -12,13 +12,16 @@ import { checkLogin, getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 import { toggleLikeArticle } from 'api/article';
 import { setSignInPop } from 'redux/loginSlice';
+import { setEditMode, SysStateType } from 'redux/sysSlice';
 // --- components ---
 import ArticleInfoItem from './ArticleInfoItem';
 
+interface StateType {
+  system: SysStateType;
+}
+
 interface PropTypes {
   articleData: ArticleDataType;
-  editMode: boolean;
-  setEditMode: (value: boolean) => void;
   title: string;
   hasContent: boolean;
   handleSubmit: () => void;
@@ -26,14 +29,13 @@ interface PropTypes {
 
 function ArticleInfoPanel({
   articleData,
-  editMode,
-  setEditMode,
   title,
   hasContent,
   handleSubmit,
 }: PropTypes) {
   const userId = getCookies('uid');
   const dispatchSlice = useDispatch();
+  const editMode = useSelector((state: StateType) => state.system.editMode); // 編輯模式
   const [article, setArticle] = useState(articleData);
   const isLike = !isEmpty(article.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
   const likeCount = article.likedByUsers.length; // 喜歡數
@@ -63,28 +65,21 @@ function ArticleInfoPanel({
   /** 處理編輯文章按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
-    setEditMode(true);
+    dispatchSlice(setEditMode(true));
   };
 
   return (
     <div className="flex items-center">
       {editMode ? (
-        <div>
-          <button>
-            <FontAwesomeIcon
-              icon={icon({ name: 'circle-xmark', style: 'solid' })}
-              className="w-6 h-6 sm:hidden"
-            />
-            <p className="hidden sm:block">取消</p>
-          </button>
+        <div className="flex gap-2">
           {!isEmpty(title) && hasContent ? (
             <button
               type="button"
-              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
+              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600 hover:bg-green-700"
               onClick={handleSubmit}
             >
               <FontAwesomeIcon
-                icon={icon({ name: 'circle-check', style: 'solid' })}
+                icon={icon({ name: 'circle-check', style: 'regular' })}
                 className="w-6 h-6 sm:hidden"
               />
               <p className="hidden sm:block">更新</p>
@@ -95,7 +90,7 @@ function ArticleInfoPanel({
               className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
             >
               <FontAwesomeIcon
-                icon={icon({ name: 'circle-check', style: 'solid' })}
+                icon={icon({ name: 'circle-check', style: 'regular' })}
                 className="w-6 h-6 sm:hidden"
               />
               <p className="hidden sm:block">更新</p>

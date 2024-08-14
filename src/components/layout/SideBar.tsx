@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // --- functions ---
-import { SysStateType, setActivePage } from '../../redux/sysSlice';
+import { SysStateType, setActivePage, setEditMode } from '../../redux/sysSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
 
@@ -155,7 +155,10 @@ function SideBar() {
               text="撰寫文章"
               count={0}
               activeItem={activePage === 'write'}
-              changeItem={() => sliceDispatch(setActivePage('write'))}
+              changeItem={() => {
+                sliceDispatch(setActivePage('write'));
+                sliceDispatch(setEditMode(true));
+              }}
             >
               <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
             </SideBarItem>
