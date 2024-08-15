@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Loading({ withBorder = true }: { withBorder?: boolean }) {
+function Loading({ withBorder = true }: { withBorder: boolean }) {
   return (
     <div className="w-[90vw] sm:w-[80vw] md:w-[600px]">
       <div

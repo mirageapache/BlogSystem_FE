@@ -1,9 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from 'react-query';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { faHeart as faHeartSolid, faSquarePen } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
@@ -22,7 +20,7 @@ interface StateType {
 
 interface PropTypes {
   articleData: ArticleDataType;
-  commentInput: React.RefObject<HTMLDivElement>,
+  commentInput: React.RefObject<HTMLDivElement>;
   title: string;
   hasContent: boolean;
   handleSubmit: () => void;

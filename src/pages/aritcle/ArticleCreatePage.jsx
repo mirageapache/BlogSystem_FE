@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 // --- components ---
 import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
-// --- functions / types --- 
+// --- functions / types ---
 import { createArticle } from 'api/article';
 import { errorAlert } from 'utils/fetchError';
 import { checkCancelEdit, getCookies } from 'utils/common';
@@ -95,7 +95,7 @@ function ArticleCreatePage() {
             });
         }
       },
-      onError: (err) => errorAlert(),
+      onError: () => errorAlert(),
     }
   );
 
@@ -115,7 +115,7 @@ function ArticleCreatePage() {
           <button
             aria-label="back"
             type="button"
-            className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500 hidden sm:block"
+            className="justify-center items-center p-2 text-gray-500 hover:text-orange-500 hidden sm:block"
             onClick={async () => {
               const isClose = await checkCancelEdit();
               if (isClose) window.history.back();

@@ -20,16 +20,16 @@ function BackwardBtn() {
         aria-label="back"
         type="button"
         className="flex items-center text-gray-500 hover:text-orange-500 xl:absolute xl:left-5"
-        onClick={async() => {
+        onClick={async () => {
           if (editMode) {
             const isClose = await checkCancelEdit();
             if (isClose) {
               // 編輯模式再次確認是否取消編輯
-              if(window.location.pathname.includes('/article/create')) history.back();
+              if (window.location.pathname.includes('/article/create')) history.back();
               dispatch(setEditMode(false));
             }
           } else {
-            history.back()
+            history.back();
           }
         }}
       >

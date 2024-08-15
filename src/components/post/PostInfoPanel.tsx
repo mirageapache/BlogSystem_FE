@@ -16,7 +16,6 @@ import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
 import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
-import { setPostId, setPostData, setShowEditModal } from '../../redux/postSlice';
 import { checkLogin } from '../../utils/common';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
 // --- components ---
@@ -77,7 +76,6 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
-    
   };
 
   return (

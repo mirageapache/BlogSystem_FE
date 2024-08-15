@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { isEmpty, get } from 'lodash';
 import { API_URL, config } from './index';
 import { ArticleDataType } from '../types/articleType';
 import { AxResponseType } from '../types/apiType';

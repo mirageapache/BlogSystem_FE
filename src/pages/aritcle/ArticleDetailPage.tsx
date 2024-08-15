@@ -7,7 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { AtomicBlockUtils, convertFromRaw, convertToRaw, Editor, EditorState, RichUtils } from 'draft-js';
+import {
+  AtomicBlockUtils,
+  convertFromRaw,
+  convertToRaw,
+  Editor,
+  EditorState,
+  RichUtils,
+} from 'draft-js';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -19,15 +26,15 @@ import { CommentDataType } from 'types/commentType';
 import { setSignInPop } from 'redux/loginSlice';
 import { getCookies } from 'utils/common';
 import { getArticleDetail, updateArticle } from '../../api/article';
-import { setEditMode, SysStateType } from 'redux/sysSlice';
+import { setEditMode, SysStateType } from '../../redux/sysSlice';
 // --- components ---
 import UserInfoPanel from '../../components/user/UserInfoPanel';
 import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
 import NoSearchResult from '../../components/tips/NoSearchResult';
-import ArticleLoading from 'components/article/ArticleLoading';
+import ArticleLoading from '../../components/article/ArticleLoading';
 import CommentList from '../../components/comment/CommentList';
-import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
-import EditorToolBar from 'components/common/EditorToolBar';
+import AtomicBlock from '../../components/common/EditorComponent/AtomicBlock';
+import EditorToolBar from '../../components/common/EditorToolBar';
 
 interface StateType {
   system: SysStateType;
@@ -99,7 +106,7 @@ function ArticleDetailPage() {
   };
 
   /** 渲染 Atomic 區塊 */
-  const blockRendererFn = (contentBlock: { getType: () => any; }) => {
+  const blockRendererFn = (contentBlock: { getType: () => any }) => {
     const type = contentBlock.getType();
     if (type === 'atomic') {
       // 插入圖片
@@ -124,7 +131,7 @@ function ArticleDetailPage() {
   };
 
   /** 觸發上傳圖片input */
-  const handleFileInput = (e: { target: { files: any[]; }; }) => {
+  const handleFileInput = (e: { target: { files: any[] } }) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -198,7 +205,7 @@ function ArticleDetailPage() {
             type="button"
             className="hidden sm:flex items-center mr-4 p-2 text-gray-500 hover:text-orange-500 xl:absolute xl:left-5"
             onClick={() => {
-              if(editMode) dispatch(setEditMode(false));
+              if (editMode) dispatch(setEditMode(false));
               else window.history.back();
             }}
           >
@@ -223,13 +230,13 @@ function ArticleDetailPage() {
               articleData={articleData}
               commentInput={commentInput}
               title={articleData.title}
-              hasContent={true} // 待修改
+              hasContent // 待修改
               handleSubmit={handleSubmit}
             />
           </div>
         </div>
         <div className="flex flex-col w-full">
-          {editMode ? 
+          {editMode ? (
             <>
               <EditorToolBar
                 toggleInlineStyle={toggleInlineStyle}
@@ -247,11 +254,13 @@ function ArticleDetailPage() {
                 />
               </div>
             </>
-          :
+          ) : (
             <h2 className="text-4xl my-4">{articleData.title}</h2>
-          }
+          )}
           {/* 文章內文 */}
-          <div className={`relative p-0.5 ${editMode? 'max-h-minus325 h-minus325 overflow-y-auto' : '' }`}>
+          <div
+            className={`relative p-0.5 ${editMode ? 'max-h-minus325 h-minus325 overflow-y-auto' : ''}`}
+          >
             <Editor
               editorState={editorState}
               readOnly={!editMode}
@@ -263,7 +272,7 @@ function ArticleDetailPage() {
           </div>
         </div>
         {/* comments Section */}
-        {!editMode && 
+        {!editMode && (
           <div className="relative mt-3 border-t-[1px]">
             <div className="flex justify-between my-3">
               <div
@@ -297,7 +306,7 @@ function ArticleDetailPage() {
             {/* 留言串 */}
             <CommentList commentListData={commentList} />
           </div>
-        }
+        )}
       </div>
     </div>
   );
