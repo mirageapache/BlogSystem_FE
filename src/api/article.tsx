@@ -70,11 +70,12 @@ export async function createArticle(
 
 /** 編輯文章 */
 export async function updateArticle(
+  articleId: string,
   userId: string,
   title: string,
   content: string
 ): Promise<ArticleApiType> {
-  const variables = { userId, title, content };
+  const variables = { articleId, userId, title, content };
   const result = await axios
     .patch(`${baseUrl}/article/update/${userId}`, variables, config)
     .then((res) => {

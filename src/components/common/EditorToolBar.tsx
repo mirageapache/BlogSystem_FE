@@ -30,7 +30,7 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
   const [showBgColor, setShowBgColor] = useState(false); // 顯示標示顏色選擇
 
   const dropdownStyle =
-    'fixed sm:absolute right-1 flex flex-wrap bg-white dark:bg-gray-900 z-40 shadow border border-gray-400 rounded-md p-1 text-gray-700 dark:text-gray-300';
+    'fixed sm:absolute right-1 flex bg-white dark:bg-gray-900 z-40 shadow border border-gray-400 rounded-md p-1 text-gray-700 dark:text-gray-300';
 
   /** 處理文字顏色 dropdown 顯示 */
   const handleShowFontColor = (value: boolean) => {
@@ -128,7 +128,7 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
                 handleShowFontColor(false);
               }}
             />
-            <div className={`w-[210px] sm:left-0 ${dropdownStyle}`}>
+            <div className={`w-[210px] sm:left-0 flex-wrap ${dropdownStyle}`}>
               <EditorToolItem
                 text="text-black"
                 btnStyle="dark:bg-gray-700"
@@ -249,7 +249,7 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
                 handleShowBgColor(false);
               }}
             />
-            <div className={`w-[315px] sm:right-[-50px] ${dropdownStyle}`}>
+            <div className={`w-[300px] sm:right-[-50px] sm:flex-wrap  ${dropdownStyle}`}>
               <EditorToolItem
                 text="bg-default"
                 tipText="預設"

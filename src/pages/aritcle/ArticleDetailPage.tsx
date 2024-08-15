@@ -44,13 +44,14 @@ function ArticleDetailPage() {
     getArticleDetail(id!)
   );
   const articleData = get(data, 'data');
-  const [title, setTitle] = useState(isEmpty(articleData) ? '' : articleData.title ); // article title
+  const [title, setTitle] = useState(''); // article title
   useEffect(() => {
     // init article content
     if (articleData) {
       const rawContent = JSON.parse(articleData.content);
       const contentState = convertFromRaw(rawContent);
       setEditorState(EditorState.createWithContent(contentState));
+      setTitle(articleData.title);
     }
   }, [articleData]);
 
@@ -147,7 +148,7 @@ function ArticleDetailPage() {
 
   /** 編輯文章 mutation */
   const editArticleMutation = useMutation(
-    ({ content }: { content: string }) => updateArticle(userId!, title, content),
+    ({ content }: { content: string }) => updateArticle(articleData!._id, userId!, title, content),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
@@ -159,6 +160,7 @@ function ArticleDetailPage() {
               confirmButtonText: '確認',
             })
             .then((result) => {
+              refetch();
               if (result.isConfirmed) dispatch(setEditMode(false));
             });
         }
@@ -189,13 +191,16 @@ function ArticleDetailPage() {
 
   return (
     <div className="flex justify-center w-full md:w-[600px]">
-      <div className="w-full mb-2 mx-5">
+      <div className="w-full mb-2 px-2 sm:px-5">
         <div className=" flex items-center border-b-[1px] xl:border-b-0 dark:border-gray-700">
           <button
             aria-label="back"
             type="button"
             className="hidden sm:flex items-center mr-4 p-2 text-gray-500 hover:text-orange-500 xl:absolute xl:left-5"
-            onClick={() => history.back()}
+            onClick={() => {
+              if(editMode) dispatch(setEditMode(false));
+              else window.history.back();
+            }}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'circle-left', style: 'solid' })}
@@ -216,6 +221,7 @@ function ArticleDetailPage() {
             {/* 文章資訊 */}
             <ArticleInfoPanel
               articleData={articleData}
+              commentInput={commentInput}
               title={articleData.title}
               hasContent={true} // 待修改
               handleSubmit={handleSubmit}
@@ -235,6 +241,7 @@ function ArticleDetailPage() {
                   type="text"
                   name="title"
                   placeholder="文章標題"
+                  value={title}
                   className="w-full text-2xl outline-none dark:text-white dark:bg-gray-950"
                   onChange={(e) => setTitle(e.target.value)}
                 />
@@ -244,7 +251,7 @@ function ArticleDetailPage() {
             <h2 className="text-4xl my-4">{articleData.title}</h2>
           }
           {/* 文章內文 */}
-          <div className={`relative ${editMode? 'max-h-minus325 h-minus325 overflow-y-auto' : '' }`}>
+          <div className={`relative p-0.5 ${editMode? 'max-h-minus325 h-minus325 overflow-y-auto' : '' }`}>
             <Editor
               editorState={editorState}
               readOnly={!editMode}
@@ -257,7 +264,7 @@ function ArticleDetailPage() {
         </div>
         {/* comments Section */}
         {!editMode && 
-          <div className="relative mt-3 sm:ml-[60px] border-t-[1px]">
+          <div className="relative mt-3 border-t-[1px]">
             <div className="flex justify-between my-3">
               <div
                 ref={commentInput}

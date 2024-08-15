@@ -39,7 +39,7 @@ function ArticleInfoItem(props: ArticleType) {
             </p>
           ))}
         <span
-          className={`top-[-25px] right-0 ${tipClass} ${HINT_LABEL} ${showTip ? 'block' : 'hidden'}`}
+          className={`top-[-25px] left-[-4px] z-40 ${tipClass} ${HINT_LABEL} ${showTip ? 'block' : 'hidden'}`}
         >
           {tipText}
         </span>

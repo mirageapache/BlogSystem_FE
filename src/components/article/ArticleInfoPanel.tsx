@@ -22,6 +22,7 @@ interface StateType {
 
 interface PropTypes {
   articleData: ArticleDataType;
+  commentInput: React.RefObject<HTMLDivElement>,
   title: string;
   hasContent: boolean;
   handleSubmit: () => void;
@@ -29,6 +30,7 @@ interface PropTypes {
 
 function ArticleInfoPanel({
   articleData,
+  commentInput,
   title,
   hasContent,
   handleSubmit,
@@ -75,25 +77,17 @@ function ArticleInfoPanel({
           {!isEmpty(title) && hasContent ? (
             <button
               type="button"
-              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600 hover:bg-green-700"
+              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-green-600 hover:bg-green-700"
               onClick={handleSubmit}
             >
-              <FontAwesomeIcon
-                icon={icon({ name: 'circle-check', style: 'regular' })}
-                className="w-6 h-6 sm:hidden"
-              />
-              <p className="hidden sm:block">更新</p>
+              <p className="text-[14px] sm:text-[16px]">更新</p>
             </button>
           ) : (
             <button
               type="button"
-              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
+              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
             >
-              <FontAwesomeIcon
-                icon={icon({ name: 'circle-check', style: 'regular' })}
-                className="w-6 h-6 sm:hidden"
-              />
-              <p className="hidden sm:block">更新</p>
+              <p className="text-[14px] sm:text-[16px]">更新</p>
             </button>
           )}
         </div>
@@ -127,7 +121,9 @@ function ArticleInfoPanel({
             count={commentCount || 0}
             faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-500"
             tipClass="w-12"
-            handleClick={() => {}}
+            handleClick={() => {
+              commentInput.current?.focus();
+            }}
           />
 
           {/* 編輯 */}

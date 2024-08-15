@@ -132,25 +132,17 @@ function ArticleCreatePage() {
           {!isEmpty(title) && hasContent ? (
             <button
               type="button"
-              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
+              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
               onClick={handleSubmit}
             >
-              <FontAwesomeIcon
-                icon={icon({ name: 'file-circle-check', style: 'solid' })}
-                className="w-6 h-6 sm:hidden"
-              />
-              <p className="hidden sm:block">發佈</p>
+              <p className="text-[14px] sm:text-[16px]">發佈</p>
             </button>
           ) : (
             <button
               type="button"
-              className="flex justify-center items-center w-10 sm:w-24 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
+              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
             >
-              <FontAwesomeIcon
-                icon={icon({ name: 'file-circle-check', style: 'solid' })}
-                className="w-6 h-6 sm:hidden"
-              />
-              <p className="hidden sm:block">發佈</p>
+              <p className="text-[14px] sm:text-[16px]">發佈</p>
             </button>
           )}
         </div>
