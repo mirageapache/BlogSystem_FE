@@ -7,14 +7,14 @@ import PostListLoading from './PostListLoading';
 // --- types ---
 import { PostDataType, PostResultType } from '../../types/postType';
 
-function PostList(props: { postQueryData: PostResultType }) {
-  const { postQueryData } = props;
-  const { isLoading, data } = postQueryData;
+function PostList(props: { postListData: PostResultType }) {
+  const { postListData } = props;
+  const { isLoading, error, data } = postListData;
   const postDataList: PostDataType[] | null = data as PostDataType[] | null;
 
   if (isLoading) return <PostListLoading />;
-  if (data!.code === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+  // if (error!.code === 'ERR_NETWORK')
+  //   return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
   if (isEmpty(postDataList))
     return <NoSearchResult msgOne="找不到任何貼文！!" msgTwo=" " type="post" />;
 

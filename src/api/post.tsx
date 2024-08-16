@@ -24,6 +24,20 @@ export async function getAllPosts(): Promise<PostApiType> {
   return result;
 }
 
+/** 取得搜尋貼文 */
+export async function getSearchPost(searchString: string, authorId: string): Promise<PostApiType> {
+  const result = await axios
+    .post(`${baseUrl}/post/search`, { searchString, authorId })
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+  return result;
+}
+
+
 /** 取得特定貼文內容 */
 export async function getPostDetail(postId: string): Promise<PostApiType> {
   const result = await axios

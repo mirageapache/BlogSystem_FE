@@ -177,7 +177,7 @@ function ExplorePage() {
         {/* 貼文 */}
         {exploreTag === 'post' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <PostList postQueryData={postQueryData!} />
+            <PostList postListData={postQueryData!} />
           </section>
         )}
         {/* 用戶 */}

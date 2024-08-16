@@ -8,11 +8,11 @@ import { getAllPosts } from 'api/post';
 function HomePage() {
   /** 取得文章 */
 
-  const postQueryData = useQuery('post', () => getAllPosts()) as PostResultType;
+  const postListData = useQuery('post', () => getAllPosts()) as PostResultType;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">
-      <PostList postQueryData={postQueryData} />
+      <PostList postListData={postListData} />
     </div>
   );
 }
