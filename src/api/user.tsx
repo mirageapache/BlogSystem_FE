@@ -104,7 +104,7 @@ export async function updateProfile(
       return res;
     })
     .catch((error) => {
-      return error.response;
+      return error;
     });
   return result;
 }

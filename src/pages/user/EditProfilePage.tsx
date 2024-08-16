@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { connect, useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
-import { Field, change, reduxForm, getFormValues, FormState } from 'redux-form';
+import { Field, reduxForm, getFormValues, FormState } from 'redux-form';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
@@ -26,12 +26,13 @@ import { required, isEmail, maxLength } from 'utils/validates';
 import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
+import { errorAlert } from 'utils/fetchError';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('editProfile')(state),
 });
 
-function EditProfilePage({ handleSubmit, dispatch }: any) {
+function EditProfilePage({ handleSubmit, initialize }: any) {
   const [firstLoad, setFirstLoad] = useState(true);
   const [emailChange, setEmailChange] = useState(false);
   const [accountChange, setAccountChange] = useState(false);
@@ -47,27 +48,24 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
     sliceDispatch(setSignInPop(true));
     return <Spinner />;
   }
+
   const getUserData = useQuery('user', () => getOwnProfile(userId!, authToken!), {
     staleTime: 0, // 資料過期時間(每次查詢都須重新獲取資料)
     cacheTime: 0, // 不存取快取資料
   });
-  const { isLoading, isSuccess, data } = getUserData;
-  const userData = get(data, 'data') as UserProfileType;
+
+  const { isLoading, data } = getUserData;
+  const userData = get(data, 'data', {}) as UserProfileType;
+  const initData = { ...userData };
 
   // 設定 Redux Form 的初始值
   useEffect(() => {
-    if (isSuccess && !isEmpty(userData) && firstLoad) {
-      dispatch(change('editProfile', 'email', userData.email));
-      dispatch(change('editProfile', 'account', userData.account));
-      dispatch(change('editProfile', 'name', userData.name));
-      dispatch(change('editProfile', 'bio', userData.bio));
-      dispatch(change('editProfile', 'language', userData.language));
-      dispatch(change('editProfile', 'emailPrompt', userData.emailPrompt));
-      dispatch(change('editProfile', 'mobilePrompt', userData.mobilePrompt));
+    if (firstLoad && !isEmpty(userData)) {
       setAvatar(userData.avatar);
+      initialize(initData);
       setFirstLoad(false);
     }
-  }, [isSuccess, userData, dispatch]);
+  }, [initData]);
 
   /** 送出編輯資料 */
   const submitEditProfile = async (form: UserProfileType) => {
@@ -94,17 +92,18 @@ function EditProfilePage({ handleSubmit, dispatch }: any) {
             scrollToTop();
           });
       }
+      errorAlert();
     } catch (error) {
       console.log(error);
+      errorAlert();
     }
   };
 
   if (isLoading) return <Spinner />;
 
-  if (isSuccess && get(data, 'response.data.message') === 'Unauthorized')
-    sliceDispatch(setSignInPop(true));
+  if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
-  if (isSuccess && !isEmpty(userData) && get(data, 'status', 0) === 200) {
+  if (!isEmpty(userData) && get(data, 'status') === 200) {
     return (
       <div className="w-full sm:max-w-[600px] p-5">
         <form onSubmit={handleSubmit(submitEditProfile)}>

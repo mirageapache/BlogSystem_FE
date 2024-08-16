@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 // --- constants ---
 import {
   SIDEBAR_FRAME,
@@ -48,7 +48,8 @@ function App() {
   const sysState = useSelector((state: StateType) => state.system);
   const loginState = useSelector((state: StateType) => state.login);
   const userState = useSelector((state: StateType) => state.user);
-  const { userId } = userState.userData;
+  const userData = get(userState, 'userData', {});
+  const userId = get(userData, 'userId', '');
 
   /** getUserData */
   const getUserData = async (id: string, authToken: string) => {
@@ -67,7 +68,7 @@ function App() {
   useEffect(() => {
     const authToken = localStorage.getItem('authToken') || '';
     const uid = getCookies('uid');
-    if (isEmpty(userId)) {
+    if (isEmpty(userData) && isEmpty(userId)) {
       // 判斷redex中沒有userData，且有cookie及authToken再執行
       if (!isEmpty(authToken) && !isEmpty(uid)) {
         getUserData(uid!, authToken!);
