@@ -142,17 +142,17 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         </div>
         {checkLogin() && (
           <div className="px-3 border-b-[1px] border-gray-400 dark:border-gray-70">
-            <Link
-              to={`/user/profile/${userData.userId}`}
-              onClick={() => {
-                closeMenu();
-                dispatch(setActivePage('user'));
-                scrollToTop();
-              }}
-            >
-              {isEmpty(userData) ? (
-                <UserLoading withBorder={false} />
-              ) : (
+            {isEmpty(userData) ? (
+              <UserLoading withBorder={false} />
+            ) : (
+              <Link
+                to={`/user/profile/${userData!.userId}`}
+                onClick={() => {
+                  closeMenu();
+                  dispatch(setActivePage('user'));
+                  scrollToTop();
+                }}
+              >
                 <UserInfoPanel
                   userId={userData._id}
                   account={userData.account}
@@ -162,8 +162,8 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                   className="my-2 py-2 px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
                   menuLink
                 />
-              )}
-            </Link>
+              </Link>
+            )}
           </div>
         )}
         <div className="h-full py-2 px-8 opacity-100">

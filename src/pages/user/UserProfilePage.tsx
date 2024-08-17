@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { get, isEmpty } from 'lodash';
 import { Link, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 // --- components ---
 import Avatar from 'components/user/Avatar';
 import ArticleList from 'components/article/ArticleList';
@@ -11,12 +12,17 @@ import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import FollowList from 'components/user/FollowList';
 // --- api / type ---
-import { UserDataType, UserResultType } from 'types/userType';
+import { UserDataType, UserProfileType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
 import { ArticleResultType } from 'types/articleType';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
 import { getArticles } from '../../api/article';
+import { UserStateType } from '../../redux/userSlice';
+
+interface StateType {
+  user: UserStateType;
+}
 
 function UserProfilePage() {
   const [activeTab, setActiveTab] = useState('article'); // 頁籤控制
@@ -26,9 +32,11 @@ function UserProfilePage() {
   const [cookies] = useCookies(['uid']); // 存在cookie的userId
   let identify = false; // 身分驗證 true => own / false => others
 
+  const userStateData = useSelector((state: StateType) => state.user.userData);
   let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
   let articleResult: ArticleResultType;
   let followList: FollowResultType;
+  let userData: UserProfileType;
 
   if (userId === undefined) window.location.href = '/';
 
@@ -36,9 +44,9 @@ function UserProfilePage() {
   if (cookies.uid === userId && !isEmpty(authToken)) {
     // own
     identify = true;
-    fetchProfile = useQuery('getOwnProfile', () =>
-      getOwnProfile(userId!, authToken!)
-    ) as UserResultType;
+    fetchProfile = useQuery('getOwnProfile', () => getOwnProfile(userId!, authToken!), {
+      enabled: isEmpty(userStateData) || userStateData!._id === '',
+    }) as UserResultType;
   } else {
     // others
     fetchProfile = useQuery('getUserProfile', () => getUserProfile(userId!)) as UserResultType;
@@ -46,7 +54,11 @@ function UserProfilePage() {
 
   const { isLoading, error, data } = fetchProfile as UserResultType;
   const fetchStatus = get(data, 'status', 404);
-  const userData = get(data, 'data', {}) as UserDataType;
+  if (identify && !isEmpty(userStateData)) {
+    userData = userStateData as UserProfileType;
+  } else {
+    userData = get(data, 'data', {}) as UserProfileType;
+  }
 
   switch (activeTab) {
     case 'article':
@@ -91,7 +103,8 @@ function UserProfilePage() {
 
   if (isLoading) return <Spinner />;
   if (error || isEmpty(userData)) return <BasicErrorPanel errorMsg="" />;
-  if (fetchStatus === 404) return <NoSearchResult msgOne="使用者不存在" msgTwo="" type="user" />;
+  if (isEmpty(userData) && fetchStatus === 404)
+    return <NoSearchResult msgOne="使用者不存在" msgTwo="" type="user" />;
 
   return (
     <div className="w-full sm:max-w-[600px] p-5">

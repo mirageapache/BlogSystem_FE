@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { Field, reduxForm, getFormValues, FormState } from 'redux-form';
 import Swal from 'sweetalert2';
@@ -26,11 +26,16 @@ import { required, isEmail, maxLength } from 'utils/validates';
 import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from '../../utils/fetchError';
+import { setUserData, UserStateType } from '../../redux/userSlice';
 
 const mapStateToProps = (state: FormState) => ({
   formValues: getFormValues('editProfile')(state),
 });
+
+interface StateType {
+  user: UserStateType;
+}
 
 function EditProfilePage({ handleSubmit, initialize }: any) {
   const [firstLoad, setFirstLoad] = useState(true);
@@ -39,10 +44,13 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
   const sliceDispatch = useDispatch();
+  const userStateData = useSelector((state: StateType) => state.user.userData);
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
   const swal = withReactContent(Swal);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   if (isEmpty(userId) || isEmpty(authToken)) {
     sliceDispatch(setSignInPop(true));
@@ -50,25 +58,26 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
   }
 
   const getUserData = useQuery('user', () => getOwnProfile(userId!, authToken!), {
-    staleTime: 0, // 資料過期時間(每次查詢都須重新獲取資料)
-    cacheTime: 0, // 不存取快取資料
+    enabled: isEmpty(userStateData) || userStateData!._id === '',
   });
 
   const { isLoading, data } = getUserData;
-  const userData = get(data, 'data', {}) as UserProfileType;
-  const initData = { ...userData };
+  const userData = isEmpty(userStateData)
+    ? (get(data, 'data', {}) as UserProfileType)
+    : userStateData;
 
   // 設定 Redux Form 的初始值
   useEffect(() => {
     if (firstLoad && !isEmpty(userData)) {
       setAvatar(userData.avatar);
-      initialize(initData);
+      initialize(userData);
       setFirstLoad(false);
     }
-  }, [initData]);
+  }, [userData]);
 
   /** 送出編輯資料 */
   const submitEditProfile = async (form: UserProfileType) => {
+    setUpdateLoading(true);
     const formData = new FormData();
     if (emailChange) formData.append('email', form.email);
     formData.append('name', form.name);
@@ -89,12 +98,14 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
           })
           .then(() => {
             navigate(`/user/profile/${userId}`);
+            dispatch(setUserData(result.data as UserProfileType));
+            setUpdateLoading(false);
             scrollToTop();
           });
+      } else {
+        errorAlert();
       }
-      errorAlert();
     } catch (error) {
-      console.log(error);
       errorAlert();
     }
   };
@@ -103,7 +114,7 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
 
   if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
-  if (!isEmpty(userData) && get(data, 'status') === 200) {
+  if (!isEmpty(userData)) {
     return (
       <div className="w-full sm:max-w-[600px] p-5">
         <form onSubmit={handleSubmit(submitEditProfile)}>
@@ -253,7 +264,14 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
               type="submit"
               className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
             >
-              修改
+              {updateLoading ? (
+                <FontAwesomeIcon
+                  icon={icon({ name: 'spinner', style: 'solid' })}
+                  className="animate-spin h-5 w-5 "
+                />
+              ) : (
+                <>修改</>
+              )}
             </button>
           </div>
         </form>

@@ -34,6 +34,7 @@ import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
+import { UserProfileType } from './types/userType';
 
 /** stateType  */
 interface StateType {
@@ -55,12 +56,7 @@ function App() {
   const getUserData = async (id: string, authToken: string) => {
     const res = await getOwnProfile(id, authToken);
     if (res.status === 200) {
-      sliceDispatch(
-        setUserData({
-          ...res.data,
-          theme: 0,
-        })
-      );
+      sliceDispatch(setUserData(res.data as UserProfileType));
     }
   };
 

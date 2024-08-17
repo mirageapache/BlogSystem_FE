@@ -7,10 +7,10 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ArticleList from 'components/article/ArticleList';
 // --- functions / types ---
-import { SearchStateType, setSearchText } from '../redux/searchSlice';
+import { SearchStateType, setSearchText } from 'redux/searchSlice';
 // --- api / type ---
-import { getArticles, getSearchArticle } from '../api/article';
-import { ArticleResultType } from '../types/articleType';
+import { getArticles, getSearchArticle } from 'api/article';
+import { ArticleResultType } from 'types/articleType';
 import { PostResultType } from 'types/postType';
 import { getSearchPost } from 'api/post';
 import { UserResultType } from 'types/userType';
@@ -46,11 +46,9 @@ function SearchPage() {
     { enabled: !!searchString || isEmpty(searchString) }
   ) as ArticleResultType;
 
-  const postQuery = useQuery(
-    ['post', searchString],
-    () => getSearchPost(searchString, ''),
-    { enabled: !!searchString }
-  ) as PostResultType;
+  const postQuery = useQuery(['post', searchString], () => getSearchPost(searchString, ''), {
+    enabled: !!searchString,
+  }) as PostResultType;
 
   const userQuery = useQuery(
     ['user', searchString],
@@ -76,15 +74,14 @@ function SearchPage() {
   //   }) as UserResultType;
   // }
 
-  if(postListData !== undefined && userListData !== undefined){
+  if (postListData !== undefined && userListData !== undefined) {
     console.log(postListData, userListData);
   }
 
   // const articleRefetch = articleListData.refetch;
 
-
   useEffect(() => {
-    if(articleQuery){
+    if (articleQuery) {
       articleQuery.refetch();
     }
     // articleRefetch();

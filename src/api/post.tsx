@@ -37,7 +37,6 @@ export async function getSearchPost(searchString: string, authorId: string): Pro
   return result;
 }
 
-
 /** 取得特定貼文內容 */
 export async function getPostDetail(postId: string): Promise<PostApiType> {
   const result = await axios

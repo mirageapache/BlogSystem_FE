@@ -13,6 +13,7 @@ import BackwardBtn from '../../components/common/BackwardBtn';
 import { SearchStateType, setSearchText } from '../../redux/searchSlice';
 import { LoginStateType, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { checkLogin } from '../../utils/common';
+import { setActivePage } from '../../redux/sysSlice';
 
 interface StateType {
   search: SearchStateType;
@@ -51,12 +52,16 @@ function Header() {
     <header className="fixed z-20 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
       <div className="w-full flex justify-between py-2 px-4">
         <div className="block sm:hidden">
-          <span className="flex justify-center items-center w-9 h-9 block">
+          <span className="flex justify-center items-center w-9 h-9">
             {showBackward && <BackwardBtn />}
           </span>
         </div>
         <div id="brand" className="flex justify-center">
-          <Link className="flex flex-row items-center w-fit" to="/">
+          <Link
+            className="flex flex-row items-center w-fit"
+            to="/"
+            onClick={() => dispatch(setActivePage('home'))}
+          >
             <img className="w-8 h-8 sm:w-11 sm:h-11 mr-1 sm:mr-2.5" src={brand} alt="logo" />
             <h3 className="font-mono text-[20px] sm:text-3xl font-semibold">ReactBlog</h3>
           </Link>
