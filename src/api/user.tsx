@@ -96,6 +96,7 @@ export async function updateProfile(
 ): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
+    'Content-Type': 'multipart/form-data',
   };
 
   const result = await axios
