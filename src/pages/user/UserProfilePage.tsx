@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { get, isEmpty } from 'lodash';
 import { Link, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // --- components ---
 import Avatar from 'components/user/Avatar';
 import ArticleList from 'components/article/ArticleList';
@@ -12,13 +12,14 @@ import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import FollowList from 'components/user/FollowList';
 // --- api / type ---
-import { UserDataType, UserProfileType, UserResultType } from 'types/userType';
+import { UserProfileType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
 import { ArticleResultType } from 'types/articleType';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
 import { getArticles } from '../../api/article';
 import { UserStateType } from '../../redux/userSlice';
+import { setSignInPop } from '../../redux/loginSlice';
 
 interface StateType {
   user: UserStateType;
@@ -31,12 +32,13 @@ function UserProfilePage() {
   const { userId } = useParams(); // 網址列的userId
   const [cookies] = useCookies(['uid']); // 存在cookie的userId
   let identify = false; // 身分驗證 true => own / false => others
+  const dispatch = useDispatch();
 
   const userStateData = useSelector((state: StateType) => state.user.userData);
   let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
   let articleResult: ArticleResultType;
   let followList: FollowResultType;
-  let userData: UserProfileType;
+  let userData: UserProfileType | undefined;
 
   if (userId === undefined) window.location.href = '/';
 
@@ -56,6 +58,9 @@ function UserProfilePage() {
   const fetchStatus = get(data, 'status', 404);
   if (identify && !isEmpty(userStateData)) {
     userData = userStateData as UserProfileType;
+  } else if (fetchStatus === 401) {
+    // 未登入
+    dispatch(setSignInPop(true));
   } else {
     userData = get(data, 'data', {}) as UserProfileType;
   }

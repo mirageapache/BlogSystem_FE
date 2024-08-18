@@ -99,7 +99,6 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
           .then(() => {
             navigate(`/user/profile/${userId}`);
             dispatch(setUserData(result.data as UserProfileType));
-            setUpdateLoading(false);
             scrollToTop();
           });
       } else {
@@ -108,6 +107,7 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
     } catch (error) {
       errorAlert();
     }
+    setUpdateLoading(false);
   };
 
   if (isLoading) return <Spinner />;

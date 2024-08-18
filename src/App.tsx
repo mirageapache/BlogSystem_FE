@@ -57,6 +57,10 @@ function App() {
     const res = await getOwnProfile(id, authToken);
     if (res.status === 200) {
       sliceDispatch(setUserData(res.data as UserProfileType));
+    } else if (res.status === 401) {
+      // -JWT token expired-, token過期清除authok 資料
+      localStorage.removeItem('authToken');
+      window.location.reload();
     }
   };
 
