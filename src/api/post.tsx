@@ -25,7 +25,10 @@ export async function getAllPosts(): Promise<PostApiType> {
 }
 
 /** 取得搜尋貼文 or 特定使用者的貼文 */
-export async function getSearchPost(searchString?: string, authorId?: string): Promise<PostApiType> {
+export async function getSearchPost(
+  searchString?: string,
+  authorId?: string
+): Promise<PostApiType> {
   const result = await axios
     .post(`${baseUrl}/post/search`, { searchString, authorId })
     .then((res) => {

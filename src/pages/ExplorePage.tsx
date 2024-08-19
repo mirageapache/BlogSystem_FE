@@ -9,15 +9,12 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import ArticleList from 'components/article/ArticleList';
 import PostList from 'components/post/PostList';
 import FollowList from 'components/user/FollowList';
-
 // --- functions / types ---
 import { getCookies } from 'utils/common';
 import { FollowResultType } from 'types/followType';
-import { SearchStateType } from '../redux/searchSlice';
-
 // --- api / type ---
 import { getAllPosts, getSearchPost } from '../api/post';
-import { getAllUserList, getRecommendUserList, getSearchUserList } from '../api/user';
+import { getRecommendUserList, getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';
@@ -39,18 +36,15 @@ function ExplorePage() {
   const tabButtonStyle = 'flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
-  let articleListData: ArticleResultType;
-  let postListData: PostResultType;
-  let userList: FollowResultType;
 
   /** 取得文章資料 */
-  articleListData = useQuery(
+  const articleListData = useQuery(
     ['article', searchString],
     () => (isEmpty(searchString) ? getArticles() : getSearchArticle(searchString, '')),
     { enabled: !!searchString || isEmpty(searchString) }
   ) as ArticleResultType;
   /** 取得貼文資料 */
-  postListData = useQuery(
+  const postListData = useQuery(
     ['post', searchString],
     () => (isEmpty(searchString) ? getAllPosts() : getSearchPost(searchString, '')),
     {
@@ -58,9 +52,9 @@ function ExplorePage() {
     }
   ) as PostResultType;
   /** 取得用戶清單 */
-  userList = useQuery(
+  const userList = useQuery(
     ['user', searchString],
-    () => isEmpty(searchString) ? getAllUserList() : getSearchUserList(searchString, currentUser),
+    () => getSearchUserList(searchString, currentUser),
     { enabled: !!searchString }
   ) as FollowResultType;
 

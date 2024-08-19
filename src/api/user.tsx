@@ -27,11 +27,11 @@ export async function getAllUserList(): Promise<GetUserProfileType> {
  * @userId [當前登入的使用者Id] - 用來判斷isFollow
  */
 export async function getSearchUserList(
-  searchText?: string,
+  searchString?: string,
   userId?: string
 ): Promise<GetUserProfileType> {
   const result = await axios
-    .post(`${baseUrl}/user/getSearchUserList`, { searchText, userId })
+    .post(`${baseUrl}/user/getSearchUserList`, { searchString, userId })
     .then((res) => {
       return res;
     })

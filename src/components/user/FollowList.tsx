@@ -32,9 +32,7 @@ function FollowList({ type, followList }: PropsType) {
 
   if (isLoading) return <UserListLoading />;
   if (type === 'userList' && isEmpty(userList))
-    return (
-      <NoSearchResult msgOne="搜尋不到相關用戶資料" msgTwo="" type="user" />
-    );
+    return <NoSearchResult msgOne="搜尋不到相關用戶資料" msgTwo="" type="user" />;
   if (type === 'following' && isEmpty(followingData))
     return (
       <NoSearchResult msgOne="你還沒有追蹤其他人喔!" msgTwo="快去尋找有趣的人吧" type="user" />
