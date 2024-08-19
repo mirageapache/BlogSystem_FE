@@ -9,14 +9,14 @@ import { PostDataType, PostResultType } from '../../types/postType';
 
 function PostList(props: { postListData: PostResultType }) {
   const { postListData } = props;
-  const { isLoading, error, data } = postListData;
+  const { isLoading, data } = postListData;
   const postDataList: PostDataType[] | null = data as PostDataType[] | null;
 
   if (isLoading) return <PostListLoading />;
-  // if (error!.code === 'ERR_NETWORK')
-  //   return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+  if (!isEmpty(data) && data.code === 'ERR_NETWORK')
+    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
   if (isEmpty(postDataList))
-    return <NoSearchResult msgOne="找不到任何貼文！!" msgTwo=" " type="post" />;
+    return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
 
   const postItems = postDataList!.map((post) => {
     return <PostItem key={post._id} postData={post} />;

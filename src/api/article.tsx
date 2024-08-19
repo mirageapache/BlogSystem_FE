@@ -36,8 +36,8 @@ export async function getArticleDetail(articleId: string): Promise<ArticleApiTyp
   return result;
 }
 
-/** 取得搜尋文章 */
-export async function getSearchArticle(searchString: string, authorId: string) {
+/** 取得搜尋文章 or 特定使用者的文章 */
+export async function getSearchArticle(searchString?: string, authorId?: string) {
   const result = await axios
     .post(`${baseUrl}/article/search`, { searchString, authorId })
     .then((res) => {

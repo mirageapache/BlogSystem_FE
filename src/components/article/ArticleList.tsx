@@ -21,7 +21,7 @@ function ArticleList(props: { articleListData: ArticleResultType }) {
     return <BasicErrorPanel errorMsg="" />;
   }
   if ((!isEmpty(apiStatus) && apiStatus !== 200) || !isEmpty(errorMsg)) {
-    return <NoSearchResult msgOne="搜尋不到相關的文章" msgTwo="請重新搜尋" type="" />;
+    return <NoSearchResult msgOne="搜尋不到相關文章" msgTwo="" type="" />;
   }
   if (isEmpty(articleList)) return <NoSearchResult msgOne="搜尋不到相關資訊" msgTwo="" type="" />;
 
