@@ -117,7 +117,7 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
       <div className="mt-4">
         <button
           type="submit"
-          className="flex items-center w-full px-4 py-2 text-lg text-white rounded-md bg-green-600"
+          className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
         >
           {isLoading ? (
             <FontAwesomeIcon

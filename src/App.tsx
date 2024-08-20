@@ -19,7 +19,6 @@ import SignUpPopup from './components/login/SignUpPopup';
 // --- pages ---
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
-import SearchPage from './pages/SearchPage';
 import PostDetailPage from './pages/post/PostDetailPage';
 import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
 import UserProfilePage from './pages/user/UserProfilePage';
@@ -29,7 +28,6 @@ import ArticleCreatePage from './pages/aritcle/ArticleCreatePage';
 
 // --- functions / types ---
 import { SysStateType } from './redux/sysSlice';
-import { SearchStateType } from './redux/searchSlice';
 import { LoginStateType } from './redux/loginSlice';
 import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
@@ -39,7 +37,6 @@ import { UserProfileType } from './types/userType';
 /** stateType  */
 interface StateType {
   system: SysStateType;
-  search: SearchStateType;
   login: LoginStateType;
   user: UserStateType;
 }
@@ -90,7 +87,6 @@ function App() {
                 {/* WebSite */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/explore" element={<ExplorePage />} />
-                <Route path="/search" element={<SearchPage />} />
 
                 {/* Article */}
                 <Route path="/article/:id" element={<ArticleDetailPage />} />

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SysStateType, setActivePage, setEditMode } from '../../redux/sysSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
+import { setSignInPop } from 'redux/loginSlice';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -113,26 +114,23 @@ function SideBar() {
           <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
         </SideBarItem>
         <SideBarItem
-          href="/search"
-          text="搜尋"
+          href={checkLogin() ? `/user/profile/${userId}` : ''}
+          text="個人資料"
           count={0}
-          activeItem={activePage === 'search'}
-          changeItem={() => sliceDispatch(setActivePage('search'))}
+          activeItem={activePage === 'user'}
+          changeItem={() => {
+            if (checkLogin()) {
+              sliceDispatch(setActivePage('user'));
+            } else {
+              sliceDispatch(setSignInPop(true));
+            }
+          }}
         >
-          <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
+          <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
         </SideBarItem>
         {checkLogin() && (
           <>
-            <SideBarItem
-              href={`/user/profile/${userId}`}
-              text="個人資料"
-              count={0}
-              activeItem={activePage === 'user'}
-              changeItem={() => sliceDispatch(setActivePage('user'))}
-            >
-              <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
-            </SideBarItem>
-            <SideBarItem
+            {/* <SideBarItem
               href="/inbox"
               text="訊息匣"
               count={0}
@@ -149,7 +147,7 @@ function SideBar() {
               changeItem={() => sliceDispatch(setActivePage('activity'))}
             >
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-            </SideBarItem>
+            </SideBarItem> */}
             <SideBarItem
               href="/article/create"
               text="撰寫文章"

@@ -110,7 +110,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       })
       .then(() => {
         closeMenu();
-        // navigate('/');
+        window.location.reload();
       });
   };
 
@@ -195,22 +195,9 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               >
                 <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
               </MenuItem>
-              <MenuItem
-                href="/search"
-                text="搜尋"
-                count={0}
-                activeItem={activePage === 'search'}
-                handleClick={() => {
-                  closeMenu();
-                  dispatch(setActivePage('search'));
-                  scrollToTop();
-                }}
-              >
-                <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
-              </MenuItem>
               {checkLogin() && (
                 <>
-                  <MenuItem
+                  {/* <MenuItem
                     href="/inbox"
                     text="訊息匣"
                     count={0}
@@ -222,8 +209,8 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     }}
                   >
                     <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
-                  </MenuItem>
-                  <MenuItem
+                  </MenuItem> */}
+                  {/* <MenuItem
                     href="/activity"
                     text="動態"
                     count={0}
@@ -235,7 +222,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     }}
                   >
                     <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-                  </MenuItem>
+                  </MenuItem> */}
                   <MenuItem
                     href="/article/create"
                     text="撰寫文章"

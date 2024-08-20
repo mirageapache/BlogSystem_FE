@@ -57,21 +57,6 @@ function BottomMenu() {
         />
       </Link>
 
-      {/* search page */}
-      <Link
-        to="/search"
-        className="w-1/3 flex justify-center py-3 cursor-pointer"
-        onClick={() => {
-          sliceDispatch(setActivePage('search'));
-          scrollToTop();
-        }}
-      >
-        <FontAwesomeIcon
-          icon={icon({ name: 'search', style: 'solid' })}
-          className={`w-5 h-5 text-gray-500  ${activePage === 'search' ? 'text-orange-500' : ''}`}
-        />
-      </Link>
-
       {isEmpty(localStorage.getItem('authToken')) || isEmpty(userId) ? (
         // 未登入狀態 => 登入功能
         <button
