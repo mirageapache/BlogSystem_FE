@@ -13,12 +13,13 @@ import FollowList from 'components/user/FollowList';
 import { getCookies } from 'utils/common';
 import { FollowResultType } from 'types/followType';
 // --- api / type ---
-import { getAllPosts, getSearchPost } from '../api/post';
+import { getAllPosts, getSearchHashTag, getSearchPost } from '../api/post';
 import { getRecommendUserList, getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';
 import { SysStateType, setExploreTag } from '../redux/sysSlice';
+import NoSearchResult from 'components/tips/NoSearchResult';
 
 /** stateType (SearchPage) */
 interface stateType {
@@ -47,9 +48,7 @@ function ExplorePage() {
   const postListData = useQuery(
     ['post', searchString],
     () => (isEmpty(searchString) ? getAllPosts() : getSearchPost(searchString, '')),
-    {
-      enabled: !!searchString,
-    }
+    { enabled: !!searchString }
   ) as PostResultType;
   /** 取得用戶清單 */
   const userList = useQuery(
@@ -57,6 +56,12 @@ function ExplorePage() {
     () => getSearchUserList(searchString, currentUser),
     { enabled: !!searchString }
   ) as FollowResultType;
+
+  /** 取得hashTag相關主題的貼文清單 */
+  const hashTagPostList = useQuery(['hashTag', searchString],
+    () => getSearchHashTag(searchString),
+    { enabled: !!searchString }
+  ) as PostResultType;
 
   useEffect(() => {
     switch (exploreTag) {
@@ -212,7 +217,17 @@ function ExplorePage() {
         {/* 標籤 */}
         {exploreTag === 'tag' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <div>還沒有標籤資料</div>
+            {isEmpty(searchString) || isEmpty(hashTagPostList) ? (
+              <section className="flex justify-center w-full max-w-[600px]">
+                <div className="">
+                  <NoSearchResult msgOne='輸入貼文的HashTag' msgTwo='即可搜尋你想找的主題貼文' type='post'/>
+                </div>
+              </section>
+            ) : (
+              <section className="flex justify-center w-full max-w-[600px]">
+                <PostList postListData={hashTagPostList!} />
+              </section>
+            )}
           </section>
         )}
       </div>
