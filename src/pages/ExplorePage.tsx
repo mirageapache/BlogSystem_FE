@@ -18,7 +18,7 @@ import { getRecommendUserList, getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';
-import { SysStateType, setExploreTag } from '../redux/sysSlice';
+import { SysStateType, setActivePage, setExploreTag } from '../redux/sysSlice';
 import NoSearchResult from 'components/tips/NoSearchResult';
 
 /** stateType (SearchPage) */
@@ -37,6 +37,7 @@ function ExplorePage() {
   const tabButtonStyle = 'flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
+  dispatch(setActivePage('explore'));
 
   /** 取得文章資料 */
   const articleListData = useQuery(

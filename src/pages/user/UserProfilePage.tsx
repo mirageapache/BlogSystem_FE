@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { get, isEmpty } from 'lodash';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // --- components ---
 import Avatar from 'components/user/Avatar';
@@ -17,9 +17,13 @@ import { FollowResultType } from 'types/followType';
 import { ArticleResultType } from 'types/articleType';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
-import { getArticles } from '../../api/article';
+import { getArticles, getSearchArticle } from '../../api/article';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
+import { PostResultType } from 'types/postType';
+import { getSearchPost } from 'api/post';
+import PostList from 'components/post/PostList';
+import { setActivePage } from 'redux/sysSlice';
 
 interface StateType {
   user: UserStateType;
@@ -33,25 +37,28 @@ function UserProfilePage() {
   const [cookies] = useCookies(['uid']); // 存在cookie的userId
   let identify = false; // 身分驗證 true => own / false => others
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const userStateData = useSelector((state: StateType) => state.user.userData);
   let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
   let articleResult: ArticleResultType;
+  let postResult: PostResultType;
   let followList: FollowResultType;
   let userData: UserProfileType | undefined;
 
-  if (userId === undefined) window.location.href = '/';
+  if (userId === undefined) navigate('/');
 
-  /** 取得個人資料 */
+  /** 取得使用者資料 */
   if (cookies.uid === userId && !isEmpty(authToken)) {
-    // own
+    // own [current user]
     identify = true;
     fetchProfile = useQuery('getOwnProfile', () => getOwnProfile(userId!, authToken!), {
       enabled: isEmpty(userStateData) || userStateData!._id === '',
     }) as UserResultType;
   } else {
-    // others
+    // others [其他user]
     fetchProfile = useQuery('getUserProfile', () => getUserProfile(userId!)) as UserResultType;
+    dispatch(setActivePage('explore')); // 不是currentUser 頁籤改為 explore
   }
 
   const { isLoading, error, data } = fetchProfile as UserResultType;
@@ -68,10 +75,11 @@ function UserProfilePage() {
   switch (activeTab) {
     case 'article':
       /** 取得文章資料 */
-      articleResult = useQuery('aritcles', () => getArticles()) as ArticleResultType;
+      articleResult = useQuery('aritcles', () => getSearchArticle('', userId)) as ArticleResultType;
       break;
-    // case 'post':
-    //   break;
+    case 'post':
+      postResult = useQuery('post', () => getSearchPost('', userId)) as PostResultType;
+      break;
     case 'follow':
       /** 取得追蹤資料 */
       followList = useQuery('followingList', () => getFollowingList(userId!)) as FollowResultType;
@@ -196,7 +204,11 @@ function UserProfilePage() {
         )}
 
         {/* 貼文 Post */}
-        {activeTab === 'post' && <div className="">尚無貼文資料</div>}
+        {activeTab === 'post' && (
+          <div className="">
+            <PostList postListData={postResult!} />
+          </div>
+        )}
 
         {/* 追蹤 follow */}
         {activeTab === 'follow' && (
