@@ -37,23 +37,26 @@ function ExplorePage() {
   const tabButtonStyle = 'flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
-  dispatch(setActivePage('explore'));
+
+  useEffect(() => {
+    dispatch(setActivePage('explore'));
+  },[]);
 
   /** 取得文章資料 */
   const articleListData = useQuery(
-    ['article', searchString],
+    ['exploreArticle', searchString],
     () => (isEmpty(searchString) ? getArticles() : getSearchArticle(searchString, '')),
     { enabled: !!searchString || isEmpty(searchString) }
   ) as ArticleResultType;
   /** 取得貼文資料 */
   const postListData = useQuery(
-    ['post', searchString],
+    ['explorePost', searchString],
     () => (isEmpty(searchString) ? getAllPosts() : getSearchPost(searchString, '')),
     { enabled: !!searchString }
   ) as PostResultType;
   /** 取得用戶清單 */
   const userList = useQuery(
-    ['user', searchString],
+    ['exploreUser', searchString],
     () => getSearchUserList(searchString, currentUser),
     { enabled: !!searchString }
   ) as FollowResultType;

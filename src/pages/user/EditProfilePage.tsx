@@ -43,6 +43,7 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
   const [accountChange, setAccountChange] = useState(false);
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
+  const [removeAvatar, setRemoveAvatar] = useState(false); // 判斷是否移除頭貼
   const sliceDispatch = useDispatch();
   const userStateData = useSelector((state: StateType) => state.user.userData);
   const userId = getCookies('uid');
@@ -86,6 +87,7 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
     formData.append('language', form.language);
     formData.append('emailPrompt', get(form, 'emailPrompt', false).toString());
     formData.append('mobilePrompt', get(form, 'mobilePrompt', false).toString());
+    formData.append('removeAvatar', removeAvatar.toString());
     if (!isEmpty(avatar)) formData.append('avatarFile', avatarFile);
     try {
       const result = await updateProfile(formData, userId!, authToken!);
@@ -127,19 +129,35 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
               textSize="text-4xl"
               bgColor={userData.bgColor}
             />
-            <label
-              htmlFor="avatarFile"
-              className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
-            >
-              更新頭貼
-            </label>
-            <Field
-              name="avatarFile"
-              id="avatarFile"
-              component={FileInput}
-              setAvatar={setAvatar}
-              setAvatarFile={setAvatarFile}
-            />
+            <div className='flex gap-2'>
+              <label
+                htmlFor="avatarFile"
+                className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
+              >
+                更新頭貼
+              </label>
+              <Field
+                name="avatarFile"
+                id="avatarFile"
+                component={FileInput}
+                setAvatar={setAvatar}
+                setAvatarFile={setAvatarFile}
+                setRemoveAvatar={setRemoveAvatar}
+              />
+              {!isEmpty(avatar) && 
+                <button
+                  type='button'
+                  className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
+                  onClick={() => {
+                    setRemoveAvatar(true);
+                    setAvatar('');
+                    setAvatarFile('');
+                  }}  
+                >
+                  移除頭貼
+                </button>
+              }
+            </div>
           </div>
 
           {/* user info */}

@@ -75,21 +75,21 @@ function UserProfilePage() {
   switch (activeTab) {
     case 'article':
       /** 取得文章資料 */
-      articleResult = useQuery('aritcles', () => getSearchArticle('', userId)) as ArticleResultType;
+      articleResult = useQuery('profileAritcles', () => getSearchArticle('', userId)) as ArticleResultType;
       break;
     case 'post':
-      postResult = useQuery('post', () => getSearchPost('', userId)) as PostResultType;
+      postResult = useQuery('profilePost', () => getSearchPost('', userId)) as PostResultType;
       break;
     case 'follow':
       /** 取得追蹤資料 */
-      followList = useQuery('followingList', () => getFollowingList(userId!)) as FollowResultType;
+      followList = useQuery('profileFollowingList', () => getFollowingList(userId!)) as FollowResultType;
       break;
     case 'follower':
       /** 取得粉絲資料 */
-      followList = useQuery('followerList', () => getFollowerList(userId!)) as FollowResultType;
+      followList = useQuery('profileFollowerList', () => getFollowerList(userId!)) as FollowResultType;
       break;
     default:
-      articleResult = useQuery('aritcles', () => getArticles()) as ArticleResultType;
+      articleResult = useQuery('profileAritcles', () => getArticles()) as ArticleResultType;
       break;
   }
 
