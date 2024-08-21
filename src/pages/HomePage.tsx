@@ -15,7 +15,7 @@ function HomePage() {
 
   useEffect(() => {
     dispatch(setActivePage('home'));
-  },[]);
+  }, []);
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">

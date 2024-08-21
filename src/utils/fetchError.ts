@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -9,9 +9,9 @@ interface DataType {
 const swal = withReactContent(Swal);
 
 /** 錯誤提醒(一般型式) */
-export const errorAlert = () => {
+export const errorAlert = (errorMsg?: string) => {
   swal.fire({
-    title: 'Oops！發生一些錯誤，請稍候再試',
+    title: !isEmpty(errorMsg) ? errorMsg : 'Oops！發生一些錯誤，請稍候再試',
     icon: 'error',
     confirmButtonText: '確認',
   });
@@ -24,8 +24,6 @@ export const errorAlert = () => {
 export const handleErrMsg = (fetchedData: DataType) => {
   let errorMsg: string = '';
   const apiStatus: number = get(fetchedData, 'response.status', 400);
-
-  console.log(fetchedData);
 
   switch (apiStatus) {
     case 400:

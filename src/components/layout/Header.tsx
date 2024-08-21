@@ -28,7 +28,7 @@ function Header() {
   const handleSearch = (key: string) => {
     if (key === 'Enter' && searchString !== '') {
       dispatch(setActivePage('explore'));
-      navigate('/explore?search=' + searchString);
+      navigate(`/explore?search=${searchString}`);
     }
   };
 

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SysStateType, setActivePage, setEditMode } from '../../redux/sysSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
-import { setSignInPop } from 'redux/loginSlice';
+import { setSignInPop } from '../../redux/loginSlice';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {

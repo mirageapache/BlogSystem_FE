@@ -93,9 +93,7 @@ export async function toggleLikePost(postId: string, userId: string, action: boo
 }
 
 /** 取得搜尋hashTag(貼文) */
-export async function getSearchHashTag(
-  searchText: string,
-): Promise<PostApiType> {
+export async function getSearchHashTag(searchText: string): Promise<PostApiType> {
   const searchString = searchText.replace('#', '');
   const result = await axios
     .post(`${baseUrl}/post/hashTag`, { searchString })

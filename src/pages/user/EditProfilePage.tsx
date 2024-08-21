@@ -104,7 +104,8 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
             scrollToTop();
           });
       } else {
-        errorAlert();
+        const errorMsg = get(result, 'response.data.message', '');
+        errorAlert(errorMsg);
       }
     } catch (error) {
       errorAlert();
@@ -129,7 +130,7 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
               textSize="text-4xl"
               bgColor={userData.bgColor}
             />
-            <div className='flex gap-2'>
+            <div className="flex gap-2">
               <label
                 htmlFor="avatarFile"
                 className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
@@ -144,19 +145,19 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 setAvatarFile={setAvatarFile}
                 setRemoveAvatar={setRemoveAvatar}
               />
-              {!isEmpty(avatar) && 
+              {!isEmpty(avatar) && (
                 <button
-                  type='button'
+                  type="button"
                   className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
                   onClick={() => {
                     setRemoveAvatar(true);
                     setAvatar('');
-                    setAvatarFile('');
-                  }}  
+                    setAvatarFile(null);
+                  }}
                 >
                   移除頭貼
                 </button>
-              }
+              )}
             </div>
           </div>
 

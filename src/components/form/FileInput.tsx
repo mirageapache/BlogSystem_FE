@@ -15,7 +15,14 @@ interface FileInputPorpsType {
   setRemoveAvatar: () => void;
 }
 
-function FileInput({ name, id, classname, setAvatar, setAvatarFile, setRemoveAvatar }: FileInputPorpsType | any) {
+function FileInput({
+  name,
+  id,
+  classname,
+  setAvatar,
+  setAvatarFile,
+  setRemoveAvatar,
+}: FileInputPorpsType | any) {
   /** 處理上傳圖片檔 */
   const handleFileChange = (event: React.ChangeEvent<any>) => {
     const fileList = event.target.files; // 獲取選擇的檔案列表
@@ -29,15 +36,15 @@ function FileInput({ name, id, classname, setAvatar, setAvatarFile, setRemoveAva
 
   return (
     <div className="relative">
-      <span className="relative">
-        <input
-          name={name}
-          id={id}
-          type="file"
-          className={`${classname} hidden`}
-          onChange={(e) => handleFileChange(e)}
-        />
-      </span>
+      <input
+        name={name}
+        id={id}
+        type="file"
+        className={`${classname} hidden`}
+        onChange={(e) => {
+          handleFileChange(e);
+        }}
+      />
     </div>
   );
 }

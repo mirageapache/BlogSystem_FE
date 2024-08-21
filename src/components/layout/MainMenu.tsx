@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import UserLoading from 'components/user/UserLoading';
@@ -86,6 +86,7 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
 /** MainMenu 元件 */
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const systemState = useSelector((state: StateType) => state.system);
   const activePage = get(systemState, 'activePage');
   const swal = withReactContent(Swal);
@@ -110,6 +111,8 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       })
       .then(() => {
         closeMenu();
+        dispatch(setActivePage('home'));
+        navigate('/');
         window.location.reload();
       });
   };

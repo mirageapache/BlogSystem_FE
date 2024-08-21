@@ -11,19 +11,19 @@ import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import FollowList from 'components/user/FollowList';
+import PostList from 'components/post/PostList';
 // --- api / type ---
 import { UserProfileType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
 import { ArticleResultType } from 'types/articleType';
+import { PostResultType } from '../../types/postType';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
 import { getArticles, getSearchArticle } from '../../api/article';
+import { getSearchPost } from '../../api/post';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
-import { PostResultType } from 'types/postType';
-import { getSearchPost } from 'api/post';
-import PostList from 'components/post/PostList';
-import { setActivePage } from 'redux/sysSlice';
+import { setActivePage } from '../../redux/sysSlice';
 
 interface StateType {
   user: UserStateType;
@@ -75,18 +75,24 @@ function UserProfilePage() {
   switch (activeTab) {
     case 'article':
       /** 取得文章資料 */
-      articleResult = useQuery('profileAritcles', () => getSearchArticle('', userId)) as ArticleResultType;
+      articleResult = useQuery('profileAritcles', () =>
+        getSearchArticle('', userId)
+      ) as ArticleResultType;
       break;
     case 'post':
       postResult = useQuery('profilePost', () => getSearchPost('', userId)) as PostResultType;
       break;
     case 'follow':
       /** 取得追蹤資料 */
-      followList = useQuery('profileFollowingList', () => getFollowingList(userId!)) as FollowResultType;
+      followList = useQuery('profileFollowingList', () =>
+        getFollowingList(userId!)
+      ) as FollowResultType;
       break;
     case 'follower':
       /** 取得粉絲資料 */
-      followList = useQuery('profileFollowerList', () => getFollowerList(userId!)) as FollowResultType;
+      followList = useQuery('profileFollowerList', () =>
+        getFollowerList(userId!)
+      ) as FollowResultType;
       break;
     default:
       articleResult = useQuery('profileAritcles', () => getArticles()) as ArticleResultType;

@@ -19,7 +19,7 @@ import { getSearchArticle, getArticles } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';
 import { SysStateType, setActivePage, setExploreTag } from '../redux/sysSlice';
-import NoSearchResult from 'components/tips/NoSearchResult';
+import NoSearchResult from '../components/tips/NoSearchResult';
 
 /** stateType (SearchPage) */
 interface stateType {
@@ -40,7 +40,7 @@ function ExplorePage() {
 
   useEffect(() => {
     dispatch(setActivePage('explore'));
-  },[]);
+  }, []);
 
   /** 取得文章資料 */
   const articleListData = useQuery(
@@ -62,7 +62,8 @@ function ExplorePage() {
   ) as FollowResultType;
 
   /** 取得hashTag相關主題的貼文清單 */
-  const hashTagPostList = useQuery(['hashTag', searchString],
+  const hashTagPostList = useQuery(
+    ['hashTag', searchString],
     () => getSearchHashTag(searchString),
     { enabled: !!searchString }
   ) as PostResultType;
@@ -224,7 +225,11 @@ function ExplorePage() {
             {isEmpty(searchString) || isEmpty(hashTagPostList) ? (
               <section className="flex justify-center w-full max-w-[600px]">
                 <div className="">
-                  <NoSearchResult msgOne='輸入貼文的HashTag' msgTwo='即可搜尋你想找的主題貼文' type='post'/>
+                  <NoSearchResult
+                    msgOne="輸入貼文的HashTag"
+                    msgTwo="即可搜尋你想找的主題貼文"
+                    type="post"
+                  />
                 </div>
               </section>
             ) : (
