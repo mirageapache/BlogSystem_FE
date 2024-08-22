@@ -3,33 +3,32 @@ import { get, isEmpty } from 'lodash';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import ArticleItem from './ArticleItem';
-import Loading from './ArticleLoading';
+import ArticleListLoading from './ArticleListLoading';
 // --- api / type ---
-import { ArticleResultType } from '../../api/article';
-import { ArticleListType } from '../../types/articleType';
+// import { ArticleResultType } from '../../api/article';
+import { ArticleDataType, ArticleResultType } from '../../types/articleType';
 
-function ArticleList(props: { articleQueryData: ArticleResultType }) {
-  const { articleQueryData } = props;
-  const { isLoading, error, data } = articleQueryData;
-  const articleList: [ArticleListType] = get(data, 'posts', null)!;
-  const errorMsg = get(articleQueryData, 'data.mssage', '');
+function ArticleList(props: { articleListData: ArticleResultType }) {
+  const { articleListData } = props;
+  const { isLoading, error, data } = articleListData;
 
-  if (isLoading) return <Loading />;
-  if (!isEmpty(error) || !isEmpty(errorMsg)) {
-    return <BasicErrorPanel errorMsg={errorMsg} />;
+  const articleList: ArticleDataType[] | null = data as ArticleDataType[] | null;
+  const apiStatus = get(articleList, 'status');
+  const errorMsg = get(articleList, 'data.message', '');
+
+  if (isLoading) return <ArticleListLoading />;
+  if (!isEmpty(error)) {
+    return <BasicErrorPanel errorMsg="" />;
+  }
+  if ((!isEmpty(apiStatus) && apiStatus !== 200) || !isEmpty(errorMsg)) {
+    return <NoSearchResult msgOne="搜尋不到相關文章" msgTwo="" type="" />;
   }
   if (isEmpty(articleList)) return <NoSearchResult msgOne="搜尋不到相關資訊" msgTwo="" type="" />;
 
-  const articleItem = articleList.map((article) => (
-    <ArticleItem
-      key={article.id}
-      id={article.id}
-      title={article.title}
-      body={article.body}
-      tags={article.tags}
-    />
+  const articleItem = articleList!.map((article) => (
+    <ArticleItem key={article._id} articleData={article} />
   ));
-  return <div className="flex-grow">{articleItem}</div>;
+  return <div className="flex-grow px-3 md:px-0">{articleItem}</div>;
 }
 
 export default ArticleList;

@@ -1,33 +1,34 @@
+/* eslint-disable no-restricted-globals */
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- images ---
 import brand from '../../assets/images/brand.png';
 // --- components ---
 import MainMenu from './MainMenu';
+import BackwardBtn from '../../components/common/BackwardBtn';
 // --- functions / types ---
-import { SearchStateType, setSearchText } from '../../redux/searchSlice';
-import { LoginStateType, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
+import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { checkLogin } from '../../utils/common';
-
-interface StateType {
-  search: SearchStateType;
-  login: LoginStateType;
-}
+import { setActivePage } from '../../redux/sysSlice';
 
 function Header() {
   const [toggleMenuAnimation, setToggleMenuAnimation] = useState('translate-x-full'); // MainMenu 動畫效果
   const navigate = useNavigate();
-  const searchState = useSelector((state: StateType) => state.search);
+  const [searchString, setSearchString] = useState<string>();
   const dispatch = useDispatch();
-  const { searchText } = searchState;
+  let showBackward = false;
+  const path = window.location.pathname;
+  if (path.includes('/article/') || path.includes('/post/') || path.includes('/user/'))
+    showBackward = true;
 
   /** 跳轉至搜尋頁 */
   const handleSearch = (key: string) => {
-    if (key === 'Enter' && searchText !== '') {
-      navigate('/search');
+    if (key === 'Enter' && searchString !== '') {
+      dispatch(setActivePage('explore'));
+      navigate(`/explore?search=${searchString}`);
     }
   };
 
@@ -44,21 +45,30 @@ function Header() {
   return (
     <header className="fixed z-20 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
       <div className="w-full flex justify-between py-2 px-4">
-        <div id="brand" className="">
-          <Link className="flex flex-row items-center w-fit" to="/">
-            <img className="w-11 h-11 mr-2.5" src={brand} alt="logo" />
-            <h3 className="font-mono text-3xl font-semibold">ReactBlog</h3>
+        <div className="block sm:hidden">
+          <span className="flex justify-center items-center w-9 h-9">
+            {showBackward && <BackwardBtn />}
+          </span>
+        </div>
+        <div id="brand" className="flex justify-center">
+          <Link
+            className="flex flex-row items-center w-fit"
+            to="/"
+            onClick={() => dispatch(setActivePage('home'))}
+          >
+            <img className="w-8 h-8 sm:w-11 sm:h-11 mr-1 sm:mr-2.5" src={brand} alt="logo" />
+            <h3 className="font-mono text-[20px] sm:text-3xl font-semibold">ReactBlog</h3>
           </Link>
         </div>
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}
-          {window.location.pathname !== '/search' && (
+          {path !== '/explore' && (
             <div className="hidden sm:flex items-center mr-1.5">
               <input
                 type="text"
                 name="search"
                 placeholder="搜尋..."
-                onChange={(e) => dispatch(setSearchText(e.target.value))}
+                onChange={(e) => setSearchString(e.target.value)}
                 onKeyUp={(e) => handleSearch(e.key)}
                 className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
               />

@@ -1,6 +1,8 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/require-default-props */
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // --- functions ---
 import { scrollToTop } from '../../utils/common';
 import { setActivePage } from '../../redux/sysSlice';
@@ -18,6 +20,8 @@ function UserInfoPanel(props: {
 }) {
   const { userId, account, name, avatarUrl, bgColor, className, menuLink = false } = props;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   return (
     <div className={`flex items-center ${className}`}>
       <div className="flex justify-center items-center mr-4">
@@ -34,17 +38,19 @@ function UserInfoPanel(props: {
         {menuLink ? (
           <p className="text-[14px] text-gray-700 dark:text-gray-400">@{account}</p>
         ) : (
-          <Link
-            to={`/user/profile/${userId}`}
-            onClick={() => {
+          <button
+            aria-label="account"
+            type="button"
+            className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500 leading-4"
+            onClick={(e) => {
+              e.stopPropagation(); // 防止冒泡事件
               dispatch(setActivePage('user'));
               scrollToTop();
+              navigate(`/user/profile/${userId}`);
             }}
           >
-            <p className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 leading-4">
-              @{account}
-            </p>
-          </Link>
+            <p>@{account}</p>
+          </button>
         )}
       </div>
     </div>

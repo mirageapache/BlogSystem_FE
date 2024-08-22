@@ -1,0 +1,23 @@
+
+// 輸入框div
+#edit-container {
+  .paragraph {
+    word-wrap: break-word;
+  }
+}
+
+// 顯示div
+#post-container {
+  .paragraph {
+    max-width: 520px;
+    word-wrap: break-word;
+
+    @media (min-width: 640px) {
+      width: calc(100vw - 230px);
+    }
+    
+    .hash-tag {
+      color: rgb(65, 120, 241);
+    }
+  }
+}

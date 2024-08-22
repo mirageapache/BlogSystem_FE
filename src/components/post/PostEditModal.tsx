@@ -6,16 +6,19 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
 // --- api ---
-import { getPostDetail, updatePost } from 'api/post';
+import { updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
+import { handleHashTag } from 'utils/input';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
+import '../../styles/post.scss';
+import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
 
 interface stateType {
   post: PostStateType;
@@ -23,48 +26,69 @@ interface stateType {
 
 function PostEditModal() {
   const dispatchSlice = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
-  const [authorId, setAuthorId] = useState('');
-  const [content, setContent] = useState(''); // 內容
-  const [image, setImage] = useState(''); // 處理 image preview
-  const [removeImage, setRemoveImage] = useState(false); // 判斷是否移除圖片檔
+  const postState = useSelector((state: stateType) => state.post);
+  const [firstLoad, setFirstLoad] = useState(true);
+  const { postId, postData } = postState;
+
+  const [content, setContent] = useState(postData.content); // 內容
+  const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
+  const [image, setImage] = useState(postData.image); // 處理 image preview
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
-  const postState = useSelector((state: stateType) => state.post);
-  const { postId } = postState;
   const swal = withReactContent(Swal);
-
-  /** 取得貼文資料 */
-  const PostDetail = async () => {
-    setIsLoading(true);
-    const res = await getPostDetail(postId);
-    if (res.status === 200) {
-      const postDetail = get(res, 'data');
-      if (contentRef.current) contentRef.current.innerHTML = postDetail.content;
-      setAuthorId(postDetail.author._id);
-      setContent(postDetail.content);
-      setImage(postDetail.image);
-    }
-    setIsLoading(false);
-  };
+  const authorId = postData.author._id;
 
   useEffect(() => {
-    PostDetail();
+    // 首次載入設定初始資料
+    if (firstLoad) {
+      if (contentRef.current) contentRef.current.innerHTML = postData.content;
+      setFirstLoad(false);
+    }
   }, []);
 
   /** 關閉modal */
-  const handleClose = () => {
-    swal
-      .fire({
-        title: '要離開編輯嗎?',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: '確定',
-        cancelButtonText: `取消`,
-      })
-      .then((result) => {
-        if (result.isConfirmed) dispatchSlice(setShowEditModal(false));
-      });
+  const handleClose = (showAlert: boolean) => {
+    if (showAlert) {
+      swal
+        .fire({
+          title: '要取消編輯嗎?',
+          text: '系統將不會儲存及修改貼文',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: '確定',
+          cancelButtonText: `取消`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) dispatchSlice(setShowEditModal(false));
+        });
+    } else {
+      dispatchSlice(setShowEditModal(false));
+    }
+  };
+
+  /** 處理上傳圖片檔 */
+  const handleFileChange = (event: React.ChangeEvent<any>) => {
+    const fileList = event.target.files; // 獲取選擇的檔案列表
+    if (!isEmpty(fileList) && fileList?.length) {
+      const file = fileList[0];
+      setImage(URL.createObjectURL(file));
+      setImageFile(file);
+    }
+  };
+
+  /** 刪除圖片檔 */
+  const handleDeleteImage = () => {
+    setImage('');
+    setImageFile('');
+  };
+
+  /** 處理div輸入行為 */
+  const handleOnInput = () => {
+    if (contentRef.current) {
+      const { formattedContent, hashTags } = handleHashTag(contentRef.current.innerText);
+      setContent(formattedContent);
+      setHashTagArr(hashTags);
+    }
   };
 
   /** 編輯貼文 mutation */
@@ -78,7 +102,7 @@ function PostEditModal() {
             icon: 'success',
             confirmButtonText: '確認',
           });
-          handleClose();
+          handleClose(false);
           window.location.reload();
         }
       },
@@ -89,10 +113,10 @@ function PostEditModal() {
 
   /** 編輯貼文 */
   const handleSubmit = () => {
-    // validate form data
-    if (isEmpty(content) || content.length === 0) {
-      return;
-    }
+    // 驗證content內容
+    if (isEmpty(content) || content.length === 0) return;
+
+    // 判斷登入操作者與作者id是否相同
     const userId = getCookies('uid') as string;
     if (userId !== authorId) {
       swal.fire({
@@ -103,43 +127,16 @@ function PostEditModal() {
       return;
     }
 
+    // 建立FormData
     const formData = new FormData();
     formData.set('postId', postId);
     formData.set('content', content);
     formData.set('status', '1');
-    formData.set('hashTags', JSON.stringify([]));
-    formData.set('removeImage', removeImage.toString());
+    formData.set('hashTags', JSON.stringify(hashTagArr));
+    formData.set('imagePath', image);
     if (imageFile) formData.set('postImage', imageFile);
 
     editPostMutation.mutate({ userId, formData });
-  };
-
-  /** 處理上傳圖片檔 */
-  const handleFileChange = (event: React.ChangeEvent<any>) => {
-    const fileList = event.target.files; // 獲取選擇的檔案列表
-    if (!isEmpty(fileList) && fileList?.length) {
-      const file = fileList[0];
-      setImage(URL.createObjectURL(file));
-      setImageFile(file);
-      setRemoveImage(false);
-    }
-  };
-
-  /** 刪除圖片檔 */
-  const handleDeleteImage = () => {
-    setImage('');
-    setImageFile('');
-    setRemoveImage(true);
-  };
-
-  /** 處理div輸入行為 */
-  const handleOnInput = () => {
-    if (contentRef.current) {
-      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const lines = contentRef.current.innerText.split('\n');
-      const formattedContent = lines.map((line) => `<div>${line}</div>`).join('');
-      setContent(formattedContent);
-    }
   };
 
   return (
@@ -152,7 +149,7 @@ function PostEditModal() {
             aria-label="close"
             type="button"
             className="flex jsutify-center m-1"
-            onClick={handleClose}
+            onClick={() => handleClose(true)}
           >
             <FontAwesomeIcon
               icon={icon({ name: 'xmark', style: 'solid' })}
@@ -163,16 +160,13 @@ function PostEditModal() {
 
         {/* modal body | [h-minus120]是自訂的tailwind樣式 */}
         <div className="relative py-2 px-5 h-minus120 sm:h-auto">
-          {isLoading ? (
-            <div className="w-full h-full sm:h-80 outline-none">資料載入中</div>
-          ) : (
-            <div
-              contentEditable
-              ref={contentRef}
-              className="w-full h-full sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
-              onInput={handleOnInput}
-            />
-          )}
+          <div
+            id="edit-container"
+            contentEditable
+            ref={contentRef}
+            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+            onInput={handleOnInput}
+          />
 
           {/* image preview */}
           {!isEmpty(image) && (
@@ -227,7 +221,7 @@ function PostEditModal() {
           </div>
         </div>
       </div>
-      <div className="fixed w-full h-full bg-black opacity-40" onClick={handleClose} />
+      <div className={GRAY_BG_PANEL} onClick={() => handleClose(true)} />
     </div>
   );
 }

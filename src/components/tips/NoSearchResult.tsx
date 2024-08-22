@@ -15,8 +15,8 @@ function NoSearchResult({ msgOne, msgTwo, type }: propsType) {
         icon={icon({ name: 'search', style: 'solid' })}
         className="h-8 w-8 m-5 stroke-0 text-gray-500 dark:text-gray-100"
       />
-      <p className="text-3xl m-1">{!isEmpty(msgOne) ? msgOne : '搜尋不到相關資料！'}</p>
-      <p className="text-3xl m-1">{!isEmpty(msgTwo) ? msgTwo : '請重新查詢'}</p>
+      <p className="text-2xl sm:text-3xl m-1">{!isEmpty(msgOne) ? msgOne : '搜尋不到相關資料！'}</p>
+      <p className="text-2xl sm:text-3xl m-1">{!isEmpty(msgTwo) ? msgTwo : '請重新查詢'}</p>
     </div>
   );
 }

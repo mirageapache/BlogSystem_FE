@@ -1,6 +1,13 @@
-import { isEmpty } from 'lodash';
+import { useEffect, useState } from 'react';
+import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { formatDateTime } from '../../utils/dateTime';
+// --- components / functions ---
+import UserInfoPanel from 'components/user/UserInfoPanel';
+import { formatDateTime } from 'utils/dateTime';
+import { ArticleDataType } from 'types/articleType';
+import { HINT_LABEL } from 'constants/LayoutConstants';
+import { convertFromRaw, EditorState } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
 
 /** Article Tags 元件 */
 function ArticleTag(props: { text: string }) {
@@ -14,49 +21,59 @@ function ArticleTag(props: { text: string }) {
   );
 }
 
-/** ArticleItem 參數型別 */
-interface ArticleItemPropsType {
-  id: number;
-  title: string;
-  tags: string[];
-  body: string;
-}
-
 /** ArticleItem 元件 */
-function ArticleItem({ id, title, body, tags }: ArticleItemPropsType) {
-  const tagsList = tags.map((tag) => <ArticleTag key={`${tag}-${id}`} text={tag} />);
+function ArticleItem(props: { articleData: ArticleDataType }) {
+  const { articleData } = props;
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const contentState = editorState.getCurrentContent();
+  const htmlContent = stateToHTML(contentState);
+  const [showCreateTip, setShowCreateTip] = useState(false);
+  const { _id, title, content, author, subject, hashTags, createdAt } = articleData;
+  // const tagsList = hashTags.map((tag) => <ArticleTag key={`${tag}-${_id}`} text={tag} />);
+
+  useEffect(() => {
+    if (articleData) {
+      const rawContent = JSON.parse(articleData.content);
+      setEditorState(EditorState.createWithContent(convertFromRaw(rawContent)));
+    }
+  }, [articleData]);
 
   return (
-    <div className="text-left border-b-[1px] p-1 sm:p-2 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-default">
-      <div className="">
-        <div className="flex w-full">
-          <div className="my-2 mr-3">
-            {isEmpty(true) ? (
-              <span className="w-11 h-11 rounded-full flex justify-center items-center bg-sky-600 font-semibold">
-                <p className="text-xl text-center text-white">J</p>
-              </span>
-            ) : (
-              <img className="w-11 h-11 rounded-full" src="" alt="author avatar" />
-            )}
-          </div>
-
-          <div className="flex justify-between w-full text-md text-gray-600 dark:text-gray-300 my-1">
-            <span className="flex items-center">
-              <p className="mr-1">James</p>
-              <p className="text-sm hover:text-orange-500 cusor-pointer my-1">(james_w)</p>
+    <div className="text-left border-b-[1px] p-1 sm:p-2 dark:border-gray-700 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-default">
+      <div className="flex w-full justify-between">
+        <UserInfoPanel
+          userId={author._id}
+          account={author.account}
+          name={author.name}
+          avatarUrl={author.avatar}
+          bgColor={author.bgColor}
+          className="my-2"
+        />
+        <div className="flex flex-col justify-center items-end">
+          <span
+            className="relative my-0.5"
+            onMouseEnter={() => setShowCreateTip(true)}
+            onMouseLeave={() => setShowCreateTip(false)}
+          >
+            <p className="text-gray-600 dark:text-gray-300">{formatDateTime(createdAt)}</p>
+            <span
+              className={`top-[-50px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
+            >
+              Created at {moment(createdAt).format('MMMM Do YYYY, h:mm:ss')}
             </span>
-            <p className="">{formatDateTime('20240101')}</p>
-          </div>
+          </span>
         </div>
-        <div>
-          <h2 className="font-semibold text-2xl xl:text-3xl">
-            <Link to={`/article/${id}`} className="hover:underline">
-              {title}
-            </Link>
-          </h2>
-          <div className="text-orange-500">{tagsList}</div>
-          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">{body}</p>
-        </div>
+      </div>
+      <div className="pb-3">
+        <h2 className="font-semibold text-2xl xl:text-3xl">
+          <Link to={`/article/${_id}`} className="hover:underline hover:text-orange-500">
+            {title}
+          </Link>
+        </h2>
+        <div
+          className="text-gray-600 dark:text-gray-300 line-clamp-5"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
       </div>
     </div>
   );

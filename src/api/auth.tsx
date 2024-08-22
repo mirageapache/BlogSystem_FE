@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { API_URL } from './index';
+import { API_URL, config } from './index';
 import { SignUpParamType, SignInParamType } from '../types/authType';
 
 const baseUrl = API_URL;
-const authToken = localStorage.getItem('authToken');
 
 /** 註冊 */
 export async function SignUp(param: SignUpParamType) {
@@ -35,9 +34,6 @@ export async function SignIn(param: SignInParamType) {
  * redux 必須存有 userId 才可進行身分驗證
  */
 export async function Auth(userId: string) {
-  const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-  };
   const result = await axios
     .post(`${baseUrl}/auth/checkAuth`, { id: userId }, config)
     .then((res) => {

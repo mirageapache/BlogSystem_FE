@@ -11,12 +11,12 @@ import { FollowResultType } from 'types/followType';
 import { UserDataType } from 'types/userType';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
-import UserLoading from './UserLoading';
 import UserInfoPanel from './UserInfoPanel';
 // --- functions ---
 import { changeFollowState, followUser, unfollowUser } from '../../api/follow';
 import { getCookies } from '../../utils/common';
 import { errorAlert } from '../../utils/fetchError';
+import UserListLoading from './UserListLoading';
 
 interface PropsType {
   type: string;
@@ -30,7 +30,9 @@ function FollowList({ type, followList }: PropsType) {
   const followingData: UserDataType[] = get(data, 'data', []);
   const followerData: UserDataType[] = get(data, 'data', []);
 
-  if (isLoading) return <UserLoading />;
+  if (isLoading) return <UserListLoading />;
+  if (type === 'userList' && isEmpty(userList))
+    return <NoSearchResult msgOne="搜尋不到相關用戶資料" msgTwo="" type="user" />;
   if (type === 'following' && isEmpty(followingData))
     return (
       <NoSearchResult msgOne="你還沒有追蹤其他人喔!" msgTwo="快去尋找有趣的人吧" type="user" />
@@ -39,7 +41,7 @@ function FollowList({ type, followList }: PropsType) {
     return <NoSearchResult msgOne="你還沒有粉絲喔!" msgTwo="快去拓展你的粉絲圈吧" type="user" />;
 
   const [activeDropdown, setActiveDropdown] = useState('');
-  const userId = getCookies('uid');
+  const currentUser = getCookies('uid'); // 目前登入的User Id
 
   /** 控制下拉選單 */
   const toggleDropdown = (id: string) => {
@@ -48,7 +50,7 @@ function FollowList({ type, followList }: PropsType) {
 
   /** 追蹤 mutation */
   const followMutation = useMutation(
-    ({ targetId }: { targetId: string }) => followUser(userId!, targetId),
+    ({ targetId }: { targetId: string }) => followUser(currentUser!, targetId),
     {
       onSuccess: (res) => {
         if (res.status === 200) refetch();
@@ -59,7 +61,7 @@ function FollowList({ type, followList }: PropsType) {
 
   /** 取消追蹤 mutation */
   const unfollowMutation = useMutation(
-    ({ targetId }: { targetId: string }) => unfollowUser(userId!, targetId),
+    ({ targetId }: { targetId: string }) => unfollowUser(currentUser!, targetId),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
@@ -74,7 +76,7 @@ function FollowList({ type, followList }: PropsType) {
   /** 更改訂閱狀態 */
   const changeState = useMutation(
     ({ targetId, state }: { targetId: string; state: number }) =>
-      changeFollowState(userId!, targetId, state),
+      changeFollowState(currentUser!, targetId, state),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
@@ -89,27 +91,27 @@ function FollowList({ type, followList }: PropsType) {
   /** 建立追蹤清單元素 */
   const generateList = (dataList: UserDataType[]) => {
     return dataList.map((user) => {
-      if (user.userId === userId) return null;
+      if (user._id === currentUser) return null;
       return (
         <div
           className="flex justify-between px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
-          key={user.userId}
+          key={user._id}
         >
           <UserInfoPanel
-            userId={user.userId}
+            userId={user._id}
             account={user.account}
             name={user.name}
             avatarUrl={user.avatar}
             bgColor={user.bgColor}
             className="my-2"
           />
-          {!isEmpty(userId) && (
+          {!isEmpty(currentUser) && (
             <div className="relative flex items-center">
               {user.isFollow ? (
                 <button
                   type="button"
                   className="py-1 px-3 rounded-lg text-white bg-gray-500"
-                  onClick={() => toggleDropdown(user.userId)}
+                  onClick={() => toggleDropdown(user._id)}
                 >
                   追蹤中
                   <FontAwesomeIcon
@@ -121,13 +123,13 @@ function FollowList({ type, followList }: PropsType) {
                 <button
                   type="button"
                   className="py-1 px-3 rounded-lg text-white bg-green-600"
-                  onClick={() => followMutation.mutate({ targetId: user.userId })}
+                  onClick={() => followMutation.mutate({ targetId: user._id })}
                 >
                   追蹤
                 </button>
               )}
               {/* 追蹤中下拉選單 */}
-              {activeDropdown === user.userId && (
+              {activeDropdown === user._id && (
                 <>
                   <div className="absolute w-28 border rounded-lg py-2 px-1 top-12 right-0 bg-white dark:bg-gray-950 dark:border-gray-600 z-50">
                     {user.followState === 1 ? (
@@ -135,7 +137,7 @@ function FollowList({ type, followList }: PropsType) {
                         type="button"
                         className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
                         onClick={() => {
-                          changeState.mutate({ targetId: user.userId, state: 0 });
+                          changeState.mutate({ targetId: user._id, state: 0 });
                         }}
                       >
                         關閉通知
@@ -145,7 +147,7 @@ function FollowList({ type, followList }: PropsType) {
                         type="button"
                         className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
                         onClick={() => {
-                          changeState.mutate({ targetId: user.userId, state: 1 });
+                          changeState.mutate({ targetId: user._id, state: 1 });
                         }}
                       >
                         開啟通知
@@ -155,7 +157,7 @@ function FollowList({ type, followList }: PropsType) {
                       type="button"
                       className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
                       onClick={() => {
-                        unfollowMutation.mutate({ targetId: user.userId });
+                        unfollowMutation.mutate({ targetId: user._id });
                       }}
                     >
                       取消追蹤
@@ -198,7 +200,7 @@ function FollowList({ type, followList }: PropsType) {
     });
   }
 
-  return <div>{listData}</div>;
+  return <div className="w-full">{listData}</div>;
 }
 
 export default FollowList;

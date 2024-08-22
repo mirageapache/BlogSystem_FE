@@ -1,0 +1,49 @@
+// 程式碼區塊
+.public-DraftStyleDefault-pre {
+  background-color: #d1d5db;
+  color: #1f2937;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.public-DraftStyleDefault-pre > pre {
+  font-family: 'Source Code Pro', monospace;
+  padding: 0.2em 0.4em;
+}
+
+// 引用區塊
+blockquote {
+  margin-left: 20px !important;
+  border-left: 4px solid #f97316;
+  padding-left: 10px;
+}
+
+// 項目清單
+.public-DraftStyleDefault-ul {
+  list-style-type: disc;
+  padding: revert;
+}
+
+// 編號清單
+.public-DraftStyleDefault-ol {
+  list-style-type: decimal;
+  padding: revert;
+}
+
+/* 對所有元素應用 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #aaa; /* 例如：灰色 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #E2E8F0; /* 例如：淺灰色 */
+  border-radius: 10px;
+}

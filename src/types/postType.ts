@@ -1,10 +1,10 @@
 import { RqResponseType, errorMsgType } from './apiType';
-import { userInfoPanelType } from './userType';
+import { UserInfoPanelType } from './userType';
 
 /** post API接收資料型別 */
 export interface PostDataType extends errorMsgType {
   _id: string;
-  author: userInfoPanelType; // userId
+  author: UserInfoPanelType; // userId
   content: string;
   image: string;
   status: number;
@@ -12,7 +12,7 @@ export interface PostDataType extends errorMsgType {
   hashTags: string[];
   collectionCount: number;
   shareCount: number;
-  likedByUsers: string[];
+  likedByUsers: UserInfoPanelType[];
   comments: string[];
   createdAt: string;
   editedAt: string;
@@ -28,6 +28,6 @@ export interface PostVariablesType {
   hashTags?: string[];
 }
 
-export interface postResultType extends RqResponseType {
+export interface PostResultType extends RqResponseType {
   data: PostDataType | null;
 }

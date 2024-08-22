@@ -1,10 +1,9 @@
 import axios from 'axios';
-import { API_URL } from './index';
+import { API_URL, config } from './index';
 import { PostDataType } from '../types/postType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
-const authToken = localStorage.getItem('authToken');
 
 /** postApi 型別 */
 interface PostApiType extends AxResponseType {
@@ -25,6 +24,22 @@ export async function getAllPosts(): Promise<PostApiType> {
   return result;
 }
 
+/** 取得搜尋貼文 or 特定使用者的貼文 */
+export async function getSearchPost(
+  searchString?: string,
+  authorId?: string
+): Promise<PostApiType> {
+  const result = await axios
+    .post(`${baseUrl}/post/search`, { searchString, authorId })
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+  return result;
+}
+
 /** 取得特定貼文內容 */
 export async function getPostDetail(postId: string): Promise<PostApiType> {
   const result = await axios
@@ -40,10 +55,6 @@ export async function getPostDetail(postId: string): Promise<PostApiType> {
 
 /** 新增貼文 */
 export async function createPost(userId: string, formData: FormData): Promise<PostApiType> {
-  const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-  };
-
   const result = await axios
     .post(`${baseUrl}/post/create/${userId}`, formData, config)
     .then((res) => {
@@ -57,10 +68,6 @@ export async function createPost(userId: string, formData: FormData): Promise<Po
 
 /** 編輯貼文 */
 export async function updatePost(userId: string, formData: FormData): Promise<PostApiType> {
-  const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-  };
-
   const result = await axios
     .patch(`${baseUrl}/post/update/${userId}`, formData, config)
     .then((res) => {
@@ -73,14 +80,28 @@ export async function updatePost(userId: string, formData: FormData): Promise<Po
 }
 
 /** 喜歡/取消喜歡貼文 */
-export async function handleLikePost(postId: string, userId: string, action: string) {
+export async function toggleLikePost(postId: string, userId: string, action: boolean) {
   const result = await axios
-    .patch(`${baseUrl}/post/like`, { postId, userId, action })
+    .patch(`${baseUrl}/post/toggleLikeAction/${userId}`, { postId, userId, action }, config)
     .then((res) => {
       return res.data;
     })
     .catch((error) => {
       return error;
+    });
+  return result;
+}
+
+/** 取得搜尋hashTag(貼文) */
+export async function getSearchHashTag(searchText: string): Promise<PostApiType> {
+  const searchString = searchText.replace('#', '');
+  const result = await axios
+    .post(`${baseUrl}/post/hashTag`, { searchString })
+    .then((res) => {
+      return res.data;
+    })
+    .catch((error) => {
+      return error.response;
     });
   return result;
 }

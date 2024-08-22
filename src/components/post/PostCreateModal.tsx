@@ -8,17 +8,20 @@ import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
+import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
 // --- functions / types ---
-import { useDispatch } from 'react-redux';
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
+import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
+import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
   const [content, setContent] = useState(''); // 內容
+  const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
   const [image, setImage] = useState(''); // 處理 image preview
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
@@ -26,6 +29,31 @@ function PostCreateModal() {
   /** 關閉modal */
   const handleClose = () => {
     dispatchSlice(setShowCreateModal(false));
+  };
+
+  /** 處理上傳圖片檔 */
+  const handleFileChange = (event: React.ChangeEvent<any>) => {
+    const fileList = event.target.files; // 獲取選擇的檔案列表
+    if (!isEmpty(fileList) && fileList?.length) {
+      const file = fileList[0];
+      setImage(URL.createObjectURL(file));
+      setImageFile(file);
+    }
+  };
+
+  /** 刪除圖片檔 */
+  const handleDeleteImage = () => {
+    setImage('');
+    setImageFile('');
+  };
+
+  /** 處理div輸入行為 */
+  const handleOnInput = () => {
+    if (contentRef.current) {
+      const { formattedContent, hashTags } = handleHashTag(contentRef.current.innerText);
+      setContent(formattedContent);
+      setHashTagArr(hashTags);
+    }
   };
 
   /** 新增貼文 mutation */
@@ -61,36 +89,10 @@ function PostCreateModal() {
     formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
-    formData.set('hashTags', JSON.stringify([]));
+    formData.set('hashTags', JSON.stringify(hashTagArr));
     if (imageFile) formData.set('postImage', imageFile);
 
     createPostMutation.mutate({ userId, formData });
-  };
-
-  /** 處理上傳圖片檔 */
-  const handleFileChange = (event: React.ChangeEvent<any>) => {
-    const fileList = event.target.files; // 獲取選擇的檔案列表
-    if (!isEmpty(fileList) && fileList?.length) {
-      const file = fileList[0];
-      setImage(URL.createObjectURL(file));
-      setImageFile(file);
-    }
-  };
-
-  /** 刪除圖片檔 */
-  const handleDeleteImage = () => {
-    setImage('');
-    setImageFile('');
-  };
-
-  /** 處理div輸入行為 */
-  const handleOnInput = () => {
-    if (contentRef.current) {
-      // 因使用contenteditable方法再不同瀏覽器中渲染HTML的處理方式不同，因此須統一在每一行內容包裹在 <div> 標籤中
-      const lines = contentRef.current.innerText.split('\n');
-      const formattedContent = lines.map((line) => `<div>${line}</div>`).join('');
-      setContent(formattedContent);
-    }
   };
 
   return (
@@ -116,9 +118,10 @@ function PostCreateModal() {
         <div className="relative py-2 px-5 h-minus120 sm:h-auto">
           {/* contenteditable功能 */}
           <div
+            id="edit-container"
             contentEditable
             ref={contentRef}
-            className="w-full h-full sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
             onInput={handleOnInput}
           />
 
@@ -175,7 +178,7 @@ function PostCreateModal() {
           </div>
         </div>
       </div>
-      <div className="fixed w-full h-full bg-black opacity-40" onClick={handleClose} />
+      <div className={GRAY_BG_PANEL} onClick={handleClose} />
     </div>
   );
 }

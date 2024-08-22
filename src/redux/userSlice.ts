@@ -1,32 +1,15 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // --- types ---
-import { UserDataType } from 'types/userType';
-
-interface UserInfoType extends UserDataType {
-  theme: number;
-}
+import { UserDataType, UserProfileType } from 'types/userType';
 
 export interface UserStateType {
-  userData: UserDataType;
+  userData: UserDataType | undefined;
 }
 
 /** user state 預設值 */
 const initState = {
-  userData: {
-    _id: '',
-    userId: '',
-    email: '',
-    account: '',
-    name: '',
-    avatar: '',
-    bgColor: '',
-    bio: '',
-    userRole: 0,
-    createdAt: '',
-    status: 0,
-    theme: 0,
-  },
+  userData: undefined,
 };
 
 /** User Slice Function */
@@ -35,7 +18,7 @@ const userSlice = createSlice({
   initialState: initState,
   reducers: {
     /** 設定User資料 */
-    setUserData(state: UserStateType, action: PayloadAction<UserInfoType>) {
+    setUserData(state: UserStateType, action: PayloadAction<UserProfileType>) {
       state.userData = action.payload;
     },
   },

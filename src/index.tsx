@@ -13,13 +13,14 @@ import './index.css';
 // import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const basename = process.env.PUBLIC_URL;
 const queryClient = new QueryClient();
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <CookiesProvider>
-          <BrowserRouter>
+          <BrowserRouter basename={basename}>
             <App />
           </BrowserRouter>
         </CookiesProvider>

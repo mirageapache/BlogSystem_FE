@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+const authToken = localStorage.getItem('authToken');
 const localhost = 'http://localhost:3100'; // localhost
 const renderServer = 'https://blogsystem-aakz.onrender.com'; // render server
 
@@ -7,3 +8,7 @@ export const DUMMYJSON_URL = 'https://dummyjson.com';
 
 /** base Url */
 export const API_URL = renderServer;
+
+export const config = {
+  headers: { Authorization: `Bearer ${authToken}` },
+};

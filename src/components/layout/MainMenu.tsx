@@ -8,12 +8,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // --- components ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
-import UserLoadingNoBorder from 'components/user/UserLoadingNoBorder';
+import UserLoading from 'components/user/UserLoading';
 // --- functions / types ---
-import { SysStateType, setActivePage, setDarkMode } from '../../redux/sysSlice';
+import { SysStateType, setActivePage, setDarkMode, setEditMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { checkLogin, scrollToTop } from '../../utils/common';
@@ -86,6 +86,7 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
 /** MainMenu 元件 */
 function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const systemState = useSelector((state: StateType) => state.system);
   const activePage = get(systemState, 'activePage');
   const swal = withReactContent(Swal);
@@ -110,7 +111,9 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       })
       .then(() => {
         closeMenu();
-        // navigate('/');
+        dispatch(setActivePage('home'));
+        navigate('/');
+        window.location.reload();
       });
   };
 
@@ -142,17 +145,17 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
         </div>
         {checkLogin() && (
           <div className="px-3 border-b-[1px] border-gray-400 dark:border-gray-70">
-            <Link
-              to={`/user/profile/${userData.userId}`}
-              onClick={() => {
-                closeMenu();
-                dispatch(setActivePage('user'));
-                scrollToTop();
-              }}
-            >
-              {isEmpty(userData) ? (
-                <UserLoadingNoBorder />
-              ) : (
+            {isEmpty(userData) ? (
+              <UserLoading withBorder={false} />
+            ) : (
+              <Link
+                to={`/user/profile/${userData!.userId}`}
+                onClick={() => {
+                  closeMenu();
+                  dispatch(setActivePage('user'));
+                  scrollToTop();
+                }}
+              >
                 <UserInfoPanel
                   userId={userData._id}
                   account={userData.account}
@@ -162,8 +165,8 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                   className="my-2 py-2 px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
                   menuLink
                 />
-              )}
-            </Link>
+              </Link>
+            )}
           </div>
         )}
         <div className="h-full py-2 px-8 opacity-100">
@@ -195,22 +198,9 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               >
                 <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
               </MenuItem>
-              <MenuItem
-                href="/search"
-                text="搜尋"
-                count={0}
-                activeItem={activePage === 'search'}
-                handleClick={() => {
-                  closeMenu();
-                  dispatch(setActivePage('search'));
-                  scrollToTop();
-                }}
-              >
-                <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
-              </MenuItem>
               {checkLogin() && (
                 <>
-                  <MenuItem
+                  {/* <MenuItem
                     href="/inbox"
                     text="訊息匣"
                     count={0}
@@ -222,8 +212,8 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     }}
                   >
                     <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
-                  </MenuItem>
-                  <MenuItem
+                  </MenuItem> */}
+                  {/* <MenuItem
                     href="/activity"
                     text="動態"
                     count={0}
@@ -235,15 +225,16 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     }}
                   >
                     <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-                  </MenuItem>
+                  </MenuItem> */}
                   <MenuItem
-                    href="/write"
+                    href="/article/create"
                     text="撰寫文章"
                     count={0}
                     activeItem={activePage === 'write'}
                     handleClick={() => {
                       closeMenu();
                       dispatch(setActivePage('write'));
+                      dispatch(setEditMode(true));
                       scrollToTop();
                     }}
                   >

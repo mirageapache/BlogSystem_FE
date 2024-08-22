@@ -7,8 +7,10 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // --- functions ---
-import { SysStateType, setActivePage } from '../../redux/sysSlice';
+import { SysStateType, setActivePage, setEditMode } from '../../redux/sysSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
+import { HINT_LABEL } from '../../constants/LayoutConstants';
+import { setSignInPop } from '../../redux/loginSlice';
 
 /** SideBar Item 參數型別 */
 type ItemProps = {
@@ -75,9 +77,7 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
         </Link>
       )}
       <div
-        className={`absolute text-center top-3 text-sm left-10 w-16 py-1 px-1 opacity-90 bg-black text-white rounded-md ${
-          showTip ? 'block' : 'hidden'
-        } lg:hidden dark:bg-white dark:text-black dark:font-bold`}
+        className={`absolute top-3 left-10 w-16 ${HINT_LABEL} ${showTip ? 'block' : 'hidden'} lg:hidden dark:font-bold z-50`}
       >
         {text}
       </div>
@@ -114,26 +114,23 @@ function SideBar() {
           <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
         </SideBarItem>
         <SideBarItem
-          href="/search"
-          text="搜尋"
+          href={checkLogin() ? `/user/profile/${userId}` : ''}
+          text="個人資料"
           count={0}
-          activeItem={activePage === 'search'}
-          changeItem={() => sliceDispatch(setActivePage('search'))}
+          activeItem={activePage === 'user'}
+          changeItem={() => {
+            if (checkLogin()) {
+              sliceDispatch(setActivePage('user'));
+            } else {
+              sliceDispatch(setSignInPop(true));
+            }
+          }}
         >
-          <FontAwesomeIcon icon={icon({ name: 'search', style: 'solid' })} />
+          <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
         </SideBarItem>
         {checkLogin() && (
           <>
-            <SideBarItem
-              href={`/user/profile/${userId}`}
-              text="個人資料"
-              count={0}
-              activeItem={activePage === 'user'}
-              changeItem={() => sliceDispatch(setActivePage('user'))}
-            >
-              <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
-            </SideBarItem>
-            <SideBarItem
+            {/* <SideBarItem
               href="/inbox"
               text="訊息匣"
               count={0}
@@ -150,13 +147,16 @@ function SideBar() {
               changeItem={() => sliceDispatch(setActivePage('activity'))}
             >
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
-            </SideBarItem>
+            </SideBarItem> */}
             <SideBarItem
-              href="/write"
+              href="/article/create"
               text="撰寫文章"
               count={0}
               activeItem={activePage === 'write'}
-              changeItem={() => sliceDispatch(setActivePage('write'))}
+              changeItem={() => {
+                sliceDispatch(setActivePage('write'));
+                sliceDispatch(setEditMode(true));
+              }}
             >
               <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
             </SideBarItem>
