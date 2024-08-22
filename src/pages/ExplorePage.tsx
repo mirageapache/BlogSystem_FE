@@ -14,7 +14,7 @@ import { getCookies } from 'utils/common';
 import { FollowResultType } from 'types/followType';
 // --- api / type ---
 import { getAllPosts, getSearchHashTag, getSearchPost } from '../api/post';
-import { getRecommendUserList, getSearchUserList } from '../api/user';
+import { getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
 import { ArticleResultType } from '../types/articleType';
 import { PostResultType } from '../types/postType';

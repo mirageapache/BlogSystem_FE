@@ -86,20 +86,20 @@ function App() {
               <Routes>
                 {/* WebSite */}
                 <Route path="/" element={<HomePage />} />
-                <Route path="/explore" element={<ExplorePage />} />
+                <Route path="explore" element={<ExplorePage />} />
 
                 {/* Article */}
-                <Route path="/article/:id" element={<ArticleDetailPage />} />
-                <Route path="/article/create" element={<ArticleCreatePage />} />
+                <Route path="article/:id" element={<ArticleDetailPage />} />
+                <Route path="article/create" element={<ArticleCreatePage />} />
                 {/* Post */}
-                <Route path="/post/:id" element={<PostDetailPage />} />
+                <Route path="post/:id" element={<PostDetailPage />} />
 
                 {/* User */}
-                <Route path="/user/profile/:userId" element={<UserProfilePage />} />
-                <Route path="/user/editProfile" element={<EditProfilePage />} />
+                <Route path="user/profile/:userId" element={<UserProfilePage />} />
+                <Route path="user/editProfile" element={<EditProfilePage />} />
 
                 {/* 404 */}
-                <Route path="/*" element={<NotFoundPage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </section>
             <section className={BOTTOM_MENU_FRAME}>
