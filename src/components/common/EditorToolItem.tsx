@@ -37,7 +37,7 @@ function EditorToolItem({
 
   return (
     <div className="relative block min-w-8 min-h-8">
-      <div className="sm:fixed z-20">
+      <div className="sm:fixed z-10">
         <button
           type="button"
           aria-label={text}
