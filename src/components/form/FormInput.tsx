@@ -1,6 +1,6 @@
-import { useState } from 'react';
+/* eslint-disable react/require-default-props */
+import React, { useState } from 'react';
 import { isEmpty } from 'lodash';
-import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FORM_CONTROL } from 'constants/LayoutConstants';
@@ -9,29 +9,26 @@ import { FORM_CONTROL } from 'constants/LayoutConstants';
 interface FormInputPropsType {
   name: string;
   type: string;
+  value: string;
   ispwd: boolean;
   placeholder: string;
-  classname: string;
-  input: CommonFieldProps & { value: string };
-  meta: WrappedFieldMetaProps;
-  normalize: (value: string) => string | number | readonly string[] | undefined;
+  classname?: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function FormInput({
   name,
   type,
+  value,
   ispwd,
   placeholder,
-  classname,
-  input,
-  meta,
-  normalize,
+  classname = '',
+  setValue,
 }: FormInputPropsType) {
   const [hidePassword, setHidePassword] = useState(ispwd); // 隱藏密碼
   const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
   const pwdtype = hidePassword ? 'password' : 'text'; // 控制密碼顯示/隱藏的input type
   const inputType = ispwd ? pwdtype : type;
-  const normalizedValue = normalize ? normalize(input.value) : input.value; // normalize 用來對輸入的值進行格式化或轉換
 
   // 顯示/隱藏密碼控制
   const showToggle = hidePassword ? (
@@ -53,8 +50,8 @@ function FormInput({
   );
 
   function onBlur() {
-    if (!isEmpty(meta.error)) setShowErrorTip(true);
-    input.onBlur(); // 觸發原生input事件(觸發meta.touch)
+    // if (!isEmpty(meta.error)) setShowErrorTip(true);
+    // input.onBlur(); // 觸發原生input事件(觸發meta.touch)
   }
 
   function onFocus() {
@@ -63,7 +60,7 @@ function FormInput({
 
   return (
     <div className="relative">
-      {showErrorTip && meta.touched && !isEmpty(meta.error) ? (
+      {showErrorTip ? (
         <>
           <span className="relative">
             <input
@@ -73,12 +70,12 @@ function FormInput({
               className={`${FORM_CONTROL} border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950 focus:border-b-2 ${classname} `}
               onBlur={onBlur}
               onFocus={onFocus}
-              onChange={input.onChange}
-              value={normalizedValue}
+              onChange={(e) => setValue(e.target.value)}
+              value={value}
             />
             {ispwd && showToggle}
           </span>
-          <p className="text-red-500 text-sm">{meta.error}</p>
+          {/* <p className="text-red-500 text-sm">{meta.error}</p> */}
         </>
       ) : (
         <span>
@@ -89,8 +86,8 @@ function FormInput({
             className={`${FORM_CONTROL} border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 focus:border-b-2 ${classname} `}
             onBlur={onBlur}
             onFocus={onFocus}
-            onChange={input.onChange}
-            value={normalizedValue}
+            onChange={(e) => setValue(e.target.value)}
+            value={value}
           />
           {ispwd && showToggle}
         </span>
