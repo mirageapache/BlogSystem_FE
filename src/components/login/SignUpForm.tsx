@@ -12,7 +12,7 @@ import FormInput from '../form/FormInput';
 import { SignUp } from '../../api/auth';
 import { SignUpParamType } from '../../types/authType';
 // --- functions / types ---
-import { required, checkLength, passwordCheck, isEmail } from '../../utils/validates';
+import { required, checkLength, passwordCheck, isEmail } from '../../utils/formValidates';
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { handleErrMsg } from '../../utils/fetchError';
 
@@ -91,7 +91,7 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
             placeholder="密碼"
             type="password"
             ispwd="true"
-            validate={[required('密碼為必填欄位'), checkLength(6, 20, '密碼長度為6～20字')]}
+            // validate={[required('密碼為必填欄位'), checkLength(6, 20, '密碼長度為6～20字')]}
           />
         </div>
         <div className="my-3">
@@ -103,7 +103,7 @@ function SignUpForm({ handleSubmit, dispatch }: any) {
             ispwd="true"
             validate={[
               required('確認密碼為必填欄位'),
-              checkLength(6, 20, '密碼長度為6～20字'),
+              // checkLength(6, 20, '密碼長度為6～20字'),
               passwordCheck,
             ]}
           />
