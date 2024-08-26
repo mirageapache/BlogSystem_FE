@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { get, isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
@@ -17,12 +17,11 @@ import { setUserData } from 'redux/userSlice';
 import FormInput from 'components/form/FormInput';
 
 function SignInPopup() {
-  // const { handleSubmit, dispatch } = props;
   const sliceDispatch = useDispatch();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [email, setEmail] = useState(''); // 紀錄email資料
+  const [password, setPassword] = useState(''); // 紀錄密碼資料
+  const [emailError, setEmailError] = useState(''); // 紀錄email錯誤訊息
+  const [passwordError, setPasswordError] = useState(''); // 紀錄密碼錯誤訊息
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const swal = withReactContent(Swal);
@@ -52,39 +51,44 @@ function SignInPopup() {
     setIsLoading(true);
     if (isEmpty(email)) {
       setEmailError('Email為必填欄位');
-      setErrorMsg('');
+      setIsLoading(false);
+      return;
+    }
+    if (isEmpty(password)) {
+      setPasswordError('密碼為必填欄位');
       setIsLoading(false);
       return;
     }
 
-    const varibales = { email, password };
-
-    try {
-      const res = await SignIn(varibales);
-      if (get(res, 'status') === 200) {
-        const authToken = get(res, 'data.authToken');
-        window.localStorage.setItem('authToken', authToken);
-        setCookie('uid', res.data.userData.userId, { path: '/' });
-        sliceDispatch(setUserData(res.data.userData));
-        swal
-          .fire({
-            title: '登入成功',
-            icon: 'success',
-            confirmButtonText: '確認',
-          })
-          .then(() => {
-            const { location } = window;
-            const pathname = get(location, 'pathname', '');
-            if (pathname === '/user/editProfile') {
-              location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
-            }
-            handleClose();
-          });
-      } else if (!isEmpty(get(res, 'response.data.message', ''))) {
-        setErrorMsg(get(res, 'response.data.message'));
+    if (isEmpty(emailError) && isEmpty(passwordError)) {
+      const variables = { email, password };
+      try {
+        const res = await SignIn(variables);
+        if (get(res, 'status') === 200) {
+          const authToken = get(res, 'data.authToken');
+          window.localStorage.setItem('authToken', authToken);
+          setCookie('uid', res.data.userData.userId, { path: '/' });
+          sliceDispatch(setUserData(res.data.userData));
+          swal
+            .fire({
+              title: '登入成功',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then(() => {
+              const { location } = window;
+              const pathname = get(location, 'pathname', '');
+              if (pathname === '/user/editProfile') {
+                location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
+              }
+              handleClose();
+            });
+        } else if (!isEmpty(get(res, 'response.data.message', ''))) {
+          setErrorMsg(get(res, 'response.data.message'));
+        }
+      } catch (error) {
+        // console.log(error);
       }
-    } catch (error) {
-      // console.log(error);
     }
     setIsLoading(false);
   };
@@ -121,11 +125,12 @@ function SignInPopup() {
                 <FormInput
                   type="email"
                   name="email"
-                  value={email}
                   ispwd={false}
                   placeholder="E-mail"
-                  showError={emailError}
+                  value={email}
                   setValue={setEmail}
+                  errorMsg={emailError}
+                  setErrorMsg={setEmailError}
                   handleEnter={() => {}}
                 />
               </div>
@@ -133,11 +138,12 @@ function SignInPopup() {
                 <FormInput
                   type="password"
                   name="password"
-                  value={password}
                   ispwd
                   placeholder="password"
-                  showError={passwordError}
+                  value={password}
                   setValue={setPassword}
+                  errorMsg={passwordError}
+                  setErrorMsg={setPasswordError}
                   handleEnter={handleEnter}
                 />
               </div>
@@ -151,7 +157,7 @@ function SignInPopup() {
               <button
                 type="button"
                 className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
-                onClick={() => submitSignIn()}
+                onClick={submitSignIn}
               >
                 {isLoading ? (
                   <FontAwesomeIcon

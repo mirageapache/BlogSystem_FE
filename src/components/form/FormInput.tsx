@@ -12,36 +12,37 @@ import { checkLength } from 'utils/formValidates';
 interface FormInputPropsType {
   name: string;
   type: string;
-  value: string;
   ispwd: boolean;
   placeholder: string;
   classname?: string;
-  showError: string;
+  value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
+  errorMsg: string;
+  setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
   handleEnter: (value: string) => void;
 }
 
 function FormInput({
   name,
   type,
-  value,
   ispwd,
   placeholder,
   classname = '',
-  showError,
+  value,
   setValue,
+  errorMsg,
+  setErrorMsg,
   handleEnter,
 }: FormInputPropsType) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [hidePassword, setHidePassword] = useState(ispwd); // 隱藏密碼
-  const [errorMsg, setErrorMsg] = useState(''); // 錯誤訊息
   const [showErrorTip, setShowErrorTip] = useState(!isEmpty(errorMsg)); // 顯示/隱藏欄位錯誤提示
   const pwdtype = hidePassword ? 'password' : 'text'; // 控制密碼顯示/隱藏的input type
   const inputType = ispwd ? pwdtype : type;
 
   useEffect(() => {
-    if (showError) setShowErrorTip(true);
-  }, [showError]);
+    if (errorMsg) setShowErrorTip(true);
+  }, [errorMsg]);
 
   /** 顯示/隱藏密碼控制 */
   const showToggle = hidePassword ? (
@@ -64,6 +65,8 @@ function FormInput({
 
   /** input on blur */
   function onBlur(e: any) {
+    setErrorMsg('');
+    setShowErrorTip(false);
     const formValue = e.target.value;
     let text = '';
     switch (name) {
@@ -78,6 +81,13 @@ function FormInput({
         text = '密碼';
         if (checkLength(value, 6, 20)) {
           setErrorMsg('密碼長度須介於6至20字元');
+          setShowErrorTip(true);
+        }
+        break;
+      case 'confirmPassword':
+        text = '確認密碼';
+        if (checkLength(value, 6, 20)) {
+          setErrorMsg('確認密碼長度須介於6至20字元');
           setShowErrorTip(true);
         }
         break;
@@ -115,10 +125,9 @@ function FormInput({
           onBlur={onBlur}
           onFocus={onFocus}
           onChange={(e) => {
-            if (isEmpty(e.target.value)) {
-              setErrorMsg(`${name}欄位必填`);
-            }
             setValue(e.target.value);
+            setErrorMsg('');
+            if (isEmpty(e.target.value)) setErrorMsg(`${name}欄位必填`);
           }}
           onKeyUp={(e) => {
             handleEnter(e.key);
