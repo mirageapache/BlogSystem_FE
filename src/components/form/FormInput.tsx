@@ -1,9 +1,12 @@
-import { useState } from 'react';
+/* eslint-disable default-case */
+/* eslint-disable react/require-default-props */
+import React, { useEffect, useRef, useState } from 'react';
 import { isEmpty } from 'lodash';
-import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FORM_CONTROL } from 'constants/LayoutConstants';
+import validator from 'validator';
+import { checkLength } from 'utils/formValidates';
 
 /** FormInputProps 型別 */
 interface FormInputPropsType {
@@ -11,10 +14,12 @@ interface FormInputPropsType {
   type: string;
   ispwd: boolean;
   placeholder: string;
-  classname: string;
-  input: CommonFieldProps & { value: string };
-  meta: WrappedFieldMetaProps;
-  normalize: (value: string) => string | number | readonly string[] | undefined;
+  classname?: string;
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  errorMsg: string;
+  setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
+  handleEnter: (value: string) => void;
 }
 
 function FormInput({
@@ -22,18 +27,24 @@ function FormInput({
   type,
   ispwd,
   placeholder,
-  classname,
-  input,
-  meta,
-  normalize,
+  classname = '',
+  value,
+  setValue,
+  errorMsg,
+  setErrorMsg,
+  handleEnter,
 }: FormInputPropsType) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [hidePassword, setHidePassword] = useState(ispwd); // 隱藏密碼
-  const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
+  const [showErrorTip, setShowErrorTip] = useState(!isEmpty(errorMsg)); // 顯示/隱藏欄位錯誤提示
   const pwdtype = hidePassword ? 'password' : 'text'; // 控制密碼顯示/隱藏的input type
   const inputType = ispwd ? pwdtype : type;
-  const normalizedValue = normalize ? normalize(input.value) : input.value; // normalize 用來對輸入的值進行格式化或轉換
 
-  // 顯示/隱藏密碼控制
+  useEffect(() => {
+    if (errorMsg) setShowErrorTip(true);
+  }, [errorMsg]);
+
+  /** 顯示/隱藏密碼控制 */
   const showToggle = hidePassword ? (
     <FontAwesomeIcon
       icon={icon({ name: 'eye-slash', style: 'solid' })}
@@ -52,49 +63,80 @@ function FormInput({
     />
   );
 
-  function onBlur() {
-    if (!isEmpty(meta.error)) setShowErrorTip(true);
-    input.onBlur(); // 觸發原生input事件(觸發meta.touch)
+  /** input on blur */
+  function onBlur(e: any) {
+    setErrorMsg('');
+    setShowErrorTip(false);
+    const formValue = e.target.value;
+    let text = '';
+    switch (name) {
+      case 'email':
+        text = 'Email';
+        if (!validator.isEmail(value)) {
+          setErrorMsg('Email格式錯誤');
+          setShowErrorTip(true);
+        }
+        break;
+      case 'password':
+        text = '密碼';
+        if (checkLength(value, 6, 20)) {
+          setErrorMsg('密碼長度須介於6至20字元');
+          setShowErrorTip(true);
+        }
+        break;
+      case 'confirmPassword':
+        text = '確認密碼';
+        if (checkLength(value, 6, 20)) {
+          setErrorMsg('確認密碼長度須介於6至20字元');
+          setShowErrorTip(true);
+        }
+        break;
+      case 'account':
+        text = '帳號';
+        break;
+    }
+    if (isEmpty(formValue)) {
+      setErrorMsg(`${text}必填`);
+      setShowErrorTip(true);
+    }
   }
 
+  /** input on focus */
   function onFocus() {
+    setErrorMsg('');
     setShowErrorTip(false);
   }
 
   return (
     <div className="relative">
-      {showErrorTip && meta.touched && !isEmpty(meta.error) ? (
-        <>
-          <span className="relative">
-            <input
-              name={name}
-              type={inputType}
-              placeholder={placeholder}
-              className={`${FORM_CONTROL} border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950 focus:border-b-2 ${classname} `}
-              onBlur={onBlur}
-              onFocus={onFocus}
-              onChange={input.onChange}
-              value={normalizedValue}
-            />
-            {ispwd && showToggle}
-          </span>
-          <p className="text-red-500 text-sm">{meta.error}</p>
-        </>
-      ) : (
-        <span>
-          <input
-            name={name}
-            type={inputType}
-            placeholder={placeholder}
-            className={`${FORM_CONTROL} border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 focus:border-b-2 ${classname} `}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            onChange={input.onChange}
-            value={normalizedValue}
-          />
-          {ispwd && showToggle}
-        </span>
-      )}
+      <span className="relative">
+        <input
+          ref={inputRef}
+          name={name}
+          type={inputType}
+          placeholder={placeholder}
+          className={`${FORM_CONTROL} ${classname}
+          ${
+            showErrorTip
+              ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950 focus:border-b-2'
+              : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 focus:border-b-2'
+          }
+          `}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          onChange={(e) => {
+            setValue(e.target.value);
+            setErrorMsg('');
+            if (isEmpty(e.target.value)) setErrorMsg(`${name}欄位必填`);
+          }}
+          onKeyUp={(e) => {
+            handleEnter(e.key);
+          }}
+          value={value}
+        />
+        {ispwd && showToggle}
+      </span>
+      {showErrorTip && <p className="text-red-500 text-sm">{errorMsg}</p>}
     </div>
   );
 }

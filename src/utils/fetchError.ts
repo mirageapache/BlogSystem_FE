@@ -11,7 +11,7 @@ const swal = withReactContent(Swal);
 /** 錯誤提醒(一般型式) */
 export const errorAlert = (errorMsg?: string) => {
   swal.fire({
-    title: !isEmpty(errorMsg) ? errorMsg : 'Oops！發生一些錯誤，請稍候再試',
+    title: !isEmpty(errorMsg) ? errorMsg : '發生一些錯誤，請稍候再試',
     icon: 'error',
     confirmButtonText: '確認',
   });
