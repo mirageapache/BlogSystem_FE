@@ -18,6 +18,7 @@ import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import { checkLogin } from '../../utils/common';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
+import { setPostData, setPostId, setShowEditModal } from '../../redux/postSlice';
 // --- components ---
 import PostInfoItem from './PostInfoItem';
 
@@ -76,6 +77,9 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
+    dispatchSlice(setPostId(post._id));
+    dispatchSlice(setPostData(post));
+    dispatchSlice(setShowEditModal(true));
   };
 
   return (
