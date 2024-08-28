@@ -24,6 +24,24 @@ export async function getAllPosts(): Promise<PostApiType> {
   return result;
 }
 
+/** (動態)取得貼文資料
+ * @param page 要取得的資料頁碼
+ */
+export async function getPartialPosts(page: number): Promise<PostApiType> {
+  const limit = 5; // 每次取得資料數量
+
+  const result = await axios
+    .post(`${baseUrl}/post/partial`, { page, limit })
+    .then((res) => {
+      const postData = res.data;
+      return postData;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}
+
 /** 取得搜尋貼文 or 特定使用者的貼文 */
 export async function getSearchPost(
   searchString?: string,
