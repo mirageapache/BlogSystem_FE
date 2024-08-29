@@ -29,16 +29,18 @@ export async function getAllPosts(): Promise<PostApiType> {
  */
 export async function getPartialPosts(page: number): Promise<PostApiType> {
   const limit = 5; // 每次取得資料數量
-
-  const result = await axios
-    .post(`${baseUrl}/post/partial`, { page, limit })
-    .then((res) => {
-      const postData = res.data;
-      return postData;
-    })
-    .catch((error) => {
-      return error;
-    });
+  let result = null;
+  if (page > 0) {
+    result = await axios
+      .post(`${baseUrl}/post/partial`, { page, limit })
+      .then((res) => {
+        const postData = res.data;
+        return postData;
+      })
+      .catch((error) => {
+        return error;
+      });
+  }
   return result;
 }
 
