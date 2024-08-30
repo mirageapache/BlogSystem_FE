@@ -13,6 +13,7 @@ import FollowList from 'components/user/FollowList';
 import { getCookies } from 'utils/common';
 import { FollowResultType } from 'types/followType';
 // --- api / type ---
+import ExplorePost from 'components/explore/ExplorePost';
 import { getAllPosts, getSearchHashTag, getSearchPost } from '../api/post';
 import { getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
@@ -49,11 +50,11 @@ function ExplorePage() {
     { enabled: !!searchString || isEmpty(searchString) }
   ) as ArticleResultType;
   /** 取得貼文資料 */
-  const postListData = useQuery(
-    ['explorePost', searchString],
-    () => (isEmpty(searchString) ? getAllPosts() : getSearchPost(searchString, '')),
-    { enabled: !!searchString }
-  ) as PostResultType;
+  // const postListData = useQuery(
+  //   ['explorePost', searchString],
+  //   () => (isEmpty(searchString) ? getAllPosts() : getSearchPost(searchString, '')),
+  //   { enabled: !!searchString }
+  // ) as PostResultType;
   /** 取得用戶清單 */
   const userList = useQuery(
     ['exploreUser', searchString],
@@ -78,7 +79,7 @@ function ExplorePage() {
         setActiveUnderLine('translate-x-0');
         break;
       case 'post':
-        postListData.refetch();
+        // postListData.refetch();
         setActiveUnderLine('translate-x-full');
         break;
       case 'user':
@@ -210,7 +211,8 @@ function ExplorePage() {
         {/* 貼文 */}
         {exploreTag === 'post' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <PostList postListData={postListData!} />
+            {/* <PostList postListData={postListData!} /> */}
+            <ExplorePost />
           </section>
         )}
         {/* 用戶 */}

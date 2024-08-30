@@ -1,9 +1,11 @@
 import axios from 'axios';
+import { isEmpty } from 'lodash';
 import { API_URL, config } from './index';
 import { PostDataType } from '../types/postType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
+const limit = 5; // 每次取得資料數量
 
 /** postApi 型別 */
 interface PostApiType extends AxResponseType {
@@ -28,7 +30,6 @@ export async function getAllPosts(): Promise<PostApiType> {
  * @param page 要取得的資料頁碼
  */
 export async function getPartialPosts(page: number): Promise<PostApiType> {
-  const limit = 5; // 每次取得資料數量
   let result = null;
   if (page > 0) {
     result = await axios
@@ -47,16 +48,20 @@ export async function getPartialPosts(page: number): Promise<PostApiType> {
 /** 取得搜尋貼文 or 特定使用者的貼文 */
 export async function getSearchPost(
   searchString?: string,
-  authorId?: string
+  authorId?: string,
+  page?: number
 ): Promise<PostApiType> {
-  const result = await axios
-    .post(`${baseUrl}/post/search`, { searchString, authorId })
-    .then((res) => {
-      return res.data;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+  let result = null;
+  if (page && page > 0) {
+    result = await axios
+      .post(`${baseUrl}/post/search`, { searchString, authorId, page, limit })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        return error.response;
+      });
+  }
   return result;
 }
 
