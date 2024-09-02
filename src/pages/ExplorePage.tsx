@@ -44,30 +44,32 @@ function ExplorePage() {
   }, []);
 
   /** 取得文章資料 */
-  const articleListData = useQuery(
-    ['exploreArticle', searchString],
-    () => (isEmpty(searchString) ? getArticles() : getSearchArticle(searchString, '')),
-    { enabled: !!searchString || isEmpty(searchString) }
-  ) as ArticleResultType;
+  // const articleListData = useQuery(
+  //   ['exploreArticle', searchString],
+  //   () => (isEmpty(searchString) ? getArticles() : getSearchArticle(searchString, '')),
+  //   { enabled: !!searchString || isEmpty(searchString) }
+  // ) as ArticleResultType;
+
   /** 取得貼文資料 */
   // const postListData = useQuery(
   //   ['explorePost', searchString],
   //   () => (isEmpty(searchString) ? getAllPosts() : getSearchPost(searchString, '')),
   //   { enabled: !!searchString }
   // ) as PostResultType;
+
   /** 取得用戶清單 */
-  const userList = useQuery(
-    ['exploreUser', searchString],
-    () => getSearchUserList(searchString, currentUser),
-    { enabled: !!searchString }
-  ) as FollowResultType;
+  // const userList = useQuery(
+  //   ['exploreUser', searchString],
+  //   () => getSearchUserList(searchString, currentUser),
+  //   { enabled: !!searchString }
+  // ) as FollowResultType;
 
   /** 取得hashTag相關主題的貼文清單 */
-  const hashTagPostList = useQuery(
-    ['hashTag', searchString],
-    () => getSearchHashTag(searchString),
-    { enabled: !!searchString }
-  ) as PostResultType;
+  // const hashTagPostList = useQuery(
+  //   ['hashTag', searchString],
+  //   () => getSearchHashTag(searchString),
+  //   { enabled: !!searchString }
+  // ) as PostResultType;
 
   useEffect(() => {
     switch (exploreTag) {
@@ -75,7 +77,7 @@ function ExplorePage() {
       //   setActiveUnderLine('translate-x-0');
       //   break;
       case 'article':
-        articleListData.refetch();
+        // articleListData.refetch();
         setActiveUnderLine('translate-x-0');
         break;
       case 'post':
@@ -83,7 +85,7 @@ function ExplorePage() {
         setActiveUnderLine('translate-x-full');
         break;
       case 'user':
-        userList.refetch();
+        // userList.refetch();
         setActiveUnderLine('translate-x-[200%]');
         break;
       case 'tag':
@@ -205,7 +207,7 @@ function ExplorePage() {
         {/* 文章 */}
         {exploreTag === 'article' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <ArticleList articleListData={articleListData!} />
+            {/* <ArticleList articleListData={articleListData!} /> */}
           </section>
         )}
         {/* 貼文 */}
@@ -218,13 +220,13 @@ function ExplorePage() {
         {/* 用戶 */}
         {exploreTag === 'user' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <FollowList type="userList" followList={userList!} />
+            {/* <FollowList type="userList" followList={userList!} /> */}
           </section>
         )}
         {/* 標籤 */}
         {exploreTag === 'tag' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            {isEmpty(searchString) || isEmpty(hashTagPostList) ? (
+            {/* {isEmpty(searchString) || isEmpty(hashTagPostList) ? (
               <section className="flex justify-center w-full max-w-[600px]">
                 <div className="">
                   <NoSearchResult
@@ -238,7 +240,7 @@ function ExplorePage() {
               <section className="flex justify-center w-full max-w-[600px]">
                 <PostList postListData={hashTagPostList!} />
               </section>
-            )}
+            )} */}
           </section>
         )}
       </div>
