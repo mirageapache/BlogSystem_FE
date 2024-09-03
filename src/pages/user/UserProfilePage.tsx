@@ -11,16 +11,14 @@ import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import FollowList from 'components/user/FollowList';
-import PostList from 'components/post/PostList';
 // --- api / type ---
 import { UserProfileType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
 import { ArticleResultType } from 'types/articleType';
-import { PostResultType } from '../../types/postType';
+import ProfilePost from 'components/profile/ProfilePost';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
 import { getArticles, getSearchArticle } from '../../api/article';
-import { getSearchPost } from '../../api/post';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
 import { setActivePage } from '../../redux/sysSlice';
@@ -42,7 +40,6 @@ function UserProfilePage() {
   const userStateData = useSelector((state: StateType) => state.user.userData);
   let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
   let articleResult: ArticleResultType;
-  let postResult: PostResultType;
   let followList: FollowResultType;
   let userData: UserProfileType | undefined;
 
@@ -78,9 +75,6 @@ function UserProfilePage() {
       articleResult = useQuery('profileAritcles', () =>
         getSearchArticle('', userId)
       ) as ArticleResultType;
-      break;
-    case 'post':
-      postResult = useQuery('profilePost', () => getSearchPost('', userId)) as PostResultType;
       break;
     case 'follow':
       /** 取得追蹤資料 */
@@ -212,7 +206,7 @@ function UserProfilePage() {
         {/* 貼文 Post */}
         {activeTab === 'post' && (
           <div className="">
-            <PostList postListData={postResult!} />
+            <ProfilePost userId={userId!} />
           </div>
         )}
 

@@ -6,28 +6,22 @@ import PostListDynamic from 'components/post/PostListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 // --- api / type ---
 import { PostDataType } from 'types/postType';
-import { getPartialPosts, getSearchPost } from 'api/post';
-import { useSearchParams } from 'react-router-dom';
+import { getSearchPost } from 'api/post';
 import NoSearchResult from 'components/tips/NoSearchResult';
 
-function ExplorePost() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchString = searchParams.get('search') || ''; // 取得搜尋字串
+function ProfilePost(props: { userId: string }) {
+  const { userId } = props;
   let nextPage = -1; // 下一頁指標，如果為「-1」表示最後一頁了
 
   // 使用 useInfiniteQuery 取得貼文
   const { data, fetchNextPage, isLoading } = useInfiniteQuery(
-    ['explorePost', searchString],
-    ({ pageParam = 1 }) =>
-      isEmpty(searchString)
-        ? getPartialPosts(pageParam)
-        : getSearchPost(searchString, '', pageParam),
+    ['profilePost'],
+    ({ pageParam = 1 }) => getSearchPost('', userId, pageParam),
     {
       getNextPageParam: (lastPage) => {
         nextPage = lastPage.nextPage;
         return nextPage > 0 ? nextPage : undefined;
       },
-      // 當 searchString 改變時，重置頁面
       keepPreviousData: false,
     }
   );
@@ -69,4 +63,4 @@ function ExplorePost() {
   );
 }
 
-export default ExplorePost;
+export default ProfilePost;
