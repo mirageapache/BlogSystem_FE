@@ -7,21 +7,18 @@ import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
 import { PostDataType } from 'types/postType';
-import { getPartialPosts, getSearchPost } from 'api/post';
+import { getSearchHashTag } from 'api/post';
 import { useSearchParams } from 'react-router-dom';
 
-function ExplorePost() {
+function ExploreHashTag() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
   let nextPage = -1; // 下一頁指標，如果為「-1」表示最後一頁了
 
   // 使用 useInfiniteQuery 取得貼文
   const { data, fetchNextPage, isLoading } = useInfiniteQuery(
-    ['explorePost', searchString],
-    ({ pageParam = 1 }) =>
-      isEmpty(searchString)
-        ? getPartialPosts(pageParam)
-        : getSearchPost(searchString, '', pageParam),
+    ['exploreHashTag', searchString],
+    ({ pageParam = 1 }) => getSearchHashTag(searchString, pageParam),
     {
       getNextPageParam: (lastPage) => {
         nextPage = lastPage.nextPage;
@@ -57,7 +54,9 @@ function ExplorePost() {
   }, [nextPage]);
 
   if (get(data, 'pages[0].code', undefined) === 'NO_FOUND')
-    return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
+    return (
+      <NoSearchResult msgOne="輸入貼文的HashTag" msgTwo="即可搜尋你想找的主題貼文" type="post" />
+    );
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
@@ -69,4 +68,4 @@ function ExplorePost() {
   );
 }
 
-export default ExplorePost;
+export default ExploreHashTag;

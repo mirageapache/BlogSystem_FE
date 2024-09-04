@@ -14,7 +14,7 @@ const initState = {
   darkMode: localStorage.getItem('darkMode') || '', // 深色模式
   editMode: false, // 文章或貼文的編輯狀態
   activePage: path, // 當前頁面路徑，用來判斷作用中的頁籤
-  exploreTag: 'post', // 紀錄"探索頁"使用中的tag頁籤
+  exploreTag: 'article', // 紀錄"探索頁"使用中的tag頁籤
 };
 
 /** system Slice Function */

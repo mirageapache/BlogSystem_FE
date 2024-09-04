@@ -13,7 +13,7 @@ interface ArticleApiType extends AxResponseType {
 
 /** 動態取得文章資料 型別 */
 interface ArticlePageListType extends AxResponseType {
-  posts: any;
+  articles: any;
   nextPage: number;
   data: ArticleDataType[];
 }
@@ -41,8 +41,8 @@ export async function getPartialArticles(page: number): Promise<ArticlePageListT
     result = await axios
       .post(`${baseUrl}/article/partial`, { page, limit })
       .then((res) => {
-        const postData = res.data;
-        return postData;
+        const articleData = res.data;
+        return articleData;
       })
       .catch((error) => {
         return error;
@@ -69,7 +69,7 @@ export async function getSearchArticle(
   searchString?: string,
   authorId?: string,
   page?: number
-): Promise<ArticleApiType> {
+): Promise<ArticlePageListType> {
   let result = null;
   if (page && page > 0) {
     result = await axios

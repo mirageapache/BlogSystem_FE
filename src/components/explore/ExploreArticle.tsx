@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { get, isEmpty } from 'lodash';
 // --- components ---
-import PostListDynamic from 'components/post/PostListDynamic';
+import ArticleListDynamic from 'components/article/ArticleListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
-// --- api / type ---
-import { PostDataType } from 'types/postType';
-import { getPartialPosts, getSearchPost } from 'api/post';
-import { useSearchParams } from 'react-router-dom';
 import NoSearchResult from 'components/tips/NoSearchResult';
+// --- api / type ---
+import { useSearchParams } from 'react-router-dom';
+import { getPartialArticles, getSearchArticle } from 'api/article';
+import { ArticleDataType } from 'types/articleType';
 
 function ExploreArticle() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,8 +20,8 @@ function ExploreArticle() {
     ['exploreArticle', searchString],
     ({ pageParam = 1 }) =>
       isEmpty(searchString)
-        ? getPartialPosts(pageParam)
-        : getSearchPost(searchString, '', pageParam),
+        ? getPartialArticles(pageParam)
+        : getSearchArticle(searchString, '', pageParam),
     {
       getNextPageParam: (lastPage) => {
         nextPage = lastPage.nextPage;
@@ -37,8 +37,8 @@ function ExploreArticle() {
     window.scrollTo(0, 0);
   }, []);
 
-  const postList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[])
+  const articleList = data
+    ? data.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[])
     : [];
 
   /** 滾動判斷fetch新資料 */
@@ -57,14 +57,18 @@ function ExploreArticle() {
   }, [nextPage]);
 
   if (get(data, 'pages[0].code', undefined) === 'NO_FOUND')
-    return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
+    return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="article" />;
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">
-      <PostListDynamic postListData={postList} isLoading={isLoading} atBottom={nextPage < 0} />
+      <ArticleListDynamic
+        articleListData={articleList}
+        isLoading={isLoading}
+        atBottom={nextPage < 0}
+      />
     </div>
   );
 }

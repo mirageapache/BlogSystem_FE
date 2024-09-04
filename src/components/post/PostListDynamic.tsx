@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { isEmpty } from 'lodash';
 // --- components ---
 import PostItem from './PostItem';
@@ -14,8 +14,6 @@ interface PropType {
 }
 
 function PostListDynamic({ postListData, isLoading, atBottom }: PropType) {
-  const loadingBar = useRef(null); // 判斷是否進行載入新資料(refetch)
-
   if (isLoading && isEmpty(postListData)) return <PostListLoading />;
 
   const postItems = postListData!.map((post) => {
@@ -25,7 +23,6 @@ function PostListDynamic({ postListData, isLoading, atBottom }: PropType) {
   return (
     <section className="w-full">
       <div>{postItems}</div>
-      <div ref={loadingBar} />
       {atBottom ? (
         <div className="text-center">已經沒有更多貼文資料了</div>
       ) : (

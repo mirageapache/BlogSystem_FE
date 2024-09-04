@@ -14,6 +14,8 @@ import { getCookies } from 'utils/common';
 import { FollowResultType } from 'types/followType';
 // --- api / type ---
 import ExplorePost from 'components/explore/ExplorePost';
+import ExploreArticle from 'components/explore/ExploreArticle';
+import ExploreHashTag from 'components/explore/ExploreHashTag';
 import { getAllPosts, getSearchHashTag, getSearchPost } from '../api/post';
 import { getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
@@ -208,6 +210,7 @@ function ExplorePage() {
         {exploreTag === 'article' && (
           <section className="flex justify-center w-full max-w-[600px]">
             {/* <ArticleList articleListData={articleListData!} /> */}
+            <ExploreArticle />
           </section>
         )}
         {/* 貼文 */}
@@ -241,6 +244,7 @@ function ExplorePage() {
                 <PostList postListData={hashTagPostList!} />
               </section>
             )} */}
+            <ExploreHashTag />
           </section>
         )}
       </div>
