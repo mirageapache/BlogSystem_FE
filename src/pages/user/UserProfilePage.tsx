@@ -11,11 +11,12 @@ import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import FollowList from 'components/user/FollowList';
+import ProfilePost from 'components/profile/ProfilePost';
+import ProfileArticle from 'components/profile/ProfileArticle';
 // --- api / type ---
 import { UserProfileType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
 import { ArticleResultType } from 'types/articleType';
-import ProfilePost from 'components/profile/ProfilePost';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
 import { getArticles, getSearchArticle } from '../../api/article';
@@ -199,7 +200,8 @@ function UserProfilePage() {
         {/* 文章 Article */}
         {activeTab === 'article' && (
           <div className="">
-            <ArticleList articleListData={articleResult!} />
+            {/* <ArticleList articleListData={articleResult!} /> */}
+            <ProfileArticle userId={userId!} />
           </div>
         )}
 

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { get, isEmpty } from 'lodash';
+import { useSearchParams } from 'react-router-dom';
 // --- components ---
 import ArticleListDynamic from 'components/article/ArticleListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
-import { useSearchParams } from 'react-router-dom';
 import { getPartialArticles, getSearchArticle } from 'api/article';
 import { ArticleDataType } from 'types/articleType';
 

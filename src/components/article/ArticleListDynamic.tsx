@@ -24,7 +24,7 @@ function ArticleListDynamic({ articleListData, isLoading, atBottom }: PropType) 
     <section className="w-full">
       <div>{articleItems}</div>
       {atBottom ? (
-        <div className="text-center">已經沒有更多貼文資料了</div>
+        <div className="text-center">已經沒有更多文章了</div>
       ) : (
         <ArticleLoading withBorder={false} />
       )}

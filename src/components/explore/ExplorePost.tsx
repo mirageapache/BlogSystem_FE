@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { get, isEmpty } from 'lodash';
+import { useSearchParams } from 'react-router-dom';
 // --- components ---
 import PostListDynamic from 'components/post/PostListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
@@ -8,7 +9,6 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
 import { PostDataType } from 'types/postType';
 import { getPartialPosts, getSearchPost } from 'api/post';
-import { useSearchParams } from 'react-router-dom';
 
 function ExplorePost() {
   const [searchParams, setSearchParams] = useSearchParams();
