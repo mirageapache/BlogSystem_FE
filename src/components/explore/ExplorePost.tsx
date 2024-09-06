@@ -56,7 +56,7 @@ function ExplorePost() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].code', undefined) === 'NO_FOUND')
+  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')

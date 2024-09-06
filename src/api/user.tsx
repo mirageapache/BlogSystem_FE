@@ -12,7 +12,7 @@ interface GetUserProfileType extends AxResponseType {
 
 /** 動態取得使用者資料 型別 */
 interface UserPageListType extends AxResponseType {
-  users: any;
+  userList: any;
   nextPage: number;
   data: UserDataType[];
 }
@@ -45,7 +45,7 @@ export async function getSearchUserList(
     result = await axios
       .post(`${baseUrl}/user/getSearchUserList`, { searchString, userId, page, limit })
       .then((res) => {
-        return res;
+        return res.data;
       })
       .catch((error) => {
         return error.response;

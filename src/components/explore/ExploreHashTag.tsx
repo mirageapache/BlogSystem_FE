@@ -58,7 +58,7 @@ function ExploreHashTag() {
       <NoSearchResult msgOne="輸入貼文的HashTag" msgTwo="即可搜尋你想找的主題貼文" type="post" />
     );
 
-  if (get(data, 'pages[0].code', undefined) === 'NO_FOUND')
+  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關HashTag貼文" msgTwo="" type="post" />;
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')

@@ -15,7 +15,7 @@ function ExploreUser() {
   const currentUser = getCookies('uid'); // 目前登入的使用者id (判斷追蹤狀態)
   let nextPage = -1;
 
-  const { data, fetchNextPage, isLoading } = useInfiniteQuery(
+  const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
     ['exploreUser', searchString],
     ({ pageParam = 1 }) => getSearchUserList(pageParam, searchString, currentUser),
     {
@@ -34,7 +34,7 @@ function ExploreUser() {
   }, []);
 
   const userList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.users], [] as UserDataType[])
+    ? data.pages.reduce((acc, page) => [...acc, ...page.userList], [] as UserDataType[])
     : [];
 
   /** 滾動判斷fetch新資料 */
@@ -52,15 +52,20 @@ function ExploreUser() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].code', undefined) === 'NO_FOUND')
+  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關用戶" msgTwo="" type="user" />;
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
 
   return (
-    <div>
-      <UserListDynamic userListData={userList} isLoading={isLoading} atBottom={nextPage < 0} />
+    <div className="w-full max-w-[600px] p-1 sm:p-0">
+      <UserListDynamic
+        userListData={userList}
+        isLoading={isLoading}
+        atBottom={nextPage < 0}
+        refetch={refetch}
+      />
     </div>
   );
 }

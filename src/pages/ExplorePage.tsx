@@ -16,6 +16,7 @@ import { FollowResultType } from 'types/followType';
 import ExplorePost from 'components/explore/ExplorePost';
 import ExploreArticle from 'components/explore/ExploreArticle';
 import ExploreHashTag from 'components/explore/ExploreHashTag';
+import ExploreUser from 'components/explore/ExploreUser';
 import { getAllPosts, getSearchHashTag, getSearchPost } from '../api/post';
 import { getSearchUserList } from '../api/user';
 import { getSearchArticle, getArticles } from '../api/article';
@@ -224,6 +225,7 @@ function ExplorePage() {
         {exploreTag === 'user' && (
           <section className="flex justify-center w-full max-w-[600px]">
             {/* <FollowList type="userList" followList={userList!} /> */}
+            <ExploreUser />
           </section>
         )}
         {/* 標籤 */}
