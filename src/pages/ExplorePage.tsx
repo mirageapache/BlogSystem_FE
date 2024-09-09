@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
 import ExplorePost from 'components/explore/ExplorePost';
@@ -11,7 +11,7 @@ import ExploreArticle from 'components/explore/ExploreArticle';
 import ExploreHashTag from 'components/explore/ExploreHashTag';
 import ExploreUser from 'components/explore/ExploreUser';
 // --- functions / types ---
-import { getCookies } from 'utils/common';
+import { checkLogin, getCookies } from 'utils/common';
 // --- api / type ---
 import { getSearchCount } from 'api';
 import { SysStateType, setActivePage, setExploreTag } from '../redux/sysSlice';
@@ -29,12 +29,19 @@ function ExplorePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
   const exploreTag = useSelector((state: stateType) => state.system.exploreTag); // 紀錄作用中的頁籤
-  const tabButtonStyle = 'flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
+  const tabButtonStyle =
+    'relative flex w-1/4 justify-center items-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
+  const countSpanStyle =
+    'sm:absolute sm:right-5 md:right-4 hidden sm:inline-block text-[12px] leading-5 px-3 bg-orange-500 text-white rounded-full'; // 數量標籤樣式
 
-  const { data } = useQuery('search', () => getSearchCount(searchString));
-  console.log(data);
+  const { data } = useQuery(['search', searchString], () => getSearchCount(searchString));
+  const article = get(data, 'article', 0);
+  const post = get(data, 'post', 0);
+  let user = get(data, 'user', 0);
+  if (checkLogin()) user -= 1; // 有登入須扣除自己
+  const hashtag = get(data, 'hashtag', 0);
 
   useEffect(() => {
     dispatch(setActivePage('explore'));
@@ -74,6 +81,7 @@ function ExplorePage() {
             name="search"
             placeholder="搜尋..."
             value={searchString}
+            autoComplete="off"
             onChange={(e) => {
               if (isEmpty(e.target.value)) {
                 navigate('/explore');
@@ -105,16 +113,14 @@ function ExplorePage() {
               className={tabButtonStyle}
               onClick={() => handleTabActive('article')}
             >
-              <p className="hidden md:inline-block">
-                文章
-                {!isEmpty(data?.article) && (
-                  <span className="bg-orange-500 rounded-full">{data?.article}</span>
-                )}
-              </p>
+              <p className="hidden md:inline-block">文章</p>
               <FontAwesomeIcon
                 icon={icon({ name: 'file-lines', style: 'regular' })}
                 className={`${iconStyle} ${exploreTag === 'article' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && article > 0 && (
+                <span className={countSpanStyle}>{article}</span>
+              )}
             </button>
             <button
               type="button"
@@ -126,6 +132,7 @@ function ExplorePage() {
                 icon={icon({ name: 'note-sticky', style: 'regular' })}
                 className={`${iconStyle} ${exploreTag === 'post' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && post > 0 && <span className={countSpanStyle}>{post}</span>}
             </button>
             <button
               type="button"
@@ -137,6 +144,7 @@ function ExplorePage() {
                 icon={icon({ name: 'users', style: 'solid' })}
                 className={`${iconStyle} ${exploreTag === 'user' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && user > 0 && <span className={countSpanStyle}>{user}</span>}
             </button>
             <button type="button" className={tabButtonStyle} onClick={() => handleTabActive('tag')}>
               <p className="hidden md:inline-block">標籤</p>
@@ -144,6 +152,9 @@ function ExplorePage() {
                 icon={icon({ name: 'tag', style: 'solid' })}
                 className={`${iconStyle} ${exploreTag === 'tag' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && hashtag > 0 && (
+                <span className={countSpanStyle}>{hashtag}</span>
+              )}
             </button>
           </div>
           <div className="flex justify-start -translate-y-0.5">

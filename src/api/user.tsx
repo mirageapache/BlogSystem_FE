@@ -4,7 +4,7 @@ import { AxResponseType } from '../types/apiType';
 import { UserDataType } from '../types/userType';
 
 const baseUrl = API_URL;
-const limit = 5;
+const limit = 20;
 
 interface GetUserProfileType extends AxResponseType {
   data: UserDataType;
