@@ -6,20 +6,18 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // --- components ---
 import Avatar from 'components/user/Avatar';
-import ArticleList from 'components/article/ArticleList';
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import FollowList from 'components/user/FollowList';
 import ProfilePost from 'components/profile/ProfilePost';
 import ProfileArticle from 'components/profile/ProfileArticle';
+import ProfileFollowing from 'components/profile/ProfileFollowing';
 // --- api / type ---
 import { UserProfileType, UserResultType } from 'types/userType';
 import { FollowResultType } from 'types/followType';
-import { ArticleResultType } from 'types/articleType';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { getFollowingList, getFollowerList } from '../../api/follow';
-import { getArticles, getSearchArticle } from '../../api/article';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
 import { setActivePage } from '../../redux/sysSlice';
@@ -40,7 +38,6 @@ function UserProfilePage() {
 
   const userStateData = useSelector((state: StateType) => state.user.userData);
   let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
-  let articleResult: ArticleResultType;
   let followList: FollowResultType;
   let userData: UserProfileType | undefined;
 
@@ -70,29 +67,22 @@ function UserProfilePage() {
     userData = get(data, 'data', {}) as UserProfileType;
   }
 
-  switch (activeTab) {
-    case 'article':
-      /** 取得文章資料 */
-      articleResult = useQuery('profileAritcles', () =>
-        getSearchArticle('', userId)
-      ) as ArticleResultType;
-      break;
-    case 'follow':
-      /** 取得追蹤資料 */
-      followList = useQuery('profileFollowingList', () =>
-        getFollowingList(userId!)
-      ) as FollowResultType;
-      break;
-    case 'follower':
-      /** 取得粉絲資料 */
-      followList = useQuery('profileFollowerList', () =>
-        getFollowerList(userId!)
-      ) as FollowResultType;
-      break;
-    default:
-      articleResult = useQuery('profileAritcles', () => getArticles()) as ArticleResultType;
-      break;
-  }
+  // switch (activeTab) {
+  //   case 'follow':
+  //     /** 取得追蹤資料 */
+  //     followList = useQuery('profileFollowingList', () =>
+  //       getFollowingList(userId!)
+  //     ) as FollowResultType;
+  //     break;
+  //   case 'follower':
+  //     /** 取得粉絲資料 */
+  //     followList = useQuery('profileFollowerList', () =>
+  //       getFollowerList(userId!)
+  //     ) as FollowResultType;
+  //     break;
+  //   default:
+  //     break;
+  // }
 
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {
@@ -200,7 +190,6 @@ function UserProfilePage() {
         {/* 文章 Article */}
         {activeTab === 'article' && (
           <div className="">
-            {/* <ArticleList articleListData={articleResult!} /> */}
             <ProfileArticle userId={userId!} />
           </div>
         )}
@@ -215,7 +204,8 @@ function UserProfilePage() {
         {/* 追蹤 follow */}
         {activeTab === 'follow' && (
           <div className="">
-            <FollowList type="following" followList={followList!} />
+            <ProfileFollowing userId={userId!} />
+            {/* <FollowList type="following" followList={followList!} /> */}
           </div>
         )}
 

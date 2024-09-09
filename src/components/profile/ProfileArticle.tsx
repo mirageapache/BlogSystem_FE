@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { get, isEmpty } from 'lodash';
 // --- components ---
+import ArticleListDynamic from 'components/article/ArticleListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
-// --- api / type ---
 import NoSearchResult from 'components/tips/NoSearchResult';
+// --- api / type ---
 import { getSearchArticle } from 'api/article';
 import { ArticleDataType } from 'types/articleType';
-import ArticleListDynamic from 'components/article/ArticleListDynamic';
 
 function ProfileArticle(props: { userId: string }) {
   const { userId } = props;

@@ -1,27 +1,31 @@
 import React, { useEffect } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { get, isEmpty } from 'lodash';
-// --- components ---
-import PostListDynamic from 'components/post/PostListDynamic';
-import BasicErrorPanel from 'components/tips/BasicErrorPanel';
+import { useSearchParams } from 'react-router-dom';
+import { getCookies } from 'utils/common';
+import { getSearchUserList } from 'api/user';
 import NoSearchResult from 'components/tips/NoSearchResult';
-// --- api / type ---
-import { PostDataType } from 'types/postType';
-import { getSearchPost } from 'api/post';
+import BasicErrorPanel from 'components/tips/BasicErrorPanel';
+import { UserDataType } from 'types/userType';
+import UserListDynamic from 'components/user/UserListDynamic';
+import { getFollowingList } from 'api/follow';
 
-function ProfilePost(props: { userId: string }) {
+function ProfileFollowing(props: { userId: string }) {
   const { userId } = props;
-  let nextPage = -1; // 下一頁指標，如果為「-1」表示最後一頁了
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchString = searchParams.get('search') || '';
+  const currentUser = getCookies('uid'); // 目前登入的使用者id (判斷追蹤狀態)
+  let nextPage = -1;
 
-  // 使用 useInfiniteQuery 取得貼文
-  const { data, fetchNextPage, isLoading } = useInfiniteQuery(
-    ['profilePost'],
-    ({ pageParam = 1 }) => getSearchPost('', userId, pageParam),
+  const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
+    ['exploreUser', searchString],
+    ({ pageParam = 1 }) => getFollowingList(userId, pageParam),
     {
       getNextPageParam: (lastPage) => {
         nextPage = lastPage.nextPage;
         return nextPage > 0 ? nextPage : undefined;
       },
+      // 當 searchString 改變時，重置頁面
       keepPreviousData: false,
     }
   );
@@ -31,8 +35,8 @@ function ProfilePost(props: { userId: string }) {
     window.scrollTo(0, 0);
   }, []);
 
-  const postList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[])
+  const followList = data
+    ? data.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[])
     : [];
 
   /** 滾動判斷fetch新資料 */
@@ -51,16 +55,23 @@ function ProfilePost(props: { userId: string }) {
   }, [nextPage]);
 
   if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
-    return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
+    return (
+      <NoSearchResult msgOne="你還沒有追蹤其他人喔!" msgTwo="快去尋找有趣的人吧" type="user" />
+    );
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">
-      <PostListDynamic postListData={postList} isLoading={isLoading} atBottom={nextPage < 0} />
+      <UserListDynamic
+        userListData={followList}
+        isLoading={isLoading}
+        atBottom={nextPage < 0}
+        refetch={refetch}
+      />
     </div>
   );
 }
 
-export default ProfilePost;
+export default ProfileFollowing;
