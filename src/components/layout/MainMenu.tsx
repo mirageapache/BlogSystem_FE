@@ -6,7 +6,6 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { get, isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { useCookies } from 'react-cookie';
 import withReactContent from 'sweetalert2-react-content';
 import { Link, useNavigate } from 'react-router-dom';
 // --- components ---
@@ -16,7 +15,7 @@ import UserLoading from 'components/user/UserLoading';
 import { SysStateType, setActivePage, setDarkMode, setEditMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { checkLogin, scrollToTop } from '../../utils/common';
+import { checkLogin, deleteCookie, scrollToTop } from '../../utils/common';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -90,7 +89,6 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   const systemState = useSelector((state: StateType) => state.system);
   const activePage = get(systemState, 'activePage');
   const swal = withReactContent(Swal);
-  const [cookies, setCookie, removeCookie] = useCookies(['uid']);
   const userState = useSelector((state: StateType) => state.user);
   const { userData } = userState;
 
@@ -102,7 +100,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   /** 登出 */
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    removeCookie('uid');
+    deleteCookie('uid');
     swal
       .fire({
         title: '已成功登出',

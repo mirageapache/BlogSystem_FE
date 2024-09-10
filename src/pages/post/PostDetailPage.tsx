@@ -11,17 +11,17 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import NoSearchResult from 'components/tips/NoSearchResult';
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import PostLoading from 'components/post/PostLoading';
+import CommentList from 'components/comment/CommentList';
+import PostInfoPanel from 'components/post/PostInfoPanel';
 // --- api ---
 import { getPostDetail } from 'api/post';
 import { formatDateTime } from 'utils/dateTime';
-import PostInfoPanel from 'components/post/PostInfoPanel';
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
 import { errorAlert } from 'utils/fetchError';
 import { getCookies } from 'utils/common';
 import { useDispatch } from 'react-redux';
 import { setSignInPop } from 'redux/loginSlice';
-import CommentList from 'components/comment/CommentList';
 import { CommentDataType } from 'types/commentType';
 import { HINT_LABEL } from 'constants/LayoutConstants';
 

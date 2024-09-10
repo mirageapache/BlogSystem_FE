@@ -172,7 +172,7 @@ function ArticleDetailPage() {
             });
         }
       },
-      onError: (err) => errorAlert(),
+      onError: () => errorAlert(),
     }
   );
 

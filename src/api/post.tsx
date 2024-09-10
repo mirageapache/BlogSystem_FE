@@ -4,10 +4,18 @@ import { PostDataType } from '../types/postType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
+const limit = 5; // 每次取得資料數量
 
 /** postApi 型別 */
 interface PostApiType extends AxResponseType {
   data: PostDataType;
+}
+
+/** 動態取得貼文資料 型別 */
+interface PostPageListType extends AxResponseType {
+  posts: any;
+  nextPage: number;
+  data: PostDataType[];
 }
 
 /** 取得所有貼文 */
@@ -24,19 +32,42 @@ export async function getAllPosts(): Promise<PostApiType> {
   return result;
 }
 
+/** (動態)取得貼文資料
+ * @param page 要取得的資料頁碼
+ */
+export async function getPartialPosts(page: number): Promise<PostPageListType> {
+  let result = null;
+  if (page > 0) {
+    result = await axios
+      .post(`${baseUrl}/post/partial`, { page, limit })
+      .then((res) => {
+        const postData = res.data;
+        return postData;
+      })
+      .catch((error) => {
+        return error;
+      });
+  }
+  return result;
+}
+
 /** 取得搜尋貼文 or 特定使用者的貼文 */
 export async function getSearchPost(
   searchString?: string,
-  authorId?: string
-): Promise<PostApiType> {
-  const result = await axios
-    .post(`${baseUrl}/post/search`, { searchString, authorId })
-    .then((res) => {
-      return res.data;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+  authorId?: string,
+  page?: number
+): Promise<PostPageListType> {
+  let result = null;
+  if (page && page > 0) {
+    result = await axios
+      .post(`${baseUrl}/post/search`, { searchString, authorId, page, limit })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        return error.response;
+      });
+  }
   return result;
 }
 
@@ -93,10 +124,13 @@ export async function toggleLikePost(postId: string, userId: string, action: boo
 }
 
 /** 取得搜尋hashTag(貼文) */
-export async function getSearchHashTag(searchText: string): Promise<PostApiType> {
+export async function getSearchHashTag(
+  searchText: string,
+  page: number
+): Promise<PostPageListType> {
   const searchString = searchText.replace('#', '');
   const result = await axios
-    .post(`${baseUrl}/post/hashTag`, { searchString })
+    .post(`${baseUrl}/post/hashTag`, { searchString, page, limit })
     .then((res) => {
       return res.data;
     })
