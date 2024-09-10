@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
@@ -29,28 +29,32 @@ import { setSignInPop } from '../../redux/loginSlice';
 import { errorAlert } from '../../utils/fetchError';
 import { setUserData, UserStateType } from '../../redux/userSlice';
 
-const mapStateToProps = (state: FormState) => ({
-  formValues: getFormValues('editProfile')(state),
-});
-
 interface StateType {
   user: UserStateType;
 }
 
-function EditProfilePage({ handleSubmit, initialize }: any) {
-  const [firstLoad, setFirstLoad] = useState(true);
+function EditProfilePage() {
+  const sliceDispatch = useDispatch();
+  const navigate = useNavigate();
+  const swal = withReactContent(Swal);
+  // const [firstLoad, setFirstLoad] = useState(true);
   const [emailChange, setEmailChange] = useState(false);
   const [accountChange, setAccountChange] = useState(false);
+
+  const [email, setEmail] = useState(''); // 紀錄email資料
+  const [emailError, setEmailError] = useState(''); // 紀錄email錯誤訊息
+  const [account, setAccount] = useState(''); // 紀錄account資料
+  const [accountError, setAccountError] = useState(''); // 紀錄account錯誤訊息
+  const [name, setName] = useState(''); // 紀錄name資料
+  const [nameError, setNameError] = useState(''); // 紀錄name錯誤訊息
+
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
   const [removeAvatar, setRemoveAvatar] = useState(false); // 判斷是否移除頭貼
-  const sliceDispatch = useDispatch();
+
   const userStateData = useSelector((state: StateType) => state.user.userData);
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
-  const swal = withReactContent(Swal);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [updateLoading, setUpdateLoading] = useState(false);
 
   if (isEmpty(userId) || isEmpty(authToken)) {
@@ -67,60 +71,89 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
     ? (get(data, 'data', {}) as UserProfileType)
     : userStateData;
 
-  // 設定 Redux Form 的初始值
-  useEffect(() => {
-    if (firstLoad && !isEmpty(userData)) {
-      setAvatar(userData.avatar);
-      initialize(userData);
-      setFirstLoad(false);
+  /** 處理上傳圖片檔 */
+  const handleFileChange = (event: React.ChangeEvent<any>) => {
+    const fileList = event.target.files; // 獲取選擇的檔案列表
+    if (!isEmpty(fileList) && fileList?.length) {
+      const file = fileList[0];
+      setAvatar(URL.createObjectURL(file));
+      setAvatarFile(file);
+      setRemoveAvatar(false);
     }
-  }, [userData]);
+  };
+
+  // 設定 Redux Form 的初始值
+  // useEffect(() => {
+  //   if (firstLoad && !isEmpty(userData)) {
+  //     setAvatar(userData.avatar);
+  //     initialize(userData);
+  //     setFirstLoad(false);
+  //   }
+  // }, [userData]);
 
   /** 送出編輯資料 */
-  const submitEditProfile = async (form: UserProfileType) => {
+  const submitEditProfile = async () => {
     setUpdateLoading(true);
-    const formData = new FormData();
-    if (emailChange) formData.append('email', form.email);
-    formData.append('name', form.name);
-    if (accountChange) formData.append('account', form.account);
-    formData.append('bio', form.bio);
-    formData.append('language', form.language);
-    formData.append('emailPrompt', get(form, 'emailPrompt', false).toString());
-    formData.append('mobilePrompt', get(form, 'mobilePrompt', false).toString());
-    formData.append('removeAvatar', removeAvatar.toString());
-    if (!isEmpty(avatar)) formData.append('avatarFile', avatarFile);
-    try {
-      const result = await updateProfile(formData, userId!, authToken!);
-      if (result.status === 200) {
-        swal
-          .fire({
-            title: '修改成功',
-            icon: 'success',
-            confirmButtonText: '確認',
-          })
-          .then(() => {
-            navigate(`/user/profile/${userId}`);
-            dispatch(setUserData(result.data as UserProfileType));
-            scrollToTop();
-          });
-      } else {
-        const errorMsg = get(result, 'response.data.message', '');
-        errorAlert(errorMsg);
-      }
-    } catch (error) {
-      errorAlert();
+
+    // 資料驗證
+    if (isEmpty(email)) {
+      setEmailError('Email欄位必填');
+      setUpdateLoading(false);
+      return;
     }
+    if (isEmpty(account)) {
+      setAccountError('帳號欄位必填');
+      setUpdateLoading(false);
+      return;
+    }
+    if (isEmpty(name)) {
+      setNameError('名稱欄位必填');
+      setUpdateLoading(false);
+      return;
+    }
+
+    console.log('submit');
+    // const formData = new FormData();
+    // if (emailChange) formData.append('email', form.email);
+    // formData.append('name', form.name);
+    // if (accountChange) formData.append('account', form.account);
+    // formData.append('bio', form.bio);
+    // formData.append('language', form.language);
+    // formData.append('emailPrompt', get(form, 'emailPrompt', false).toString());
+    // formData.append('mobilePrompt', get(form, 'mobilePrompt', false).toString());
+    // formData.append('removeAvatar', removeAvatar.toString());
+    // if (!isEmpty(avatar)) formData.append('avatarFile', avatarFile);
+    // try {
+    //   const result = await updateProfile(formData, userId!, authToken!);
+    //   if (result.status === 200) {
+    //     swal
+    //       .fire({
+    //         title: '修改成功',
+    //         icon: 'success',
+    //         confirmButtonText: '確認',
+    //       })
+    //       .then(() => {
+    //         navigate(`/user/profile/${userId}`);
+    //         sliceDispatch(setUserData(result.data as UserProfileType));
+    //         scrollToTop();
+    //       });
+    //   } else {
+    //     const errorMsg = get(result, 'response.data.message', '');
+    //     errorAlert(errorMsg);
+    //   }
+    // } catch (error) {
+    //   errorAlert();
+    // }
     setUpdateLoading(false);
   };
 
   if (isLoading) return <Spinner />;
-
   if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
   if (!isEmpty(userData)) {
     return (
       <div className="w-full sm:max-w-[600px] p-5">
-        <form onSubmit={handleSubmit(submitEditProfile)}>
+        <form>
           {/* avatar */}
           <div className="flex flex-col items-center w-full mb-5 pb-5 border-b-[1px] dark:border-gray-700">
             <Avatar
@@ -137,13 +170,12 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
               >
                 更新頭貼
               </label>
-              <Field
+              <input
                 name="avatarFile"
                 id="avatarFile"
-                component={FileInput}
-                setAvatar={setAvatar}
-                setAvatarFile={setAvatarFile}
-                setRemoveAvatar={setRemoveAvatar}
+                type="file"
+                className="hidden"
+                onChange={(e) => handleFileChange(e)}
               />
               {!isEmpty(avatar) && (
                 <button
@@ -174,13 +206,16 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                   修改後即更換登入系統及電子報接收之Email
                 </p>
               </div>
-              <Field
-                name="email"
-                component={FormInput}
-                placeholder="請填寫Email"
+              <FormInput
                 type="email"
-                validate={[required('Email為必填資料'), isEmail('Email格式錯誤')]}
-                onChange={() => setEmailChange(true)}
+                name="email"
+                ispwd={false}
+                placeholder="E-mail"
+                value={email}
+                setValue={setEmail}
+                errorMsg={emailError}
+                setErrorMsg={setEmailError}
+                handleEnter={() => {}}
               />
             </div>
 
@@ -189,14 +224,25 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 <span className="text-red-500">*</span>
                 帳號
               </label>
-              <Field
+              <FormInput
+                type="text"
+                name="account"
+                ispwd={false}
+                placeholder="帳號"
+                value={account}
+                setValue={setAccount}
+                errorMsg={accountError}
+                setErrorMsg={setAccountError}
+                handleEnter={() => {}}
+              />
+              {/* <Field
                 name="account"
                 component={FormInput}
                 placeholder="請填寫帳號"
                 type="text"
                 validate={[required('帳號為必填資料')]}
                 onChange={() => setAccountChange(true)}
-              />
+              /> */}
             </div>
 
             <div className="mt-10">
@@ -204,6 +250,17 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 <span className="text-red-500">*</span>
                 名稱
               </label>
+              <FormInput
+                type="text"
+                name="name"
+                ispwd={false}
+                placeholder="名稱"
+                value={name}
+                setValue={setName}
+                errorMsg={nameError}
+                setErrorMsg={setNameError}
+                handleEnter={() => {}}
+              />
               <Field
                 name="name"
                 component={FormInput}
@@ -282,6 +339,7 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
             <button
               type="submit"
               className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
+              onClick={() => submitEditProfile}
             >
               {updateLoading ? (
                 <FontAwesomeIcon
@@ -301,8 +359,4 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
   return <BasicErrorPanel errorMsg="" />;
 }
 
-export default connect(mapStateToProps)(
-  reduxForm({
-    form: 'editProfile',
-  })(EditProfilePage)
-);
+export default EditProfilePage;
