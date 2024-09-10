@@ -27,7 +27,6 @@ function ExploreArticle() {
         nextPage = lastPage.nextPage;
         return nextPage > 0 ? nextPage : undefined;
       },
-      // 當 searchString 改變時，重置頁面
       keepPreviousData: false,
     }
   );

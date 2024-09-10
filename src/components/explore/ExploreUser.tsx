@@ -2,12 +2,14 @@ import React, { useEffect } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { get, isEmpty } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
+// --- components ---
+import UserListDynamic from 'components/user/UserListDynamic';
+import BasicErrorPanel from 'components/tips/BasicErrorPanel';
+import NoSearchResult from 'components/tips/NoSearchResult';
+// --- api / types ---
 import { getCookies } from 'utils/common';
 import { getSearchUserList } from 'api/user';
-import NoSearchResult from 'components/tips/NoSearchResult';
-import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import { UserDataType } from 'types/userType';
-import UserListDynamic from 'components/user/UserListDynamic';
 
 function ExploreUser() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,7 +25,6 @@ function ExploreUser() {
         nextPage = lastPage.nextPage;
         return nextPage > 0 ? nextPage : undefined;
       },
-      // 當 searchString 改變時，重置頁面
       keepPreviousData: false,
     }
   );
@@ -65,6 +66,7 @@ function ExploreUser() {
         isLoading={isLoading}
         atBottom={nextPage < 0}
         refetch={refetch}
+        type="userList"
       />
     </div>
   );

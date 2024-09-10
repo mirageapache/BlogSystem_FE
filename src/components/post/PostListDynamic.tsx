@@ -24,7 +24,7 @@ function PostListDynamic({ postListData, isLoading, atBottom }: PropType) {
     <section className="w-full">
       <div>{postItems}</div>
       {atBottom ? (
-        <div className="text-center">已經沒有更多貼文資料了</div>
+        <div className="my-5 text-center text-gray-500">- 已經沒有更多貼文了 -</div>
       ) : (
         <PostLoading withBorder={false} />
       )}

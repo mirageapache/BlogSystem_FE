@@ -10,9 +10,8 @@ import ExplorePost from 'components/explore/ExplorePost';
 import ExploreArticle from 'components/explore/ExploreArticle';
 import ExploreHashTag from 'components/explore/ExploreHashTag';
 import ExploreUser from 'components/explore/ExploreUser';
-// --- functions / types ---
-import { checkLogin, getCookies } from 'utils/common';
 // --- api / type ---
+import { checkLogin } from 'utils/common';
 import { getSearchCount } from 'api';
 import { SysStateType, setActivePage, setExploreTag } from '../redux/sysSlice';
 
@@ -25,7 +24,6 @@ function ExplorePage() {
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const currentUser = getCookies('uid'); // 目前登入的使用者id (判斷追蹤狀態)
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
   const exploreTag = useSelector((state: stateType) => state.system.exploreTag); // 紀錄作用中的頁籤

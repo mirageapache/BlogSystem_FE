@@ -4,7 +4,7 @@ import { AxResponseType } from '../types/apiType';
 import { UserDataType } from '../types/userType';
 
 const baseUrl = API_URL;
-const limit = 5;
+const limit = 20;
 
 interface getFollowListType extends AxResponseType {
   data: UserDataType;
@@ -22,7 +22,7 @@ export async function getFollowingList(userId: string, page: number): Promise<Fo
   const result = await axios
     .post(`${baseUrl}/follow/getfollowing`, { userId, page, limit })
     .then((res) => {
-      return res;
+      return res.data;
     })
     .catch((error) => {
       return error.response;
@@ -31,11 +31,11 @@ export async function getFollowingList(userId: string, page: number): Promise<Fo
 }
 
 /** 取得粉絲資料 */
-export async function getFollowerList(userId: string): Promise<FollowPageListType> {
+export async function getFollowerList(userId: string, page: number): Promise<FollowPageListType> {
   const result = await axios
-    .post(`${baseUrl}/follow/getfollower`, { userId })
+    .post(`${baseUrl}/follow/getfollower`, { userId, page, limit })
     .then((res) => {
-      return res;
+      return res.data;
     })
     .catch((error) => {
       return error.response;
