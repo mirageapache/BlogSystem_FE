@@ -18,12 +18,12 @@ import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import Avatar from 'components/user/Avatar';
 import FileInput from 'components/form/FileInput';
+import FormInput from 'components/form/FormInput';
 import FormTextArea from 'components/form/FormTextArea';
 // --- functions ---
 import { required, isEmail, maxLength } from 'utils/reudxFormValidates';
 // --- types ---
 import { UserProfileType } from 'types/userType';
-import FormInput from '../../components/form/FormInput';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 import { errorAlert } from '../../utils/fetchError';

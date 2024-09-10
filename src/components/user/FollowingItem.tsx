@@ -5,7 +5,6 @@ import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { useMutation } from 'react-query';
-
 // --- api/type ---
 import { UserDataType } from 'types/userType';
 import { getCookies } from '../../utils/common';

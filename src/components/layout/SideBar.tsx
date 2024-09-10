@@ -2,11 +2,10 @@ import { ReactNode, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { get, isEmpty } from 'lodash';
-import { checkLogin, getCookies, scrollToTop } from 'utils/common';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-
 // --- functions ---
+import { checkLogin, getCookies, scrollToTop } from 'utils/common';
 import { SysStateType, setActivePage, setEditMode } from '../../redux/sysSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
