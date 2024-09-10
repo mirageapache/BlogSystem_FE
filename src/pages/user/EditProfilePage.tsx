@@ -37,16 +37,18 @@ function EditProfilePage() {
   const sliceDispatch = useDispatch();
   const navigate = useNavigate();
   const swal = withReactContent(Swal);
-  // const [firstLoad, setFirstLoad] = useState(true);
+  const [firstLoad, setFirstLoad] = useState(true);
   const [emailChange, setEmailChange] = useState(false);
   const [accountChange, setAccountChange] = useState(false);
 
-  const [email, setEmail] = useState(''); // 紀錄email資料
-  const [emailError, setEmailError] = useState(''); // 紀錄email錯誤訊息
-  const [account, setAccount] = useState(''); // 紀錄account資料
-  const [accountError, setAccountError] = useState(''); // 紀錄account錯誤訊息
-  const [name, setName] = useState(''); // 紀錄name資料
-  const [nameError, setNameError] = useState(''); // 紀錄name錯誤訊息
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [account, setAccount] = useState('');
+  const [accountError, setAccountError] = useState('');
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [bio, setBio] = useState('');
+  const [bioError, setBioError] = useState('');
 
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
@@ -83,13 +85,16 @@ function EditProfilePage() {
   };
 
   // 設定 Redux Form 的初始值
-  // useEffect(() => {
-  //   if (firstLoad && !isEmpty(userData)) {
-  //     setAvatar(userData.avatar);
-  //     initialize(userData);
-  //     setFirstLoad(false);
-  //   }
-  // }, [userData]);
+  useEffect(() => {
+    if (firstLoad && !isEmpty(userData)) {
+      setAvatar(userData.avatar);
+      setEmail(userData.email);
+      setAccount(userData.account);
+      setName(userData.name);
+      setBio(userData.bio);
+      setFirstLoad(false);
+    }
+  }, [userData]);
 
   /** 送出編輯資料 */
   const submitEditProfile = async () => {
@@ -235,14 +240,6 @@ function EditProfilePage() {
                 setErrorMsg={setAccountError}
                 handleEnter={() => {}}
               />
-              {/* <Field
-                name="account"
-                component={FormInput}
-                placeholder="請填寫帳號"
-                type="text"
-                validate={[required('帳號為必填資料')]}
-                onChange={() => setAccountChange(true)}
-              /> */}
             </div>
 
             <div className="mt-10">
@@ -261,26 +258,19 @@ function EditProfilePage() {
                 setErrorMsg={setNameError}
                 handleEnter={() => {}}
               />
-              <Field
-                name="name"
-                component={FormInput}
-                placeholder="請填寫名稱"
-                type="text"
-                validate={[required('名稱為必填資料')]}
-              />
             </div>
 
             <div className="mt-10">
               <label htmlFor="bio" className="font-bold">
                 自我介紹
               </label>
-              <Field
-                name="bio"
-                component={FormTextArea}
+              <textarea
+                name={name}
                 placeholder="來說說你的故事吧！"
-                type="text"
-                validate={[maxLength(200, '自我介紹內容不超過200字')]}
-                value="自我介紹"
+                className={`rounded-md resize-none focus:border-2 ${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950`}
+                rows={3}
+                onChange={(e) => setBio(e.target.value)}
+                value={bio}
               />
             </div>
           </div>
@@ -292,9 +282,9 @@ function EditProfilePage() {
                 <label htmlFor="language" className="min-w-20 font-bold mr-5">
                   系統語言
                 </label>
-                <Field
+                <select
                   name="language"
-                  component="select"
+                  value={userData.language}
                   className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-700 rounded-md focus:border-2`}
                 >
                   <option value="zh" className="">
@@ -303,7 +293,7 @@ function EditProfilePage() {
                   <option value="en" className="">
                     English
                   </option>
-                </Field>
+                </select>
               </div>
             </div>
             <div className="mt-10">
@@ -311,7 +301,12 @@ function EditProfilePage() {
                 <label htmlFor="emailPrompt" className="font-bold mr-5">
                   是否開啟Email通知推播
                 </label>
-                <Field name="emailPrompt" component="input" type="checkbox" className="w-5 h-5" />
+                <input
+                  name="emailPrompt"
+                  type="checkbox"
+                  className="w-5 h-5"
+                  checked={get(userData, 'emailPrompt', false)}
+                />
               </div>
             </div>
             <div className="my-10">
@@ -319,7 +314,12 @@ function EditProfilePage() {
                 <label htmlFor="mobilePrompt" className="font-bold mr-5">
                   是否開啟手機通知推播
                 </label>
-                <Field name="mobilePrompt" component="input" type="checkbox" className="w-5 h-5" />
+                <input
+                  name="mobilePrompt"
+                  type="checkbox"
+                  className="w-5 h-5"
+                  checked={get(userData, 'mobilePrompt', false)}
+                />
               </div>
             </div>
           </div>

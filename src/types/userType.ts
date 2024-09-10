@@ -21,8 +21,8 @@ export interface UserDataType {
 export interface UserSettingType {
   language: string;
   theme: number;
-  emailPrompt: Boolean;
-  mobilePrompt: Boolean;
+  emailPrompt: boolean;
+  mobilePrompt: boolean;
 }
 
 /** 使用者資訊版型別 */
