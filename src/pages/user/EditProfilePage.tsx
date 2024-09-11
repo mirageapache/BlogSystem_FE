@@ -8,8 +8,6 @@ import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-// --- api ---
-import { getOwnProfile, updateProfile } from 'api/user';
 // --- constant ---
 import { FORM_CONTROL } from 'constants/LayoutConstants';
 // --- components ---
@@ -18,12 +16,14 @@ import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import Avatar from 'components/user/Avatar';
 import FormInput from 'components/form/FormInput';
 import FormTextArea from 'components/form/FormTextArea';
-// --- types ---
+// --- api/types ---
+import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 import { errorAlert } from '../../utils/fetchError';
 import { setUserData, UserStateType } from '../../redux/userSlice';
+import { uploadImage } from '../../api';
 
 interface StateType {
   user: UserStateType;
@@ -59,26 +59,15 @@ function EditProfilePage() {
     return <Spinner />;
   }
 
-  const getUserData = useQuery('user', () => getOwnProfile(userId!, authToken!), {
-    enabled: isEmpty(userStateData) || userStateData!._id === '',
+  const getUserData = useQuery('editProfile', () => getOwnProfile(userId!, authToken!), {
+    enabled: isEmpty(userStateData) && firstLoad,
   });
-
   const { isLoading, data } = getUserData;
   const userData = isEmpty(userStateData)
     ? (get(data, 'data', {}) as UserProfileType)
     : userStateData;
 
-  /** 處理上傳圖片檔 */
-  const handleFileChange = (event: React.ChangeEvent<any>) => {
-    const fileList = event.target.files; // 獲取選擇的檔案列表
-    if (!isEmpty(fileList) && fileList?.length) {
-      const file = fileList[0];
-      setAvatar(URL.createObjectURL(file));
-      setAvatarFile(file);
-    }
-  };
-
-  // 設定 Redux Form 的初始值
+  // 設定表單初始資料
   useEffect(() => {
     if (firstLoad && !isEmpty(userData)) {
       setAvatar(userData.avatar);
@@ -93,9 +82,23 @@ function EditProfilePage() {
     }
   }, [userData]);
 
+  /** 設定圖片檔 */
+  const handleFileChange = (event: React.ChangeEvent<any>) => {
+    const fileList = event.target.files; // 獲取選擇的檔案列表
+    if (!isEmpty(fileList) && fileList?.length) {
+      const file = fileList[0];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']; // 可上傳的圖片格式
+      if (allowedTypes.includes(file.type)) {
+        setAvatar(URL.createObjectURL(file));
+        setAvatarFile(file);
+      } else {
+        errorAlert('請選擇 jpeg、jpg、png 或 gif 格式的圖片');
+      }
+    }
+  };
+
   /** 送出編輯資料 */
   const submitEditProfile = async () => {
-    console.log('submit');
     setUpdateLoading(true);
     // 資料驗證
     if (isEmpty(email)) {
@@ -120,6 +123,14 @@ function EditProfilePage() {
     }
 
     if (isEmpty(emailError) && isEmpty(accountError) && isEmpty(nameError) && isEmpty(bioError)) {
+      const uploadRes = await uploadImage(avatarFile);
+      if (uploadRes === 'UPLOAD_FAILED') {
+        errorAlert('大頭照上傳失敗，請稍後再試');
+        return;
+      }
+      // console.log(uploadRes);
+      // console.log(avatar);
+
       const variables = {
         email,
         account,
@@ -130,10 +141,8 @@ function EditProfilePage() {
         emailPrompt,
         mobilePrompt,
       };
-      console.log(variables);
       try {
         const result = await updateProfile(variables, userId!, authToken!);
-        console.log(result);
         if (result.status === 200) {
           swal
             .fire({
