@@ -34,6 +34,18 @@ export interface UserInfoPanelType {
   bgColor: string;
 }
 
+/** user edit API 參數型別 */
+export interface UserEditVariablesType {
+  email: string;
+  account: string;
+  name: string;
+  bio: string;
+  avatar: string;
+  language: string;
+  emailPrompt: boolean;
+  mobilePrompt: boolean;
+}
+
 /** 使用者個人資訊
  * [包含 userDataType 及 userSettingType ]
  * */

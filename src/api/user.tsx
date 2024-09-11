@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from './index';
 import { AxResponseType } from '../types/apiType';
-import { UserDataType } from '../types/userType';
+import { UserDataType, UserEditVariablesType } from '../types/userType';
 
 const baseUrl = API_URL;
 const limit = 20;
@@ -103,17 +103,15 @@ export async function getUserProfile(userId: string): Promise<GetUserProfileType
 
 /** 更新使用者資料 */
 export async function updateProfile(
-  formData: FormData,
+  variables: UserEditVariablesType,
   userId: string,
   authToken: string
 ): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
-    'Content-Type': 'multipart/form-data',
   };
-
   const result = await axios
-    .patch(`${baseUrl}/user/own/${userId}`, formData, config)
+    .patch(`${baseUrl}/user/own/${userId}`, variables, config)
     .then((res) => {
       return res;
     })
