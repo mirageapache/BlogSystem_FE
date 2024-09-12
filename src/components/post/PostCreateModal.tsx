@@ -70,6 +70,8 @@ function PostCreateModal() {
           });
           handleClose();
           window.location.reload();
+        } else {
+          errorAlert();
         }
       },
       onError: () => errorAlert(),
@@ -165,7 +167,14 @@ function PostCreateModal() {
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
                 onClick={handleSubmit}
               >
-                發佈
+                {createPostMutation.isLoading ? (
+                  <FontAwesomeIcon
+                    icon={icon({ name: 'spinner', style: 'solid' })}
+                    className="animate-spin h-5 w-5 "
+                  />
+                ) : (
+                  <>發佈</>
+                )}
               </button>
             ) : (
               <button

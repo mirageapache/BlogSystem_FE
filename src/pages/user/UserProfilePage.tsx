@@ -6,21 +6,16 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // --- components ---
 import Avatar from 'components/user/Avatar';
-import ArticleList from 'components/article/ArticleList';
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
-import FollowList from 'components/user/FollowList';
-import PostList from 'components/post/PostList';
+import ProfilePost from 'components/profile/ProfilePost';
+import ProfileArticle from 'components/profile/ProfileArticle';
+import ProfileFollowing from 'components/profile/ProfileFollowing';
+import ProfileFollowed from 'components/profile/ProfileFollowed';
 // --- api / type ---
 import { UserProfileType, UserResultType } from 'types/userType';
-import { FollowResultType } from 'types/followType';
-import { ArticleResultType } from 'types/articleType';
-import { PostResultType } from '../../types/postType';
 import { getOwnProfile, getUserProfile } from '../../api/user';
-import { getFollowingList, getFollowerList } from '../../api/follow';
-import { getArticles, getSearchArticle } from '../../api/article';
-import { getSearchPost } from '../../api/post';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
 import { setActivePage } from '../../redux/sysSlice';
@@ -41,9 +36,6 @@ function UserProfilePage() {
 
   const userStateData = useSelector((state: StateType) => state.user.userData);
   let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
-  let articleResult: ArticleResultType;
-  let postResult: PostResultType;
-  let followList: FollowResultType;
   let userData: UserProfileType | undefined;
 
   if (userId === undefined) navigate('/');
@@ -52,12 +44,14 @@ function UserProfilePage() {
   if (cookies.uid === userId && !isEmpty(authToken)) {
     // own [current user]
     identify = true;
-    fetchProfile = useQuery('getOwnProfile', () => getOwnProfile(userId!, authToken!), {
+    fetchProfile = useQuery(['getOwnProfile', userId], () => getOwnProfile(userId!, authToken!), {
       enabled: isEmpty(userStateData) || userStateData!._id === '',
     }) as UserResultType;
   } else {
     // others [其他user]
-    fetchProfile = useQuery('getUserProfile', () => getUserProfile(userId!)) as UserResultType;
+    fetchProfile = useQuery(['getUserProfile', userId], () =>
+      getUserProfile(userId!)
+    ) as UserResultType;
     dispatch(setActivePage('explore')); // 不是currentUser 頁籤改為 explore
   }
 
@@ -70,33 +64,6 @@ function UserProfilePage() {
     dispatch(setSignInPop(true));
   } else {
     userData = get(data, 'data', {}) as UserProfileType;
-  }
-
-  switch (activeTab) {
-    case 'article':
-      /** 取得文章資料 */
-      articleResult = useQuery('profileAritcles', () =>
-        getSearchArticle('', userId)
-      ) as ArticleResultType;
-      break;
-    case 'post':
-      postResult = useQuery('profilePost', () => getSearchPost('', userId)) as PostResultType;
-      break;
-    case 'follow':
-      /** 取得追蹤資料 */
-      followList = useQuery('profileFollowingList', () =>
-        getFollowingList(userId!)
-      ) as FollowResultType;
-      break;
-    case 'follower':
-      /** 取得粉絲資料 */
-      followList = useQuery('profileFollowerList', () =>
-        getFollowerList(userId!)
-      ) as FollowResultType;
-      break;
-    default:
-      articleResult = useQuery('profileAritcles', () => getArticles()) as ArticleResultType;
-      break;
   }
 
   /** 頁籤切換 */
@@ -205,28 +172,28 @@ function UserProfilePage() {
         {/* 文章 Article */}
         {activeTab === 'article' && (
           <div className="">
-            <ArticleList articleListData={articleResult!} />
+            <ProfileArticle userId={userId!} />
           </div>
         )}
 
         {/* 貼文 Post */}
         {activeTab === 'post' && (
           <div className="">
-            <PostList postListData={postResult!} />
+            <ProfilePost userId={userId!} />
           </div>
         )}
 
         {/* 追蹤 follow */}
         {activeTab === 'follow' && (
           <div className="">
-            <FollowList type="following" followList={followList!} />
+            <ProfileFollowing userId={userId!} />
           </div>
         )}
 
         {/* 粉絲 follower */}
         {activeTab === 'follower' && (
           <div className="">
-            <FollowList type="follower" followList={followList!} />
+            <ProfileFollowed userId={userId!} />
           </div>
         )}
       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
@@ -10,16 +11,16 @@ import { convertFromRaw, EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 
 /** Article Tags 元件 */
-function ArticleTag(props: { text: string }) {
-  const { text } = props;
-  return (
-    <span className="mr-3">
-      <Link to="/" className="font-bold">
-        {text.toUpperCase()}
-      </Link>
-    </span>
-  );
-}
+// function ArticleTag(props: { text: string }) {
+//   const { text } = props;
+//   return (
+//     <span className="mr-3">
+//       <Link to="/" className="font-bold">
+//         {text.toUpperCase()}
+//       </Link>
+//     </span>
+//   );
+// }
 
 /** ArticleItem 元件 */
 function ArticleItem(props: { articleData: ArticleDataType }) {
@@ -28,7 +29,7 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
   const contentState = editorState.getCurrentContent();
   const htmlContent = stateToHTML(contentState);
   const [showCreateTip, setShowCreateTip] = useState(false);
-  const { _id, title, content, author, subject, hashTags, createdAt } = articleData;
+  const { _id, title, author, createdAt } = articleData;
   // const tagsList = hashTags.map((tag) => <ArticleTag key={`${tag}-${_id}`} text={tag} />);
 
   useEffect(() => {

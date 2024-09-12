@@ -17,6 +17,11 @@ export const getCookies = (name: string) => {
   return undefined; // 若找不到指定的cookie則返回undefined
 };
 
+/** 移除Cookies */
+export const deleteCookie = (name: string) => {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+};
+
 /**
  * 判斷是否登入
  */

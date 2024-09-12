@@ -5,7 +5,6 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 import ArticleItem from './ArticleItem';
 import ArticleListLoading from './ArticleListLoading';
 // --- api / type ---
-// import { ArticleResultType } from '../../api/article';
 import { ArticleDataType, ArticleResultType } from '../../types/articleType';
 
 function ArticleList(props: { articleListData: ArticleResultType }) {

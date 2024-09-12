@@ -1,12 +1,20 @@
 import axios from 'axios';
 import { API_URL } from './index';
 import { AxResponseType } from '../types/apiType';
-import { UserDataType } from '../types/userType';
+import { UserDataType, UserEditVariablesType } from '../types/userType';
 
 const baseUrl = API_URL;
+const limit = 20;
 
 interface GetUserProfileType extends AxResponseType {
   data: UserDataType;
+}
+
+/** 動態取得使用者資料 型別 */
+interface UserPageListType extends AxResponseType {
+  userList: any;
+  nextPage: number;
+  data: UserDataType[];
 }
 
 /** 取得所有使用者 */
@@ -25,19 +33,24 @@ export async function getAllUserList(): Promise<GetUserProfileType> {
 /** 取得搜尋使用者清單(含follow資料)
  * @searchString [搜尋字串]
  * @userId [當前登入的使用者Id] - 用來判斷isFollow
+ * @page 要取得的資料頁碼
  */
 export async function getSearchUserList(
+  page: number,
   searchString?: string,
   userId?: string
-): Promise<GetUserProfileType> {
-  const result = await axios
-    .post(`${baseUrl}/user/getSearchUserList`, { searchString, userId })
-    .then((res) => {
-      return res;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+): Promise<UserPageListType> {
+  let result = null;
+  if (page > 0) {
+    result = await axios
+      .post(`${baseUrl}/user/getSearchUserList`, { searchString, userId, page, limit })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        return error.response;
+      });
+  }
   return result;
 }
 
@@ -90,17 +103,15 @@ export async function getUserProfile(userId: string): Promise<GetUserProfileType
 
 /** 更新使用者資料 */
 export async function updateProfile(
-  formData: FormData,
+  variables: UserEditVariablesType,
   userId: string,
   authToken: string
 ): Promise<GetUserProfileType> {
   const config = {
     headers: { Authorization: `Bearer ${authToken}` },
-    'Content-Type': 'multipart/form-data',
   };
-
   const result = await axios
-    .patch(`${baseUrl}/user/own/${userId}`, formData, config)
+    .patch(`${baseUrl}/user/own/${userId}`, variables, config)
     .then((res) => {
       return res;
     })

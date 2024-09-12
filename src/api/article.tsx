@@ -4,9 +4,18 @@ import { ArticleDataType } from '../types/articleType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
+const limit = 5; // 每次取得資料數量
 
+/** AritlceApi 型別 */
 interface ArticleApiType extends AxResponseType {
   data: ArticleDataType;
+}
+
+/** 動態取得文章資料 型別 */
+interface ArticlePageListType extends AxResponseType {
+  articles: any;
+  nextPage: number;
+  data: ArticleDataType[];
 }
 
 /** 取得所有文章 */
@@ -20,6 +29,25 @@ export async function getArticles(): Promise<ArticleApiType> {
     .catch((error) => {
       return error;
     });
+  return result;
+}
+
+/** (動態)取得文章資料
+ * @param page 要取得的資料頁碼
+ */
+export async function getPartialArticles(page: number): Promise<ArticlePageListType> {
+  let result = null;
+  if (page > 0) {
+    result = await axios
+      .post(`${baseUrl}/article/partial`, { page, limit })
+      .then((res) => {
+        const articleData = res.data;
+        return articleData;
+      })
+      .catch((error) => {
+        return error;
+      });
+  }
   return result;
 }
 
@@ -37,15 +65,22 @@ export async function getArticleDetail(articleId: string): Promise<ArticleApiTyp
 }
 
 /** 取得搜尋文章 or 特定使用者的文章 */
-export async function getSearchArticle(searchString?: string, authorId?: string) {
-  const result = await axios
-    .post(`${baseUrl}/article/search`, { searchString, authorId })
-    .then((res) => {
-      return res.data;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+export async function getSearchArticle(
+  searchString?: string,
+  authorId?: string,
+  page?: number
+): Promise<ArticlePageListType> {
+  let result = null;
+  if (page && page > 0) {
+    result = await axios
+      .post(`${baseUrl}/article/search`, { searchString, authorId, page, limit })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        return error.response;
+      });
+  }
   return result;
 }
 

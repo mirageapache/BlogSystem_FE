@@ -3,23 +3,17 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 // --- components ---
-import ArticleList from 'components/article/ArticleList';
-import PostList from 'components/post/PostList';
-import FollowList from 'components/user/FollowList';
-// --- functions / types ---
-import { getCookies } from 'utils/common';
-import { FollowResultType } from 'types/followType';
+import ExplorePost from 'components/explore/ExplorePost';
+import ExploreArticle from 'components/explore/ExploreArticle';
+import ExploreHashTag from 'components/explore/ExploreHashTag';
+import ExploreUser from 'components/explore/ExploreUser';
 // --- api / type ---
-import { getAllPosts, getSearchHashTag, getSearchPost } from '../api/post';
-import { getSearchUserList } from '../api/user';
-import { getSearchArticle, getArticles } from '../api/article';
-import { ArticleResultType } from '../types/articleType';
-import { PostResultType } from '../types/postType';
+import { checkLogin } from 'utils/common';
+import { getSearchCount } from 'api';
 import { SysStateType, setActivePage, setExploreTag } from '../redux/sysSlice';
-import NoSearchResult from '../components/tips/NoSearchResult';
 
 /** stateType (SearchPage) */
 interface stateType {
@@ -30,59 +24,36 @@ function ExplorePage() {
   const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const currentUser = getCookies('uid'); // 目前登入的使用者id (判斷追蹤狀態)
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
   const exploreTag = useSelector((state: stateType) => state.system.exploreTag); // 紀錄作用中的頁籤
-  const tabButtonStyle = 'flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
+  const tabButtonStyle =
+    'relative flex w-1/4 justify-center items-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
+  const countSpanStyle =
+    'sm:absolute sm:right-5 md:right-4 hidden sm:inline-block text-[12px] leading-5 px-3 bg-orange-500 text-white rounded-full'; // 數量標籤樣式
+
+  const { data } = useQuery(['search', searchString], () => getSearchCount(searchString));
+  const article = get(data, 'article', 0);
+  const post = get(data, 'post', 0);
+  let user = get(data, 'user', 0);
+  if (checkLogin()) user -= 1; // 有登入須扣除自己
+  const hashtag = get(data, 'hashtag', 0);
 
   useEffect(() => {
     dispatch(setActivePage('explore'));
   }, []);
 
-  /** 取得文章資料 */
-  const articleListData = useQuery(
-    ['exploreArticle', searchString],
-    () => (isEmpty(searchString) ? getArticles() : getSearchArticle(searchString, '')),
-    { enabled: !!searchString || isEmpty(searchString) }
-  ) as ArticleResultType;
-  /** 取得貼文資料 */
-  const postListData = useQuery(
-    ['explorePost', searchString],
-    () => (isEmpty(searchString) ? getAllPosts() : getSearchPost(searchString, '')),
-    { enabled: !!searchString }
-  ) as PostResultType;
-  /** 取得用戶清單 */
-  const userList = useQuery(
-    ['exploreUser', searchString],
-    () => getSearchUserList(searchString, currentUser),
-    { enabled: !!searchString }
-  ) as FollowResultType;
-
-  /** 取得hashTag相關主題的貼文清單 */
-  const hashTagPostList = useQuery(
-    ['hashTag', searchString],
-    () => getSearchHashTag(searchString),
-    { enabled: !!searchString }
-  ) as PostResultType;
-
   useEffect(() => {
     switch (exploreTag) {
-      // case 'popular':
-      //   setActiveUnderLine('translate-x-0');
-      //   break;
       case 'article':
-        articleListData.refetch();
         setActiveUnderLine('translate-x-0');
         break;
       case 'post':
-        postListData.refetch();
         setActiveUnderLine('translate-x-full');
         break;
       case 'user':
-        userList.refetch();
         setActiveUnderLine('translate-x-[200%]');
         break;
       case 'tag':
@@ -108,6 +79,7 @@ function ExplorePage() {
             name="search"
             placeholder="搜尋..."
             value={searchString}
+            autoComplete="off"
             onChange={(e) => {
               if (isEmpty(e.target.value)) {
                 navigate('/explore');
@@ -134,17 +106,6 @@ function ExplorePage() {
         {/* 頁籤 */}
         <div className="w-full max-w-[600px]">
           <div className="text-lg flex border-b-[1px] border-gray-400 dark:text-gray-400">
-            {/* <button
-              type="button"
-              className={tabButtonStyle}
-              onClick={() => handleTabActive('popular')}
-            >
-              <p className="hidden md:inline-block">熱門</p>
-              <FontAwesomeIcon
-                icon={icon({ name: 'fire', style: 'solid' })}
-                className={`${iconStyle} ${exploreTag === 'popular' ? activeTabStyle : ''}`}
-              />
-            </button> */}
             <button
               type="button"
               className={tabButtonStyle}
@@ -155,6 +116,9 @@ function ExplorePage() {
                 icon={icon({ name: 'file-lines', style: 'regular' })}
                 className={`${iconStyle} ${exploreTag === 'article' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && article > 0 && (
+                <span className={countSpanStyle}>{article}</span>
+              )}
             </button>
             <button
               type="button"
@@ -166,6 +130,7 @@ function ExplorePage() {
                 icon={icon({ name: 'note-sticky', style: 'regular' })}
                 className={`${iconStyle} ${exploreTag === 'post' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && post > 0 && <span className={countSpanStyle}>{post}</span>}
             </button>
             <button
               type="button"
@@ -177,6 +142,7 @@ function ExplorePage() {
                 icon={icon({ name: 'users', style: 'solid' })}
                 className={`${iconStyle} ${exploreTag === 'user' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && user > 0 && <span className={countSpanStyle}>{user}</span>}
             </button>
             <button type="button" className={tabButtonStyle} onClick={() => handleTabActive('tag')}>
               <p className="hidden md:inline-block">標籤</p>
@@ -184,6 +150,9 @@ function ExplorePage() {
                 icon={icon({ name: 'tag', style: 'solid' })}
                 className={`${iconStyle} ${exploreTag === 'tag' ? activeTabStyle : ''}`}
               />
+              {!isEmpty(searchString) && hashtag > 0 && (
+                <span className={countSpanStyle}>{hashtag}</span>
+              )}
             </button>
           </div>
           <div className="flex justify-start -translate-y-0.5">
@@ -195,48 +164,28 @@ function ExplorePage() {
       </div>
 
       <div className="flex justify-center">
-        {/* 熱門 */}
-        {/* {exploreTag === 'popular' && (
-          <section className="flex justify-center w-full max-w-[600px]">
-            <ArticleList articleListData={articleListData!} />
-          </section>
-        )} */}
         {/* 文章 */}
         {exploreTag === 'article' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <ArticleList articleListData={articleListData!} />
+            <ExploreArticle />
           </section>
         )}
         {/* 貼文 */}
         {exploreTag === 'post' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <PostList postListData={postListData!} />
+            <ExplorePost />
           </section>
         )}
         {/* 用戶 */}
         {exploreTag === 'user' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            <FollowList type="userList" followList={userList!} />
+            <ExploreUser />
           </section>
         )}
         {/* 標籤 */}
         {exploreTag === 'tag' && (
           <section className="flex justify-center w-full max-w-[600px]">
-            {isEmpty(searchString) || isEmpty(hashTagPostList) ? (
-              <section className="flex justify-center w-full max-w-[600px]">
-                <div className="">
-                  <NoSearchResult
-                    msgOne="輸入貼文的HashTag"
-                    msgTwo="即可搜尋你想找的主題貼文"
-                    type="post"
-                  />
-                </div>
-              </section>
-            ) : (
-              <section className="flex justify-center w-full max-w-[600px]">
-                <PostList postListData={hashTagPostList!} />
-              </section>
-            )}
+            <ExploreHashTag />
           </section>
         )}
       </div>

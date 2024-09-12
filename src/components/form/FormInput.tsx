@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable default-case */
 /* eslint-disable react/require-default-props */
 import React, { useEffect, useRef, useState } from 'react';
@@ -93,6 +94,9 @@ function FormInput({
         break;
       case 'account':
         text = '帳號';
+        break;
+      case 'name':
+        text = '名稱';
         break;
     }
     if (isEmpty(formValue)) {
