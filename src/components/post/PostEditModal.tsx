@@ -132,9 +132,9 @@ function PostEditModal() {
     formData.set('postId', postId);
     formData.set('content', content);
     formData.set('status', '1');
+    formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    formData.set('imagePath', image);
-    if (imageFile) formData.set('postImage', imageFile);
+    if (imageFile) formData.set('imageFile', imageFile);
 
     editPostMutation.mutate({ userId, formData });
   };

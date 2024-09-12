@@ -91,8 +91,9 @@ function PostCreateModal() {
     formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
+    formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    if (imageFile) formData.set('postImage', imageFile);
+    if (imageFile) formData.set('imageFile', imageFile);
 
     createPostMutation.mutate({ userId, formData });
   };
