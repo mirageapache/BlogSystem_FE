@@ -123,26 +123,19 @@ function EditProfilePage() {
     }
 
     if (isEmpty(emailError) && isEmpty(accountError) && isEmpty(nameError) && isEmpty(bioError)) {
-      const uploadRes = await uploadImage(avatarFile);
-      if (uploadRes === 'UPLOAD_FAILED') {
-        errorAlert('大頭照上傳失敗，請稍後再試');
-        return;
-      }
-      // console.log(uploadRes);
-      // console.log(avatar);
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('name', name);
+      formData.append('account', account);
+      formData.append('bio', bio);
+      formData.append('language', language);
+      formData.append('emailPrompt', emailPrompt.toString());
+      formData.append('mobilePrompt', mobilePrompt.toString());
+      formData.append('avatar', avatar);
+      if (!isEmpty(avatarFile)) formData.append('avatarFile', avatarFile);
 
-      const variables = {
-        email,
-        account,
-        name,
-        bio,
-        avatar,
-        language,
-        emailPrompt,
-        mobilePrompt,
-      };
       try {
-        const result = await updateProfile(variables, userId!, authToken!);
+        const result = await updateProfile(formData, userId!, authToken!);
         if (result.status === 200) {
           swal
             .fire({
