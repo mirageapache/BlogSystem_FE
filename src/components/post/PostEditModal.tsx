@@ -133,6 +133,7 @@ function PostEditModal() {
     formData.set('content', content);
     formData.set('status', '1');
     formData.set('image', image);
+    formData.set('imageId', postData.imageId);
     formData.set('hashTags', JSON.stringify(hashTagArr));
     if (imageFile) formData.set('imageFile', imageFile);
 

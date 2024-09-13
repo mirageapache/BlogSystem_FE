@@ -7,6 +7,7 @@ export interface PostDataType extends errorMsgType {
   author: UserInfoPanelType; // userId
   content: string;
   image: string;
+  imageId: string;
   status: number;
   subject: string;
   hashTags: string[];
@@ -24,6 +25,7 @@ export interface PostVariablesType {
   userId: string; // author
   content: string;
   image?: string;
+  imageId: string;
   status: number;
   hashTags?: string[];
 }

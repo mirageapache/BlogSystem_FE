@@ -10,7 +10,7 @@ const renderServer = 'https://blogsystem-aakz.onrender.com'; // render server
 export const DUMMYJSON_URL = 'https://dummyjson.com';
 
 /** base Url */
-export const API_URL = localhost;
+export const API_URL = renderServer;
 
 export const config = {
   headers: { Authorization: `Bearer ${authToken}` },
@@ -32,30 +32,6 @@ export async function getSearchCount(searchString?: string): Promise<ResultType>
     })
     .catch((error) => {
       return error.response;
-    });
-  return result;
-}
-
-/** 上傳圖片 */
-export async function uploadImage(avatarFile: any): Promise<string> {
-  const imgurClientId = process.env.REACT_APP_IMGUR_CLIENT;
-  if (!avatarFile) return 'NO_FILE';
-  const formData = new FormData();
-  formData.append('image', avatarFile);
-
-  const result = await axios
-    .post('https://api.imgur.com/3/image', formData, {
-      headers: {
-        Authorization: `Client-ID ${imgurClientId}`,
-      },
-    })
-    .then((res) => {
-      console.log(res);
-      return res.data.data;
-    })
-    .catch((error) => {
-      console.error('上傳失敗:', error);
-      return 'UPLOAD_FAILED';
     });
   return result;
 }

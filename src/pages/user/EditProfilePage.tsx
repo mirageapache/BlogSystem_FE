@@ -23,7 +23,6 @@ import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 import { errorAlert } from '../../utils/fetchError';
 import { setUserData, UserStateType } from '../../redux/userSlice';
-import { uploadImage } from '../../api';
 
 interface StateType {
   user: UserStateType;
@@ -37,6 +36,7 @@ function EditProfilePage() {
 
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
+  const [removeAvatar, setRemoveAvatar] = useState<boolean>(false); // 處理avatar image preview
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [account, setAccount] = useState('');
@@ -91,6 +91,7 @@ function EditProfilePage() {
       if (allowedTypes.includes(file.type)) {
         setAvatar(URL.createObjectURL(file));
         setAvatarFile(file);
+        setRemoveAvatar(false);
       } else {
         errorAlert('請選擇 jpeg、jpg、png 或 gif 格式的圖片');
       }
@@ -131,8 +132,10 @@ function EditProfilePage() {
       formData.append('language', language);
       formData.append('emailPrompt', emailPrompt.toString());
       formData.append('mobilePrompt', mobilePrompt.toString());
+      formData.append('removeAvatar', removeAvatar.toString());
       formData.append('avatar', avatar);
-      if (!isEmpty(avatarFile)) formData.append('avatarFile', avatarFile);
+      formData.append('avatarId', userData.avatarId);
+      formData.append('imageFile', avatarFile);
 
       try {
         const result = await updateProfile(formData, userId!, authToken!);
@@ -177,14 +180,14 @@ function EditProfilePage() {
             />
             <div className="flex gap-2">
               <label
-                htmlFor="avatarFile"
+                htmlFor="avatar"
                 className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
               >
                 更新頭貼
               </label>
               <input
-                name="avatarFile"
-                id="avatarFile"
+                name="imageFile"
+                id="avatar"
                 type="file"
                 className="hidden"
                 onChange={(e) => handleFileChange(e)}
@@ -195,7 +198,8 @@ function EditProfilePage() {
                   className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
                   onClick={() => {
                     setAvatar('');
-                    setAvatarFile(null);
+                    setAvatarFile('');
+                    setRemoveAvatar(true);
                   }}
                 >
                   移除頭貼

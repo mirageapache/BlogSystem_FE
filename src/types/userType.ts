@@ -8,6 +8,7 @@ export interface UserDataType {
   account: string;
   name: string;
   avatar: string;
+  avatarId: string;
   bgColor: string;
   bio: string;
   userRole: number;
@@ -41,6 +42,8 @@ export interface UserEditVariablesType {
   name: string;
   bio: string;
   avatar: string;
+  avatarId: string;
+  removeAvatar: boolean;
   language: string;
   emailPrompt: boolean;
   mobilePrompt: boolean;
