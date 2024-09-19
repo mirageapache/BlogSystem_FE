@@ -11,6 +11,7 @@ import { useMutation } from 'react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
+import { uploadImage } from 'api';
 // --- functions / types ---
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
@@ -31,7 +32,7 @@ function PostCreateModal() {
     dispatchSlice(setShowCreateModal(false));
   };
 
-  /** 處理上傳圖片檔 */
+  /** 處理欲上傳圖片檔 */
   const handleFileChange = (event: React.ChangeEvent<any>) => {
     const fileList = event.target.files; // 獲取選擇的檔案列表
     if (!isEmpty(fileList) && fileList?.length) {
@@ -80,22 +81,24 @@ function PostCreateModal() {
   );
 
   /** 發佈貼文 */
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // validate form data
     if (isEmpty(content) || content.length === 0) {
       return;
     }
     const userId = getCookies('uid') as string;
 
-    const formData = new FormData();
-    formData.set('author', userId);
-    formData.set('content', content);
-    formData.set('status', '1');
-    formData.set('image', image);
-    formData.set('hashTags', JSON.stringify(hashTagArr));
-    if (imageFile) formData.set('imageFile', imageFile);
+    const imageUrl = await uploadImage(imageFile);
 
-    createPostMutation.mutate({ userId, formData });
+    // const formData = new FormData();
+    // formData.set('author', userId);
+    // formData.set('content', content);
+    // formData.set('status', '1');
+    // formData.set('image', image);
+    // formData.set('hashTags', JSON.stringify(hashTagArr));
+    // if (imageFile) formData.set('imageFile', imageFile);
+
+    // createPostMutation.mutate({ userId, formData });
   };
 
   return (
