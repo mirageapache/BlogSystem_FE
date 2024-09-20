@@ -1,56 +1,57 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
-import { Field, reduxForm, getFormValues, FormState } from 'redux-form';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-// --- api ---
-import { getOwnProfile, updateProfile } from 'api/user';
 // --- constant ---
 import { FORM_CONTROL } from 'constants/LayoutConstants';
 // --- components ---
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import Avatar from 'components/user/Avatar';
-import FileInput from 'components/form/FileInput';
 import FormInput from 'components/form/FormInput';
 import FormTextArea from 'components/form/FormTextArea';
-// --- functions ---
-import { required, isEmail, maxLength } from 'utils/reudxFormValidates';
-// --- types ---
+// --- api/types ---
+import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 import { errorAlert } from '../../utils/fetchError';
 import { setUserData, UserStateType } from '../../redux/userSlice';
 
-const mapStateToProps = (state: FormState) => ({
-  formValues: getFormValues('editProfile')(state),
-});
-
 interface StateType {
   user: UserStateType;
 }
 
-function EditProfilePage({ handleSubmit, initialize }: any) {
+function EditProfilePage() {
+  const sliceDispatch = useDispatch();
+  const navigate = useNavigate();
+  const swal = withReactContent(Swal);
   const [firstLoad, setFirstLoad] = useState(true);
-  const [emailChange, setEmailChange] = useState(false);
-  const [accountChange, setAccountChange] = useState(false);
+
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
-  const [removeAvatar, setRemoveAvatar] = useState(false); // 判斷是否移除頭貼
-  const sliceDispatch = useDispatch();
+  const [removeAvatar, setRemoveAvatar] = useState<boolean>(false); // 處理avatar image preview
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [account, setAccount] = useState('');
+  const [accountError, setAccountError] = useState('');
+  const [name, setName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [bio, setBio] = useState('');
+  const [bioError, setBioError] = useState('');
+  const [language, setLanguage] = useState('');
+  const [emailPrompt, setEmailPrompt] = useState(false);
+  const [mobilePrompt, setMobilePrompt] = useState(false);
+
   const userStateData = useSelector((state: StateType) => state.user.userData);
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
-  const swal = withReactContent(Swal);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [updateLoading, setUpdateLoading] = useState(false);
 
   if (isEmpty(userId) || isEmpty(authToken)) {
@@ -58,69 +59,116 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
     return <Spinner />;
   }
 
-  const getUserData = useQuery('user', () => getOwnProfile(userId!, authToken!), {
-    enabled: isEmpty(userStateData) || userStateData!._id === '',
+  const getUserData = useQuery('editProfile', () => getOwnProfile(userId!, authToken!), {
+    enabled: isEmpty(userStateData) && firstLoad,
   });
-
   const { isLoading, data } = getUserData;
   const userData = isEmpty(userStateData)
     ? (get(data, 'data', {}) as UserProfileType)
     : userStateData;
 
-  // 設定 Redux Form 的初始值
+  // 設定表單初始資料
   useEffect(() => {
     if (firstLoad && !isEmpty(userData)) {
       setAvatar(userData.avatar);
-      initialize(userData);
+      setEmail(userData.email);
+      setAccount(userData.account);
+      setName(userData.name);
+      setBio(userData.bio);
+      setLanguage(userData.language);
+      setEmailPrompt(userData.emailPrompt);
+      setMobilePrompt(userData.mobilePrompt);
       setFirstLoad(false);
     }
   }, [userData]);
 
-  /** 送出編輯資料 */
-  const submitEditProfile = async (form: UserProfileType) => {
-    setUpdateLoading(true);
-    const formData = new FormData();
-    if (emailChange) formData.append('email', form.email);
-    formData.append('name', form.name);
-    if (accountChange) formData.append('account', form.account);
-    formData.append('bio', form.bio);
-    formData.append('language', form.language);
-    formData.append('emailPrompt', get(form, 'emailPrompt', false).toString());
-    formData.append('mobilePrompt', get(form, 'mobilePrompt', false).toString());
-    formData.append('removeAvatar', removeAvatar.toString());
-    if (!isEmpty(avatar)) formData.append('avatarFile', avatarFile);
-    try {
-      const result = await updateProfile(formData, userId!, authToken!);
-      if (result.status === 200) {
-        swal
-          .fire({
-            title: '修改成功',
-            icon: 'success',
-            confirmButtonText: '確認',
-          })
-          .then(() => {
-            navigate(`/user/profile/${userId}`);
-            dispatch(setUserData(result.data as UserProfileType));
-            scrollToTop();
-          });
+  /** 設定圖片檔 */
+  const handleFileChange = (event: React.ChangeEvent<any>) => {
+    const fileList = event.target.files; // 獲取選擇的檔案列表
+    if (!isEmpty(fileList) && fileList?.length) {
+      const file = fileList[0];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']; // 可上傳的圖片格式
+      if (allowedTypes.includes(file.type)) {
+        setAvatar(URL.createObjectURL(file));
+        setAvatarFile(file);
+        setRemoveAvatar(false);
       } else {
-        const errorMsg = get(result, 'response.data.message', '');
-        errorAlert(errorMsg);
+        errorAlert('請選擇 jpeg、jpg、png 或 gif 格式的圖片');
       }
-    } catch (error) {
-      errorAlert();
+    }
+  };
+
+  /** 送出編輯資料 */
+  const submitEditProfile = async () => {
+    setUpdateLoading(true);
+    // 資料驗證
+    if (isEmpty(email)) {
+      setEmailError('Email欄位必填');
+      setUpdateLoading(false);
+      return;
+    }
+    if (isEmpty(account)) {
+      setAccountError('帳號欄位必填');
+      setUpdateLoading(false);
+      return;
+    }
+    if (isEmpty(name)) {
+      setNameError('名稱欄位必填');
+      setUpdateLoading(false);
+      return;
+    }
+    if (bio.length > 200) {
+      setBioError('自我介紹最多200字');
+      setUpdateLoading(false);
+      return;
+    }
+
+    if (isEmpty(emailError) && isEmpty(accountError) && isEmpty(nameError) && isEmpty(bioError)) {
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('name', name);
+      formData.append('account', account);
+      formData.append('bio', bio);
+      formData.append('language', language);
+      formData.append('emailPrompt', emailPrompt.toString());
+      formData.append('mobilePrompt', mobilePrompt.toString());
+      formData.append('removeAvatar', removeAvatar.toString());
+      formData.append('avatar', avatar);
+      formData.append('avatarId', userData.avatarId);
+      formData.append('imageFile', avatarFile);
+
+      try {
+        const result = await updateProfile(formData, userId!, authToken!);
+        if (result.status === 200) {
+          swal
+            .fire({
+              title: '修改成功',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then(() => {
+              navigate(`/user/profile/${userId}`);
+              sliceDispatch(setUserData(result.data as UserProfileType));
+              scrollToTop();
+            });
+        } else {
+          const errorMsg = get(result, 'response.data.message', '');
+          errorAlert(errorMsg);
+        }
+      } catch (error) {
+        errorAlert();
+      }
     }
     setUpdateLoading(false);
   };
 
   if (isLoading) return <Spinner />;
-
   if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
   if (!isEmpty(userData)) {
     return (
       <div className="w-full sm:max-w-[600px] p-5">
-        <form onSubmit={handleSubmit(submitEditProfile)}>
+        <form>
           {/* avatar */}
           <div className="flex flex-col items-center w-full mb-5 pb-5 border-b-[1px] dark:border-gray-700">
             <Avatar
@@ -132,27 +180,26 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
             />
             <div className="flex gap-2">
               <label
-                htmlFor="avatarFile"
+                htmlFor="avatar"
                 className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
               >
                 更新頭貼
               </label>
-              <Field
-                name="avatarFile"
-                id="avatarFile"
-                component={FileInput}
-                setAvatar={setAvatar}
-                setAvatarFile={setAvatarFile}
-                setRemoveAvatar={setRemoveAvatar}
+              <input
+                name="imageFile"
+                id="avatar"
+                type="file"
+                className="hidden"
+                onChange={(e) => handleFileChange(e)}
               />
               {!isEmpty(avatar) && (
                 <button
                   type="button"
                   className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
                   onClick={() => {
-                    setRemoveAvatar(true);
                     setAvatar('');
-                    setAvatarFile(null);
+                    setAvatarFile('');
+                    setRemoveAvatar(true);
                   }}
                 >
                   移除頭貼
@@ -174,13 +221,16 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                   修改後即更換登入系統及電子報接收之Email
                 </p>
               </div>
-              <Field
-                name="email"
-                component={FormInput}
-                placeholder="請填寫Email"
+              <FormInput
                 type="email"
-                validate={[required('Email為必填資料'), isEmail('Email格式錯誤')]}
-                onChange={() => setEmailChange(true)}
+                name="email"
+                ispwd={false}
+                placeholder="E-mail"
+                value={email}
+                setValue={setEmail}
+                errorMsg={emailError}
+                setErrorMsg={setEmailError}
+                handleEnter={() => {}}
               />
             </div>
 
@@ -189,13 +239,16 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 <span className="text-red-500">*</span>
                 帳號
               </label>
-              <Field
-                name="account"
-                component={FormInput}
-                placeholder="請填寫帳號"
+              <FormInput
                 type="text"
-                validate={[required('帳號為必填資料')]}
-                onChange={() => setAccountChange(true)}
+                name="account"
+                ispwd={false}
+                placeholder="帳號"
+                value={account}
+                setValue={setAccount}
+                errorMsg={accountError}
+                setErrorMsg={setAccountError}
+                handleEnter={() => {}}
               />
             </div>
 
@@ -204,12 +257,16 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 <span className="text-red-500">*</span>
                 名稱
               </label>
-              <Field
-                name="name"
-                component={FormInput}
-                placeholder="請填寫名稱"
+              <FormInput
                 type="text"
-                validate={[required('名稱為必填資料')]}
+                name="name"
+                ispwd={false}
+                placeholder="名稱"
+                value={name}
+                setValue={setName}
+                errorMsg={nameError}
+                setErrorMsg={setNameError}
+                handleEnter={() => {}}
               />
             </div>
 
@@ -217,13 +274,13 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
               <label htmlFor="bio" className="font-bold">
                 自我介紹
               </label>
-              <Field
-                name="bio"
-                component={FormTextArea}
+              <FormTextArea
+                name={name}
                 placeholder="來說說你的故事吧！"
-                type="text"
-                validate={[maxLength(200, '自我介紹內容不超過200字')]}
-                value="自我介紹"
+                value={bio}
+                setValue={setBio}
+                errorMsg={bioError}
+                setErrorMsg={setBioError}
               />
             </div>
           </div>
@@ -235,10 +292,11 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 <label htmlFor="language" className="min-w-20 font-bold mr-5">
                   系統語言
                 </label>
-                <Field
+                <select
                   name="language"
-                  component="select"
+                  value={language}
                   className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-700 rounded-md focus:border-2`}
+                  onChange={(e) => setLanguage(e.target.value)}
                 >
                   <option value="zh" className="">
                     中文
@@ -246,7 +304,7 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                   <option value="en" className="">
                     English
                   </option>
-                </Field>
+                </select>
               </div>
             </div>
             <div className="mt-10">
@@ -254,7 +312,13 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 <label htmlFor="emailPrompt" className="font-bold mr-5">
                   是否開啟Email通知推播
                 </label>
-                <Field name="emailPrompt" component="input" type="checkbox" className="w-5 h-5" />
+                <input
+                  name="emailPrompt"
+                  type="checkbox"
+                  className="w-5 h-5"
+                  checked={emailPrompt}
+                  onChange={(e) => setEmailPrompt(e.target.checked)}
+                />
               </div>
             </div>
             <div className="my-10">
@@ -262,7 +326,13 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
                 <label htmlFor="mobilePrompt" className="font-bold mr-5">
                   是否開啟手機通知推播
                 </label>
-                <Field name="mobilePrompt" component="input" type="checkbox" className="w-5 h-5" />
+                <input
+                  name="mobilePrompt"
+                  type="checkbox"
+                  className="w-5 h-5"
+                  checked={mobilePrompt}
+                  onChange={(e) => setMobilePrompt(e.target.checked)}
+                />
               </div>
             </div>
           </div>
@@ -280,8 +350,9 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
               取消
             </button>
             <button
-              type="submit"
+              type="button"
               className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
+              onClick={submitEditProfile}
             >
               {updateLoading ? (
                 <FontAwesomeIcon
@@ -301,8 +372,4 @@ function EditProfilePage({ handleSubmit, initialize }: any) {
   return <BasicErrorPanel errorMsg="" />;
 }
 
-export default connect(mapStateToProps)(
-  reduxForm({
-    form: 'editProfile',
-  })(EditProfilePage)
-);
+export default EditProfilePage;

@@ -16,7 +16,7 @@ import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
+import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -31,7 +31,7 @@ function PostCreateModal() {
     dispatchSlice(setShowCreateModal(false));
   };
 
-  /** 處理上傳圖片檔 */
+  /** 處理欲上傳圖片檔 */
   const handleFileChange = (event: React.ChangeEvent<any>) => {
     const fileList = event.target.files; // 獲取選擇的檔案列表
     if (!isEmpty(fileList) && fileList?.length) {
@@ -80,7 +80,7 @@ function PostCreateModal() {
   );
 
   /** 發佈貼文 */
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // validate form data
     if (isEmpty(content) || content.length === 0) {
       return;
@@ -91,8 +91,9 @@ function PostCreateModal() {
     formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
+    formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    if (imageFile) formData.set('postImage', imageFile);
+    if (imageFile) formData.set('imageFile', imageFile);
 
     createPostMutation.mutate({ userId, formData });
   };
@@ -132,7 +133,12 @@ function PostCreateModal() {
             <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
               <div className="relative">
                 <img src={image} alt="" className="h-24 object-cover" />
-                <button aria-label="close" type="button" onClick={handleDeleteImage}>
+                <button
+                  aria-label="close"
+                  type="button"
+                  className={`${WHITE_SPACER}`}
+                  onClick={handleDeleteImage}
+                >
                   <FontAwesomeIcon
                     className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
                     icon={icon({ name: 'circle-xmark', style: 'solid' })}

@@ -95,6 +95,9 @@ function FormInput({
       case 'account':
         text = '帳號';
         break;
+      case 'name':
+        text = '名稱';
+        break;
     }
     if (isEmpty(formValue)) {
       setErrorMsg(`${text}必填`);

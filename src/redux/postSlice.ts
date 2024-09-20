@@ -25,6 +25,7 @@ const initPostData: PostDataType = {
   author: initAuthor,
   content: '',
   image: '',
+  imageId: '',
   status: 0,
   subject: '',
   hashTags: [],

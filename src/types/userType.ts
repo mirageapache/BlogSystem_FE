@@ -8,6 +8,7 @@ export interface UserDataType {
   account: string;
   name: string;
   avatar: string;
+  avatarId: string;
   bgColor: string;
   bio: string;
   userRole: number;
@@ -21,8 +22,8 @@ export interface UserDataType {
 export interface UserSettingType {
   language: string;
   theme: number;
-  emailPrompt: Boolean;
-  mobilePrompt: Boolean;
+  emailPrompt: boolean;
+  mobilePrompt: boolean;
 }
 
 /** 使用者資訊版型別 */
@@ -32,6 +33,20 @@ export interface UserInfoPanelType {
   name: string;
   avatar: string;
   bgColor: string;
+}
+
+/** user edit API 參數型別 */
+export interface UserEditVariablesType {
+  email: string;
+  account: string;
+  name: string;
+  bio: string;
+  avatar: string;
+  avatarId: string;
+  removeAvatar: boolean;
+  language: string;
+  emailPrompt: boolean;
+  mobilePrompt: boolean;
 }
 
 /** 使用者個人資訊
