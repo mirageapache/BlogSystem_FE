@@ -11,13 +11,12 @@ import { useMutation } from 'react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
-import { uploadImage } from 'api';
 // --- functions / types ---
 import { getCookies } from 'utils/common';
 import { errorAlert } from 'utils/fetchError';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
+import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -88,17 +87,15 @@ function PostCreateModal() {
     }
     const userId = getCookies('uid') as string;
 
-    const imageUrl = await uploadImage(imageFile);
+    const formData = new FormData();
+    formData.set('author', userId);
+    formData.set('content', content);
+    formData.set('status', '1');
+    formData.set('image', image);
+    formData.set('hashTags', JSON.stringify(hashTagArr));
+    if (imageFile) formData.set('imageFile', imageFile);
 
-    // const formData = new FormData();
-    // formData.set('author', userId);
-    // formData.set('content', content);
-    // formData.set('status', '1');
-    // formData.set('image', image);
-    // formData.set('hashTags', JSON.stringify(hashTagArr));
-    // if (imageFile) formData.set('imageFile', imageFile);
-
-    // createPostMutation.mutate({ userId, formData });
+    createPostMutation.mutate({ userId, formData });
   };
 
   return (
@@ -136,7 +133,12 @@ function PostCreateModal() {
             <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
               <div className="relative">
                 <img src={image} alt="" className="h-24 object-cover" />
-                <button aria-label="close" type="button" onClick={handleDeleteImage}>
+                <button
+                  aria-label="close"
+                  type="button"
+                  className={`${WHITE_SPACER}`}
+                  onClick={handleDeleteImage}
+                >
                   <FontAwesomeIcon
                     className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
                     icon={icon({ name: 'circle-xmark', style: 'solid' })}
