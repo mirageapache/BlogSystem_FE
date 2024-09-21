@@ -80,7 +80,7 @@ function FollowingItem({ user, refetch }: PropType) {
         bgColor={user.bgColor}
         className="my-2"
       />
-      {!isEmpty(currentUser) && (
+      {!isEmpty(currentUser) && user._id !== currentUser && (
         <div className="relative flex items-center">
           {user.isFollow ? (
             <button
