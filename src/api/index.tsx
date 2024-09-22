@@ -9,7 +9,7 @@ const renderServer = 'https://blogsystem-aakz.onrender.com'; // render server
 export const DUMMYJSON_URL = 'https://dummyjson.com';
 
 /** base Url */
-export const API_URL = localhost;
+export const API_URL = renderServer;
 
 interface ResultType extends AxResponseType {
   article: number;
