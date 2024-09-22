@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL, config } from './index';
+import { API_URL } from './index';
 import { CommentDataType } from '../types/commentType';
 import { AxResponseType } from '../types/apiType';
 
@@ -36,6 +36,9 @@ export async function createComment(
   content: string,
   route: string
 ): Promise<CommentApiType> {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const result = await axios
     .post(`${baseUrl}/comment/create/${userId}`, { id, userId, content, route }, config)
     .then((res) => {
@@ -49,6 +52,9 @@ export async function createComment(
 
 /** 編輯留言 */
 export async function updateComment(userId: string, formData: FormData): Promise<CommentApiType> {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const result = await axios
     .patch(`${baseUrl}/comment/update/${userId}`, formData, config)
     .then((res) => {

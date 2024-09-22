@@ -140,7 +140,7 @@ function PostCreateModal() {
                   onClick={handleDeleteImage}
                 >
                   <FontAwesomeIcon
-                    className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
+                    className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
                     icon={icon({ name: 'circle-xmark', style: 'solid' })}
                   />
                 </button>

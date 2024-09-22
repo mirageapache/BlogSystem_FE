@@ -89,7 +89,7 @@ function PostItem(props: { postData: PostDataType }) {
             <div
               id="post-container"
               className={`text-gray-600 dark:text-gray-300 ${
-                hiddenContent ? 'line-clamp-[10]' : ''
+                hiddenContent ? 'max-h-[300px] line-clamp-[10]' : ''
               }`}
               dangerouslySetInnerHTML={{ __html: postData.content }}
             />

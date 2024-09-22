@@ -62,7 +62,7 @@ function Header() {
         </div>
         <nav className="flex items-center text-lg">
           {/* 搜尋 */}
-          {path !== '/explore' && (
+          {!path.includes('/explore') && (
             <div className="hidden sm:flex items-center mr-1.5">
               <input
                 type="text"
