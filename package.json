@@ -1,7 +1,6 @@
 {
   "name": "blog_system_fe",
   "version": "0.1.0",
-  "homepage": "https://mirageapache.github.io/BlogSystem_FE",
   "private": true,
   "dependencies": {
     "@babel/preset-env": "^7.23.7",
