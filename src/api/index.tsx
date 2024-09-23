@@ -2,14 +2,8 @@ import axios from 'axios';
 import { AxResponseType } from 'types/apiType';
 
 /* eslint-disable no-unused-vars */
-const localhost = 'http://localhost:3100'; // localhost
-const renderServer = 'https://blogsystem-aakz.onrender.com'; // render server
-
-/** 測試資料 dummyjson */
-export const DUMMYJSON_URL = 'https://dummyjson.com';
-
 /** base Url */
-export const API_URL = localhost;
+export const API_URL = process.env.REACT_APP_API_URL;
 
 interface ResultType extends AxResponseType {
   article: number;
