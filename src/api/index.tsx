@@ -5,6 +5,7 @@ import { AxResponseType } from 'types/apiType';
 /** base Url */
 export const API_URL = process.env.REACT_APP_API_URL;
 
+
 interface ResultType extends AxResponseType {
   article: number;
   post: number;
