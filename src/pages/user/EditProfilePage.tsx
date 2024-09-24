@@ -34,6 +34,7 @@ function EditProfilePage() {
   const swal = withReactContent(Swal);
   const [firstLoad, setFirstLoad] = useState(true);
 
+  // const userStateData = useSelector((state: StateType) => state.user.userData);
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
   const [removeAvatar, setRemoveAvatar] = useState<boolean>(false); // 處理avatar image preview
@@ -49,7 +50,6 @@ function EditProfilePage() {
   const [emailPrompt, setEmailPrompt] = useState(false);
   const [mobilePrompt, setMobilePrompt] = useState(false);
 
-  const userStateData = useSelector((state: StateType) => state.user.userData);
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
   const [updateLoading, setUpdateLoading] = useState(false);
@@ -60,12 +60,10 @@ function EditProfilePage() {
   }
 
   const getUserData = useQuery('editProfile', () => getOwnProfile(userId!, authToken!), {
-    enabled: isEmpty(userStateData) && firstLoad,
+    enabled: firstLoad,
   });
   const { isLoading, data } = getUserData;
-  const userData = isEmpty(userStateData)
-    ? (get(data, 'data', {}) as UserProfileType)
-    : userStateData;
+  const userData = get(data, 'data', {}) as UserProfileType;
 
   // 設定表單初始資料
   useEffect(() => {
