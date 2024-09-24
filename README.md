@@ -2,9 +2,11 @@
 
 [Live Demo Website](https://mirageapache.github.io/BlogSystem_FE/)
 
-概念源自Substack，想以此做出一個"部落格系統"的SideProject
-使用者可在不登入的狀態下即可瀏覽貼文及文章，也可以註冊登入發表貼文及文章
+概念源自[Substack](https://substack.com/home)
+以此為系統設計主軸做出一個"部落格系統"的SideProject
+使用者在不登入的狀態下即可瀏覽貼文及文章，也可以註冊登入發表貼文及文章
 除了瀏覽外也可以對貼文及文章進行"按讚"、"留言"等功能
+部署平台：Vercel
 
 ## 開始使用
 
@@ -40,7 +42,7 @@ npm start
 
 ## 專案環境設置
 
-- npm - 8.5.0
+- node - 18.x
 - react - 18.2.0
 - react-router-dom - 6.21.1
 - gh-pages - 6.1.1
