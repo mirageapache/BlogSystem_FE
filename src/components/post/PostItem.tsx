@@ -80,7 +80,11 @@ function PostItem(props: { postData: PostDataType }) {
           {/* image */}
           {!isEmpty(postData.image) && (
             <div className="">
-              <img className="w-full rounded-md" src={postData.image} alt="postImage" />
+              <img
+                className="w-full max-h-[500px] object-contain rounded-md"
+                src={postData.image}
+                alt="postImage"
+              />
             </div>
           )}
 
