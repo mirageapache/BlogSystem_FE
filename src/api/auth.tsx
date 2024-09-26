@@ -47,3 +47,16 @@ export async function Auth(userId: string) {
     });
   return result;
 }
+
+/** 找回密碼(寄送連結Email) */
+export async function FindPwd(email: string) {
+  const result = await axios
+    .post(`${baseUrl}/auth/findPassword`, email)
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}

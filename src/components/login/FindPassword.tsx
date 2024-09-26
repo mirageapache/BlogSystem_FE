@@ -8,46 +8,33 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { useCookies } from 'react-cookie';
 // --- functions / types ---
-import { setForgetPwd, setSignInPop, setSignUpPop } from 'redux/loginSlice';
+import { setForgetPwd, setSignInPop } from 'redux/loginSlice';
 import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
-import { SignIn } from 'api/auth';
-import { setUserData } from 'redux/userSlice';
+import { FindPwd } from 'api/auth';
 // --- components ---
 import FormInput from 'components/form/FormInput';
 
-function SignInPopup() {
+function FindPassword() {
   const sliceDispatch = useDispatch();
   const [email, setEmail] = useState(''); // 紀錄email資料
-  const [password, setPassword] = useState(''); // 紀錄密碼資料
   const [emailError, setEmailError] = useState(''); // 紀錄email錯誤訊息
-  const [passwordError, setPasswordError] = useState(''); // 紀錄密碼錯誤訊息
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const swal = withReactContent(Swal);
-  const [cookies, setCookie, removeCookie] = useCookies(['uid']);
 
-  /** 導頁至註冊 */
-  const directSignUp = () => {
-    // cleanForm();
-    sliceDispatch(setSignInPop(false));
-    sliceDispatch(setSignUpPop(true));
-  };
-
-  /** 關閉登入Popup */
+  /** 關閉 Popup */
   const handleClose = () => {
-    // cleanForm();
-    sliceDispatch(setSignInPop(false));
+    sliceDispatch(setForgetPwd(false));
   };
 
-  /** 忘記密碼 */
-  const findPassword = () => {
-    sliceDispatch(setSignInPop(false));
-    sliceDispatch(setForgetPwd(true));
+  /** 返回登入Popup */
+  const BackToLogin = () => {
+    sliceDispatch(setForgetPwd(false));
+    sliceDispatch(setSignInPop(true));
   };
 
-  /** 送出登入資料 */
+  /** 送出資料 */
   const submitSignIn = async () => {
     setErrorMsg('');
     setIsLoading(true);
@@ -56,34 +43,19 @@ function SignInPopup() {
       setIsLoading(false);
       return;
     }
-    if (isEmpty(password)) {
-      setPasswordError('密碼為必填欄位');
-      setIsLoading(false);
-      return;
-    }
 
-    if (isEmpty(emailError) && isEmpty(passwordError)) {
-      const variables = { email, password };
+    if (isEmpty(emailError)) {
       try {
-        const res = await SignIn(variables);
+        const res = await FindPwd(email);
         if (get(res, 'status') === 200) {
-          const authToken = get(res, 'data.authToken');
-          window.localStorage.setItem('authToken', authToken);
-          setCookie('uid', res.data.userData.userId, { path: '/' });
-          sliceDispatch(setUserData(res.data.userData));
           swal
             .fire({
-              title: '登入成功',
-              icon: 'success',
+              title: '已寄送重置密碼連結至信箱',
+              icon: 'info',
               confirmButtonText: '確認',
             })
             .then(() => {
-              const { location } = window;
-              const pathname = get(location, 'pathname', '');
-              if (pathname === '/user/editProfile') {
-                location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
-              }
-              handleClose();
+              BackToLogin();
             });
         } else if (!isEmpty(get(res, 'response.data.message', ''))) {
           setErrorMsg(get(res, 'response.data.message'));
@@ -106,7 +78,7 @@ function SignInPopup() {
       <div className="absolute z-10 w-full min-[320px]:w-11/12 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
         {/* popup header */}
         <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">
-          <h2 className="text-2xl text-orange-500 font-semibold">歡迎回來</h2>
+          <h2 className="text-2xl text-orange-500 font-semibold">找回密碼</h2>
           <button
             aria-label="close"
             type="button"
@@ -120,7 +92,16 @@ function SignInPopup() {
           </button>
         </div>
         {/* popup body */}
-        <div className="pt-4 pb-8 px-6 flex justify-center items-center">
+        <div className="pt-4 pb-8 px-6 flex flex-col justify-center items-center">
+          <div className="flex gap-1 mb-4 text-gray-500">
+            <FontAwesomeIcon
+              icon={icon({ name: 'info-circle', style: 'solid' })}
+              className="mt-1 text-orange-500"
+            />
+            <p>
+              請輸入你註冊時的E-mail，系統將寄送「重設密碼」的連結至你的信箱，重設後即可使用新密碼進行登入
+            </p>
+          </div>
           <form className="w-full max-w-80">
             <div className="mb-6 w-full">
               <div>
@@ -133,19 +114,6 @@ function SignInPopup() {
                   setValue={setEmail}
                   errorMsg={emailError}
                   setErrorMsg={setEmailError}
-                  handleEnter={() => {}}
-                />
-              </div>
-              <div className="my-3">
-                <FormInput
-                  type="password"
-                  name="password"
-                  ispwd
-                  placeholder="password"
-                  value={password}
-                  setValue={setPassword}
-                  errorMsg={passwordError}
-                  setErrorMsg={setPasswordError}
                   handleEnter={handleEnter}
                 />
               </div>
@@ -167,32 +135,9 @@ function SignInPopup() {
                     className="animate-spin h-5 w-5 "
                   />
                 ) : (
-                  <>登入</>
+                  <>重置密碼</>
                 )}
               </button>
-            </div>
-            <div className="flex max-[420px]:flex-col justify-center mt-4">
-              <span className="flex">
-                沒有帳戶？
-                <button
-                  type="button"
-                  className="text-blue-600 cursor-pointer"
-                  onClick={directSignUp}
-                >
-                  前往註冊
-                </button>
-              </span>
-              <span className="mx-2 hidden min-[421px]:block">|</span>
-              <span>
-                忘記密碼？
-                <button
-                  type="button"
-                  className="text-blue-600 cursor-pointer"
-                  onClick={findPassword}
-                >
-                  找回密碼
-                </button>
-              </span>
             </div>
           </form>
         </div>
@@ -201,4 +146,4 @@ function SignInPopup() {
   );
 }
 
-export default SignInPopup;
+export default FindPassword;

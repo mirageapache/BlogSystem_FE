@@ -11,10 +11,11 @@ import {
 // --- components ---
 import BottomMenu from 'components/layout/BottomMenu';
 import ModalSection from 'components/layout/ModalSection';
-import Header from './components/layout/Header';
-import SideBar from './components/layout/SideBar';
-import SignInPopup from './components/login/SignInPopup';
-import SignUpPopup from './components/login/SignUpPopup';
+import Header from 'components/layout/Header';
+import SideBar from 'components/layout/SideBar';
+import SignInPopup from 'components/login/SignInPopup';
+import SignUpPopup from 'components/login/SignUpPopup';
+import FindPassword from 'components/login/FindPassword';
 
 // --- pages ---
 import HomePage from './pages/HomePage';
@@ -112,6 +113,7 @@ function App() {
         {/* 登入&註冊 Popup */}
         {loginState.showSignInPop && <SignInPopup />}
         {loginState.showSignUpPop && <SignUpPopup />}
+        {loginState.showForgetPwd && <FindPassword />}
       </div>
     </div>
   );
