@@ -51,7 +51,24 @@ export async function Auth(userId: string) {
 /** 找回密碼(寄送連結Email) */
 export async function FindPwd(email: string) {
   const result = await axios
-    .post(`${baseUrl}/auth/findPassword`, email)
+    .post(`${baseUrl}/auth/findpwd`, { email })
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}
+
+/** 重設密碼 */
+export async function ResetPwd(token: string, password: string, confirmPassword: string) {
+  const result = await axios
+    .post(`${baseUrl}/auth/resetpwd`, {
+      token,
+      password,
+      confirmPassword,
+    })
     .then((res) => {
       return res;
     })

@@ -18,6 +18,7 @@ import SignUpPopup from 'components/login/SignUpPopup';
 import FindPassword from 'components/login/FindPassword';
 
 // --- pages ---
+import ResetPassword from 'pages/ResetPassword';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import PostDetailPage from './pages/post/PostDetailPage';
@@ -98,6 +99,9 @@ function App() {
                 {/* User */}
                 <Route path="user/profile/:userId" element={<UserProfilePage />} />
                 <Route path="user/editProfile" element={<EditProfilePage />} />
+
+                {/* Reset PWD */}
+                <Route path="reset_password/:token" element={<ResetPassword />} />
 
                 {/* 404 */}
                 <Route path="*" element={<NotFoundPage />} />
