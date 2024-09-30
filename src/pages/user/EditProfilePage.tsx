@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -22,11 +22,7 @@ import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 import { errorAlert } from '../../utils/fetchError';
-import { setUserData, UserStateType } from '../../redux/userSlice';
-
-interface StateType {
-  user: UserStateType;
-}
+import { setUserData } from '../../redux/userSlice';
 
 function EditProfilePage() {
   const sliceDispatch = useDispatch();
@@ -34,7 +30,6 @@ function EditProfilePage() {
   const swal = withReactContent(Swal);
   const [firstLoad, setFirstLoad] = useState(true);
 
-  // const userStateData = useSelector((state: StateType) => state.user.userData);
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
   const [removeAvatar, setRemoveAvatar] = useState<boolean>(false); // 處理avatar image preview

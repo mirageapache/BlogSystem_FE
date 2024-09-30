@@ -360,14 +360,14 @@ function EditorToolBar({ toggleInlineStyle, toggleBlockType, handleFileInput }: 
         toggleBlockType={toggleBlockType}
       />
       {/* 插入圖片 */}
-      <EditorToolItem
+      {/* <EditorToolItem
         text="insert-image"
         tipText="插入圖片"
         tipStyle="w-16"
         iconName={faImage}
         iconStyle="w-5 h-5 mt-0.5"
         handleFileInput={handleFileInput}
-      />
+      /> */}
     </div>
   );
 }

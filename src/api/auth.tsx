@@ -47,3 +47,39 @@ export async function Auth(userId: string) {
     });
   return result;
 }
+
+/** 找回密碼(寄送連結Email) */
+export async function FindPwd(email: string) {
+  const result = await axios
+    .post(`${baseUrl}/auth/findpwd`, { email })
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}
+
+/** 重設密碼 */
+export async function ResetPwd(token: string, password: string, confirmPassword: string) {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+  const result = await axios
+    .post(
+      `${baseUrl}/auth/resetpwd`,
+      {
+        password,
+        confirmPassword,
+      },
+      config
+    )
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      return error;
+    });
+  return result;
+}

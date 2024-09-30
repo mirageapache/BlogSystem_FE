@@ -98,7 +98,7 @@ function UserProfilePage() {
         <div className="flex gap-4">
           <div>
             <Avatar
-              name="test"
+              name={userData.name}
               avatarUrl={userData.avatar}
               size="w-[72px] h-[72px]"
               textSize="text-4xl"
