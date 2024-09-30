@@ -63,12 +63,18 @@ export async function FindPwd(email: string) {
 
 /** 重設密碼 */
 export async function ResetPwd(token: string, password: string, confirmPassword: string) {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
   const result = await axios
-    .post(`${baseUrl}/auth/resetpwd`, {
-      token,
-      password,
-      confirmPassword,
-    })
+    .post(
+      `${baseUrl}/auth/resetpwd`,
+      {
+        password,
+        confirmPassword,
+      },
+      config
+    )
     .then((res) => {
       return res;
     })

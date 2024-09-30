@@ -8,7 +8,6 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { ResetPwd } from 'api/auth';
 import FormInput from 'components/form/FormInput';
-import { errorAlert } from 'utils/fetchError';
 import { setSignInPop } from 'redux/loginSlice';
 
 function ResetPassword() {
@@ -57,10 +56,8 @@ function ResetPassword() {
               navigate('/');
               dispatch(setSignInPop(true));
             });
-        } else if (get(res, 'response.status') === 401) {
-          setErrorMsg(get(res, 'response.data.message', ''));
         } else {
-          errorAlert();
+          setErrorMsg(get(res, 'response.data.message', ''));
         }
       } catch (error) {
         // console.log(error);
