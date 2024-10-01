@@ -99,7 +99,7 @@ function SignUpPopup() {
   return (
     <div className="fixed w-screen h-screen z-30 flex justify-center items-center">
       <div className={GRAY_BG_PANEL} onClick={handleClose} />
-      <div className="absolute z-10 w-4/5 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
+      <div className="absolute z-10 w-full min-[320px]:w-11/12 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
         {/* popup header */}
         <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">
           <h2 className="text-2xl text-orange-500 font-semibold">歡迎加入</h2>

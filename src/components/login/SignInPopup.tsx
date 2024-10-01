@@ -30,14 +30,12 @@ function SignInPopup() {
 
   /** 導頁至註冊 */
   const directSignUp = () => {
-    // cleanForm();
     sliceDispatch(setSignInPop(false));
     sliceDispatch(setSignUpPop(true));
   };
 
   /** 關閉登入Popup */
   const handleClose = () => {
-    // cleanForm();
     sliceDispatch(setSignInPop(false));
   };
 
