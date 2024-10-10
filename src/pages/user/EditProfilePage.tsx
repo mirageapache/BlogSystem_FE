@@ -69,8 +69,8 @@ function EditProfilePage() {
       setName(userData.name);
       setBio(userData.bio);
       setLanguage(userData.language);
-      setEmailPrompt(userData.emailPrompt);
-      setMobilePrompt(userData.mobilePrompt);
+      setEmailPrompt(userData.emailPrompt === true);
+      setMobilePrompt(userData.mobilePrompt === true);
       setFirstLoad(false);
     }
   }, [userData]);
