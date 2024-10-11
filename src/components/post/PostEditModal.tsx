@@ -13,7 +13,7 @@ import { updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from 'utils/fetch';
 import { handleHashTag } from 'utils/input';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';

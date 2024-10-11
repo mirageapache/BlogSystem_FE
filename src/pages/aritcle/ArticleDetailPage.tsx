@@ -21,7 +21,7 @@ import withReactContent from 'sweetalert2-react-content';
 // --- api / functions / types ---
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from 'utils/fetch';
 import { CommentDataType } from 'types/commentType';
 import { setSignInPop } from 'redux/loginSlice';
 import { getCookies } from 'utils/common';

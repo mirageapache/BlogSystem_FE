@@ -15,7 +15,7 @@ import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
 // --- functions / types ---
 import { createArticle } from 'api/article';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from 'utils/fetch';
 import { checkCancelEdit, getCookies } from 'utils/common';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import '../../styles/editor.scss';

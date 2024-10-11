@@ -21,7 +21,7 @@ import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
-import { errorAlert } from '../../utils/fetchError';
+import { errorAlert } from '../../utils/fetch';
 import { setUserData } from '../../redux/userSlice';
 
 function EditProfilePage() {

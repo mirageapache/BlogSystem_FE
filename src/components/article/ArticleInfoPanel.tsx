@@ -7,7 +7,7 @@ import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-
 // --- functions / types ---
 import { ArticleDataType } from 'types/articleType';
 import { checkLogin, getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from 'utils/fetch';
 import { toggleLikeArticle } from 'api/article';
 import { setSignInPop } from 'redux/loginSlice';
 import { setEditMode, SysStateType } from 'redux/sysSlice';

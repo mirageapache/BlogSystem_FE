@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 import FormInput from 'components/form/FormInput';
 // --- functions / types ---
 import { SignUp } from 'api/auth';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert, handleStatus } from 'utils/fetch';
 import { get, isEmpty, isEqual } from 'lodash';
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
@@ -67,8 +67,7 @@ function SignUpPopup() {
       const variables = { email, password, confirmPassword };
       try {
         const res = await SignUp(variables);
-        if (get(res, 'status') === 200) {
-          // 提示訊息
+        if (handleStatus(get(res, 'status', 0)) === 2) {
           swal
             .fire({
               title: '註冊成功🎉',
@@ -79,8 +78,8 @@ function SignUpPopup() {
             .then(() => {
               handleClose();
             });
-        } else if (get(res, 'response.status') === 401) {
-          setErrorMsg(get(res, 'response.data.message', ''));
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          setErrorMsg(get(res, 'data.message', ''));
         } else {
           errorAlert();
         }

@@ -12,7 +12,7 @@ export async function SignUp(param: SignUpParamType) {
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
@@ -25,7 +25,7 @@ export async function SignIn(param: SignInParamType) {
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
@@ -56,7 +56,7 @@ export async function FindPwd(email: string) {
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
@@ -79,7 +79,7 @@ export async function ResetPwd(token: string, password: string, confirmPassword:
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

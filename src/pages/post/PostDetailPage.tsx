@@ -18,7 +18,7 @@ import { getPostDetail } from 'api/post';
 import { formatDateTime } from 'utils/dateTime';
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from 'utils/fetch';
 import { getCookies } from 'utils/common';
 import { useDispatch } from 'react-redux';
 import { setSignInPop } from 'redux/loginSlice';

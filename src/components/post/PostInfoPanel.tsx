@@ -14,7 +14,7 @@ import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-
 import { toggleLikePost } from 'api/post';
 import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from 'utils/fetch';
 import { getCookies } from 'utils/common';
 import { checkLogin } from '../../utils/common';
 import { HINT_LABEL } from '../../constants/LayoutConstants';

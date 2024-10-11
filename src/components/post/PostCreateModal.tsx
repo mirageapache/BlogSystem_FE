@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import { createPost } from 'api/post';
 // --- functions / types ---
 import { getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert } from 'utils/fetch';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
