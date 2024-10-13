@@ -17,6 +17,7 @@ import { setUserData } from 'redux/userSlice';
 // --- components ---
 import FormInput from 'components/form/FormInput';
 import { handleStatus } from 'utils/fetch';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function SignInPopup() {
   const sliceDispatch = useDispatch();
@@ -87,6 +88,8 @@ function SignInPopup() {
             });
         } else if (handleStatus(get(res, 'status', 0)) === 4) {
           setErrorMsg(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          setErrorMsg(ERR_NETWORK_MSG);
         }
       } catch (error) {
         // console.log(error);

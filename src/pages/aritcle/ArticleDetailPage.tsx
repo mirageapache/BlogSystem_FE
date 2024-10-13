@@ -21,7 +21,7 @@ import withReactContent from 'sweetalert2-react-content';
 // --- api / functions / types ---
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
-import { errorAlert } from 'utils/fetch';
+import { errorAlert, handleStatus } from 'utils/fetch';
 import { CommentDataType } from 'types/commentType';
 import { setSignInPop } from 'redux/loginSlice';
 import { getCookies } from 'utils/common';
@@ -35,6 +35,8 @@ import ArticleLoading from '../../components/article/ArticleLoading';
 import CommentList from '../../components/comment/CommentList';
 import AtomicBlock from '../../components/common/EditorComponent/AtomicBlock';
 import EditorToolBar from '../../components/common/EditorToolBar';
+import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
+import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 interface StateType {
   system: SysStateType;
@@ -47,10 +49,9 @@ function ArticleDetailPage() {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const editorRef = useRef(null);
   const editMode = useSelector((state: StateType) => state.system.editMode); // 編輯模式
-  const { isLoading, error, data, refetch } = useQuery(['articleDetail', id], () =>
-    getArticleDetail(id!)
-  );
+  const { isLoading, data, refetch } = useQuery(['articleDetail', id], () => getArticleDetail(id!));
   const articleData = get(data, 'data');
+
   const [title, setTitle] = useState(''); // article title
   useEffect(() => {
     // init article content
@@ -158,7 +159,7 @@ function ArticleDetailPage() {
     ({ content }: { content: string }) => updateArticle(articleData!._id, userId!, title, content),
     {
       onSuccess: (res) => {
-        if (res.status === 200) {
+        if (handleStatus(get(res, 'status')) === 2) {
           const swal = withReactContent(Swal);
           swal
             .fire({
@@ -170,6 +171,10 @@ function ArticleDetailPage() {
               refetch();
               if (result.isConfirmed) dispatch(setEditMode(false));
             });
+        } else if (handleStatus(get(res, 'status')) === 4) {
+          errorAlert(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          errorAlert(ERR_NETWORK_MSG);
         }
       },
       onError: () => errorAlert(),
@@ -185,7 +190,10 @@ function ArticleDetailPage() {
   };
 
   if (isLoading) return <ArticleLoading withBorder={false} />;
-  if (error) return <p>Error</p>;
+  if (get(data, 'code') === 'ERR_NETWORK') {
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
+  }
+
   if (isEmpty(articleData)) {
     return (
       <NoSearchResult

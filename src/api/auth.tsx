@@ -25,6 +25,7 @@ export async function SignIn(param: SignInParamType) {
       return res;
     })
     .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
       return error.response;
     });
   return result;

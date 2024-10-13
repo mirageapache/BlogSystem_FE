@@ -8,6 +8,7 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
 import { getSearchArticle } from 'api/article';
 import { ArticleDataType } from 'types/articleType';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ProfileArticle(props: { userId: string }) {
   const { userId } = props;
@@ -55,7 +56,7 @@ function ProfileArticle(props: { userId: string }) {
     return <NoSearchResult msgOne="搜尋不到相關文章" msgTwo="" type="article" />;
 
   if (isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">

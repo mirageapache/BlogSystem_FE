@@ -10,6 +10,7 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 import { getCookies } from 'utils/common';
 import { getSearchUserList } from 'api/user';
 import { UserDataType } from 'types/userType';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ExploreUser() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,7 +58,7 @@ function ExploreUser() {
     return <NoSearchResult msgOne="搜尋不到相關用戶" msgTwo="" type="user" />;
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">

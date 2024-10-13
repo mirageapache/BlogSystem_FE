@@ -9,6 +9,7 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
 import { PostDataType } from 'types/postType';
 import { getPartialPosts, getSearchPost } from 'api/post';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ExplorePost() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,7 +61,7 @@ function ExplorePost() {
     return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">
