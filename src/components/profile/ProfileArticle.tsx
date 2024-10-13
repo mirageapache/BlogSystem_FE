@@ -31,9 +31,10 @@ function ProfileArticle(props: { userId: string }) {
     window.scrollTo(0, 0);
   }, []);
 
-  const articleList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[])
-    : [];
+  const articleList =
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -53,7 +54,7 @@ function ProfileArticle(props: { userId: string }) {
   if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關文章" msgTwo="" type="article" />;
 
-  if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
+  if (isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
 
   return (

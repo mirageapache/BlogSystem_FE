@@ -59,7 +59,7 @@ function FindPassword() {
               BackToLogin();
             });
         } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          setErrorMsg(get(res, 'response.data.message', ''));
+          setErrorMsg(get(res, 'data.message', ''));
         }
       } catch (error) {
         // console.log(error);

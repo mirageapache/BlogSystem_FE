@@ -41,8 +41,7 @@ export async function getPartialArticles(page: number): Promise<ArticlePageListT
     result = await axios
       .post(`${baseUrl}/article/partial`, { page, limit })
       .then((res) => {
-        const articleData = res.data;
-        return articleData;
+        return res.data;
       })
       .catch((error) => {
         return error;

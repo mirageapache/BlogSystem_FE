@@ -58,7 +58,7 @@ function ResetPassword() {
               dispatch(setSignInPop(true));
             });
         } else {
-          setErrorMsg(get(res, 'response.data.message', ''));
+          setErrorMsg(get(res, 'data.message', ''));
         }
       } catch (error) {
         // console.log(error);
