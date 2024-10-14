@@ -6,14 +6,15 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
 // --- functions / types ---
 import { getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetch';
+import { errorAlert, handleStatus } from 'utils/fetch';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
@@ -61,21 +62,25 @@ function PostCreateModal() {
     ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
     {
       onSuccess: (res) => {
-        if (res.status === 200) {
+        if (handleStatus(get(res, 'status')) === 2) {
           const swal = withReactContent(Swal);
-          swal.fire({
-            title: '貼文已發佈',
-            icon: 'success',
-            confirmButtonText: '確認',
-          });
-          handleClose();
-          window.location.reload();
-        } else {
-          errorAlert();
+          swal
+            .fire({
+              title: '貼文已發佈',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then(() => {
+              handleClose();
+              window.location.reload();
+            });
+        } else if (handleStatus(get(res, 'status')) === 4) {
+          errorAlert(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          errorAlert(ERR_NETWORK_MSG);
         }
       },
       onError: () => errorAlert(),
-      // error type:未登入、沒有內容
     }
   );
 

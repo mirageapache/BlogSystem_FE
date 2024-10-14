@@ -35,9 +35,10 @@ function ExploreHashTag() {
     window.scrollTo(0, 0);
   }, []);
 
-  const postList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[])
-    : [];
+  const postList =
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -62,7 +63,7 @@ function ExploreHashTag() {
   if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關HashTag貼文" msgTwo="" type="post" />;
 
-  if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
+  if (isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (

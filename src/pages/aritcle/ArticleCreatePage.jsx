@@ -83,7 +83,7 @@ function ArticleCreatePage() {
     ({ userId, content }) => createArticle(userId, title, content),
     {
       onSuccess: (res) => {
-        if (res.status === 200) {
+        if (handleStatus(get(res, 'status')) === 2) {
           const swal = withReactContent(Swal);
           swal
             .fire({

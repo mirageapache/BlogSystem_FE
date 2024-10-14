@@ -21,7 +21,7 @@ import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
-import { errorAlert } from '../../utils/fetch';
+import { errorAlert, handleStatus } from '../../utils/fetch';
 import { setUserData } from '../../redux/userSlice';
 
 function EditProfilePage() {
@@ -132,7 +132,7 @@ function EditProfilePage() {
 
       try {
         const result = await updateProfile(formData, userId!, authToken!);
-        if (result.status === 200) {
+        if (handleStatus(get(result, 'status', 0)) === 2) {
           swal
             .fire({
               title: '修改成功',
@@ -145,8 +145,7 @@ function EditProfilePage() {
               scrollToTop();
             });
         } else {
-          const errorMsg = get(result, 'response.data.message', '');
-          errorAlert(errorMsg);
+          errorAlert(get(result, 'data.message', ''));
         }
       } catch (error) {
         errorAlert();
