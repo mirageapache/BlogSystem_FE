@@ -9,6 +9,7 @@ import { PostDataType, PostResultType } from 'types/postType';
 import { getPartialPosts } from 'api/post';
 import { useDispatch } from 'react-redux';
 import { setActivePage } from 'redux/sysSlice';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -51,7 +52,7 @@ function HomePage() {
   }, []);
 
   if (!isEmpty(data) && data.code === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">

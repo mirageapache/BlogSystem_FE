@@ -8,7 +8,7 @@ import { useMutation } from 'react-query';
 // --- api/type ---
 import { UserDataType } from 'types/userType';
 import { getCookies } from '../../utils/common';
-import { errorAlert } from '../../utils/fetchError';
+import { errorAlert } from '../../utils/fetch';
 import { changeFollowState, followUser, unfollowUser } from '../../api/follow';
 // --- components ---
 import UserInfoPanel from './UserInfoPanel';

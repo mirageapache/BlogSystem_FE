@@ -8,6 +8,7 @@ import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 // --- api / types ---
 import { UserDataType } from 'types/userType';
 import { getFollowerList } from 'api/follow';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ProfileFollowed(props: { userId: string }) {
   const { userId } = props;
@@ -53,7 +54,7 @@ function ProfileFollowed(props: { userId: string }) {
     return <NoSearchResult msgOne="你還沒有粉絲喔!" msgTwo="快去拓展你的粉絲圈吧" type="user" />;
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">

@@ -16,6 +16,8 @@ import { SignIn } from 'api/auth';
 import { setUserData } from 'redux/userSlice';
 // --- components ---
 import FormInput from 'components/form/FormInput';
+import { handleStatus } from 'utils/fetch';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function SignInPopup() {
   const sliceDispatch = useDispatch();
@@ -30,14 +32,12 @@ function SignInPopup() {
 
   /** 導頁至註冊 */
   const directSignUp = () => {
-    // cleanForm();
     sliceDispatch(setSignInPop(false));
     sliceDispatch(setSignUpPop(true));
   };
 
   /** 關閉登入Popup */
   const handleClose = () => {
-    // cleanForm();
     sliceDispatch(setSignInPop(false));
   };
 
@@ -66,7 +66,8 @@ function SignInPopup() {
       const variables = { email, password };
       try {
         const res = await SignIn(variables);
-        if (get(res, 'status') === 200) {
+
+        if (handleStatus(get(res, 'status', 0)) === 2) {
           const authToken = get(res, 'data.authToken');
           window.localStorage.setItem('authToken', authToken);
           setCookie('uid', res.data.userData.userId, { path: '/' });
@@ -85,8 +86,10 @@ function SignInPopup() {
               }
               handleClose();
             });
-        } else if (!isEmpty(get(res, 'response.data.message', ''))) {
-          setErrorMsg(get(res, 'response.data.message'));
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          setErrorMsg(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          setErrorMsg(ERR_NETWORK_MSG);
         }
       } catch (error) {
         // console.log(error);

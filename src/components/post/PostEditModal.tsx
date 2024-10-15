@@ -6,19 +6,20 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
 // --- api ---
 import { updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert, handleStatus } from 'utils/fetch';
 import { handleHashTag } from 'utils/input';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
 import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
+import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 interface stateType {
   post: PostStateType;
@@ -99,18 +100,24 @@ function PostEditModal() {
     ({ userId, formData }: { userId: string; formData: FormData }) => updatePost(userId, formData),
     {
       onSuccess: (res) => {
-        if (res.status === 200) {
-          swal.fire({
-            title: '貼文已修改',
-            icon: 'success',
-            confirmButtonText: '確認',
-          });
-          handleClose(false);
-          window.location.reload();
+        if (handleStatus(get(res, 'status')) === 2) {
+          swal
+            .fire({
+              title: '貼文已修改',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then(() => {
+              handleClose(false);
+              window.location.reload();
+            });
+        } else if (handleStatus(get(res, 'status')) === 4) {
+          errorAlert(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          errorAlert(ERR_NETWORK_MSG);
         }
       },
       onError: () => errorAlert(),
-      // error type:未登入、沒有內容
     }
   );
 

@@ -41,8 +41,7 @@ export async function getPartialPosts(page: number): Promise<PostPageListType> {
     result = await axios
       .post(`${baseUrl}/post/partial`, { page, limit })
       .then((res) => {
-        const postData = res.data;
-        return postData;
+        return res.data;
       })
       .catch((error) => {
         return error;
@@ -95,7 +94,8 @@ export async function createPost(userId: string, formData: FormData): Promise<Po
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }
@@ -111,7 +111,8 @@ export async function updatePost(userId: string, formData: FormData): Promise<Po
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }

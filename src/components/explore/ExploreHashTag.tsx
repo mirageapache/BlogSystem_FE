@@ -9,6 +9,7 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / type ---
 import { PostDataType } from 'types/postType';
 import { getSearchHashTag } from 'api/post';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ExploreHashTag() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,9 +35,10 @@ function ExploreHashTag() {
     window.scrollTo(0, 0);
   }, []);
 
-  const postList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[])
-    : [];
+  const postList =
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -61,8 +63,8 @@ function ExploreHashTag() {
   if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關HashTag貼文" msgTwo="" type="post" />;
 
-  if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+  if (isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">

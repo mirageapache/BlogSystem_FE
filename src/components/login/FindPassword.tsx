@@ -14,6 +14,7 @@ import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
 import { FindPwd } from 'api/auth';
 // --- components ---
 import FormInput from 'components/form/FormInput';
+import { handleStatus } from 'utils/fetch';
 
 function FindPassword() {
   const sliceDispatch = useDispatch();
@@ -47,7 +48,7 @@ function FindPassword() {
     if (isEmpty(emailError)) {
       try {
         const res = await FindPwd(email);
-        if (get(res, 'status') === 200) {
+        if (handleStatus(get(res, 'status', 0)) === 2) {
           swal
             .fire({
               title: '已寄送重置密碼連結至信箱',
@@ -57,8 +58,8 @@ function FindPassword() {
             .then(() => {
               BackToLogin();
             });
-        } else if (!isEmpty(get(res, 'response.data.message', ''))) {
-          setErrorMsg(get(res, 'response.data.message'));
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          setErrorMsg(get(res, 'data.message', ''));
         }
       } catch (error) {
         // console.log(error);

@@ -9,6 +9,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { ResetPwd } from 'api/auth';
 import FormInput from 'components/form/FormInput';
 import { setSignInPop } from 'redux/loginSlice';
+import { handleStatus } from 'utils/fetch';
 
 function ResetPassword() {
   const { token } = useParams();
@@ -44,7 +45,7 @@ function ResetPassword() {
     if (isEmpty(passwordError) && isEmpty(confirmPasswordError)) {
       try {
         const res = await ResetPwd(token!, password, confirmPassword);
-        if (get(res, 'status') === 200) {
+        if (handleStatus(get(res, 'status', 0)) === 2) {
           // 提示訊息
           swal
             .fire({
@@ -57,7 +58,7 @@ function ResetPassword() {
               dispatch(setSignInPop(true));
             });
         } else {
-          setErrorMsg(get(res, 'response.data.message', ''));
+          setErrorMsg(get(res, 'data.message', ''));
         }
       } catch (error) {
         // console.log(error);

@@ -116,7 +116,7 @@ export async function updateProfile(
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

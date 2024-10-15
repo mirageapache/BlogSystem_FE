@@ -6,6 +6,7 @@ import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
 import PostListLoading from './PostListLoading';
 // --- types ---
 import { PostDataType, PostResultType } from '../../types/postType';
+import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 function PostList(props: { postListData: PostResultType }) {
   const { postListData } = props;
@@ -14,7 +15,7 @@ function PostList(props: { postListData: PostResultType }) {
 
   if (isLoading) return <PostListLoading />;
   if (!isEmpty(data) && data.code === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
   if (isEmpty(postDataList))
     return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
 

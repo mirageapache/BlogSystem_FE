@@ -41,8 +41,7 @@ export async function getPartialArticles(page: number): Promise<ArticlePageListT
     result = await axios
       .post(`${baseUrl}/article/partial`, { page, limit })
       .then((res) => {
-        const articleData = res.data;
-        return articleData;
+        return res.data;
       })
       .catch((error) => {
         return error;
@@ -100,7 +99,8 @@ export async function createArticle(
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }
@@ -122,7 +122,8 @@ export async function updateArticle(
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }

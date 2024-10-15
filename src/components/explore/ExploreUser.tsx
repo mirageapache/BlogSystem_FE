@@ -10,6 +10,7 @@ import NoSearchResult from 'components/tips/NoSearchResult';
 import { getCookies } from 'utils/common';
 import { getSearchUserList } from 'api/user';
 import { UserDataType } from 'types/userType';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ExploreUser() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,9 +35,10 @@ function ExploreUser() {
     window.scrollTo(0, 0);
   }, []);
 
-  const userList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.userList], [] as UserDataType[])
-    : [];
+  const userList =
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data.pages.reduce((acc, page) => [...acc, ...page.userList], [] as UserDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -56,8 +58,8 @@ function ExploreUser() {
   if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關用戶" msgTwo="" type="user" />;
 
-  if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
-    return <BasicErrorPanel errorMsg="與伺服器連線異常，請稍候再試！" />;
+  if (isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
+    return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">
