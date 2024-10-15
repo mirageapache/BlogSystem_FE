@@ -10,8 +10,8 @@ import { UserDataType } from 'types/userType';
 import { getFollowingList } from 'api/follow';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
-function ProfileFollowing(props: { userId: string }) {
-  const { userId } = props;
+function ProfileFollowing(props: { userId: string; identify: boolean }) {
+  const { userId, identify } = props;
   let nextPage = -1;
 
   const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
@@ -50,10 +50,13 @@ function ProfileFollowing(props: { userId: string }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
-    return (
-      <NoSearchResult msgOne="你還沒有追蹤其他人喔!" msgTwo="快去尋找有趣的人吧" type="user" />
-    );
+  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND') {
+    if (identify)
+      return (
+        <NoSearchResult msgOne="你還沒有追蹤任何人喔" msgTwo="快去尋找有趣的人吧" type="user" />
+      );
+    return <NoSearchResult msgOne="沒有追蹤任何人" msgTwo=" " type="user" />;
+  }
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
