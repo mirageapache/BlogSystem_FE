@@ -36,9 +36,11 @@ function ExploreUser() {
   }, []);
 
   const userList =
-    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) ||
+    get(data, 'pages[0].data.code', '') !== '' ||
+    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data.pages.reduce((acc, page) => [...acc, ...page.userList], [] as UserDataType[]);
+      : data!.pages.reduce((acc, page) => [...acc, ...page.userList], [] as UserDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -55,10 +57,10 @@ function ExploreUser() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
+  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND')
     return <NoSearchResult msgOne="搜尋不到相關用戶" msgTwo="" type="user" />;
 
-  if (isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
+  if (get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (

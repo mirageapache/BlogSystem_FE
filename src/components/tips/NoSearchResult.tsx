@@ -24,21 +24,21 @@ function NoSearchResult({ msgOne, msgTwo, type }: propsType) {
       <p className="text-2xl sm:text-3xl m-1">{!isEmpty(msgTwo) ? msgTwo : '請重新查詢'}</p>
 
       {type === 'createArticle' && (
-        <Link to="/article/create">
-          <span>撰寫文章</span>
+        <Link
+          to="/article/create"
+          className="mt-5 bg-orange-500 rounded-md cursor-pointer py-2 px-4 hover:bg-orange-600"
+        >
+          撰寫文章
         </Link>
       )}
 
-      {type === 'createArticle' && (
+      {type === 'createPost' && (
         <button
           type="button"
-          className="flex my-1.5 ml-3 text-xl cursor-pointer py-4"
+          className="mt-5 bg-orange-500 rounded-md cursor-pointer py-2 px-4 hover:bg-orange-600"
           onClick={() => dispatch(setShowCreateModal(true))}
         >
-          <div className="flex items-center">
-            <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
-          </div>
-          <span className="ml-3 font-bold hidden lg:block">建立貼文</span>
+          發佈貼文
         </button>
       )}
     </div>

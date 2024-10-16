@@ -33,7 +33,8 @@ function ProfileArticle(props: { userId: string; identify: boolean }) {
   }, []);
 
   const articleList =
-    get(data, 'pages[0].status', 0) !== 200 ||
+    isEmpty(data) ||
+    get(data, 'pages[0].data.code', '') !== '' ||
     get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
       : data!.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[]);

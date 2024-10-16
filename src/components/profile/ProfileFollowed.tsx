@@ -31,9 +31,12 @@ function ProfileFollowed(props: { userId: string; identify: boolean }) {
     window.scrollTo(0, 0);
   }, []);
 
-  const followList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[])
-    : [];
+  const followList =
+    isEmpty(data) ||
+    get(data, 'pages[0].data.code', '') !== '' ||
+    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data!.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
