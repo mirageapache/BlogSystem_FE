@@ -10,8 +10,8 @@ import { UserDataType } from 'types/userType';
 import { getFollowerList } from 'api/follow';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
-function ProfileFollowed(props: { userId: string }) {
-  const { userId } = props;
+function ProfileFollowed(props: { userId: string; identify: boolean }) {
+  const { userId, identify } = props;
   let nextPage = -1;
 
   const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
@@ -31,9 +31,12 @@ function ProfileFollowed(props: { userId: string }) {
     window.scrollTo(0, 0);
   }, []);
 
-  const followList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[])
-    : [];
+  const followList =
+    isEmpty(data) ||
+    get(data, 'pages[0].data.code', '') !== '' ||
+    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data!.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -50,8 +53,11 @@ function ProfileFollowed(props: { userId: string }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
-    return <NoSearchResult msgOne="你還沒有粉絲喔!" msgTwo="快去拓展你的粉絲圈吧" type="user" />;
+  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND') {
+    if (identify)
+      return <NoSearchResult msgOne="你還沒有粉絲喔" msgTwo="快去拓展你的粉絲圈吧" type="user" />;
+    return <NoSearchResult msgOne="沒有任何粉絲資訊" msgTwo=" " type="user" />;
+  }
 
   if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;

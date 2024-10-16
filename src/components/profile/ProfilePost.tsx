@@ -10,8 +10,8 @@ import { PostDataType } from 'types/postType';
 import { getSearchPost } from 'api/post';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
-function ProfilePost(props: { userId: string }) {
-  const { userId } = props;
+function ProfilePost(props: { userId: string; identify: boolean }) {
+  const { userId, identify } = props;
   let nextPage = -1; // 下一頁指標，如果為「-1」表示最後一頁了
 
   // 使用 useInfiniteQuery 取得貼文
@@ -32,9 +32,12 @@ function ProfilePost(props: { userId: string }) {
     window.scrollTo(0, 0);
   }, []);
 
-  const postList = data
-    ? data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[])
-    : [];
+  const postList =
+    isEmpty(data) ||
+    get(data, 'pages[0].data.code', '') !== '' ||
+    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -51,10 +54,15 @@ function ProfilePost(props: { userId: string }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
-    return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
+  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND') {
+    if (identify)
+      return (
+        <NoSearchResult msgOne="你還沒發佈任何貼文" msgTwo="快發佈你的貼文動態" type="createPost" />
+      );
+    return <NoSearchResult msgOne="尚未發佈任何貼文" msgTwo=" " type="post" />;
+  }
 
-  if (!isEmpty(data) && get(data, 'code', undefined) === 'ERR_NETWORK')
+  if (get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (

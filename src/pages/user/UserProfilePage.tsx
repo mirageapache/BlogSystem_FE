@@ -172,28 +172,28 @@ function UserProfilePage() {
         {/* 文章 Article */}
         {activeTab === 'article' && (
           <div className="">
-            <ProfileArticle userId={userId!} />
+            <ProfileArticle userId={userId!} identify={identify} />
           </div>
         )}
 
         {/* 貼文 Post */}
         {activeTab === 'post' && (
           <div className="">
-            <ProfilePost userId={userId!} />
+            <ProfilePost userId={userId!} identify={identify} />
           </div>
         )}
 
         {/* 追蹤 follow */}
         {activeTab === 'follow' && (
           <div className="">
-            <ProfileFollowing userId={userId!} />
+            <ProfileFollowing userId={userId!} identify={identify} />
           </div>
         )}
 
         {/* 粉絲 follower */}
         {activeTab === 'follower' && (
           <div className="">
-            <ProfileFollowed userId={userId!} />
+            <ProfileFollowed userId={userId!} identify={identify} />
           </div>
         )}
       </div>

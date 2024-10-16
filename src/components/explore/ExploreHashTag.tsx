@@ -36,9 +36,11 @@ function ExploreHashTag() {
   }, []);
 
   const postList =
-    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) ||
+    get(data, 'pages[0].data.code', '') !== '' ||
+    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
+      : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
   /** 滾動判斷fetch新資料 */
   const handleScroll = () => {
@@ -60,10 +62,10 @@ function ExploreHashTag() {
       <NoSearchResult msgOne="輸入貼文的HashTag" msgTwo="即可搜尋你想找的主題貼文" type="post" />
     );
 
-  if (get(data, 'pages[0].code', undefined) === 'NOT_FOUND')
+  if (get(data, 'pages[0].data.totalPost', 0) === 0)
     return <NoSearchResult msgOne="搜尋不到相關HashTag貼文" msgTwo="" type="post" />;
 
-  if (isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
+  if (get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
