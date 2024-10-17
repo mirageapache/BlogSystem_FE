@@ -74,7 +74,7 @@ function PostCreateModal() {
               handleClose();
               window.location.reload();
             });
-        } else if (handleStatus(get(res, 'status')) === 4) {
+        } else if (handleStatus(get(res, 'status')) === 5) {
           errorAlert(get(res, 'data.message'));
         } else if (get(res, 'code') === 'ERR_NETWORK') {
           errorAlert(ERR_NETWORK_MSG);
@@ -129,7 +129,7 @@ function PostCreateModal() {
             id="edit-container"
             contentEditable
             ref={contentRef}
-            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto dark:text-white"
             onInput={handleOnInput}
           />
 
