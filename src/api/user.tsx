@@ -89,9 +89,12 @@ export async function getOwnProfile(
 }
 
 /** 取得一般使用者詳細資料 */
-export async function getUserProfile(userId: string): Promise<GetUserProfileType> {
+export async function getUserProfile(
+  userId: string,
+  currentUserId: string
+): Promise<GetUserProfileType> {
   const result = await axios
-    .post(`${baseUrl}/user/${userId}`, null)
+    .post(`${baseUrl}/user/${userId}`, { currentUserId })
     .then((res) => {
       return res;
     })

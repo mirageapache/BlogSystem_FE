@@ -15,6 +15,7 @@ import ProfileFollowing from 'components/profile/ProfileFollowing';
 import ProfileFollowed from 'components/profile/ProfileFollowed';
 // --- api / type ---
 import { UserProfileType, UserResultType } from 'types/userType';
+import FollowBtn from 'components/user/FollowBtn';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
@@ -30,6 +31,7 @@ function UserProfilePage() {
   const authToken = localStorage.getItem('authToken');
   const { userId } = useParams(); // 網址列的userId
   const [cookies] = useCookies(['uid']); // 存在cookie的userId
+  const currentUserId = cookies.uid;
   let identify = false; // 身分驗證 true => own / false => others
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -41,7 +43,7 @@ function UserProfilePage() {
   if (userId === undefined) navigate('/');
 
   /** 取得使用者資料 */
-  if (cookies.uid === userId && !isEmpty(authToken)) {
+  if (currentUserId === userId && !isEmpty(authToken)) {
     // own [current user]
     identify = true;
     fetchProfile = useQuery(['getOwnProfile', userId], () => getOwnProfile(userId!, authToken!), {
@@ -50,12 +52,12 @@ function UserProfilePage() {
   } else {
     // others [其他user]
     fetchProfile = useQuery(['getUserProfile', userId], () =>
-      getUserProfile(userId!)
+      getUserProfile(userId!, currentUserId)
     ) as UserResultType;
     dispatch(setActivePage('explore')); // 不是currentUser 頁籤改為 explore
   }
 
-  const { isLoading, error, data } = fetchProfile as UserResultType;
+  const { isLoading, error, data, refetch } = fetchProfile as UserResultType;
   const fetchStatus = get(data, 'status', 404);
   if (identify && !isEmpty(userStateData)) {
     userData = userStateData as UserProfileType;
@@ -110,6 +112,10 @@ function UserProfilePage() {
             <p className="text-gray-500">@{userData.account}</p>
           </div>
         </div>
+        {/* 追蹤狀態 */}
+        {!isEmpty(currentUserId) && userData._id !== currentUserId && (
+          <FollowBtn user={userData} currentUser={currentUserId} refetch={refetch} />
+        )}
         {/* 編輯功能 */}
         {identify && (
           <div>
