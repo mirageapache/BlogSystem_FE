@@ -15,7 +15,7 @@ function ProfileFollowed(props: { userId: string; identify: boolean }) {
   let nextPage = -1;
 
   const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
-    ['followed', userId],
+    [userId],
     ({ pageParam = 1 }) => getFollowerList(userId, pageParam),
     {
       getNextPageParam: (lastPage) => {

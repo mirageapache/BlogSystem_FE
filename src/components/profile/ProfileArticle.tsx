@@ -16,7 +16,7 @@ function ProfileArticle(props: { userId: string; identify: boolean }) {
 
   // 使用 useInfiniteQuery 取得貼文
   const { data, fetchNextPage, isLoading } = useInfiniteQuery(
-    ['profileArticle'],
+    [userId],
     ({ pageParam = 1 }) => getSearchArticle('', userId, pageParam),
     {
       getNextPageParam: (lastPage) => {
