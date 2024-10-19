@@ -2,7 +2,7 @@ import React from 'react';
 
 function Loading({ withBorder = true }: { withBorder: boolean }) {
   return (
-    <div className="w-[90vw] sm:w-[80vw] md:w-[600px]">
+    <div className="w-[90vw] sm:w-[80vw] md:w-[560px]">
       <div
         className={`w-full ${withBorder ? 'my-4 border border-blue-400 shadow' : ''} rounded-md p-4`}
       >

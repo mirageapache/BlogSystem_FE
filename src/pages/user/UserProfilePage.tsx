@@ -113,12 +113,10 @@ function UserProfilePage() {
           </div>
         </div>
         {/* 追蹤狀態 */}
-        {!isEmpty(currentUserId) && userData._id !== currentUserId && (
-          <FollowBtn user={userData} currentUser={currentUserId} refetch={refetch} />
-        )}
+        {!identify && <FollowBtn user={userData} currentUser={currentUserId} refetch={refetch} />}
         {/* 編輯功能 */}
         {identify && (
-          <div>
+          <div className="flex justify-center items-center">
             <Link
               to="/user/editProfile"
               type="button"

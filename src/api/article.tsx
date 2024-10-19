@@ -128,6 +128,24 @@ export async function updateArticle(
   return result;
 }
 
+/** 刪除文章 */
+export async function deleteArticle(articleId: string, userId: string) {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+    data: { articleId }, // 在 delete 請求中，必須在 config 裡加上 data
+  };
+  const result = await axios
+    .delete(`${baseUrl}/article/delete/${userId}`, config)
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
+  return result;
+}
+
 /** 喜歡/取消喜歡文章 */
 export async function toggleLikeArticle(articleId: string, userId: string, action: boolean) {
   const config = {
