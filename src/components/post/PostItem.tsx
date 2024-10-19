@@ -65,6 +65,7 @@ function PostItem(props: { postData: PostDataType }) {
     onError: () => errorAlert(),
   });
 
+  /** 刪除貼文 */
   const handleDelete = (e: any) => {
     e.stopPropagation();
     if (iscurrentUser) {
