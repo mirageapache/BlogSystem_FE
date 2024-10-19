@@ -117,6 +117,24 @@ export async function updatePost(userId: string, formData: FormData): Promise<Po
   return result;
 }
 
+/** 刪除貼文 */
+export async function deletePost(postId: string, userId: string) {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+    data: { postId }, // 在 delete 請求中，必須在 config 裡加上 data
+  };
+  const result = await axios
+    .delete(`${baseUrl}/post/delete/${userId}`, config)
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
+  return result;
+}
+
 /** 喜歡/取消喜歡貼文 */
 export async function toggleLikePost(postId: string, userId: string, action: boolean) {
   const config = {
