@@ -20,7 +20,7 @@ import { getOwnProfile, getUserProfile } from '../../api/user';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
 import { setActivePage } from '../../redux/sysSlice';
-import { checkLogin } from 'utils/common';
+import { checkLogin } from '../../utils/common';
 
 interface StateType {
   user: UserStateType;
