@@ -20,6 +20,7 @@ import { getOwnProfile, getUserProfile } from '../../api/user';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
 import { setActivePage } from '../../redux/sysSlice';
+import { checkLogin } from 'utils/common';
 
 interface StateType {
   user: UserStateType;
@@ -113,7 +114,9 @@ function UserProfilePage() {
           </div>
         </div>
         {/* 追蹤狀態 */}
-        {!identify && <FollowBtn user={userData} currentUser={currentUserId} refetch={refetch} />}
+        {!identify && checkLogin() && (
+          <FollowBtn user={userData} currentUser={currentUserId} refetch={refetch} />
+        )}
         {/* 編輯功能 */}
         {identify && (
           <div className="flex justify-center items-center">
