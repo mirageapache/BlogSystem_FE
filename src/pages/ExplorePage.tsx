@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,13 +26,25 @@ function ExplorePage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
-  const exploreTag = useSelector((state: stateType) => state.system.exploreTag); // 紀錄作用中的頁籤
   const tabButtonStyle =
     'relative flex w-1/4 justify-center items-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
   const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
   const countSpanStyle =
     'sm:absolute sm:right-5 md:right-4 hidden sm:inline-block text-[12px] leading-5 px-3 bg-orange-500 text-white rounded-full'; // 數量標籤樣式
+
+  /** 頁籤切換 */
+  const handleTabActive = (tabValue: string) => {
+    dispatch(setExploreTag(tabValue));
+  };
+  const { tag } = useParams();
+  let exploreTag = '';
+  if (!isEmpty(tag) && tag !== '') {
+    exploreTag = tag!;
+    handleTabActive(tag!);
+  } else {
+    exploreTag = useSelector((state: stateType) => state.system.exploreTag); // 紀錄作用中的頁籤
+  }
 
   const { data } = useQuery(['search', searchString], () => getSearchCount(searchString));
   const article = get(data, 'article', 0);
@@ -63,11 +75,6 @@ function ExplorePage() {
         setActiveUnderLine('translate-x-0');
     }
   }, [exploreTag]);
-
-  /** 頁籤切換 */
-  const handleTabActive = (tabValue: string) => {
-    dispatch(setExploreTag(tabValue));
-  };
 
   return (
     <div className="w-full">
