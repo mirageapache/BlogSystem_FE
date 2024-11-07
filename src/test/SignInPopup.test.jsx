@@ -11,7 +11,9 @@ jest.mock('api/auth');
 jest.mock('sweetalert2', () => ({
   fire: jest.fn().mockResolvedValue({ isConfirmed: true }),
 }));
-jest.mock('sweetalert2-react-content', () => jest.fn(() => Swal));
+
+const mockSwal = Swal;
+jest.mock('sweetalert2-react-content', () => jest.fn(() => mockSwal));
 
 const mockStore = configureStore([]);
 
