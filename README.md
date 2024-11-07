@@ -1,46 +1,50 @@
-# Getting Started with Create React App
+# React Blog (frontend)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[Live Demo Website](https://mirageapache.github.io/BlogSystem_FE/)
 
-## Available Scripts
+概念源自[Substack](https://substack.com/home)
+以此為系統設計主軸做出一個"部落格系統"的SideProject
+使用者在不登入的狀態下即可瀏覽貼文及文章，也可以註冊登入發表貼文及文章
+除了瀏覽外也可以對貼文及文章進行"按讚"、"留言"等功能
+部署平台：Vercel
 
-In the project directory, you can run:
+## 開始使用
 
-### `npm start`
+1. Clone Repository
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+git clone https://github.com/mirageapache/BlogSystem_FE.git
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+2. 安裝 npm
 
-### `npm test`
+```
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. 啟動程式
 
-### `npm run build`
+```
+npm start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+4. 瀏覽網頁
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+瀏覽器將自動開啟網頁，如未正常開啟請輸入http://localhost:3000/，即可使用
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+5. 終止程式
 
-### `npm run eject`
+```
+在終端機按下兩次 ctrl + C 即可終止程式
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 專案環境設置
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- node - 18.x
+- react - 18.2.0
+- react-router-dom - 6.21.1
+- gh-pages - 6.1.1
+- typescript - 4.9.5
+- draft-js - 0.11.7

@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // --- types ---
-import { UserDataType, UserProfileType } from 'types/userType';
+import { UserProfileType } from 'types/userType';
 
 export interface UserStateType {
-  userData: UserDataType | undefined;
+  userData: UserProfileType | undefined;
 }
 
 /** user state 預設值 */

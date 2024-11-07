@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from 'react-query';
-import { faHeart as faHeartSolid, faSquarePen } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import {
+  faHeart as faHeartSolid,
+  faSquarePen,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
 import { ArticleDataType } from 'types/articleType';
 import { checkLogin, getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetchError';
-import { toggleLikeArticle } from 'api/article';
+import { errorAlert, handleStatus } from 'utils/fetch';
+import { deleteArticle, toggleLikeArticle } from 'api/article';
 import { setSignInPop } from 'redux/loginSlice';
 import { setEditMode, SysStateType } from 'redux/sysSlice';
 // --- components ---
@@ -33,17 +40,20 @@ function ArticleInfoPanel({
   hasContent,
   handleSubmit,
 }: PropTypes) {
-  const userId = getCookies('uid');
+  const currentUserId = getCookies('uid');
   const dispatchSlice = useDispatch();
   const editMode = useSelector((state: StateType) => state.system.editMode); // 編輯模式
   const [article, setArticle] = useState(articleData);
-  const isLike = !isEmpty(article.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
+  const isLike = !isEmpty(article.likedByUsers.find((item) => item._id === currentUserId)); // 顯示是否喜歡該貼文
   const likeCount = article.likedByUsers.length; // 喜歡數
   const commentCount = article.comments.length; // 留言數
+  const swal = withReactContent(Swal);
+  const iscurrentUser = currentUserId === article.author._id;
+  const navigate = useNavigate();
 
   /** 喜歡/取消喜歡 mutation */
   const likeMutation = useMutation(
-    (action: boolean) => toggleLikeArticle(article._id, userId!, action),
+    (action: boolean) => toggleLikeArticle(article._id, currentUserId!, action),
     {
       onSuccess: (res) => {
         setArticle(res.updateResult);
@@ -66,6 +76,43 @@ function ArticleInfoPanel({
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
     dispatchSlice(setEditMode(true));
+  };
+
+  /** 刪除文章 mutation */
+  const deleteMutation = useMutation(() => deleteArticle(articleData._id, currentUserId!), {
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status', 0)) === 2) {
+        swal
+          .fire({
+            title: '已刪除貼文',
+            icon: 'info',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            navigate(`/user/profile/${currentUserId}`);
+          });
+      }
+    },
+    onError: () => errorAlert(),
+  });
+
+  /** 刪除文章 */
+  const handleDelete = (e: any) => {
+    e.stopPropagation();
+    if (iscurrentUser) {
+      swal
+        .fire({
+          title: '確定要刪除此文章嗎？',
+          text: '確定後會立即刪除文章',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '確定',
+          cancelButtonText: `取消`,
+        })
+        .then((result) => {
+          if (result.isConfirmed) deleteMutation.mutate();
+        });
+    }
   };
 
   return (
@@ -125,15 +172,25 @@ function ArticleInfoPanel({
           />
 
           {/* 編輯 */}
-          {userId === article.author._id && (
-            <ArticleInfoItem
-              iconName={faSquarePen} // 透過props傳遞icon名稱
-              tipText="編輯"
-              count={undefined}
-              faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
-              tipClass="w-12"
-              handleClick={handleClickEdit}
-            />
+          {iscurrentUser && (
+            <>
+              <ArticleInfoItem
+                iconName={faSquarePen} // 透過props傳遞icon名稱
+                tipText="編輯"
+                count={undefined}
+                faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
+                tipClass="w-12"
+                handleClick={handleClickEdit}
+              />
+              <ArticleInfoItem
+                iconName={faTrashCan} // 透過props傳遞icon名稱
+                tipText="刪除"
+                count={undefined}
+                faClass="text-gray-400 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500"
+                tipClass="w-12"
+                handleClick={handleDelete}
+              />
+            </>
           )}
         </div>
       )}

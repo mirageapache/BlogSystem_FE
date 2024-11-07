@@ -1,12 +1,21 @@
 import axios from 'axios';
-import { API_URL, config } from './index';
+import { API_URL } from './index';
 import { ArticleDataType } from '../types/articleType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
+const limit = 5; // 每次取得資料數量
 
+/** AritlceApi 型別 */
 interface ArticleApiType extends AxResponseType {
   data: ArticleDataType;
+}
+
+/** 動態取得文章資料 型別 */
+interface ArticlePageListType extends AxResponseType {
+  articles: any;
+  nextPage: number;
+  data: ArticleDataType[];
 }
 
 /** 取得所有文章 */
@@ -20,6 +29,24 @@ export async function getArticles(): Promise<ArticleApiType> {
     .catch((error) => {
       return error;
     });
+  return result;
+}
+
+/** (動態)取得文章資料
+ * @param page 要取得的資料頁碼
+ */
+export async function getPartialArticles(page: number): Promise<ArticlePageListType> {
+  let result = null;
+  if (page > 0) {
+    result = await axios
+      .post(`${baseUrl}/article/partial`, { page, limit })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        return error;
+      });
+  }
   return result;
 }
 
@@ -37,15 +64,22 @@ export async function getArticleDetail(articleId: string): Promise<ArticleApiTyp
 }
 
 /** 取得搜尋文章 or 特定使用者的文章 */
-export async function getSearchArticle(searchString?: string, authorId?: string) {
-  const result = await axios
-    .post(`${baseUrl}/article/search`, { searchString, authorId })
-    .then((res) => {
-      return res.data;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+export async function getSearchArticle(
+  searchString?: string,
+  authorId?: string,
+  page?: number
+): Promise<ArticlePageListType> {
+  let result = null;
+  if (page && page > 0) {
+    result = await axios
+      .post(`${baseUrl}/article/search`, { searchString, authorId, page, limit })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((error) => {
+        return error.response;
+      });
+  }
   return result;
 }
 
@@ -55,6 +89,9 @@ export async function createArticle(
   title: string,
   content: string
 ): Promise<ArticleApiType> {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const variables = { userId, title, content };
   const result = await axios
     .post(`${baseUrl}/article/create/${userId}`, variables, config)
@@ -62,7 +99,8 @@ export async function createArticle(
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }
@@ -74,6 +112,9 @@ export async function updateArticle(
   title: string,
   content: string
 ): Promise<ArticleApiType> {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const variables = { articleId, userId, title, content };
   const result = await axios
     .patch(`${baseUrl}/article/update/${userId}`, variables, config)
@@ -81,13 +122,35 @@ export async function updateArticle(
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
+  return result;
+}
+
+/** 刪除文章 */
+export async function deleteArticle(articleId: string, userId: string) {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+    data: { articleId }, // 在 delete 請求中，必須在 config 裡加上 data
+  };
+  const result = await axios
+    .delete(`${baseUrl}/article/delete/${userId}`, config)
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }
 
 /** 喜歡/取消喜歡文章 */
 export async function toggleLikeArticle(articleId: string, userId: string, action: boolean) {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const result = await axios
     .patch(`${baseUrl}/article/toggleLikeAction/${userId}`, { articleId, userId, action }, config)
     .then((res) => {

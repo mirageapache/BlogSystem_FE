@@ -21,7 +21,7 @@ export interface ArticleDataType extends errorMsgType {
 
 /** article API參數型別 */
 export interface ArticleVariablesType {
-  postId?: string;
+  articleId?: string;
   userId: string; // author
   content: string;
   image?: string;

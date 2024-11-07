@@ -1,40 +1,44 @@
-import { useState } from 'react';
-import { isEmpty } from 'lodash';
-import { CommonFieldProps, WrappedFieldMetaProps } from 'redux-form';
+import React, { useEffect, useState } from 'react';
 import { FORM_CONTROL } from 'constants/LayoutConstants';
+import { isEmpty } from 'lodash';
 
 /** FormTextAreaPropsType 型別 */
 interface FormTextAreaPropsType {
   name: string;
   placeholder: string;
-  classname: string;
   value: string;
-  input: CommonFieldProps & { value: string };
-  meta: WrappedFieldMetaProps;
-  normalize: (value: string) => string | number | readonly string[] | undefined;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  errorMsg: string;
+  setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function FormTextArea({
   name,
   placeholder,
-  classname,
   value,
-  input,
-  meta,
-  normalize,
+  setValue,
+  errorMsg,
+  setErrorMsg,
 }: FormTextAreaPropsType) {
-  const [showErrorTip, setShowErrorTip] = useState(false); // 顯示/隱藏欄位錯誤提示
-  const normalizedValue = normalize ? normalize(input.value) : input.value;
+  const [showErrorTip, setShowErrorTip] = useState(!isEmpty(errorMsg)); // 顯示/隱藏欄位錯誤提示
   let activeStyle = '';
-  if (showErrorTip && meta.touched && !isEmpty(meta.error)) {
+  if (showErrorTip) {
     activeStyle = 'm-1.5 border-2 border-red-500 bg-yellow-100 dark:bg-gray-950'; // with error style
   } else {
     activeStyle = 'border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'; // normal style
   }
 
-  function onBlur() {
-    if (!isEmpty(meta.error)) setShowErrorTip(true);
-    input.onBlur(); // 觸發原生input事件(觸發meta.touch)
+  useEffect(() => {
+    if (errorMsg) setShowErrorTip(true);
+  }, [errorMsg]);
+
+  function onBlur(e: any) {
+    setErrorMsg('');
+    setShowErrorTip(false);
+    if (e.target.value.length > 200) {
+      setErrorMsg('自我介紹最多200字');
+      setShowErrorTip(true);
+    }
   }
 
   function onFocus() {
@@ -45,17 +49,17 @@ function FormTextArea({
     <div className="relative">
       <textarea
         name={name}
+        value={value}
         placeholder={placeholder}
-        className={`rounded-md resize-none focus:border-2 ${FORM_CONTROL} ${activeStyle} ${classname}`}
+        className={`rounded-md resize-none focus:border-2 ${FORM_CONTROL} ${activeStyle}`}
         rows={3}
         onBlur={onBlur}
         onFocus={onFocus}
-        onChange={input.onChange}
-        value={normalizedValue}
-      >
-        {value}
-      </textarea>
-      {showErrorTip && <p className="text-red-500 text-sm mt-[-6px]">{meta.error}</p>}
+        onChange={(e) => {
+          if (e.target.value.length < 200) setValue(e.target.value);
+        }}
+      />
+      {showErrorTip && <p className="text-red-500 text-sm mt-[-6px]">{errorMsg}</p>}
     </div>
   );
 }

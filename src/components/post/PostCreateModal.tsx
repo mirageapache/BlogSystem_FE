@@ -6,17 +6,18 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
 // --- functions / types ---
 import { getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert, handleStatus } from 'utils/fetch';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
+import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -31,7 +32,7 @@ function PostCreateModal() {
     dispatchSlice(setShowCreateModal(false));
   };
 
-  /** 處理上傳圖片檔 */
+  /** 處理欲上傳圖片檔 */
   const handleFileChange = (event: React.ChangeEvent<any>) => {
     const fileList = event.target.files; // 獲取選擇的檔案列表
     if (!isEmpty(fileList) && fileList?.length) {
@@ -61,24 +62,30 @@ function PostCreateModal() {
     ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
     {
       onSuccess: (res) => {
-        if (res.status === 200) {
+        if (handleStatus(get(res, 'status')) === 2) {
           const swal = withReactContent(Swal);
-          swal.fire({
-            title: '貼文已發佈',
-            icon: 'success',
-            confirmButtonText: '確認',
-          });
-          handleClose();
-          window.location.reload();
+          swal
+            .fire({
+              title: '貼文已發佈',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then(() => {
+              handleClose();
+              window.location.reload();
+            });
+        } else if (handleStatus(get(res, 'status')) === 5) {
+          errorAlert(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          errorAlert(ERR_NETWORK_MSG);
         }
       },
       onError: () => errorAlert(),
-      // error type:未登入、沒有內容
     }
   );
 
   /** 發佈貼文 */
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // validate form data
     if (isEmpty(content) || content.length === 0) {
       return;
@@ -89,8 +96,9 @@ function PostCreateModal() {
     formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
+    formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    if (imageFile) formData.set('postImage', imageFile);
+    if (imageFile) formData.set('imageFile', imageFile);
 
     createPostMutation.mutate({ userId, formData });
   };
@@ -121,7 +129,7 @@ function PostCreateModal() {
             id="edit-container"
             contentEditable
             ref={contentRef}
-            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto dark:text-white"
             onInput={handleOnInput}
           />
 
@@ -130,9 +138,14 @@ function PostCreateModal() {
             <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
               <div className="relative">
                 <img src={image} alt="" className="h-24 object-cover" />
-                <button aria-label="close" type="button" onClick={handleDeleteImage}>
+                <button
+                  aria-label="close"
+                  type="button"
+                  className={`${WHITE_SPACER}`}
+                  onClick={handleDeleteImage}
+                >
                   <FontAwesomeIcon
-                    className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
+                    className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
                     icon={icon({ name: 'circle-xmark', style: 'solid' })}
                   />
                 </button>
@@ -165,7 +178,14 @@ function PostCreateModal() {
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
                 onClick={handleSubmit}
               >
-                發佈
+                {createPostMutation.isLoading ? (
+                  <FontAwesomeIcon
+                    icon={icon({ name: 'spinner', style: 'solid' })}
+                    className="animate-spin h-5 w-5 "
+                  />
+                ) : (
+                  <>發佈</>
+                )}
               </button>
             ) : (
               <button
