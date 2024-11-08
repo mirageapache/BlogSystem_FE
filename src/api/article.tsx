@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL, config } from './index';
+import { API_URL } from './index';
 import { ArticleDataType } from '../types/articleType';
 import { AxResponseType } from '../types/apiType';
 
@@ -41,8 +41,7 @@ export async function getPartialArticles(page: number): Promise<ArticlePageListT
     result = await axios
       .post(`${baseUrl}/article/partial`, { page, limit })
       .then((res) => {
-        const articleData = res.data;
-        return articleData;
+        return res.data;
       })
       .catch((error) => {
         return error;
@@ -90,6 +89,9 @@ export async function createArticle(
   title: string,
   content: string
 ): Promise<ArticleApiType> {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const variables = { userId, title, content };
   const result = await axios
     .post(`${baseUrl}/article/create/${userId}`, variables, config)
@@ -97,7 +99,8 @@ export async function createArticle(
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }
@@ -109,6 +112,9 @@ export async function updateArticle(
   title: string,
   content: string
 ): Promise<ArticleApiType> {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const variables = { articleId, userId, title, content };
   const result = await axios
     .patch(`${baseUrl}/article/update/${userId}`, variables, config)
@@ -116,13 +122,35 @@ export async function updateArticle(
       return res;
     })
     .catch((error) => {
-      return error;
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
+  return result;
+}
+
+/** 刪除文章 */
+export async function deleteArticle(articleId: string, userId: string) {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+    data: { articleId }, // 在 delete 請求中，必須在 config 裡加上 data
+  };
+  const result = await axios
+    .delete(`${baseUrl}/article/delete/${userId}`, config)
+    .then((res) => {
+      return res;
+    })
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
     });
   return result;
 }
 
 /** 喜歡/取消喜歡文章 */
 export async function toggleLikeArticle(articleId: string, userId: string, action: boolean) {
+  const config = {
+    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+  };
   const result = await axios
     .patch(`${baseUrl}/article/toggleLikeAction/${userId}`, { articleId, userId, action }, config)
     .then((res) => {

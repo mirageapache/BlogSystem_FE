@@ -4,12 +4,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface LoginStateType {
   showSignInPop: boolean;
   showSignUpPop: boolean;
+  showForgetPwd: boolean;
 }
 
 /** login state 預設值 */
 const initState = {
-  showSignInPop: false, // 顯示登入Popup
-  showSignUpPop: false, // 顯示註冊Popup
+  showSignInPop: false, // 顯示登入 Popup
+  showSignUpPop: false, // 顯示註冊 Popup
+  showForgetPwd: false, // 顯示忘記密碼 Popup
 };
 
 /** Login Slice Function */
@@ -25,8 +27,12 @@ const loginSlice = createSlice({
     setSignUpPop(state: LoginStateType, action: PayloadAction<boolean>) {
       state.showSignUpPop = action.payload;
     },
+    /** 顯示/關閉忘記密碼Popup */
+    setForgetPwd(state: LoginStateType, action: PayloadAction<boolean>) {
+      state.showForgetPwd = action.payload;
+    },
   },
 });
 
-export const { setSignInPop, setSignUpPop } = loginSlice.actions;
+export const { setSignInPop, setSignUpPop, setForgetPwd } = loginSlice.actions;
 export default loginSlice.reducer;

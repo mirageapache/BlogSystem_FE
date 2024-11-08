@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -21,13 +21,8 @@ import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
 import { getCookies, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
-import { errorAlert } from '../../utils/fetchError';
-import { setUserData, UserStateType } from '../../redux/userSlice';
-import { uploadImage } from '../../api';
-
-interface StateType {
-  user: UserStateType;
-}
+import { errorAlert, handleStatus } from '../../utils/fetch';
+import { setUserData } from '../../redux/userSlice';
 
 function EditProfilePage() {
   const sliceDispatch = useDispatch();
@@ -37,6 +32,7 @@ function EditProfilePage() {
 
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
+  const [removeAvatar, setRemoveAvatar] = useState<boolean>(false); // 處理avatar image preview
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [account, setAccount] = useState('');
@@ -49,7 +45,6 @@ function EditProfilePage() {
   const [emailPrompt, setEmailPrompt] = useState(false);
   const [mobilePrompt, setMobilePrompt] = useState(false);
 
-  const userStateData = useSelector((state: StateType) => state.user.userData);
   const userId = getCookies('uid');
   const authToken = localStorage.getItem('authToken');
   const [updateLoading, setUpdateLoading] = useState(false);
@@ -60,12 +55,10 @@ function EditProfilePage() {
   }
 
   const getUserData = useQuery('editProfile', () => getOwnProfile(userId!, authToken!), {
-    enabled: isEmpty(userStateData) && firstLoad,
+    enabled: firstLoad,
   });
   const { isLoading, data } = getUserData;
-  const userData = isEmpty(userStateData)
-    ? (get(data, 'data', {}) as UserProfileType)
-    : userStateData;
+  const userData = get(data, 'data', {}) as UserProfileType;
 
   // 設定表單初始資料
   useEffect(() => {
@@ -76,8 +69,8 @@ function EditProfilePage() {
       setName(userData.name);
       setBio(userData.bio);
       setLanguage(userData.language);
-      setEmailPrompt(userData.emailPrompt);
-      setMobilePrompt(userData.mobilePrompt);
+      setEmailPrompt(userData.emailPrompt === true);
+      setMobilePrompt(userData.mobilePrompt === true);
       setFirstLoad(false);
     }
   }, [userData]);
@@ -91,6 +84,7 @@ function EditProfilePage() {
       if (allowedTypes.includes(file.type)) {
         setAvatar(URL.createObjectURL(file));
         setAvatarFile(file);
+        setRemoveAvatar(false);
       } else {
         errorAlert('請選擇 jpeg、jpg、png 或 gif 格式的圖片');
       }
@@ -123,27 +117,22 @@ function EditProfilePage() {
     }
 
     if (isEmpty(emailError) && isEmpty(accountError) && isEmpty(nameError) && isEmpty(bioError)) {
-      const uploadRes = await uploadImage(avatarFile);
-      if (uploadRes === 'UPLOAD_FAILED') {
-        errorAlert('大頭照上傳失敗，請稍後再試');
-        return;
-      }
-      // console.log(uploadRes);
-      // console.log(avatar);
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('name', name);
+      formData.append('account', account);
+      formData.append('bio', bio);
+      formData.append('language', language);
+      formData.append('emailPrompt', emailPrompt.toString());
+      formData.append('mobilePrompt', mobilePrompt.toString());
+      formData.append('removeAvatar', removeAvatar.toString());
+      formData.append('avatar', avatar);
+      formData.append('avatarId', userData.avatarId);
+      formData.append('imageFile', avatarFile);
 
-      const variables = {
-        email,
-        account,
-        name,
-        bio,
-        avatar,
-        language,
-        emailPrompt,
-        mobilePrompt,
-      };
       try {
-        const result = await updateProfile(variables, userId!, authToken!);
-        if (result.status === 200) {
+        const result = await updateProfile(formData, userId!, authToken!);
+        if (handleStatus(get(result, 'status', 0)) === 2) {
           swal
             .fire({
               title: '修改成功',
@@ -156,8 +145,7 @@ function EditProfilePage() {
               scrollToTop();
             });
         } else {
-          const errorMsg = get(result, 'response.data.message', '');
-          errorAlert(errorMsg);
+          errorAlert(get(result, 'data.message', ''));
         }
       } catch (error) {
         errorAlert();
@@ -184,14 +172,14 @@ function EditProfilePage() {
             />
             <div className="flex gap-2">
               <label
-                htmlFor="avatarFile"
+                htmlFor="avatar"
                 className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
               >
                 更新頭貼
               </label>
               <input
-                name="avatarFile"
-                id="avatarFile"
+                name="imageFile"
+                id="avatar"
                 type="file"
                 className="hidden"
                 onChange={(e) => handleFileChange(e)}
@@ -202,7 +190,8 @@ function EditProfilePage() {
                   className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
                   onClick={() => {
                     setAvatar('');
-                    setAvatarFile(null);
+                    setAvatarFile('');
+                    setRemoveAvatar(true);
                   }}
                 >
                   移除頭貼

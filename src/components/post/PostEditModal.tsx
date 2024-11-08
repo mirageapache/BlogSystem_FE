@@ -6,19 +6,20 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useMutation } from 'react-query';
 // --- api ---
 import { updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
 import { getCookies } from 'utils/common';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert, handleStatus } from 'utils/fetch';
 import { handleHashTag } from 'utils/input';
 // --- components ---
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
-import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
+import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
+import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 interface stateType {
   post: PostStateType;
@@ -34,6 +35,7 @@ function PostEditModal() {
   const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
   const [image, setImage] = useState(postData.image); // 處理 image preview
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
+  const [removeImage, setRemoveImage] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
   const swal = withReactContent(Swal);
   const authorId = postData.author._id;
@@ -73,6 +75,7 @@ function PostEditModal() {
       const file = fileList[0];
       setImage(URL.createObjectURL(file));
       setImageFile(file);
+      setRemoveImage(false);
     }
   };
 
@@ -80,6 +83,7 @@ function PostEditModal() {
   const handleDeleteImage = () => {
     setImage('');
     setImageFile('');
+    setRemoveImage(true);
   };
 
   /** 處理div輸入行為 */
@@ -96,18 +100,24 @@ function PostEditModal() {
     ({ userId, formData }: { userId: string; formData: FormData }) => updatePost(userId, formData),
     {
       onSuccess: (res) => {
-        if (res.status === 200) {
-          swal.fire({
-            title: '貼文已修改',
-            icon: 'success',
-            confirmButtonText: '確認',
-          });
-          handleClose(false);
-          window.location.reload();
+        if (handleStatus(get(res, 'status')) === 2) {
+          swal
+            .fire({
+              title: '貼文已修改',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then(() => {
+              handleClose(false);
+              window.location.reload();
+            });
+        } else if (handleStatus(get(res, 'status')) === 5) {
+          errorAlert(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          errorAlert(ERR_NETWORK_MSG);
         }
       },
       onError: () => errorAlert(),
-      // error type:未登入、沒有內容
     }
   );
 
@@ -132,9 +142,11 @@ function PostEditModal() {
     formData.set('postId', postId);
     formData.set('content', content);
     formData.set('status', '1');
+    formData.set('image', image);
+    formData.set('imageId', postData.imageId);
+    formData.set('removeImage', removeImage.toString());
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    formData.set('imagePath', image);
-    if (imageFile) formData.set('postImage', imageFile);
+    formData.set('imageFile', imageFile);
 
     editPostMutation.mutate({ userId, formData });
   };
@@ -172,10 +184,15 @@ function PostEditModal() {
           {!isEmpty(image) && (
             <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
               <div className="relative">
-                <img src={image} alt="" className="h-24 object-cover" />
-                <button aria-label="close" type="button" onClick={handleDeleteImage}>
+                <img src={image} alt="postImg" className="h-24 min-w-24 object-cover" />
+                <button
+                  aria-label="close"
+                  type="button"
+                  className={`${WHITE_SPACER}`}
+                  onClick={handleDeleteImage}
+                >
                   <FontAwesomeIcon
-                    className="absolute top-1 right-1 w-5 h-5 text-gray-500 hover:text-red-500"
+                    className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
                     icon={icon({ name: 'circle-xmark', style: 'solid' })}
                   />
                 </button>

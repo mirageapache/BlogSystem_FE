@@ -36,7 +36,7 @@ function UserListDynamic({ userListData, isLoading, atBottom, refetch, type }: P
         />
       );
     }
-    if (user._id === currentUser) return null;
+    if (type === 'userList' && user._id === currentUser) return null;
     return <FollowingItem key={user._id} user={user} refetch={refetch} />;
   });
 

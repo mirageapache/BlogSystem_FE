@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/no-danger */
 import { useEffect, useState } from 'react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // --- components / functions ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import { formatDateTime } from 'utils/dateTime';
@@ -24,6 +26,7 @@ import { stateToHTML } from 'draft-js-export-html';
 
 /** ArticleItem 元件 */
 function ArticleItem(props: { articleData: ArticleDataType }) {
+  const navigate = useNavigate();
   const { articleData } = props;
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const contentState = editorState.getCurrentContent();
@@ -40,7 +43,12 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
   }, [articleData]);
 
   return (
-    <div className="text-left border-b-[1px] p-1 sm:p-2 dark:border-gray-700 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-default">
+    <div
+      className="text-left border-b-[1px] p-1 sm:p-2 dark:border-gray-700 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+      onClick={() => {
+        navigate(`/article/${_id}`);
+      }}
+    >
       <div className="flex w-full justify-between">
         <UserInfoPanel
           userId={author._id}
@@ -67,12 +75,10 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
       </div>
       <div className="pb-3">
         <h2 className="font-semibold text-2xl xl:text-3xl">
-          <Link to={`/article/${_id}`} className="hover:underline hover:text-orange-500">
-            {title}
-          </Link>
+          <span className="hover:underline hover:text-orange-500">{title}</span>
         </h2>
         <div
-          className="text-gray-600 dark:text-gray-300 line-clamp-5"
+          className="max-h-[150px] text-gray-600 dark:text-gray-300 line-clamp-5"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
       </div>

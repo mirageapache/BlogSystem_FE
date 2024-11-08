@@ -2,19 +2,8 @@ import axios from 'axios';
 import { AxResponseType } from 'types/apiType';
 
 /* eslint-disable no-unused-vars */
-const authToken = localStorage.getItem('authToken');
-const localhost = 'http://localhost:3100'; // localhost
-const renderServer = 'https://blogsystem-aakz.onrender.com'; // render server
-
-/** 測試資料 dummyjson */
-export const DUMMYJSON_URL = 'https://dummyjson.com';
-
 /** base Url */
-export const API_URL = renderServer;
-
-export const config = {
-  headers: { Authorization: `Bearer ${authToken}` },
-};
+export const API_URL = process.env.REACT_APP_API_URL;
 
 interface ResultType extends AxResponseType {
   article: number;
@@ -36,26 +25,21 @@ export async function getSearchCount(searchString?: string): Promise<ResultType>
   return result;
 }
 
-/** 上傳圖片 */
-export async function uploadImage(avatarFile: any): Promise<string> {
-  const imgurClientId = process.env.REACT_APP_IMGUR_CLIENT;
-  if (!avatarFile) return 'NO_FILE';
+/** 上傳圖片至cloudinary */
+export async function uploadImage(imageFile: any) {
   const formData = new FormData();
-  formData.append('image', avatarFile);
+  formData.append('file', imageFile);
+  formData.append('upload_preset', 'blogSystem'); // 在 Cloudinary 創建的 unsigned preset 名稱
+  formData.append('cloud_name', 'db9878jd4'); // Cloudinary Cloud 名稱
 
   const result = await axios
-    .post('https://api.imgur.com/3/image', formData, {
-      headers: {
-        Authorization: `Client-ID ${imgurClientId}`,
-      },
+    .post('https://api.cloudinary.com/v1_1/db9878jd4/image/upload', formData)
+    .then((response) => {
+      return response.data.secure_url; // 獲取上傳後的圖片 URL
     })
-    .then((res) => {
-      console.log(res);
-      return res.data.data;
-    })
-    .catch((error) => {
-      console.error('上傳失敗:', error);
-      return 'UPLOAD_FAILED';
+    .catch((err) => {
+      return err;
     });
+
   return result;
 }

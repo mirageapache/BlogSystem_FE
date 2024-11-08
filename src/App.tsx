@@ -11,12 +11,14 @@ import {
 // --- components ---
 import BottomMenu from 'components/layout/BottomMenu';
 import ModalSection from 'components/layout/ModalSection';
-import Header from './components/layout/Header';
-import SideBar from './components/layout/SideBar';
-import SignInPopup from './components/login/SignInPopup';
-import SignUpPopup from './components/login/SignUpPopup';
+import Header from 'components/layout/Header';
+import SideBar from 'components/layout/SideBar';
+import SignInPopup from 'components/login/SignInPopup';
+import SignUpPopup from 'components/login/SignUpPopup';
+import FindPassword from 'components/login/FindPassword';
 
 // --- pages ---
+import ResetPassword from 'pages/ResetPassword';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import PostDetailPage from './pages/post/PostDetailPage';
@@ -33,6 +35,7 @@ import { getCookies } from './utils/common';
 import { getOwnProfile } from './api/user';
 import { UserStateType, setUserData } from './redux/userSlice';
 import { UserProfileType } from './types/userType';
+import { handleStatus } from './utils/fetch';
 
 /** stateType  */
 interface StateType {
@@ -52,9 +55,9 @@ function App() {
   /** getUserData */
   const getUserData = async (id: string, authToken: string) => {
     const res = await getOwnProfile(id, authToken);
-    if (res.status === 200) {
+    if (handleStatus(get(res, 'status', 0)) === 2) {
       sliceDispatch(setUserData(res.data as UserProfileType));
-    } else if (res.status === 401) {
+    } else if (handleStatus(get(res, 'status', 0)) === 4) {
       // -JWT token expired-, token過期清除authok 資料
       localStorage.removeItem('authToken');
       window.location.reload();
@@ -98,6 +101,9 @@ function App() {
                 <Route path="user/profile/:userId" element={<UserProfilePage />} />
                 <Route path="user/editProfile" element={<EditProfilePage />} />
 
+                {/* Reset PWD */}
+                <Route path="reset_password/:token" element={<ResetPassword />} />
+
                 {/* 404 */}
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
@@ -112,6 +118,7 @@ function App() {
         {/* 登入&註冊 Popup */}
         {loginState.showSignInPop && <SignInPopup />}
         {loginState.showSignUpPop && <SignUpPopup />}
+        {loginState.showForgetPwd && <FindPassword />}
       </div>
     </div>
   );

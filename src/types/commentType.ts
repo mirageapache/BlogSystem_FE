@@ -11,14 +11,6 @@ export interface CommentDataType extends errorMsgType {
   editedAt: string;
 }
 
-/** post API參數型別 */
-export interface PostVariablesType {
-  postId?: string;
-  userId: string; // author
-  toUserId?: string; // replyTo userId
-  content: string;
-}
-
 export interface PostResultType extends RqResponseType {
   data: CommentDataType | null;
 }

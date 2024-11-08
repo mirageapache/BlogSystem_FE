@@ -5,7 +5,7 @@ import React, { useRef, useState } from 'react';
 import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-query';
 import withReactContent from 'sweetalert2-react-content';
@@ -15,10 +15,11 @@ import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
 // --- functions / types ---
 import { createArticle } from 'api/article';
-import { errorAlert } from 'utils/fetchError';
+import { errorAlert, handleStatus } from 'utils/fetch';
 import { checkCancelEdit, getCookies } from 'utils/common';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import '../../styles/editor.scss';
+import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ArticleCreatePage() {
   const [title, setTitle] = useState('');
@@ -82,7 +83,7 @@ function ArticleCreatePage() {
     ({ userId, content }) => createArticle(userId, title, content),
     {
       onSuccess: (res) => {
-        if (res.status === 200) {
+        if (handleStatus(get(res, 'status')) === 2) {
           const swal = withReactContent(Swal);
           swal
             .fire({
@@ -93,9 +94,15 @@ function ArticleCreatePage() {
             .then((result) => {
               if (result.isConfirmed) navigate('/');
             });
+        } else if (handleStatus(get(res, 'status')) === 5) {
+          errorAlert(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          errorAlert(ERR_NETWORK_MSG);
         }
       },
-      onError: () => errorAlert(),
+      onError: () => {
+        errorAlert();
+      },
     }
   );
 
