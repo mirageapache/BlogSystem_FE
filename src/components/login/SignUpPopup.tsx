@@ -1,19 +1,19 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { useDispatch } from 'react-redux';
+import { get, isEmpty, isEqual } from 'lodash';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-// --- components ---
-import FormInput from 'components/form/FormInput';
 // --- functions / types ---
-import { SignUp } from 'api/auth';
-import { errorAlert, handleStatus } from 'utils/fetch';
-import { get, isEmpty, isEqual } from 'lodash';
+import { SignUp } from '../../api/auth';
+import { errorAlert, handleStatus } from '../../utils/fetch';
 import { setSignInPop, setSignUpPop } from '../../redux/loginSlice';
 import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
+// --- components ---
+import FormInput from '../../components/form/FormInput';
 
 function SignUpPopup() {
   const sliceDispatch = useDispatch();

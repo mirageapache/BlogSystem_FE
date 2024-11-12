@@ -1,13 +1,16 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import { SignUp } from 'api/auth';
+import { Store, AnyAction } from 'redux';
 import Swal from 'sweetalert2';
+import configureStore from 'redux-mock-store';
+import { SignUp } from '../../api/auth';
 import SignUpPopup from './SignUpPopup';
 
-// Mock dependencies
-jest.mock('api/auth');
+jest.mock('../../api/auth', () => ({
+  SignUp: jest.fn(),
+}));
+
 jest.mock('sweetalert2', () => ({
   fire: jest.fn().mockResolvedValue({ isConfirmed: true }),
 }));
@@ -16,18 +19,17 @@ const mockSwal = Swal;
 jest.mock('sweetalert2-react-content', () => jest.fn(() => mockSwal));
 
 const mockStore = configureStore([]);
+const mockedSignUp = SignUp as jest.Mock;
 
-describe('SignUpPopup', () => {
-  let store;
+describe('註冊功能(SignUp)', () => {
+  let store: Store<unknown, AnyAction>;
 
   beforeEach(() => {
-    store = mockStore({
-      // 初始化您的 Redux store 狀態
-    });
+    store = mockStore({}); // 初始化 Redux store 狀態
     store.dispatch = jest.fn();
   });
 
-  it('renders correctly', () => {
+  test('元件顯示', () => {
     render(
       <Provider store={store}>
         <SignUpPopup />
@@ -40,7 +42,7 @@ describe('SignUpPopup', () => {
     expect(screen.getByText('註冊')).toBeInTheDocument();
   });
 
-  it('shows error messages for empty fields', async () => {
+  test('測試表單欄位必填', async () => {
     render(
       <Provider store={store}>
         <SignUpPopup />
@@ -54,7 +56,7 @@ describe('SignUpPopup', () => {
     });
   });
 
-  it('shows error when passwords do not match', async () => {
+  test('測試密碼與確認密碼不相符', async () => {
     render(
       <Provider store={store}>
         <SignUpPopup />
@@ -74,8 +76,8 @@ describe('SignUpPopup', () => {
     });
   });
 
-  it('calls SignUp API and shows success message on successful registration', async () => {
-    SignUp.mockResolvedValue({ status: 200 });
+  test('call SignUp API，執行註冊並回傳註冊成功', async () => {
+    mockedSignUp.mockResolvedValue({ status: 200 });
 
     render(
       <Provider store={store}>
