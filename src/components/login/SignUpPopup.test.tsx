@@ -76,7 +76,7 @@ describe('註冊功能(SignUp)', () => {
     });
   });
 
-  test('call SignUp API，執行註冊並回傳註冊成功', async () => {
+  test('測試註冊成功行為', async () => {
     mockedSignUp.mockResolvedValue({ status: 200 });
 
     render(
