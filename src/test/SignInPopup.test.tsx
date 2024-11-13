@@ -5,10 +5,10 @@ import { Store, AnyAction } from 'redux';
 import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
 import Swal from 'sweetalert2';
-import { SignIn } from '../../api/auth';
-import SignInPopup from './SignInPopup';
+import { SignIn } from '../api/auth';
+import SignInPopup from '../components/login/SignInPopup';
 
-jest.mock('../../api/auth', () => ({
+jest.mock('../api/auth', () => ({
   SignIn: jest.fn(),
 }));
 

@@ -4,10 +4,10 @@ import { Provider } from 'react-redux';
 import { Store, AnyAction } from 'redux';
 import Swal from 'sweetalert2';
 import configureStore from 'redux-mock-store';
-import { SignUp } from '../../api/auth';
-import SignUpPopup from './SignUpPopup';
+import { SignUp } from '../api/auth';
+import SignUpPopup from '../components/login/SignUpPopup';
 
-jest.mock('../../api/auth', () => ({
+jest.mock('../api/auth', () => ({
   SignUp: jest.fn(),
 }));
 
