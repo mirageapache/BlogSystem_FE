@@ -53,7 +53,13 @@ describe('登入功能(SignIn)', () => {
   });
 
   test('測試登入成功行為', async () => {
-    mockedSignIn.mockResolvedValue({ status: 200 });
+    mockedSignIn.mockResolvedValue({
+      status: 200,
+      data: {
+        authToken: 'mockAuthToken',
+        userData: { userId: 'mockUserId' },
+      },
+    });
 
     render(
       <Provider store={store}>
@@ -61,9 +67,9 @@ describe('登入功能(SignIn)', () => {
       </Provider>
     );
 
-    userEvent.type(screen.getByPlaceholderText('E-mail'), 'test@example.com');
-    userEvent.type(screen.getByPlaceholderText('password'), 'password123');
-    userEvent.click(screen.getByText('登入'));
+    await userEvent.type(screen.getByPlaceholderText('E-mail'), 'test@example.com');
+    await userEvent.type(screen.getByPlaceholderText('password'), 'password123');
+    await userEvent.click(screen.getByText('登入'));
 
     await waitFor(() => {
       expect(SignIn).toHaveBeenCalledWith({
@@ -72,8 +78,8 @@ describe('登入功能(SignIn)', () => {
       });
       expect(Swal.fire).toHaveBeenCalledWith({
         title: '登入成功',
-        text: '歡迎回來ReactBlog',
         icon: 'success',
+        confirmButtonText: '確認',
       });
     });
   });
