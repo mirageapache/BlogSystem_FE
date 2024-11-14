@@ -1,0 +1,40 @@
+/** 貼文測試資料 */
+export const mockData: any[] = [
+  {
+    _id: '1',
+    author: { userId: 'user1', username: 'User One', avatar: 'https://example.com/avatar1.png' },
+    content: 'This is the content of Post 1',
+    image: 'https://example.com/image1.png',
+    imageId: 'image1',
+    status: 1,
+    subject: 'Subject 1',
+    hashTags: ['#tag1', '#tag2'],
+    collectionCount: 5,
+    shareCount: 2,
+    likedByUsers: [
+      { userId: 'user2', username: 'User Two', avatar: 'https://example.com/avatar2.png' },
+      { userId: 'user3', username: 'User Three', avatar: 'https://example.com/avatar3.png' },
+    ],
+    comments: ['comment1', 'comment2'],
+    createdAt: '2023-11-12T10:20:30Z',
+    editedAt: '2023-11-13T12:15:00Z',
+  },
+  {
+    _id: '2',
+    author: { userId: 'user2', username: 'User Two', avatar: 'https://example.com/avatar2.png' },
+    content: 'This is the content of Post 2',
+    image: 'https://example.com/image2.png',
+    imageId: 'image2',
+    status: 1,
+    subject: 'Subject 2',
+    hashTags: ['#tag3', '#tag4'],
+    collectionCount: 10,
+    shareCount: 5,
+    likedByUsers: [
+      { userId: 'user1', username: 'User One', avatar: 'https://example.com/avatar1.png' },
+    ],
+    comments: ['comment3'],
+    createdAt: '2023-11-11T14:30:00Z',
+    editedAt: '2023-11-12T16:00:00Z',
+  },
+];

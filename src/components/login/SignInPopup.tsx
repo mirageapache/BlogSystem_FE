@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { get, isEmpty } from 'lodash';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
@@ -10,14 +10,14 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useCookies } from 'react-cookie';
 // --- functions / types ---
-import { setForgetPwd, setSignInPop, setSignUpPop } from 'redux/loginSlice';
-import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
-import { SignIn } from 'api/auth';
-import { setUserData } from 'redux/userSlice';
+import { setUserData } from '../../redux/userSlice';
+import { setForgetPwd, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
+import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
+import { SignIn } from '../../api/auth';
+import { handleStatus } from '../../utils/fetch';
+import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 // --- components ---
-import FormInput from 'components/form/FormInput';
-import { handleStatus } from 'utils/fetch';
-import { ERR_NETWORK_MSG } from 'constants/StringConstants';
+import FormInput from '../form/FormInput';
 
 function SignInPopup() {
   const sliceDispatch = useDispatch();
