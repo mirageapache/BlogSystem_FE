@@ -7,24 +7,24 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import { useDispatch } from 'react-redux';
+import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
-import '../../styles/post.scss';
-// --- components ---
-import PostInfoPanel from 'components/post/PostInfoPanel';
-import UserInfoPanel from 'components/user/UserInfoPanel';
-import PostInfoItem from 'components/post/PostInfoItem';
-// --- functions / types ---
-import { formatDateTime } from 'utils/dateTime';
-import { PostDataType } from 'types/postType';
-import { setPostData, setPostId } from 'redux/postSlice';
-import { HINT_LABEL } from 'constants/LayoutConstants';
-import { useMutation } from 'react-query';
-import { errorAlert, handleStatus } from 'utils/fetch';
-import { deletePost } from 'api/post';
-import { getCookies } from 'utils/common';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import '../../styles/post.scss';
+// --- functions / types ---
+import { HINT_LABEL } from '../../constants/LayoutConstants';
+import { errorAlert, handleStatus } from '../../utils/fetch';
+import { deletePost } from '../../api/post';
+import { getCookies } from '../../utils/common';
+import { formatDateTime } from '../../utils/dateTime';
+import { PostDataType } from '../../types/postType';
+import { setPostData, setPostId } from '../../redux/postSlice';
+// --- components ---
+import UserInfoPanel from '../user/UserInfoPanel';
+import PostInfoItem from './PostInfoItem';
+import PostInfoPanel from './PostInfoPanel';
 
 function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;

@@ -5,9 +5,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { FORM_CONTROL } from 'constants/LayoutConstants';
 import validator from 'validator';
-import { checkLength } from 'utils/formValidates';
+import { checkLength } from '../../utils/formValidates';
+import { FORM_CONTROL } from '../../constants/LayoutConstants';
 
 /** FormInputProps 型別 */
 interface FormInputPropsType {
