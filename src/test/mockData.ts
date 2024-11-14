@@ -1,5 +1,5 @@
 /** 貼文測試資料 */
-export const mockPostData: any[] = [
+export const mockData: any[] = [
   {
     _id: '1',
     author: { userId: 'user1', username: 'User One', avatar: 'https://example.com/avatar1.png' },
