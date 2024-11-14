@@ -49,7 +49,7 @@ function SignInPopup() {
 
   /** 送出登入資料 */
   const submitSignIn = async (role?: string) => {
-    if (role !== 'cust') {
+    if (role !== 'visitor') {
       setErrorMsg('');
       setIsLoading(true);
       if (isEmpty(email)) {
@@ -66,7 +66,12 @@ function SignInPopup() {
 
     if (isEmpty(emailError) && isEmpty(passwordError)) {
       let variables = { email, password };
-      if (role === 'cust') variables = { email: 'cust@test.com', password: 'custpassword' }; // 限訪客身份使用
+      if (role === 'visitor')
+        // 限訪客身份使用
+        variables = {
+          email: process.env.REACT_APP_CUST_EMAIL!,
+          password: process.env.REACT_APP_CUST_PWD!,
+        };
 
       try {
         const res = await SignIn(variables);
@@ -179,8 +184,8 @@ function SignInPopup() {
               </button>
               <button
                 type="button"
-                className="flex justify-center items-center w-full h-10 my-2 px-4 py-2 text-lg rounded-md bg-white border border-gray-500"
-                onClick={() => submitSignIn('cust')}
+                className="flex justify-center items-center w-full h-10 my-4 px-4 py-2 text-lg rounded-md bg-transparent border border-gray-500"
+                onClick={() => submitSignIn('visitor')}
               >
                 以訪客身份登入
               </button>

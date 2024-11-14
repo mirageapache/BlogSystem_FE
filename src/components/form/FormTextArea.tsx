@@ -10,6 +10,7 @@ interface FormTextAreaPropsType {
   setValue: React.Dispatch<React.SetStateAction<string>>;
   errorMsg: string;
   setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
+  disabled: boolean;
 }
 
 function FormTextArea({
@@ -19,6 +20,7 @@ function FormTextArea({
   setValue,
   errorMsg,
   setErrorMsg,
+  disabled,
 }: FormTextAreaPropsType) {
   const [showErrorTip, setShowErrorTip] = useState(!isEmpty(errorMsg)); // 顯示/隱藏欄位錯誤提示
   let activeStyle = '';
@@ -58,6 +60,7 @@ function FormTextArea({
         onChange={(e) => {
           if (e.target.value.length < 200) setValue(e.target.value);
         }}
+        disabled={disabled}
       />
       {showErrorTip && <p className="text-red-500 text-sm mt-[-6px]">{errorMsg}</p>}
     </div>
