@@ -48,22 +48,26 @@ function SignInPopup() {
   };
 
   /** 送出登入資料 */
-  const submitSignIn = async () => {
-    setErrorMsg('');
-    setIsLoading(true);
-    if (isEmpty(email)) {
-      setEmailError('Email為必填欄位');
-      setIsLoading(false);
-      return;
-    }
-    if (isEmpty(password)) {
-      setPasswordError('密碼為必填欄位');
-      setIsLoading(false);
-      return;
+  const submitSignIn = async (role?: string) => {
+    if (role !== 'cust') {
+      setErrorMsg('');
+      setIsLoading(true);
+      if (isEmpty(email)) {
+        setEmailError('Email為必填欄位');
+        setIsLoading(false);
+        return;
+      }
+      if (isEmpty(password)) {
+        setPasswordError('密碼為必填欄位');
+        setIsLoading(false);
+        return;
+      }
     }
 
     if (isEmpty(emailError) && isEmpty(passwordError)) {
-      const variables = { email, password };
+      let variables = { email, password };
+      if (role === 'cust') variables = { email: 'cust@test.com', password: 'custpassword' }; // 限訪客身份使用
+
       try {
         const res = await SignIn(variables);
 
@@ -162,7 +166,7 @@ function SignInPopup() {
               <button
                 type="button"
                 className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
-                onClick={submitSignIn}
+                onClick={() => submitSignIn}
               >
                 {isLoading ? (
                   <FontAwesomeIcon
@@ -172,6 +176,13 @@ function SignInPopup() {
                 ) : (
                   <>登入</>
                 )}
+              </button>
+              <button
+                type="button"
+                className="flex justify-center items-center w-full h-10 my-2 px-4 py-2 text-lg rounded-md bg-white border border-gray-500"
+                onClick={() => submitSignIn('cust')}
+              >
+                以訪客身份登入
               </button>
             </div>
             <div className="flex max-[420px]:flex-col justify-center mt-4">
