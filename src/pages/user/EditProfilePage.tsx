@@ -158,6 +158,7 @@ function EditProfilePage() {
   if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
   if (!isEmpty(userData)) {
+    const isVisitor = userData.email === process.env.REACT_APP_CUST_EMAIL;
     return (
       <div className="w-full sm:max-w-[600px] p-5">
         <form>
@@ -170,34 +171,46 @@ function EditProfilePage() {
               textSize="text-4xl"
               bgColor={userData.bgColor}
             />
-            <div className="flex gap-2">
-              <label
-                htmlFor="avatar"
-                className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
-              >
-                更新頭貼
-              </label>
-              <input
-                name="imageFile"
-                id="avatar"
-                type="file"
-                className="hidden"
-                onChange={(e) => handleFileChange(e)}
-              />
-              {!isEmpty(avatar) && (
-                <button
-                  type="button"
-                  className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
-                  onClick={() => {
-                    setAvatar('');
-                    setAvatarFile('');
-                    setRemoveAvatar(true);
-                  }}
+            {isVisitor ? (
+              <div className="flex flex-col items-center">
+                <p>
+                  <i className="text-red-500">您的身份為訪客，因此無法修改個人資料！</i>
+                </p>
+                <p>
+                  <i className="text-blue-500">您可以測試發佈文章、貼文等操作功能！</i>
+                </p>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <label
+                  htmlFor="avatar"
+                  className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
                 >
-                  移除頭貼
-                </button>
-              )}
-            </div>
+                  更新頭貼
+                </label>
+                <input
+                  name="imageFile"
+                  id="avatar"
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e)}
+                  disabled={isVisitor}
+                />
+                {!isEmpty(avatar) && (
+                  <button
+                    type="button"
+                    className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
+                    onClick={() => {
+                      setAvatar('');
+                      setAvatarFile('');
+                      setRemoveAvatar(true);
+                    }}
+                  >
+                    移除頭貼
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* user info */}
@@ -223,6 +236,7 @@ function EditProfilePage() {
                 errorMsg={emailError}
                 setErrorMsg={setEmailError}
                 handleEnter={() => {}}
+                disabled={isVisitor}
               />
             </div>
 
@@ -241,6 +255,7 @@ function EditProfilePage() {
                 errorMsg={accountError}
                 setErrorMsg={setAccountError}
                 handleEnter={() => {}}
+                disabled={isVisitor}
               />
             </div>
 
@@ -259,6 +274,7 @@ function EditProfilePage() {
                 errorMsg={nameError}
                 setErrorMsg={setNameError}
                 handleEnter={() => {}}
+                disabled={isVisitor}
               />
             </div>
 
@@ -273,6 +289,7 @@ function EditProfilePage() {
                 setValue={setBio}
                 errorMsg={bioError}
                 setErrorMsg={setBioError}
+                disabled={isVisitor}
               />
             </div>
           </div>
@@ -289,6 +306,7 @@ function EditProfilePage() {
                   value={language}
                   className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-700 rounded-md focus:border-2`}
                   onChange={(e) => setLanguage(e.target.value)}
+                  disabled={isVisitor}
                 >
                   <option value="zh" className="">
                     中文
@@ -339,22 +357,24 @@ function EditProfilePage() {
                 scrollToTop();
               }}
             >
-              取消
+              {isVisitor ? '返回' : '取消'}
             </button>
-            <button
-              type="button"
-              className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
-              onClick={submitEditProfile}
-            >
-              {updateLoading ? (
-                <FontAwesomeIcon
-                  icon={icon({ name: 'spinner', style: 'solid' })}
-                  className="animate-spin h-5 w-5 "
-                />
-              ) : (
-                <>修改</>
-              )}
-            </button>
+            {!isVisitor && (
+              <button
+                type="button"
+                className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
+                onClick={submitEditProfile}
+              >
+                {updateLoading ? (
+                  <FontAwesomeIcon
+                    icon={icon({ name: 'spinner', style: 'solid' })}
+                    className="animate-spin h-5 w-5 "
+                  />
+                ) : (
+                  <>修改</>
+                )}
+              </button>
+            )}
           </div>
         </form>
       </div>
