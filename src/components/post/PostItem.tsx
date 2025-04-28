@@ -35,7 +35,9 @@ function PostItem(props: { postData: PostDataType }) {
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
   const contentArr = postData.content.match(/<div.*?<\/div>/g); // 將字串內容轉換成陣列
   const contentLength = isEmpty(contentArr) ? 0 : contentArr!.length; // 貼文內容長度(行數)
-  const [hiddenContent, setHiddenContent] = useState(contentLength > 10 || false); // 是否隱藏貼文內容(預設顯示10行，過長的部分先隱藏)
+  const [hiddenContent, setHiddenContent] = useState(
+    contentLength > 3 || postData.content.length > 100 || false // 是否隱藏貼文內容(預設顯示3行，超過3行或長度超過100字先隱藏多餘的內容)
+  );
   const swal = withReactContent(Swal);
   const iscurrentUser = !isEmpty(currentUserId) && postData.author._id === currentUserId;
   const path = window.location.pathname;
@@ -156,12 +158,19 @@ function PostItem(props: { postData: PostDataType }) {
             <div
               id="post-container"
               className={`text-gray-600 dark:text-gray-300 ${
-                hiddenContent ? 'max-h-[300px] line-clamp-[10]' : ''
+                hiddenContent ? 'max-h-[300px] line-clamp-[3]' : ''
               }`}
               dangerouslySetInnerHTML={{ __html: postData.content }}
             />
             {hiddenContent && (
-              <button type="button" onClick={() => setHiddenContent(false)}>
+              <button
+                type="button"
+                className="text-orange-500 hover:text-orange-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setHiddenContent(false);
+                }}
+              >
                 顯示更多
               </button>
             )}
