@@ -21,6 +21,7 @@ interface FormInputPropsType {
   errorMsg: string;
   setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
   handleEnter: (value: string) => void;
+  disabled?: boolean;
 }
 
 function FormInput({
@@ -34,6 +35,7 @@ function FormInput({
   errorMsg,
   setErrorMsg,
   handleEnter,
+  disabled,
 }: FormInputPropsType) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [hidePassword, setHidePassword] = useState(ispwd); // 隱藏密碼
@@ -137,6 +139,7 @@ function FormInput({
             handleEnter(e.key);
           }}
           value={value}
+          disabled={disabled}
         />
         {ispwd && showToggle}
       </span>
