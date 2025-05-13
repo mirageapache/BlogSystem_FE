@@ -27,6 +27,7 @@ function SignInPopup() {
   const [passwordError, setPasswordError] = useState(''); // 紀錄密碼錯誤訊息
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisitorLoading, setIsVisitorLoading] = useState(false);
   const swal = withReactContent(Swal);
   const [cookies, setCookie, removeCookie] = useCookies(['uid']);
 
@@ -66,45 +67,48 @@ function SignInPopup() {
 
     if (isEmpty(emailError) && isEmpty(passwordError)) {
       let variables = { email, password };
-      if (role === 'visitor')
+      if (role === 'visitor') {
+        setIsVisitorLoading(true);
         // 限訪客身份使用
         variables = {
           email: process.env.REACT_APP_CUST_EMAIL!,
           password: process.env.REACT_APP_CUST_PWD!,
         };
 
-      try {
-        const res = await SignIn(variables);
+        try {
+          const res = await SignIn(variables);
 
-        if (handleStatus(get(res, 'status', 0)) === 2) {
-          const authToken = get(res, 'data.authToken');
-          window.localStorage.setItem('authToken', authToken);
-          setCookie('uid', res.data.userData.userId, { path: '/' });
-          sliceDispatch(setUserData(res.data.userData));
-          swal
-            .fire({
-              title: '登入成功',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then(() => {
-              const { location } = window;
-              const pathname = get(location, 'pathname', '');
-              if (pathname === '/user/editProfile') {
-                location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
-              }
-              handleClose();
-            });
-        } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          setErrorMsg(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          setErrorMsg(ERR_NETWORK_MSG);
+          if (handleStatus(get(res, 'status', 0)) === 2) {
+            const authToken = get(res, 'data.authToken');
+            window.localStorage.setItem('authToken', authToken);
+            setCookie('uid', res.data.userData.userId, { path: '/' });
+            sliceDispatch(setUserData(res.data.userData));
+            swal
+              .fire({
+                title: '登入成功',
+                icon: 'success',
+                confirmButtonText: '確認',
+              })
+              .then(() => {
+                const { location } = window;
+                const pathname = get(location, 'pathname', '');
+                if (pathname === '/user/editProfile') {
+                  location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
+                }
+                handleClose();
+              });
+          } else if (handleStatus(get(res, 'status', 0)) === 4) {
+            setErrorMsg(get(res, 'data.message'));
+          } else if (get(res, 'code') === 'ERR_NETWORK') {
+            setErrorMsg(ERR_NETWORK_MSG);
+          }
+        } catch (error) {
+          // console.log(error);
         }
-      } catch (error) {
-        // console.log(error);
       }
     }
     setIsLoading(false);
+    setIsVisitorLoading(false);
   };
 
   /** handleEnter */
@@ -171,7 +175,7 @@ function SignInPopup() {
               <button
                 type="button"
                 className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
-                onClick={() => submitSignIn}
+                onClick={() => submitSignIn()}
               >
                 {isLoading ? (
                   <FontAwesomeIcon
@@ -187,7 +191,14 @@ function SignInPopup() {
                 className="flex justify-center items-center w-full h-10 my-4 px-4 py-2 text-lg rounded-md bg-transparent border border-gray-500"
                 onClick={() => submitSignIn('visitor')}
               >
-                以訪客身份登入
+                {isVisitorLoading ? (
+                  <FontAwesomeIcon
+                    icon={icon({ name: 'spinner', style: 'solid' })}
+                    className="animate-spin h-5 w-5 "
+                  />
+                ) : (
+                  <>以訪客身份登入</>
+                )}
               </button>
             </div>
             <div className="flex max-[420px]:flex-col justify-center mt-4">
