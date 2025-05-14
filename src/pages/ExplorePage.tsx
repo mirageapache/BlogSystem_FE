@@ -32,6 +32,7 @@ function ExplorePage() {
   const activeTabStyle = 'text-orange-500'; // 頁籤控制
   const countSpanStyle =
     'sm:absolute sm:right-5 md:right-4 hidden sm:inline-block text-[12px] leading-5 px-3 bg-orange-500 text-white rounded-full'; // 數量標籤樣式
+  const countDotStyle = 'block sm:hidden absolute top-2 ml-8 w-2 h-2 bg-orange-500 rounded-full'; // 標籤點樣式
 
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {
@@ -124,7 +125,10 @@ function ExplorePage() {
                 className={`${iconStyle} ${exploreTag === 'article' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && article > 0 && (
-                <span className={countSpanStyle}>{article}</span>
+                <>
+                  <span className={countSpanStyle}>{article}</span>
+                  <span className={countDotStyle} />
+                </>
               )}
             </button>
             <button
@@ -137,7 +141,12 @@ function ExplorePage() {
                 icon={icon({ name: 'note-sticky', style: 'regular' })}
                 className={`${iconStyle} ${exploreTag === 'post' ? activeTabStyle : ''}`}
               />
-              {!isEmpty(searchString) && post > 0 && <span className={countSpanStyle}>{post}</span>}
+              {!isEmpty(searchString) && post > 0 && (
+                <>
+                  <span className={countSpanStyle}>{post}</span>
+                  <span className={countDotStyle} />
+                </>
+              )}
             </button>
             <button
               type="button"
@@ -149,7 +158,12 @@ function ExplorePage() {
                 icon={icon({ name: 'users', style: 'solid' })}
                 className={`${iconStyle} ${exploreTag === 'user' ? activeTabStyle : ''}`}
               />
-              {!isEmpty(searchString) && user > 0 && <span className={countSpanStyle}>{user}</span>}
+              {!isEmpty(searchString) && user > 0 && (
+                <>
+                  <span className={countSpanStyle}>{user}</span>
+                  <span className={countDotStyle} />
+                </>
+              )}
             </button>
             <button type="button" className={tabButtonStyle} onClick={() => handleTabActive('tag')}>
               <p className="hidden md:inline-block">標籤</p>
@@ -158,7 +172,10 @@ function ExplorePage() {
                 className={`${iconStyle} ${exploreTag === 'tag' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && hashtag > 0 && (
-                <span className={countSpanStyle}>{hashtag}</span>
+                <>
+                  <span className={countSpanStyle}>{hashtag}</span>
+                  <span className={countDotStyle} />
+                </>
               )}
             </button>
           </div>
