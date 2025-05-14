@@ -74,37 +74,36 @@ function SignInPopup() {
           email: process.env.REACT_APP_CUST_EMAIL!,
           password: process.env.REACT_APP_CUST_PWD!,
         };
+      }
+      try {
+        const res = await SignIn(variables);
 
-        try {
-          const res = await SignIn(variables);
-
-          if (handleStatus(get(res, 'status', 0)) === 2) {
-            const authToken = get(res, 'data.authToken');
-            window.localStorage.setItem('authToken', authToken);
-            setCookie('uid', res.data.userData.userId, { path: '/' });
-            sliceDispatch(setUserData(res.data.userData));
-            swal
-              .fire({
-                title: '登入成功',
-                icon: 'success',
-                confirmButtonText: '確認',
-              })
-              .then(() => {
-                const { location } = window;
-                const pathname = get(location, 'pathname', '');
-                if (pathname === '/user/editProfile') {
-                  location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
-                }
-                handleClose();
-              });
-          } else if (handleStatus(get(res, 'status', 0)) === 4) {
-            setErrorMsg(get(res, 'data.message'));
-          } else if (get(res, 'code') === 'ERR_NETWORK') {
-            setErrorMsg(ERR_NETWORK_MSG);
-          }
-        } catch (error) {
-          // console.log(error);
+        if (handleStatus(get(res, 'status', 0)) === 2) {
+          const authToken = get(res, 'data.authToken');
+          window.localStorage.setItem('authToken', authToken);
+          setCookie('uid', res.data.userData.userId, { path: '/' });
+          sliceDispatch(setUserData(res.data.userData));
+          swal
+            .fire({
+              title: '登入成功',
+              icon: 'success',
+              confirmButtonText: '確認',
+            })
+            .then(() => {
+              const { location } = window;
+              const pathname = get(location, 'pathname', '');
+              if (pathname === '/user/editProfile') {
+                location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
+              }
+              handleClose();
+            });
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          setErrorMsg(get(res, 'data.message'));
+        } else if (get(res, 'code') === 'ERR_NETWORK') {
+          setErrorMsg(ERR_NETWORK_MSG);
         }
+      } catch (error) {
+        // console.log(error);
       }
     }
     setIsLoading(false);
