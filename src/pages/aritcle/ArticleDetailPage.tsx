@@ -78,7 +78,7 @@ function ArticleDetailPage() {
   };
 
   /** 回覆貼文 mutation */
-  const CommentMutation = useMutation(
+  const { mutate: CommentMutation, isLoading: commentLoading } = useMutation(
     ({ articleId, content }: { articleId: string; content: string }) =>
       createComment(articleId, userId!, content, 'article'),
     {
@@ -103,7 +103,7 @@ function ArticleDetailPage() {
       return;
     }
 
-    CommentMutation.mutate({ articleId: id!, content: commentContent });
+    CommentMutation({ articleId: id!, content: commentContent });
   };
 
   /** 渲染 Atomic 區塊 */
@@ -307,7 +307,14 @@ function ArticleDetailPage() {
                 className={`w-16 h-9 p-0.5 rounded-md text-white ${commentContent.length > 0 ? 'bg-green-600' : 'bg-gray-500'}`}
                 onClick={submitComment}
               >
-                回覆
+                {commentLoading ? (
+                  <FontAwesomeIcon
+                    icon={icon({ name: 'spinner', style: 'solid' })}
+                    className="animate-spin h-5 w-5 m-1.5"
+                  />
+                ) : (
+                  '回覆'
+                )}
               </button>
             </div>
 

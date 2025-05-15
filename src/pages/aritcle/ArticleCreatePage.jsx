@@ -79,7 +79,7 @@ function ArticleCreatePage() {
   };
 
   /** 新增文章 mutation */
-  const createArticleMutation = useMutation(
+  const { mutate: createArticleMutate, isLoading } = useMutation(
     ({ userId, content }) => createArticle(userId, title, content),
     {
       onSuccess: (res) => {
@@ -111,7 +111,7 @@ function ArticleCreatePage() {
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
     const userId = getCookies('uid');
-    createArticleMutation.mutate({ userId, content: contentString });
+    createArticleMutate({ userId, content: contentString });
   };
 
   return (
@@ -139,10 +139,17 @@ function ArticleCreatePage() {
           {!isEmpty(title) && hasContent ? (
             <button
               type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
+              className="flex justify-center items-center w-16 sm:w-20 h-9 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
               onClick={handleSubmit}
             >
-              <p className="text-[14px] sm:text-[16px]">發佈</p>
+              {isLoading ? (
+                <FontAwesomeIcon
+                  icon={icon({ name: 'spinner', style: 'solid' })}
+                  className="animate-spin h-5 w-5 m-1.5"
+                />
+              ) : (
+                <p className="text-[14px] sm:text-[16px]">發佈</p>
+              )}
             </button>
           ) : (
             <button
