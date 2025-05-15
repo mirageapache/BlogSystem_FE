@@ -59,6 +59,29 @@ function ExplorePage() {
   }, []);
 
   useEffect(() => {
+    if (!isEmpty(searchString) && data) {
+      // 切換到有數據的頁籤
+      const currentTabHasData =
+        (exploreTag === 'article' && article > 0) ||
+        (exploreTag === 'post' && post > 0) ||
+        (exploreTag === 'user' && user > 0) ||
+        (exploreTag === 'tag' && hashtag > 0);
+
+      if (!currentTabHasData) {
+        if (article > 0) {
+          handleTabActive('article');
+        } else if (post > 0) {
+          handleTabActive('post');
+        } else if (user > 0) {
+          handleTabActive('user');
+        } else if (hashtag > 0) {
+          handleTabActive('tag');
+        }
+      }
+    }
+  }, [data, searchString]);
+
+  useEffect(() => {
     switch (exploreTag) {
       case 'article':
         setActiveUnderLine('translate-x-0');
