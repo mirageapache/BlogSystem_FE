@@ -63,10 +63,10 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   };
 
   /** 分享至FB */
-  const shareToFB = () => {
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-    window.open(shareUrl, '_blank');
-  };
+  // const shareToFB = () => {
+  //   const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  //   window.open(shareUrl, '_blank');
+  // };
 
   /** 分享至Line */
   const shareToLine = () => {
@@ -153,7 +153,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                     已複製！
                   </span>
                 </li>
-                <li className="p-1 hover:bg-gray-300 dark:hover:bg-gray-700 ">
+                {/* <li className="p-1 hover:bg-gray-300 dark:hover:bg-gray-700 ">
                   <button
                     type="button"
                     className="flex items-center gap-2 w-full p-1"
@@ -165,7 +165,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                     />
                     <p>分享至FaceBook</p>
                   </button>
-                </li>
+                </li> */}
                 <li className="p-1 hover:bg-gray-300 dark:hover:bg-gray-700">
                   <button
                     type="button"
