@@ -12,11 +12,13 @@ interface ToolItemPropsType {
   tipStyle: string;
   iconName: IconDefinition; // 透過props傳遞icon名稱的寫法
   iconStyle?: string;
+  isTiptap?: boolean; // 是否為tiptap的工具列
   handleShowFontColor?: () => void;
   handleShowBgColor?: () => void;
   toggleInlineStyle?: (style: string) => void;
   toggleBlockType?: (style: string) => void;
   handleFileInput?: (e: any) => void;
+  handleTipTap?: () => void;
 }
 
 function EditorToolItem({
@@ -26,11 +28,13 @@ function EditorToolItem({
   tipStyle,
   iconName,
   iconStyle = '',
+  isTiptap = false,
   handleShowFontColor = () => {},
   handleShowBgColor = () => {},
   toggleInlineStyle = () => {},
   toggleBlockType = () => {},
   handleFileInput = () => {},
+  handleTipTap = () => {},
 }: ToolItemPropsType) {
   const [showTip, setShowTip] = useState(false);
   const imgUpload = useRef<HTMLInputElement>(null);
@@ -43,10 +47,14 @@ function EditorToolItem({
           aria-label={text}
           className={`p-1 min-w-8 h-8 text-gray-500 ${text.substring(0, 2) === 'bg' ? '' : 'hover:text-orange-500'} hover:bg-sky-100 dark:hover:bg-sky-900 ${btnStyle}`}
           onClick={() => {
-            if (toggleInlineStyle !== undefined) toggleInlineStyle(text.toUpperCase());
-            if (toggleBlockType !== undefined) toggleBlockType(text);
-            if (text === 'insert-image' && imgUpload.current !== null) {
-              imgUpload.current.click();
+            if (isTiptap) {
+              handleTipTap();
+            } else {
+              if (toggleInlineStyle !== undefined) toggleInlineStyle(text.toUpperCase());
+              if (toggleBlockType !== undefined) toggleBlockType(text);
+              if (text === 'insert-image' && imgUpload.current !== null) {
+                imgUpload.current.click();
+              }
             }
           }}
           onMouseDown={(e) => {

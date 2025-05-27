@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { waitFor } from '@testing-library/dom';
 import { Provider } from 'react-redux';
 import { Store, AnyAction } from 'redux';
 import Swal from 'sweetalert2';
