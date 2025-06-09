@@ -2,7 +2,8 @@ import { get, isEmpty } from 'lodash';
 // --- components ---
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
-import ArticleItem from './ArticleItem';
+// import ArticleItem from './ArticleItem';
+import TiptapArticleItem from './TiptapArticleItem';
 import ArticleListLoading from './ArticleListLoading';
 // --- api / type ---
 import { ArticleDataType, ArticleResultType } from '../../types/articleType';
@@ -25,7 +26,7 @@ function ArticleList(props: { articleListData: ArticleResultType }) {
   if (isEmpty(articleList)) return <NoSearchResult msgOne="搜尋不到相關資訊" msgTwo="" type="" />;
 
   const articleItem = articleList!.map((article) => (
-    <ArticleItem key={article._id} articleData={article} />
+    <TiptapArticleItem key={article._id} articleData={article} />
   ));
   return <div className="flex-grow px-3 md:px-0">{articleItem}</div>;
 }

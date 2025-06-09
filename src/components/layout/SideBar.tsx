@@ -154,7 +154,6 @@ function SideBar() {
               activeItem={activePage === 'write'}
               changeItem={() => {
                 sliceDispatch(setActivePage('write'));
-                sliceDispatch(setEditMode(true));
               }}
             >
               <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />

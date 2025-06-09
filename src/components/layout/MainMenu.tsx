@@ -232,7 +232,6 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     handleClick={() => {
                       closeMenu();
                       dispatch(setActivePage('write'));
-                      dispatch(setEditMode(true));
                       scrollToTop();
                     }}
                   >

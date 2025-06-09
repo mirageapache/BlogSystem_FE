@@ -22,11 +22,12 @@ import ResetPassword from 'pages/ResetPassword';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import PostDetailPage from './pages/post/PostDetailPage';
-import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
 import UserProfilePage from './pages/user/UserProfilePage';
 import EditProfilePage from './pages/user/EditProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import TiptapArticleCreatePage from './pages/aritcle/TiptapArticleCreatePage';
+import TiptapArticleDetailPage from './pages/aritcle/TiptapArticleDetailPage';
+// import ArticleDetailPage from './pages/aritcle/ArticleDetailPage';
 // import ArticleCreatePage from './pages/aritcle/ArticleCreatePage';
 
 // --- functions / types ---
@@ -93,7 +94,7 @@ function App() {
                 <Route path="explore" element={<ExplorePage />} />
 
                 {/* Article */}
-                <Route path="article/:id" element={<ArticleDetailPage />} />
+                <Route path="article/:id" element={<TiptapArticleDetailPage />} />
                 <Route path="article/create" element={<TiptapArticleCreatePage />} />
                 {/* <Route path="article/create" element={<ArticleCreatePage />} /> */}
                 {/* Post */}

@@ -1,7 +1,8 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
 // --- components ---
-import ArticleItem from './ArticleItem';
+// import ArticleItem from './ArticleItem';
+import TiptapArticleItem from './TiptapArticleItem';
 import ArticleLoading from './ArticleLoading';
 import ArticleListLoading from './ArticleListLoading';
 // --- types ---
@@ -17,7 +18,7 @@ function ArticleListDynamic({ articleListData, isLoading, atBottom }: PropType) 
   if (isLoading && isEmpty(articleListData)) return <ArticleListLoading />;
 
   const articleItems = articleListData!.map((article) => {
-    return <ArticleItem key={article._id} articleData={article} />;
+    return <TiptapArticleItem key={article._id} articleData={article} />;
   });
 
   return (
