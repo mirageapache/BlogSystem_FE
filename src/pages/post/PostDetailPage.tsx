@@ -1,6 +1,6 @@
-/* eslint-disable react/no-danger */
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
+import DOMPurify from 'dompurify';
 import { useMutation, useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import { get, isEmpty } from 'lodash';
@@ -18,15 +18,21 @@ import { getPostDetail } from 'api/post';
 import { formatDateTime } from 'utils/dateTime';
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
-import { errorAlert } from 'utils/fetch';
-import { getCookies } from 'utils/common';
-import { useDispatch } from 'react-redux';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { guardVisitorAction } from 'utils/common';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSignInPop } from 'redux/loginSlice';
+import { UserStateType } from 'redux/userSlice';
 import { CommentDataType } from 'types/commentType';
 import { HINT_LABEL } from 'constants/LayoutConstants';
 
+interface StateType {
+  user: UserStateType;
+}
+
 function PostDetailPage() {
   const dispatch = useDispatch();
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
   const [commentContent, setCommentContent] = useState(''); // 留言內容
@@ -50,14 +56,16 @@ function PostDetailPage() {
 
   /** 回覆貼文 mutation */
   const { mutate: CommentMutation, isLoading: commentLoading } = useMutation(
-    ({ postId, userId, content }: { postId: string; userId: string; content: string }) =>
-      createComment(postId, userId, content, 'post'),
+    ({ postId, content }: { postId: string; content: string }) =>
+      createComment(postId, content, 'post'),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
           commentInput.current!.innerText = '';
           setCommentContent('');
           refetch();
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          handleApiError(res);
         }
       },
       onError: () => errorAlert(),
@@ -68,14 +76,14 @@ function PostDetailPage() {
   /** 回覆貼文 */
   const submitComment = () => {
     if (commentContent.trim().length === 0) return; // 檢查有沒有留言內容
-    const userId = getCookies('uid') as string;
 
     if (isEmpty(userId)) {
       dispatch(setSignInPop(true));
       return;
     }
+    if (guardVisitorAction()) return;
 
-    CommentMutation({ postId: id!, userId, content: commentContent });
+    CommentMutation({ postId: id!, content: commentContent });
   };
 
   if (isLoading) return <PostLoading withBorder={false} />;
@@ -157,7 +165,7 @@ function PostDetailPage() {
             <div
               id="post-container"
               className="text-gray-600 dark:text-gray-300"
-              dangerouslySetInnerHTML={{ __html: postData.content }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(postData.content) }}
             />
           </div>
 

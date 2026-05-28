@@ -7,7 +7,6 @@ import UserListDynamic from 'components/user/UserListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';
 // --- api / types ---
-import { getCookies } from 'utils/common';
 import { getSearchUserList } from 'api/user';
 import { UserDataType } from 'types/userType';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
@@ -15,12 +14,11 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 function ExploreUser() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || '';
-  const currentUser = getCookies('uid'); // 目前登入的使用者id (判斷追蹤狀態)
   let nextPage = -1;
 
   const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
     ['exploreUser', searchString],
-    ({ pageParam = 1 }) => getSearchUserList(pageParam, searchString, currentUser),
+    ({ pageParam = 1 }) => getSearchUserList(pageParam, searchString),
     {
       getNextPageParam: (lastPage) => {
         nextPage = lastPage.nextPage;
@@ -36,9 +34,7 @@ function ExploreUser() {
   }, []);
 
   const userList =
-    isEmpty(data) ||
-    get(data, 'pages[0].data.code', '') !== '' ||
-    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
       : data!.pages.reduce((acc, page) => [...acc, ...page.userList], [] as UserDataType[]);
 
@@ -57,7 +53,7 @@ function ExploreUser() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND')
+  if (!isLoading && userList.length === 0 && !isEmpty(data))
     return <NoSearchResult msgOne="搜尋不到相關用戶" msgTwo="" type="user" />;
 
   if (get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')

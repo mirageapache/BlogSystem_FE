@@ -33,9 +33,7 @@ function ProfilePost(props: { userId: string; identify: boolean }) {
   }, []);
 
   const postList =
-    isEmpty(data) ||
-    get(data, 'pages[0].data.code', '') !== '' ||
-    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
       : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
@@ -54,7 +52,7 @@ function ProfilePost(props: { userId: string; identify: boolean }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND') {
+  if (!isLoading && postList.length === 0 && !isEmpty(data)) {
     if (identify)
       return (
         <NoSearchResult msgOne="你還沒發佈任何貼文" msgTwo="快發佈你的貼文動態" type="createPost" />

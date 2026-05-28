@@ -1,13 +1,18 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
+import { useSelector } from 'react-redux';
 // --- components ---
 import UserLoading from './UserLoading';
 import UserListLoading from './UserListLoading';
 import FollowingItem from './FollowingItem';
 // --- types ---
 import { UserDataType } from '../../types/userType';
-import { getCookies } from '../../utils/common';
+import { UserStateType } from '../../redux/userSlice';
 import UserInfoPanel from './UserInfoPanel';
+
+interface StateType {
+  user: UserStateType;
+}
 
 interface PropType {
   userListData: UserDataType[];
@@ -18,7 +23,7 @@ interface PropType {
 }
 
 function UserListDynamic({ userListData, isLoading, atBottom, refetch, type }: PropType) {
-  const currentUser = getCookies('uid');
+  const currentUser = useSelector((state: StateType) => state.user.userData?.userId);
 
   if (isLoading && isEmpty(userListData)) return <UserListLoading />;
 

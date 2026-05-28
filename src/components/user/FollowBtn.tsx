@@ -5,16 +5,17 @@ import { useMutation } from 'react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { UserDataType } from 'types/userType';
-import { errorAlert } from 'utils/fetch';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { get } from 'lodash';
+import { guardVisitorAction } from 'utils/common';
 import { changeFollowState, followUser, unfollowUser } from 'api/follow';
 
 interface PropType {
   user: UserDataType;
-  currentUser: string;
   refetch: () => void;
 }
 
-function FollowBtn({ user, currentUser, refetch }: PropType) {
+function FollowBtn({ user, refetch }: PropType) {
   // state為追蹤狀態 [0-追蹤(不主動推播) / 1-主動推播]
   const [activeDropdown, setActiveDropdown] = useState('');
 
@@ -24,24 +25,24 @@ function FollowBtn({ user, currentUser, refetch }: PropType) {
   };
 
   /** 追蹤 mutation */
-  const followMutation = useMutation(
-    ({ targetId }: { targetId: string }) => followUser(currentUser!, targetId),
-    {
-      onSuccess: (res) => {
-        if (res.status === 200) refetch();
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const followMutation = useMutation(({ targetId }: { targetId: string }) => followUser(targetId), {
+    onSuccess: (res) => {
+      if (res.status === 200) refetch();
+      else if (handleStatus(get(res, 'status', 0)) === 4) handleApiError(res);
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 取消追蹤 mutation */
   const unfollowMutation = useMutation(
-    ({ targetId }: { targetId: string }) => unfollowUser(currentUser!, targetId),
+    ({ targetId }: { targetId: string }) => unfollowUser(targetId),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
           toggleDropdown('');
           refetch();
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          handleApiError(res);
         }
       },
       onError: () => errorAlert(),
@@ -51,17 +52,37 @@ function FollowBtn({ user, currentUser, refetch }: PropType) {
   /** 更改訂閱狀態 */
   const changeState = useMutation(
     ({ targetId, state }: { targetId: string; state: number }) =>
-      changeFollowState(currentUser!, targetId, state),
+      changeFollowState(targetId, state),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
           toggleDropdown('');
           refetch();
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          handleApiError(res);
         }
       },
       onError: () => errorAlert(),
     }
   );
+
+  /** 追蹤(含訪客守衛) */
+  const handleFollow = () => {
+    if (guardVisitorAction()) return;
+    followMutation.mutate({ targetId: user._id });
+  };
+
+  /** 取消追蹤(含訪客守衛) */
+  const handleUnfollow = () => {
+    if (guardVisitorAction()) return;
+    unfollowMutation.mutate({ targetId: user._id });
+  };
+
+  /** 切換通知狀態(含訪客守衛) */
+  const handleChangeState = (state: number) => {
+    if (guardVisitorAction()) return;
+    changeState.mutate({ targetId: user._id, state });
+  };
 
   return (
     <div className="relative flex items-center">
@@ -78,7 +99,7 @@ function FollowBtn({ user, currentUser, refetch }: PropType) {
         <button
           type="button"
           className="py-1 px-3 rounded-lg text-white bg-green-600"
-          onClick={() => followMutation.mutate({ targetId: user._id })}
+          onClick={handleFollow}
         >
           追蹤
         </button>
@@ -91,9 +112,7 @@ function FollowBtn({ user, currentUser, refetch }: PropType) {
               <button
                 type="button"
                 className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-                onClick={() => {
-                  changeState.mutate({ targetId: user._id, state: 0 });
-                }}
+                onClick={() => handleChangeState(0)}
               >
                 關閉通知
               </button>
@@ -101,9 +120,7 @@ function FollowBtn({ user, currentUser, refetch }: PropType) {
               <button
                 type="button"
                 className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-                onClick={() => {
-                  changeState.mutate({ targetId: user._id, state: 1 });
-                }}
+                onClick={() => handleChangeState(1)}
               >
                 開啟通知
               </button>
@@ -111,9 +128,7 @@ function FollowBtn({ user, currentUser, refetch }: PropType) {
             <button
               type="button"
               className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-              onClick={() => {
-                unfollowMutation.mutate({ targetId: user._id });
-              }}
+              onClick={handleUnfollow}
             >
               取消追蹤
             </button>

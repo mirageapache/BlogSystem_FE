@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from 'react-query';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,18 +14,22 @@ import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-
 import { toggleLikePost } from 'api/post';
 import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
-import { errorAlert } from 'utils/fetch';
-import { getCookies } from 'utils/common';
-import { checkLogin } from '../../utils/common';
+import { errorAlert, handleApiError } from 'utils/fetch';
+import { UserStateType } from 'redux/userSlice';
+import { checkLogin, guardVisitorAction } from '../../utils/common';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
 import { setPostData, setPostId, setShowEditModal } from '../../redux/postSlice';
 // --- components ---
 import PostInfoItem from './PostInfoItem';
 
+interface StateType {
+  user: UserStateType;
+}
+
 function PostInfoPanel(props: { postData: PostDataType }) {
   const { postData } = props;
   const dispatchSlice = useDispatch();
-  const userId = getCookies('uid');
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [post, setPost] = useState(postData);
   const [showShareInfo, setShowShareInfo] = useState(false);
   const [showCopyHint, setShowCopyHint] = useState(false); // 顯示"已複製"提示標籤
@@ -35,9 +39,10 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   const url = window.location.toString();
 
   /** 喜歡/取消喜歡 mutation */
-  const likeMutation = useMutation((action: boolean) => toggleLikePost(post._id, userId!, action), {
+  const likeMutation = useMutation((action: boolean) => toggleLikePost(post._id, action), {
     onSuccess: (res) => {
-      setPost(res.updateResult);
+      if (handleApiError(res)) return;
+      if (res?.updateResult) setPost(res.updateResult);
     },
     onError: () => errorAlert(),
   });
@@ -49,6 +54,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
       dispatchSlice(setSignInPop(true));
       return;
     }
+    if (guardVisitorAction()) return;
     likeMutation.mutate(!isLike);
   };
 
@@ -77,6 +83,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
+    if (guardVisitorAction()) return;
     dispatchSlice(setPostId(post._id));
     dispatchSlice(setPostData(post));
     dispatchSlice(setShowEditModal(true));

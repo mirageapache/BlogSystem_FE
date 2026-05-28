@@ -32,9 +32,7 @@ function ProfileFollowing(props: { userId: string; identify: boolean }) {
   }, []);
 
   const followList =
-    isEmpty(data) ||
-    get(data, 'pages[0].data.code', '') !== '' ||
-    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
       : data!.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[]);
 
@@ -53,7 +51,7 @@ function ProfileFollowing(props: { userId: string; identify: boolean }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND') {
+  if (!isLoading && followList.length === 0 && !isEmpty(data)) {
     if (identify)
       return (
         <NoSearchResult msgOne="你還沒有追蹤任何人喔" msgTwo="快去尋找有趣的人吧" type="user" />

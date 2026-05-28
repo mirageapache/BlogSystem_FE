@@ -39,9 +39,7 @@ function ExplorePost() {
   }, []);
 
   const postList =
-    isEmpty(data) ||
-    get(data, 'pages[0].data.code', '') !== '' ||
-    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
       : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
@@ -60,7 +58,7 @@ function ExplorePost() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND')
+  if (!isLoading && postList.length === 0 && !isEmpty(data))
     return <NoSearchResult msgOne="搜尋不到相關貼文" msgTwo="" type="post" />;
 
   if (get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')

@@ -13,16 +13,18 @@ import {
 import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
 import { ArticleDataType } from 'types/articleType';
-import { checkLogin, getCookies } from 'utils/common';
-import { errorAlert, handleStatus } from 'utils/fetch';
+import { checkLogin, guardVisitorAction } from 'utils/common';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
 import { deleteArticle, toggleLikeArticle } from 'api/article';
 import { setSignInPop } from 'redux/loginSlice';
 import { setEditMode, SysStateType } from 'redux/sysSlice';
+import { UserStateType } from 'redux/userSlice';
 // --- components ---
 import ArticleInfoItem from './ArticleInfoItem';
 
 interface StateType {
   system: SysStateType;
+  user: UserStateType;
 }
 
 interface PropTypes {
@@ -40,7 +42,7 @@ function ArticleInfoPanel({
   hasContent,
   handleSubmit,
 }: PropTypes) {
-  const currentUserId = getCookies('uid');
+  const currentUserId = useSelector((state: StateType) => state.user.userData?.userId);
   const dispatchSlice = useDispatch();
   const editMode = useSelector((state: StateType) => state.system.editMode); // 編輯模式
   const [article, setArticle] = useState(articleData);
@@ -52,15 +54,13 @@ function ArticleInfoPanel({
   const navigate = useNavigate();
 
   /** 喜歡/取消喜歡 mutation */
-  const likeMutation = useMutation(
-    (action: boolean) => toggleLikeArticle(article._id, currentUserId!, action),
-    {
-      onSuccess: (res) => {
-        setArticle(res.updateResult);
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const likeMutation = useMutation((action: boolean) => toggleLikeArticle(article._id, action), {
+    onSuccess: (res) => {
+      if (handleApiError(res)) return;
+      if (res?.updateResult) setArticle(res.updateResult);
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 喜歡/取消喜歡貼文 */
   const handleLikeArticle = (e: any) => {
@@ -69,17 +69,19 @@ function ArticleInfoPanel({
       dispatchSlice(setSignInPop(true));
       return;
     }
+    if (guardVisitorAction()) return;
     likeMutation.mutate(!isLike);
   };
 
   /** 處理編輯文章按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
+    if (guardVisitorAction()) return;
     dispatchSlice(setEditMode(true));
   };
 
   /** 刪除文章 mutation */
-  const deleteMutation = useMutation(() => deleteArticle(articleData._id, currentUserId!), {
+  const deleteMutation = useMutation(() => deleteArticle(articleData._id), {
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status', 0)) === 2) {
         swal
@@ -91,6 +93,8 @@ function ArticleInfoPanel({
           .then(() => {
             navigate(`/user/profile/${currentUserId}`);
           });
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        handleApiError(res);
       }
     },
     onError: () => errorAlert(),
@@ -99,6 +103,7 @@ function ArticleInfoPanel({
   /** 刪除文章 */
   const handleDelete = (e: any) => {
     e.stopPropagation();
+    if (guardVisitorAction()) return;
     if (iscurrentUser) {
       swal
         .fire({

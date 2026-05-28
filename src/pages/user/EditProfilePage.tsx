@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -19,10 +19,14 @@ import FormTextArea from 'components/form/FormTextArea';
 // --- api/types ---
 import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
-import { getCookies, scrollToTop } from '../../utils/common';
+import { guardVisitorAction, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
-import { errorAlert, handleStatus } from '../../utils/fetch';
-import { setUserData } from '../../redux/userSlice';
+import { errorAlert, handleApiError, handleStatus } from '../../utils/fetch';
+import { setUserData, UserStateType } from '../../redux/userSlice';
+
+interface StateType {
+  user: UserStateType;
+}
 
 function EditProfilePage() {
   const sliceDispatch = useDispatch();
@@ -45,16 +49,15 @@ function EditProfilePage() {
   const [emailPrompt, setEmailPrompt] = useState(false);
   const [mobilePrompt, setMobilePrompt] = useState(false);
 
-  const userId = getCookies('uid');
-  const authToken = localStorage.getItem('authToken');
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [updateLoading, setUpdateLoading] = useState(false);
 
-  if (isEmpty(userId) || isEmpty(authToken)) {
+  if (isEmpty(userId)) {
     sliceDispatch(setSignInPop(true));
     return <Spinner />;
   }
 
-  const getUserData = useQuery('editProfile', () => getOwnProfile(userId!, authToken!), {
+  const getUserData = useQuery('editProfile', () => getOwnProfile(), {
     enabled: firstLoad,
   });
   const { isLoading, data } = getUserData;
@@ -93,6 +96,7 @@ function EditProfilePage() {
 
   /** 送出編輯資料 */
   const submitEditProfile = async () => {
+    if (guardVisitorAction()) return;
     setUpdateLoading(true);
     // 資料驗證
     if (isEmpty(email)) {
@@ -131,7 +135,7 @@ function EditProfilePage() {
       formData.append('imageFile', avatarFile);
 
       try {
-        const result = await updateProfile(formData, userId!, authToken!);
+        const result = await updateProfile(formData);
         if (handleStatus(get(result, 'status', 0)) === 2) {
           swal
             .fire({
@@ -144,6 +148,8 @@ function EditProfilePage() {
               sliceDispatch(setUserData(result.data as UserProfileType));
               scrollToTop();
             });
+        } else if (handleStatus(get(result, 'status', 0)) === 4) {
+          handleApiError(result);
         } else {
           errorAlert(get(result, 'data.message', ''));
         }
@@ -158,7 +164,7 @@ function EditProfilePage() {
   if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
   if (!isEmpty(userData)) {
-    const isVisitor = userData.email === process.env.REACT_APP_CUST_EMAIL;
+    const isVisitor = userData.userRole === -1;
     return (
       <div className="w-full sm:max-w-[600px] p-5">
         <form>

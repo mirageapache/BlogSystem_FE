@@ -38,9 +38,7 @@ function ExploreArticle() {
   }, []);
 
   const articleList =
-    isEmpty(data) ||
-    get(data, 'pages[0].data.code', '') !== '' ||
-    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
       : data!.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[]);
 
@@ -59,7 +57,7 @@ function ExploreArticle() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND')
+  if (!isLoading && articleList.length === 0 && !isEmpty(data))
     return <NoSearchResult msgOne="搜尋不到相關文章" msgTwo="" type="article" />;
 
   if (get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')

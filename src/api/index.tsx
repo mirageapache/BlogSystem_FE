@@ -5,6 +5,9 @@ import { AxResponseType } from 'types/apiType';
 /** base Url */
 export const API_URL = process.env.REACT_APP_API_URL;
 
+// 讓所有 axios 請求自動帶上 cookie（後端改用 HttpOnly Cookie 存 JWT 時需要）
+axios.defaults.withCredentials = true;
+
 interface ResultType extends AxResponseType {
   article: number;
   post: number;
@@ -33,7 +36,7 @@ export async function uploadImage(imageFile: any) {
   formData.append('cloud_name', 'db9878jd4'); // Cloudinary Cloud 名稱
 
   const result = await axios
-    .post('https://api.cloudinary.com/v1_1/db9878jd4/image/upload', formData)
+    .post(`${API_URL}/utility/upload`, formData)
     .then((response) => {
       return response.data.secure_url; // 獲取上傳後的圖片 URL
     })

@@ -26,21 +26,16 @@ export async function getComment(): Promise<CommentApiType> {
 
 /** 新增留言
  * @id 貼文或文章 id
- * @userId 使用者 id
  * @content 留言內容
  * @route 判斷post/article
  */
 export async function createComment(
   id: string,
-  userId: string,
   content: string,
   route: string
 ): Promise<CommentApiType> {
-  const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-  };
   const result = await axios
-    .post(`${baseUrl}/comment/create/${userId}`, { id, userId, content, route }, config)
+    .post(`${baseUrl}/comment/create`, { id, content, route })
     .then((res) => {
       return res;
     })
@@ -51,12 +46,9 @@ export async function createComment(
 }
 
 /** 編輯留言 */
-export async function updateComment(userId: string, formData: FormData): Promise<CommentApiType> {
-  const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-  };
+export async function updateComment(formData: FormData): Promise<CommentApiType> {
   const result = await axios
-    .patch(`${baseUrl}/comment/update/${userId}`, formData, config)
+    .patch(`${baseUrl}/comment/update`, formData)
     .then((res) => {
       return res;
     })

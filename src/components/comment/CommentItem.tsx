@@ -1,5 +1,5 @@
-/* eslint-disable react/no-danger */
 import React from 'react';
+import DOMPurify from 'dompurify';
 import { CommentDataType } from 'types/commentType';
 
 // --- components ---
@@ -31,7 +31,7 @@ function CommentItem(props: { commentData: CommentDataType }) {
             </Link>
             <p className="text-gray-500">{formatDateTime(commentData.createdAt)}</p>
           </span>
-          <div dangerouslySetInnerHTML={{ __html: commentData.content }} />
+          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(commentData.content) }} />
         </div>
       </div>
     </div>

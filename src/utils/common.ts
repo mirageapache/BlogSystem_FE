@@ -1,38 +1,40 @@
 /* eslint-disable no-plusplus */
 import { isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
+import { UserProfileType } from 'types/userType';
+import store from '../redux/configStore';
+import { GUEST_BLOCK_MSG, GUEST_USER_ID } from '../constants/StringConstants';
 
 /**
- * 取得Cookies
- */
-export const getCookies = (name: string) => {
-  const cookies = document.cookie.split(';');
-
-  for (let i = 0; i < cookies.length; i++) {
-    const [cookieName, cookieValue] = cookies[i].split('=');
-    if (cookieName.trim() === name) {
-      return decodeURIComponent(cookieValue);
-    }
-  }
-  return undefined; // 若找不到指定的cookie則返回undefined
-};
-
-/** 移除Cookies */
-export const deleteCookie = (name: string) => {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-};
-
-/**
- * 判斷是否登入
+ * 判斷是否登入（讀取 Redux store，不依賴 cookie）
  */
 export const checkLogin = () => {
-  const id = getCookies('uid');
-  const token = localStorage.getItem('authToken');
+  const { userData } = store.getState().user;
+  return !isEmpty(userData);
+};
 
-  if (!isEmpty(id) && !isEmpty(token)) {
-    return true;
-  }
-  return false;
+/**
+ * 判斷目前登入者是否為訪客
+ * 訪客的 userRole === -1（或 userId 為固定的 GUEST_USER_ID）
+ */
+export const checkVisitor = () => {
+  const userData = store.getState().user.userData as UserProfileType | undefined;
+  if (!userData) return false;
+  return userData.userRole === -1 || userData.userId === GUEST_USER_ID;
+};
+
+/**
+ * 訪客行為守衛：若目前為訪客，跳出提示並回傳 true，呼叫端應立即 return。
+ */
+export const guardVisitorAction = (): boolean => {
+  if (!checkVisitor()) return false;
+  Swal.fire({
+    title: '訪客無法使用此功能',
+    text: GUEST_BLOCK_MSG,
+    icon: 'info',
+    confirmButtonText: '確認',
+  });
+  return true;
 };
 
 /**

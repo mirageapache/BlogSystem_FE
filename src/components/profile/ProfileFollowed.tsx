@@ -32,9 +32,7 @@ function ProfileFollowed(props: { userId: string; identify: boolean }) {
   }, []);
 
   const followList =
-    isEmpty(data) ||
-    get(data, 'pages[0].data.code', '') !== '' ||
-    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
       : data!.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[]);
 
@@ -53,7 +51,7 @@ function ProfileFollowed(props: { userId: string; identify: boolean }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [nextPage]);
 
-  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND') {
+  if (!isLoading && followList.length === 0 && !isEmpty(data)) {
     if (identify)
       return <NoSearchResult msgOne="你還沒有粉絲喔" msgTwo="快去拓展你的粉絲圈吧" type="user" />;
     return <NoSearchResult msgOne="沒有任何粉絲資訊" msgTwo=" " type="user" />;

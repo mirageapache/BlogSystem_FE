@@ -12,10 +12,12 @@ import { useMutation } from 'react-query';
 import { updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
-import { getCookies } from 'utils/common';
-import { errorAlert, handleStatus } from 'utils/fetch';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { guardVisitorAction } from 'utils/common';
 import { handleHashTag } from 'utils/input';
 // --- components ---
+// --- components ---
+import { UserStateType } from '../../redux/userSlice';
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
 import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
@@ -23,11 +25,13 @@ import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 interface stateType {
   post: PostStateType;
+  user: UserStateType;
 }
 
 function PostEditModal() {
   const dispatchSlice = useDispatch();
   const postState = useSelector((state: stateType) => state.post);
+  const userId = useSelector((state: stateType) => state.user.userData?.userId) as string;
   const [firstLoad, setFirstLoad] = useState(true);
   const { postId, postData } = postState;
 
@@ -96,38 +100,37 @@ function PostEditModal() {
   };
 
   /** 編輯貼文 mutation */
-  const editPostMutation = useMutation(
-    ({ userId, formData }: { userId: string; formData: FormData }) => updatePost(userId, formData),
-    {
-      onSuccess: (res) => {
-        if (handleStatus(get(res, 'status')) === 2) {
-          swal
-            .fire({
-              title: '貼文已修改',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then(() => {
-              handleClose(false);
-              window.location.reload();
-            });
-        } else if (handleStatus(get(res, 'status')) === 5) {
-          errorAlert(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          errorAlert(ERR_NETWORK_MSG);
-        }
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const editPostMutation = useMutation((formData: FormData) => updatePost(formData), {
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status')) === 2) {
+        swal
+          .fire({
+            title: '貼文已修改',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            handleClose(false);
+            window.location.reload();
+          });
+      } else if (handleStatus(get(res, 'status')) === 4) {
+        handleApiError(res);
+      } else if (handleStatus(get(res, 'status')) === 5) {
+        errorAlert(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        errorAlert(ERR_NETWORK_MSG);
+      }
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 編輯貼文 */
   const handleSubmit = () => {
     // 驗證content內容
     if (isEmpty(content) || content.length === 0) return;
+    if (guardVisitorAction()) return;
 
     // 判斷登入操作者與作者id是否相同
-    const userId = getCookies('uid') as string;
     if (userId !== authorId) {
       swal.fire({
         title: '操作異常!',
@@ -148,7 +151,7 @@ function PostEditModal() {
     formData.set('hashTags', JSON.stringify(hashTagArr));
     formData.set('imageFile', imageFile);
 
-    editPostMutation.mutate({ userId, formData });
+    editPostMutation.mutate(formData);
   };
 
   return (
