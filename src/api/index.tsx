@@ -32,8 +32,6 @@ export async function getSearchCount(searchString?: string): Promise<ResultType>
 export async function uploadImage(imageFile: any) {
   const formData = new FormData();
   formData.append('file', imageFile);
-  formData.append('upload_preset', 'blogSystem'); // 在 Cloudinary 創建的 unsigned preset 名稱
-  formData.append('cloud_name', 'db9878jd4'); // Cloudinary Cloud 名稱
 
   const result = await axios
     .post(`${API_URL}/utility/upload`, formData)
