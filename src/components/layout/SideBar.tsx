@@ -5,8 +5,9 @@ import { get, isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // --- functions ---
-import { checkLogin, getCookies, scrollToTop } from 'utils/common';
+import { checkLogin, checkVisitor, guardVisitorAction, scrollToTop } from 'utils/common';
 import { SysStateType, setActivePage, setEditMode } from '../../redux/sysSlice';
+import { UserStateType } from '../../redux/userSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
 import { setSignInPop } from '../../redux/loginSlice';
@@ -23,6 +24,7 @@ type ItemProps = {
 
 interface StateType {
   system: SysStateType;
+  user: UserStateType;
 }
 
 const activeStyle = 'text-orange-500 hover:text-orange-500 hover:fill-orange-500';
@@ -41,7 +43,10 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
           type="button"
           ref={tooltip}
           className={`flex my-1.5 ml-3 text-xl cursor-pointer py-4 ${normalStyle}`}
-          onClick={() => sliceDispatch(setShowCreateModal(true))}
+          onClick={() => {
+            if (guardVisitorAction()) return;
+            sliceDispatch(setShowCreateModal(true));
+          }}
           onMouseEnter={() => setShowTip(true)}
           onMouseLeave={() => setShowTip(false)}
         >
@@ -89,7 +94,7 @@ function SideBar() {
   const sliceDispatch = useDispatch();
   const systemState = useSelector((state: StateType) => state.system);
   const activePage = get(systemState, 'activePage');
-  const userId = getCookies('uid');
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
 
   return (
     <div className="text-left h-fit sm:px-1">
@@ -112,22 +117,7 @@ function SideBar() {
         >
           <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
         </SideBarItem>
-        <SideBarItem
-          href={checkLogin() ? `/user/profile/${userId}` : ''}
-          text="個人資料"
-          count={0}
-          activeItem={activePage === 'user'}
-          changeItem={() => {
-            if (checkLogin()) {
-              sliceDispatch(setActivePage('user'));
-            } else {
-              sliceDispatch(setSignInPop(true));
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
-        </SideBarItem>
-        {checkLogin() && (
+        {checkLogin() && !checkVisitor() && (
           <>
             {/* <SideBarItem
               href="/inbox"
@@ -147,6 +137,21 @@ function SideBar() {
             >
               <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
             </SideBarItem> */}
+            <SideBarItem
+              href={checkLogin() ? `/user/profile/${userId}` : ''}
+              text="個人資料"
+              count={0}
+              activeItem={activePage === 'user'}
+              changeItem={() => {
+                if (checkLogin()) {
+                  sliceDispatch(setActivePage('user'));
+                } else {
+                  sliceDispatch(setSignInPop(true));
+                }
+              }}
+            >
+              <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
+            </SideBarItem>
             <SideBarItem
               href="/article/create"
               text="撰寫文章"

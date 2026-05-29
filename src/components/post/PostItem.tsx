@@ -1,13 +1,13 @@
-/* eslint-disable react/no-danger */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
 import moment from 'moment';
 import { get, isEmpty } from 'lodash';
-import { useDispatch } from 'react-redux';
-import { useMutation } from 'react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
@@ -15,22 +15,28 @@ import withReactContent from 'sweetalert2-react-content';
 import '../../styles/post.scss';
 // --- functions / types ---
 import { HINT_LABEL } from '../../constants/LayoutConstants';
-import { errorAlert, handleStatus } from '../../utils/fetch';
+import { errorAlert, handleApiError, handleStatus } from '../../utils/fetch';
+import { guardVisitorAction } from '../../utils/common';
 import { deletePost } from '../../api/post';
-import { getCookies } from '../../utils/common';
-import { formatDateTime } from '../../utils/dateTime';
 import { PostDataType } from '../../types/postType';
+import { formatDateTime } from '../../utils/dateTime';
 import { setPostData, setPostId } from '../../redux/postSlice';
+import { UserStateType } from '../../redux/userSlice';
 // --- components ---
 import UserInfoPanel from '../user/UserInfoPanel';
 import PostInfoItem from './PostInfoItem';
 import PostInfoPanel from './PostInfoPanel';
 
+interface StateType {
+  user: UserStateType;
+}
+
 function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
   const dispatchSlice = useDispatch();
   const navigate = useNavigate();
-  const currentUserId = getCookies('uid');
+  const queryClient = useQueryClient();
+  const currentUserId = useSelector((state: StateType) => state.user.userData?.userId);
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
   const contentArr = postData.content.match(/<div.*?<\/div>/g); // 將字串內容轉換成陣列
@@ -42,26 +48,29 @@ function PostItem(props: { postData: PostDataType }) {
   const iscurrentUser = !isEmpty(currentUserId) && postData.author._id === currentUserId;
   const path = window.location.pathname;
 
-  /** 點選貼文 */
-  const handleClickPost = () => {
+  /** 點選貼文（若點到內文的 hashtag 連結則讓 <a> 自己處理，不導去詳細頁） */
+  const handleClickPost = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest('a.hash-tag')) return;
     dispatchSlice(setPostId(postData._id));
     dispatchSlice(setPostData(postData));
     navigate(`/post/${postData._id}`); // 導到詳細頁
   };
 
   /** 刪除貼文 mutation */
-  const deleteMutation = useMutation(() => deletePost(postData._id, currentUserId!), {
+  const deleteMutation = useMutation(() => deletePost(postData._id), {
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status', 0)) === 2) {
-        swal
-          .fire({
-            title: '已刪除貼文',
-            icon: 'info',
-            confirmButtonText: '確認',
-          })
-          .then(() => {
-            window.location.reload();
-          });
+        // 失效所有貼文列表 cache，由 react-query 自動 refetch
+        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
+          queryClient.invalidateQueries({ queryKey: [key] })
+        );
+        swal.fire({
+          title: '已刪除貼文',
+          icon: 'info',
+          confirmButtonText: '確認',
+        });
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        handleApiError(res);
       }
     },
     onError: () => errorAlert(),
@@ -70,6 +79,7 @@ function PostItem(props: { postData: PostDataType }) {
   /** 刪除貼文 */
   const handleDelete = (e: any) => {
     e.stopPropagation();
+    if (guardVisitorAction()) return;
     if (iscurrentUser) {
       swal
         .fire({
@@ -160,7 +170,7 @@ function PostItem(props: { postData: PostDataType }) {
               className={`text-gray-600 dark:text-gray-300 ${
                 hiddenContent ? 'max-h-[300px] line-clamp-[3]' : ''
               }`}
-              dangerouslySetInnerHTML={{ __html: postData.content }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(postData.content) }}
             />
             {hiddenContent && (
               <button

@@ -3,8 +3,8 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useMutation } from 'react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { useMutation, useQueryClient } from 'react-query';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
@@ -14,30 +14,61 @@ import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-
 import { toggleLikePost } from 'api/post';
 import { setSignInPop } from 'redux/loginSlice';
 import { PostDataType } from 'types/postType';
-import { errorAlert } from 'utils/fetch';
-import { getCookies } from 'utils/common';
-import { checkLogin } from '../../utils/common';
+import { errorAlert, handleApiError } from 'utils/fetch';
+import { UserStateType } from 'redux/userSlice';
+import { checkLogin, guardVisitorAction } from '../../utils/common';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
 import { setPostData, setPostId, setShowEditModal } from '../../redux/postSlice';
 // --- components ---
 import PostInfoItem from './PostInfoItem';
 
+interface StateType {
+  user: UserStateType;
+}
+
 function PostInfoPanel(props: { postData: PostDataType }) {
   const { postData } = props;
   const dispatchSlice = useDispatch();
-  const userId = getCookies('uid');
-  const [post, setPost] = useState(postData);
+  const queryClient = useQueryClient();
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [showShareInfo, setShowShareInfo] = useState(false);
   const [showCopyHint, setShowCopyHint] = useState(false); // 顯示"已複製"提示標籤
-  const isLike = !isEmpty(post.likedByUsers.find((item) => item._id === userId)); // 顯示是否喜歡該貼文
-  const likeCount = post.likedByUsers.length; // 喜歡數
-  const commentCount = post.comments.length; // 留言數
+  // 直接由 props 推導，避免拷貝 prop 進 local state 導致外層 refetch 後資料不同步
+  const isLike = !isEmpty(postData.likedByUsers.find((item) => item._id === userId));
+  const likeCount = postData.likedByUsers.length; // 喜歡數
+  const commentCount = postData.comments.length; // 留言數
   const url = window.location.toString();
 
-  /** 喜歡/取消喜歡 mutation */
-  const likeMutation = useMutation((action: boolean) => toggleLikePost(post._id, userId!, action), {
+  /** 喜歡/取消喜歡 mutation
+   * 後端回傳 updateResult 後，同步更新 react-query 內所有含此貼文的 cache，由 props 自然帶下來
+   */
+  const likeMutation = useMutation((action: boolean) => toggleLikePost(postData._id, action), {
     onSuccess: (res) => {
-      setPost(res.updateResult);
+      if (handleApiError(res)) return;
+      if (!res?.updateResult) return;
+      const updated: PostDataType = res.updateResult;
+
+      // 1. PostDetail 單筆 cache
+      queryClient.setQueryData(['postDetail', updated._id], (old: any) =>
+        old ? { ...old, data: { ...old.data, ...updated } } : old
+      );
+
+      // 2. 各種 useInfiniteQuery 列表內的對應項
+      const listKeys = ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'];
+      listKeys.forEach((key) => {
+        queryClient.setQueriesData({ queryKey: [key] }, (old: any) => {
+          if (!old?.pages) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page: any) => ({
+              ...page,
+              posts: page.posts?.map((p: PostDataType) =>
+                p._id === updated._id ? { ...p, ...updated } : p
+              ),
+            })),
+          };
+        });
+      });
     },
     onError: () => errorAlert(),
   });
@@ -49,6 +80,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
       dispatchSlice(setSignInPop(true));
       return;
     }
+    if (guardVisitorAction()) return;
     likeMutation.mutate(!isLike);
   };
 
@@ -70,15 +102,16 @@ function PostInfoPanel(props: { postData: PostDataType }) {
 
   /** 分享至Line */
   const shareToLine = () => {
-    const shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=與你分享一則Blog貼文}`;
+    const shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=與你分享一則Blog貼文`;
     window.open(shareUrl, '_blank');
   };
 
   /** 處理編輯貼文按鈕 */
   const handleClickEdit = (e: any) => {
     e.stopPropagation();
-    dispatchSlice(setPostId(post._id));
-    dispatchSlice(setPostData(post));
+    if (guardVisitorAction()) return;
+    dispatchSlice(setPostId(postData._id));
+    dispatchSlice(setPostData(postData));
     dispatchSlice(setShowEditModal(true));
   };
 
@@ -123,7 +156,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           <PostInfoItem
             iconName={faShare}
             tipText="分享"
-            count={post.shareCount || undefined}
+            count={postData.shareCount || undefined}
             faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
             tipClass="w-12"
             handleClick={() => setShowShareInfo(!showShareInfo)}
@@ -188,14 +221,14 @@ function PostInfoPanel(props: { postData: PostDataType }) {
         {/* <PostInfoItem
           iconName={faBookmark}
           tipText="收藏"
-          count={post.collectionCount || undefined}
+          count={postData.collectionCount || undefined}
           faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
           tipClass="w-12"
           handleClick={() => {}}
         /> */}
 
         {/* 編輯 */}
-        {userId === post.author._id && (
+        {userId === postData.author._id && (
           <PostInfoItem
             iconName={faSquarePen} // 透過props傳遞icon名稱
             tipText="編輯"

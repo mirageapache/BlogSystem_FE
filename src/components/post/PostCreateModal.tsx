@@ -7,13 +7,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { get, isEmpty } from 'lodash';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
 // --- functions / types ---
-import { getCookies } from 'utils/common';
-import { errorAlert, handleStatus } from 'utils/fetch';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { guardVisitorAction } from 'utils/common';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
@@ -21,6 +21,7 @@ import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
+  const queryClient = useQueryClient();
   const [content, setContent] = useState(''); // 內容
   const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
   const [image, setImage] = useState(''); // 處理 image preview
@@ -58,31 +59,33 @@ function PostCreateModal() {
   };
 
   /** 新增貼文 mutation */
-  const createPostMutation = useMutation(
-    ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
-    {
-      onSuccess: (res) => {
-        if (handleStatus(get(res, 'status')) === 2) {
-          const swal = withReactContent(Swal);
-          swal
-            .fire({
-              title: '貼文已發佈',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then(() => {
-              handleClose();
-              window.location.reload();
-            });
-        } else if (handleStatus(get(res, 'status')) === 5) {
-          errorAlert(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          errorAlert(ERR_NETWORK_MSG);
-        }
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const createPostMutation = useMutation((formData: FormData) => createPost(formData), {
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status')) === 2) {
+        const swal = withReactContent(Swal);
+        // 失效所有貼文列表 cache，新貼文自動拉回
+        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
+          queryClient.invalidateQueries({ queryKey: [key] })
+        );
+        swal
+          .fire({
+            title: '貼文已發佈',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            handleClose();
+          });
+      } else if (handleStatus(get(res, 'status')) === 4) {
+        handleApiError(res);
+      } else if (handleStatus(get(res, 'status')) === 5) {
+        errorAlert(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        errorAlert(ERR_NETWORK_MSG);
+      }
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 發佈貼文 */
   const handleSubmit = async () => {
@@ -90,17 +93,16 @@ function PostCreateModal() {
     if (isEmpty(content) || content.length === 0) {
       return;
     }
-    const userId = getCookies('uid') as string;
+    if (guardVisitorAction()) return;
 
     const formData = new FormData();
-    formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
     formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
     if (imageFile) formData.set('imageFile', imageFile);
 
-    createPostMutation.mutate({ userId, formData });
+    createPostMutation.mutate(formData);
   };
 
   return (

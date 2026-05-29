@@ -14,7 +14,15 @@ import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 const basename = process.env.PUBLIC_URL;
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

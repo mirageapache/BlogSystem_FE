@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -19,10 +19,14 @@ import FormTextArea from 'components/form/FormTextArea';
 // --- api/types ---
 import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
-import { getCookies, scrollToTop } from '../../utils/common';
+import { guardVisitorAction, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
-import { errorAlert, handleStatus } from '../../utils/fetch';
-import { setUserData } from '../../redux/userSlice';
+import { errorAlert, handleApiError, handleStatus } from '../../utils/fetch';
+import { setUserData, UserStateType } from '../../redux/userSlice';
+
+interface StateType {
+  user: UserStateType;
+}
 
 function EditProfilePage() {
   const sliceDispatch = useDispatch();
@@ -45,20 +49,26 @@ function EditProfilePage() {
   const [emailPrompt, setEmailPrompt] = useState(false);
   const [mobilePrompt, setMobilePrompt] = useState(false);
 
-  const userId = getCookies('uid');
-  const authToken = localStorage.getItem('authToken');
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [updateLoading, setUpdateLoading] = useState(false);
 
-  if (isEmpty(userId) || isEmpty(authToken)) {
-    sliceDispatch(setSignInPop(true));
-    return <Spinner />;
-  }
+  // 未登入 → 彈出登入框（不在 render 期 dispatch，避免循環）
+  useEffect(() => {
+    if (isEmpty(userId)) sliceDispatch(setSignInPop(true));
+  }, [userId]);
 
-  const getUserData = useQuery('editProfile', () => getOwnProfile(userId!, authToken!), {
-    enabled: firstLoad,
+  const getUserData = useQuery('editProfile', () => getOwnProfile(), {
+    enabled: !!userId && firstLoad,
   });
   const { isLoading, data } = getUserData;
   const userData = get(data, 'data', {}) as UserProfileType;
+
+  // 後端回傳 Unauthorized → 同樣彈出登入
+  useEffect(() => {
+    if (get(data, 'response.data.message') === 'Unauthorized') {
+      sliceDispatch(setSignInPop(true));
+    }
+  }, [data]);
 
   // 設定表單初始資料
   useEffect(() => {
@@ -93,6 +103,7 @@ function EditProfilePage() {
 
   /** 送出編輯資料 */
   const submitEditProfile = async () => {
+    if (guardVisitorAction()) return;
     setUpdateLoading(true);
     // 資料驗證
     if (isEmpty(email)) {
@@ -128,10 +139,11 @@ function EditProfilePage() {
       formData.append('removeAvatar', removeAvatar.toString());
       formData.append('avatar', avatar);
       formData.append('avatarId', userData.avatarId);
-      formData.append('imageFile', avatarFile);
+      // 只有真的選了新檔案才 append；avatarFile 可能是 null（沒選過）或 ''（按了移除頭貼）
+      if (avatarFile instanceof File) formData.append('imageFile', avatarFile);
 
       try {
-        const result = await updateProfile(formData, userId!, authToken!);
+        const result = await updateProfile(formData);
         if (handleStatus(get(result, 'status', 0)) === 2) {
           swal
             .fire({
@@ -144,6 +156,8 @@ function EditProfilePage() {
               sliceDispatch(setUserData(result.data as UserProfileType));
               scrollToTop();
             });
+        } else if (handleStatus(get(result, 'status', 0)) === 4) {
+          handleApiError(result);
         } else {
           errorAlert(get(result, 'data.message', ''));
         }
@@ -154,11 +168,11 @@ function EditProfilePage() {
     setUpdateLoading(false);
   };
 
+  if (isEmpty(userId)) return <Spinner />;
   if (isLoading) return <Spinner />;
-  if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
   if (!isEmpty(userData)) {
-    const isVisitor = userData.email === process.env.REACT_APP_CUST_EMAIL;
+    const isVisitor = userData.userRole === -1;
     return (
       <div className="w-full sm:max-w-[600px] p-5">
         <form>

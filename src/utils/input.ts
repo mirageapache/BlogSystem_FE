@@ -13,7 +13,8 @@ export const handleHashTag = (inputContent: string) => {
     if (phase.includes('#')) {
       return phase.replace(regex, (match, p1) => {
         hashTags.push(match.substring(1));
-        return `<a class="hash-tag" href="/explore?tag=tag&search=${p1}" onclick="event.stopPropagation();">${match}</a>`;
+        // onclick 內聯 handler 會被 DOMPurify 預設規則剝除，由父層 PostItem 用 event delegation 判斷 a.hash-tag 點擊
+        return `<a class="hash-tag" href="/explore?tag=tag&search=${p1}">${match}</a>`;
       });
     }
     return phase;

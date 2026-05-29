@@ -33,7 +33,8 @@
       {
         "devDependencies": true,
         "optionalDependencies": true,
-        "peerDependencies": true
+        "peerDependencies": true,
+        "packageDir": "./"
       }
     ],
     "max-len": [

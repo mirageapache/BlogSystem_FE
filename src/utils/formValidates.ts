@@ -11,14 +11,15 @@ export const required = (value: string) => (value ? undefined : '該欄位必填
  * 最大值檢核
  */
 export const maxLength = (value: string, max: number, msg: string) => {
-  if (!isEmpty(value)) value.length > max ? msg : '';
+  if (isEmpty(value)) return '';
+  return value.length > max ? msg : '';
 };
 
 /**
  * 長度檢核
  */
 export const checkLength = (value: string, min: number, max: number) => {
-  if (isEmpty(value)) return undefined;
+  if (isEmpty(value)) return false;
   return value.length < min || value.length > max;
 };
 
@@ -59,7 +60,7 @@ export const passwordCheck = (value: string, allValues: unknown) => {
 /**
  * Email檢核
  */
-export const isEmail = (value: string) => {
+export const isEmail = (value: string, errorMessage?: string): string | undefined => {
   if (!value) return undefined;
-  return validator.isEmail(value);
+  return validator.isEmail(value) ? undefined : errorMessage || 'Email格式錯誤';
 };

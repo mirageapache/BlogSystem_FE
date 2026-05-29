@@ -31,11 +31,11 @@ import ArticleCreatePage from './pages/aritcle/ArticleCreatePage';
 // --- functions / types ---
 import { SysStateType } from './redux/sysSlice';
 import { LoginStateType } from './redux/loginSlice';
-import { getCookies } from './utils/common';
-import { getOwnProfile } from './api/user';
+import { getMe } from './api/auth';
 import { UserStateType, setUserData } from './redux/userSlice';
 import { UserProfileType } from './types/userType';
 import { handleStatus } from './utils/fetch';
+import { GUEST_USER_DATA } from './constants/StringConstants';
 
 /** stateType  */
 interface StateType {
@@ -52,29 +52,38 @@ function App() {
   const userData = get(userState, 'userData', {});
   const userId = get(userData, 'userId', '');
 
-  /** getUserData */
-  const getUserData = async (id: string, authToken: string) => {
-    const res = await getOwnProfile(id, authToken);
-    if (handleStatus(get(res, 'status', 0)) === 2) {
-      sliceDispatch(setUserData(res.data as UserProfileType));
-    } else if (handleStatus(get(res, 'status', 0)) === 4) {
-      // -JWT token expired-, token過期清除authok 資料
-      localStorage.removeItem('authToken');
-      window.location.reload();
-    }
-  };
-
-  /** 判斷是否有儲存authToken及uid */
+  /** 判斷是否已有使用者資料，若無則向後端確認
+   * 訪客 token 後端不會回傳完整 user data，前端用固定 GUEST_USER_DATA 顯示
+   * 用 ignore flag 避免快速登出/重登時舊回應覆蓋新 state
+   */
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken') || '';
-    const uid = getCookies('uid');
-    if (isEmpty(userData) && isEmpty(userId)) {
-      // 判斷redex中沒有userData，且有cookie及authToken再執行
-      if (!isEmpty(authToken) && !isEmpty(uid)) {
-        getUserData(uid!, authToken!);
+    if (!isEmpty(userData) || !isEmpty(userId)) return undefined;
+    if (!localStorage.getItem('hasSession')) return undefined;
+
+    let ignore = false;
+    (async () => {
+      const res = await getMe();
+      if (ignore) return;
+      if (handleStatus(get(res, 'status', 0)) === 2) {
+        const rawData = get(res, 'data');
+        // 後端登入回傳格式為 { userData: {...} }，與 SignIn 保持一致
+        // 若 rawData 直接是 user object（userId 在頂層），也支援
+        const user = get(rawData, 'userData') || rawData;
+        if (isEmpty(user) || isEmpty(get(user, 'userId'))) {
+          sliceDispatch(setUserData(GUEST_USER_DATA));
+        } else {
+          sliceDispatch(setUserData(user as UserProfileType));
+        }
+      } else {
+        // 4xx = 未登入或 token 失效，清掉 localStorage flag 避免下次重試
+        localStorage.removeItem('hasSession');
       }
-    }
-  }, [userId]);
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [userId, userData]);
 
   return (
     <div className={`font-sans ${sysState.darkMode}`}>

@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import {
   AtomicBlockUtils,
+  ContentState,
+  convertFromHTML,
   convertFromRaw,
   convertToRaw,
   Editor,
@@ -21,10 +23,11 @@ import withReactContent from 'sweetalert2-react-content';
 // --- api / functions / types ---
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
-import { errorAlert, handleStatus } from 'utils/fetch';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { guardVisitorAction } from 'utils/common';
 import { CommentDataType } from 'types/commentType';
 import { setSignInPop } from 'redux/loginSlice';
-import { getCookies } from 'utils/common';
+import { UserStateType } from '../../redux/userSlice';
 import { getArticleDetail, updateArticle } from '../../api/article';
 import { setEditMode, SysStateType } from '../../redux/sysSlice';
 // --- components ---
@@ -40,11 +43,12 @@ import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 interface StateType {
   system: SysStateType;
+  user: UserStateType;
 }
 
 function ArticleDetailPage() {
   const dispatch = useDispatch();
-  const userId = getCookies('uid'); // user id
+  const userId = useSelector((state: StateType) => state.user.userData?.userId); // user id
   const { id } = useParams(); // article id
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const editorRef = useRef(null);
@@ -56,9 +60,19 @@ function ArticleDetailPage() {
   useEffect(() => {
     // init article content
     if (articleData) {
-      const rawContent = JSON.parse(articleData.content);
-      const contentState = convertFromRaw(rawContent);
-      setEditorState(EditorState.createWithContent(contentState));
+      try {
+        const rawContent = JSON.parse(articleData.content);
+        const contentState = convertFromRaw(rawContent);
+        setEditorState(EditorState.createWithContent(contentState));
+      } catch {
+        // 內容為 HTML 格式（舊資料或其他編輯器產出），改用 convertFromHTML 解析
+        const blocksFromHTML = convertFromHTML(articleData.content);
+        const contentState = ContentState.createFromBlockArray(
+          blocksFromHTML.contentBlocks,
+          blocksFromHTML.entityMap
+        );
+        setEditorState(EditorState.createWithContent(contentState));
+      }
       setTitle(articleData.title);
     }
   }, [articleData]);
@@ -80,13 +94,15 @@ function ArticleDetailPage() {
   /** 回覆貼文 mutation */
   const { mutate: CommentMutation, isLoading: commentLoading } = useMutation(
     ({ articleId, content }: { articleId: string; content: string }) =>
-      createComment(articleId, userId!, content, 'article'),
+      createComment(articleId, content, 'article'),
     {
       onSuccess: (res) => {
         if (res.status === 200) {
           commentInput.current!.innerText = '';
           setCommentContent('');
           refetch();
+        } else if (handleStatus(get(res, 'status', 0)) === 4) {
+          handleApiError(res);
         }
       },
       onError: () => errorAlert(),
@@ -102,6 +118,7 @@ function ArticleDetailPage() {
       dispatch(setSignInPop(true));
       return;
     }
+    if (guardVisitorAction()) return;
 
     CommentMutation({ articleId: id!, content: commentContent });
   };
@@ -156,7 +173,7 @@ function ArticleDetailPage() {
 
   /** 編輯文章 mutation */
   const editArticleMutation = useMutation(
-    ({ content }: { content: string }) => updateArticle(articleData!._id, userId!, title, content),
+    ({ content }: { content: string }) => updateArticle(articleData!._id, title, content),
     {
       onSuccess: (res) => {
         if (handleStatus(get(res, 'status')) === 2) {
@@ -171,6 +188,8 @@ function ArticleDetailPage() {
               refetch();
               if (result.isConfirmed) dispatch(setEditMode(false));
             });
+        } else if (handleStatus(get(res, 'status')) === 4) {
+          handleApiError(res);
         } else if (handleStatus(get(res, 'status')) === 5) {
           errorAlert(get(res, 'data.message'));
         } else if (get(res, 'code') === 'ERR_NETWORK') {
@@ -183,6 +202,7 @@ function ArticleDetailPage() {
 
   /** 修改文章 */
   const handleSubmit = () => {
+    if (guardVisitorAction()) return;
     const contentState = editorState.getCurrentContent();
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);

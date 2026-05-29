@@ -15,8 +15,8 @@ import EditorToolBar from 'components/common/EditorToolBar';
 import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
 // --- functions / types ---
 import { createArticle } from 'api/article';
-import { errorAlert, handleStatus } from 'utils/fetch';
-import { checkCancelEdit, getCookies } from 'utils/common';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { checkCancelEdit, guardVisitorAction } from 'utils/common';
 import { customStyleMap } from 'constants/CustomStyleMap';
 import '../../styles/editor.scss';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
@@ -80,7 +80,7 @@ function ArticleCreatePage() {
 
   /** 新增文章 mutation */
   const { mutate: createArticleMutate, isLoading } = useMutation(
-    ({ userId, content }) => createArticle(userId, title, content),
+    ({ content }) => createArticle(title, content),
     {
       onSuccess: (res) => {
         if (handleStatus(get(res, 'status')) === 2) {
@@ -94,6 +94,8 @@ function ArticleCreatePage() {
             .then((result) => {
               if (result.isConfirmed) navigate('/');
             });
+        } else if (handleStatus(get(res, 'status')) === 4) {
+          handleApiError(res);
         } else if (handleStatus(get(res, 'status')) === 5) {
           errorAlert(get(res, 'data.message'));
         } else if (get(res, 'code') === 'ERR_NETWORK') {
@@ -108,10 +110,10 @@ function ArticleCreatePage() {
 
   /** 發佈文章 */
   const handleSubmit = () => {
+    if (guardVisitorAction()) return;
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
-    const userId = getCookies('uid');
-    createArticleMutate({ userId, content: contentString });
+    createArticleMutate({ content: contentString });
   };
 
   return (

@@ -4,23 +4,22 @@ import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { get, isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCookies } from 'react-cookie';
-
 // --- functions / types ---
-import { scrollToTop } from 'utils/common';
+import { checkVisitor, guardVisitorAction, scrollToTop } from 'utils/common';
 import { SysStateType, setActivePage } from '../../redux/sysSlice';
+import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 
 interface StateType {
   system: SysStateType;
+  user: UserStateType;
 }
 
 function BottomMenu() {
   const sliceDispatch = useDispatch();
   const systemState = useSelector((state: StateType) => state.system);
-  const [cookies] = useCookies(['uid']);
-  const userId = cookies.uid; // 設定userId，判斷有沒有登入
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const activePage = get(systemState, 'activePage');
 
   return (
@@ -57,7 +56,7 @@ function BottomMenu() {
         />
       </Link>
 
-      {isEmpty(localStorage.getItem('authToken')) || isEmpty(userId) ? (
+      {isEmpty(userId) ? (
         // 未登入狀態 => 登入功能
         <button
           aria-label="user"
@@ -75,17 +74,22 @@ function BottomMenu() {
       ) : (
         // 已登入狀態 => 顯示建立(文章、貼文)&個人頁面
         <>
-          <button
-            aria-label="user"
-            type="button"
-            className="w-1/3 flex justify-center py-3 cursor-pointer"
-            onClick={() => sliceDispatch(setShowCreateModal(true))}
-          >
-            <FontAwesomeIcon
-              icon={icon({ name: 'square-plus', style: 'solid' })}
-              className="w-5 h-5 text-gray-500"
-            />
-          </button>
+          {!checkVisitor() && (
+            <button
+              aria-label="user"
+              type="button"
+              className="w-1/3 flex justify-center py-3 cursor-pointer"
+              onClick={() => {
+                if (guardVisitorAction()) return;
+                sliceDispatch(setShowCreateModal(true));
+              }}
+            >
+              <FontAwesomeIcon
+                icon={icon({ name: 'square-plus', style: 'solid' })}
+                className="w-5 h-5 text-gray-500"
+              />
+            </button>
+          )}
           <Link
             to={`/user/profile/${userId}`}
             className="w-1/3 flex justify-center py-3 cursor-pointer"

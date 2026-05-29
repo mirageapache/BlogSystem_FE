@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/no-danger */
 import { useEffect, useState } from 'react';
+import DOMPurify from 'dompurify';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 // --- components / functions ---
@@ -9,7 +9,7 @@ import UserInfoPanel from 'components/user/UserInfoPanel';
 import { formatDateTime } from 'utils/dateTime';
 import { ArticleDataType } from 'types/articleType';
 import { HINT_LABEL } from 'constants/LayoutConstants';
-import { convertFromRaw, EditorState } from 'draft-js';
+import { ContentState, convertFromHTML, convertFromRaw, EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 
 /** Article Tags 元件 */
@@ -37,8 +37,18 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
 
   useEffect(() => {
     if (articleData) {
-      const rawContent = JSON.parse(articleData.content);
-      setEditorState(EditorState.createWithContent(convertFromRaw(rawContent)));
+      try {
+        const rawContent = JSON.parse(articleData.content);
+        setEditorState(EditorState.createWithContent(convertFromRaw(rawContent)));
+      } catch {
+        // 內容為 HTML 格式（舊資料或其他編輯器產出），改用 convertFromHTML 解析
+        const blocksFromHTML = convertFromHTML(articleData.content);
+        const htmlContentState = ContentState.createFromBlockArray(
+          blocksFromHTML.contentBlocks,
+          blocksFromHTML.entityMap
+        );
+        setEditorState(EditorState.createWithContent(htmlContentState));
+      }
     }
   }, [articleData]);
 
@@ -79,7 +89,7 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
         </h2>
         <div
           className="max-h-[150px] text-gray-600 dark:text-gray-300 line-clamp-5"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent) }}
         />
       </div>
     </div>

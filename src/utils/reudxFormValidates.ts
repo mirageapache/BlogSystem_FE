@@ -12,14 +12,16 @@ export const required = (errorMessage: string) => (value: string) =>
  * 最大值檢核
  */
 export const maxLength = (max: number, msg: string) => (value: string) => {
-  if (!isEmpty(value)) value.length > max ? msg : '';
+  if (isEmpty(value)) return undefined;
+  return value.length > max ? msg : undefined;
 };
 
 /**
  * 長度檢核
  */
 export const checkLength = (min: number, max: number, msg: string) => (value: string) => {
-  if (!isEmpty(value)) value.length < min || value.length > max ? msg : '';
+  if (isEmpty(value)) return undefined;
+  return value.length < min || value.length > max ? msg : undefined;
 };
 
 /**

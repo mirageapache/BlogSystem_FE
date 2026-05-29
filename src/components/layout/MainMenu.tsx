@@ -15,7 +15,7 @@ import UserLoading from 'components/user/UserLoading';
 import { SysStateType, setActivePage, setDarkMode, setEditMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { checkLogin, deleteCookie, scrollToTop } from '../../utils/common';
+import { checkLogin, checkVisitor, guardVisitorAction, scrollToTop } from '../../utils/common';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -42,7 +42,7 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
   const sliceDispatch = useDispatch();
 
   return (
-    <li>
+    <li className="menu-item">
       {text === '建立貼文' ? (
         <button
           type="button"
@@ -51,6 +51,7 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
           }`}
           onClick={() => {
             handleClick(); // 關閉選單
+            if (guardVisitorAction()) return;
             sliceDispatch(setShowCreateModal(true));
           }}
         >
@@ -99,13 +100,14 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
 
   /** 登出 */
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    deleteCookie('uid');
+    localStorage.removeItem('hasSession'); // 清除登入提示 flag
     swal
       .fire({
         title: '已成功登出',
         icon: 'info',
         confirmButtonText: '確認',
+        timer: 2000,
+        timerProgressBar: true,
       })
       .then(() => {
         closeMenu();
@@ -116,7 +118,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   };
 
   return (
-    <nav className="fixed">
+    <nav id="main-menu" className="fixed">
       <button
         type="button"
         className={`w-full h-full top-0 left-0 text-transparent ${
@@ -155,7 +157,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                 }}
               >
                 <UserInfoPanel
-                  userId={userData._id}
+                  userId={userData.userId}
                   account={userData.account}
                   name={userData.name}
                   avatarUrl={userData.avatar}
@@ -196,7 +198,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
               >
                 <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
               </MenuItem>
-              {checkLogin() && (
+              {checkLogin() && !checkVisitor() && (
                 <>
                   {/* <MenuItem
                     href="/inbox"
