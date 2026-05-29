@@ -27,20 +27,3 @@ export async function getSearchCount(searchString?: string): Promise<ResultType>
     });
   return result;
 }
-
-/** 上傳圖片至cloudinary */
-export async function uploadImage(imageFile: any) {
-  const formData = new FormData();
-  formData.append('file', imageFile);
-
-  const result = await axios
-    .post(`${API_URL}/utility/upload`, formData)
-    .then((response) => {
-      return response.data.secure_url; // 獲取上傳後的圖片 URL
-    })
-    .catch((err) => {
-      return err;
-    });
-
-  return result;
-}

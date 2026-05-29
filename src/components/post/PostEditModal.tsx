@@ -153,7 +153,8 @@ function PostEditModal() {
     formData.set('imageId', postData.imageId);
     formData.set('removeImage', removeImage.toString());
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    formData.set('imageFile', imageFile);
+    // 只有真的選了新檔案才 append；避免 null 被序列化為字串 "null"
+    if (imageFile instanceof File) formData.set('imageFile', imageFile);
 
     editPostMutation.mutate(formData);
   };

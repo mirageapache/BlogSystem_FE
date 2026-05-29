@@ -181,11 +181,13 @@
 
 ### 1.1 Node 升級
 - **現況推測：** Node 16/18（CRA 5 + react-scripts 時代）
-- **目標：** Node **20 LTS**（2026 年標準；Node 22 為 current）
+- **目標：** Node **24 LTS**（2026-05 時 Node 24 為 Active LTS、Node 26 為 current；Node 20 已 EOL、Node 22 進入 maintenance）
+- **過渡期注意：** react-scripts 5 在 Node 24 下啟動會出現 unsupported engine 警告（不影響運作）。因 Phase 1 後段就會拔 CRA 換 Vite，警告期間很短可接受；Vite 5/6 + React 19 + react-query v5 對 Node 24 是正式支援。
 - **動作：**
-  - 新增 `.nvmrc` 與 `package.json` engines 欄位：`"engines": { "node": ">=20.0.0" }`
+  - 新增 `.nvmrc`（內容：`24`）
+  - `package.json` engines 欄位設 `"engines": { "node": ">=24.0.0 <25.0.0" }`（鎖在 LTS 偶數版區間，避免有人在奇數版 Node 25 上安裝）
   - 開發團隊各自 `nvm use`
-  - CI runner 設 `node-version: 20`
+  - CI runner 設 `node-version: 24`（GitHub Actions `actions/setup-node@v4`）
 
 ### 1.2 React 升級
 - **現況：** React 18.2

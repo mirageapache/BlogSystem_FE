@@ -100,7 +100,7 @@ function PostCreateModal() {
     formData.set('status', '1');
     formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    if (imageFile) formData.set('imageFile', imageFile);
+    if (imageFile instanceof File) formData.set('imageFile', imageFile);
 
     createPostMutation.mutate(formData);
   };
