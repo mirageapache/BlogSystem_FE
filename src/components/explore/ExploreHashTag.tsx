@@ -14,17 +14,13 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 function ExploreHashTag() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
-  let nextPage = -1; // 下一頁指標，如果為「-1」表示最後一頁了
 
   // 使用 useInfiniteQuery 取得貼文
-  const { data, fetchNextPage, isLoading } = useInfiniteQuery(
+  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
     ['exploreHashTag', searchString],
     ({ pageParam = 1 }) => getSearchHashTag(searchString, pageParam),
     {
-      getNextPageParam: (lastPage) => {
-        nextPage = lastPage.nextPage;
-        return nextPage > 0 ? nextPage : undefined;
-      },
+      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
       // 當 searchString 改變時，重置頁面
       keepPreviousData: false,
     }
@@ -43,19 +39,18 @@ function ExploreHashTag() {
       : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
   /** 滾動判斷fetch新資料 */
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 350
-    ) {
-      if (nextPage > 0) fetchNextPage();
-    }
-  };
-
   useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 350
+      ) {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [nextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (get(data, 'pages[0].code', undefined) === 'NO_SEARCH_STRING')
     return (
@@ -70,7 +65,7 @@ function ExploreHashTag() {
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">
-      <PostListDynamic postListData={postList} isLoading={isLoading} atBottom={nextPage < 0} />
+      <PostListDynamic postListData={postList} isLoading={isLoading} atBottom={!hasNextPage} />
     </div>
   );
 }

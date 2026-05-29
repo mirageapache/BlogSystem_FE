@@ -39,13 +39,14 @@ function ExplorePage() {
     dispatch(setExploreTag(tabValue));
   };
   const { tag } = useParams();
-  let exploreTag = '';
-  if (!isEmpty(tag) && tag !== '') {
-    exploreTag = tag!;
-    handleTabActive(tag!);
-  } else {
-    exploreTag = useSelector((state: stateType) => state.system.exploreTag); // 紀錄作用中的頁籤
-  }
+  // Hook 必須無條件呼叫；tag 存在時優先用 URL 上的值，否則用 redux store 內紀錄
+  const exploreTagFromStore = useSelector((state: stateType) => state.system.exploreTag);
+  const exploreTag = !isEmpty(tag) ? tag! : exploreTagFromStore;
+
+  // URL 上的 tag 改變時同步到 redux（不可在 render 期直接 dispatch）
+  useEffect(() => {
+    if (!isEmpty(tag)) dispatch(setExploreTag(tag!));
+  }, [tag]);
 
   const { data } = useQuery(['search', searchString], () => getSearchCount(searchString));
   const article = get(data, 'article', 0);

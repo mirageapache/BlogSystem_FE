@@ -14,20 +14,16 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 function ExploreArticle() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
-  let nextPage = -1; // 下一頁指標，如果為「-1」表示最後一頁了
 
   // 使用 useInfiniteQuery 取得文章
-  const { data, fetchNextPage, isLoading } = useInfiniteQuery(
+  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
     ['exploreArticle', searchString],
     ({ pageParam = 1 }) =>
       isEmpty(searchString)
         ? getPartialArticles(pageParam)
         : getSearchArticle(searchString, '', pageParam),
     {
-      getNextPageParam: (lastPage) => {
-        nextPage = lastPage.nextPage;
-        return nextPage > 0 ? nextPage : undefined;
-      },
+      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
       keepPreviousData: false,
     }
   );
@@ -43,19 +39,18 @@ function ExploreArticle() {
       : data!.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[]);
 
   /** 滾動判斷fetch新資料 */
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 350
-    ) {
-      if (nextPage > 0) fetchNextPage();
-    }
-  };
-
   useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 350
+      ) {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [nextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (!isLoading && articleList.length === 0 && !isEmpty(data))
     return <NoSearchResult msgOne="搜尋不到相關文章" msgTwo="" type="article" />;
@@ -68,7 +63,7 @@ function ExploreArticle() {
       <ArticleListDynamic
         articleListData={articleList}
         isLoading={isLoading}
-        atBottom={nextPage < 0}
+        atBottom={!hasNextPage}
       />
     </div>
   );

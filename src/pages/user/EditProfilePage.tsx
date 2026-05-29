@@ -52,16 +52,23 @@ function EditProfilePage() {
   const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [updateLoading, setUpdateLoading] = useState(false);
 
-  if (isEmpty(userId)) {
-    sliceDispatch(setSignInPop(true));
-    return <Spinner />;
-  }
+  // 未登入 → 彈出登入框（不在 render 期 dispatch，避免循環）
+  useEffect(() => {
+    if (isEmpty(userId)) sliceDispatch(setSignInPop(true));
+  }, [userId]);
 
   const getUserData = useQuery('editProfile', () => getOwnProfile(), {
-    enabled: firstLoad,
+    enabled: !!userId && firstLoad,
   });
   const { isLoading, data } = getUserData;
   const userData = get(data, 'data', {}) as UserProfileType;
+
+  // 後端回傳 Unauthorized → 同樣彈出登入
+  useEffect(() => {
+    if (get(data, 'response.data.message') === 'Unauthorized') {
+      sliceDispatch(setSignInPop(true));
+    }
+  }, [data]);
 
   // 設定表單初始資料
   useEffect(() => {
@@ -160,8 +167,8 @@ function EditProfilePage() {
     setUpdateLoading(false);
   };
 
+  if (isEmpty(userId)) return <Spinner />;
   if (isLoading) return <Spinner />;
-  if (get(data, 'response.data.message') === 'Unauthorized') sliceDispatch(setSignInPop(true));
 
   if (!isEmpty(userData)) {
     const isVisitor = userData.userRole === -1;

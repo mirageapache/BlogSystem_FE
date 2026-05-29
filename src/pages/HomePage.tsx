@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { get, isEmpty } from 'lodash';
-import { useQuery } from 'react-query';
+import { useInfiniteQuery } from 'react-query';
 // --- components ---
 import PostListDynamic from 'components/post/PostListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 // --- api / type ---
-import { PostDataType, PostResultType } from 'types/postType';
+import { PostDataType } from 'types/postType';
 import { getPartialPosts } from 'api/post';
 import { useDispatch } from 'react-redux';
 import { setActivePage } from 'redux/sysSlice';
@@ -13,14 +13,15 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function HomePage() {
   const dispatch = useDispatch();
-  const [page, setPage] = useState(1); // (動態載入)目前呈現的post資料取得的index(頁碼)
-  const [postList, setPostList] = useState<PostDataType[]>([]); // 儲存post資料
 
-  /** 取得文章 */
-  const postListData = useQuery('homepagePost', () => getPartialPosts(page)) as PostResultType;
-  const { isLoading, data, refetch } = postListData;
-  const posts = get(data, 'posts', []) as PostDataType[]; // 貼文資料
-  const nextPage = get(data, 'nextPage', 1); // 下一頁指標，如果為「-1」表示最後一頁了
+  /** 取得文章（無限滾動） */
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
+    ['homepagePost'],
+    ({ pageParam = 1 }) => getPartialPosts(pageParam),
+    {
+      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
+    }
+  );
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置
@@ -28,35 +29,31 @@ function HomePage() {
     dispatch(setActivePage('home'));
   }, []);
 
-  useEffect(() => {
-    if (!isEmpty(posts)) {
-      setPostList((prevData) => [...prevData, ...posts]);
-      setPage(nextPage);
-    }
-  }, [nextPage]);
+  const postList =
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+      ? []
+      : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
 
-  /** 滾動判斷fetch新資料 */
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 100
-    ) {
-      if (page > 0) refetch();
-    }
-  };
-
-  /** 監聽頁面滾動 */
+  /** 監聽頁面滾動，到底就 fetchNextPage（由 react-query 自己管 page 狀態，避免 stale closure） */
   useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 100
+      ) {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (!isEmpty(data) && data.code === 'ERR_NETWORK')
+  if (get(data, 'pages[0].code', undefined) === 'ERR_NETWORK')
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
     <div className="w-full max-w-[600px] p-1 sm:p-0">
-      <PostListDynamic postListData={postList} isLoading={isLoading} atBottom={page < 0} />
+      <PostListDynamic postListData={postList} isLoading={isLoading} atBottom={!hasNextPage} />
     </div>
   );
 }
