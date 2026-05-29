@@ -7,7 +7,7 @@ import DOMPurify from 'dompurify';
 import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
@@ -35,6 +35,7 @@ function PostItem(props: { postData: PostDataType }) {
   const { postData } = props;
   const dispatchSlice = useDispatch();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const currentUserId = useSelector((state: StateType) => state.user.userData?.userId);
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
@@ -47,8 +48,9 @@ function PostItem(props: { postData: PostDataType }) {
   const iscurrentUser = !isEmpty(currentUserId) && postData.author._id === currentUserId;
   const path = window.location.pathname;
 
-  /** 點選貼文 */
-  const handleClickPost = () => {
+  /** 點選貼文（若點到內文的 hashtag 連結則讓 <a> 自己處理，不導去詳細頁） */
+  const handleClickPost = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest('a.hash-tag')) return;
     dispatchSlice(setPostId(postData._id));
     dispatchSlice(setPostData(postData));
     navigate(`/post/${postData._id}`); // 導到詳細頁
@@ -58,15 +60,15 @@ function PostItem(props: { postData: PostDataType }) {
   const deleteMutation = useMutation(() => deletePost(postData._id), {
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status', 0)) === 2) {
-        swal
-          .fire({
-            title: '已刪除貼文',
-            icon: 'info',
-            confirmButtonText: '確認',
-          })
-          .then(() => {
-            window.location.reload();
-          });
+        // 失效所有貼文列表 cache，由 react-query 自動 refetch
+        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
+          queryClient.invalidateQueries({ queryKey: [key] })
+        );
+        swal.fire({
+          title: '已刪除貼文',
+          icon: 'info',
+          confirmButtonText: '確認',
+        });
       } else if (handleStatus(get(res, 'status', 0)) === 4) {
         handleApiError(res);
       }

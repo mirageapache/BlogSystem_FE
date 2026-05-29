@@ -139,7 +139,8 @@ function EditProfilePage() {
       formData.append('removeAvatar', removeAvatar.toString());
       formData.append('avatar', avatar);
       formData.append('avatarId', userData.avatarId);
-      formData.append('imageFile', avatarFile);
+      // 只有真的選了新檔案才 append；avatarFile 可能是 null（沒選過）或 ''（按了移除頭貼）
+      if (avatarFile instanceof File) formData.append('imageFile', avatarFile);
 
       try {
         const result = await updateProfile(formData);

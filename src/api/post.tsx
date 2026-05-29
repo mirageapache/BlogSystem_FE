@@ -35,20 +35,15 @@ export async function getAllPosts(): Promise<PostApiType> {
 /** (動態)取得貼文資料
  * @param page 要取得的資料頁碼
  */
-export async function getPartialPosts(page: number): Promise<PostPageListType> {
-  let result = null;
-  if (page > 0) {
-    result = await axios
-      .post(`${baseUrl}/post/partial`, { page, limit })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((error) => {
-        if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
-        return error.response;
-      });
-  }
-  return result;
+export async function getPartialPosts(page: number): Promise<PostPageListType | null> {
+  if (page <= 0) return null;
+  return axios
+    .post(`${baseUrl}/post/partial`, { page, limit })
+    .then((res) => res.data)
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
 }
 
 /** 取得搜尋貼文 or 特定使用者的貼文 */
@@ -56,20 +51,15 @@ export async function getSearchPost(
   searchString?: string,
   authorId?: string,
   page?: number
-): Promise<PostPageListType> {
-  let result = null;
-  if (page && page > 0) {
-    result = await axios
-      .post(`${baseUrl}/post/search`, { searchString, authorId, page, limit })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((error) => {
-        if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
-        return error.response;
-      });
-  }
-  return result;
+): Promise<PostPageListType | null> {
+  if (!page || page <= 0) return null;
+  return axios
+    .post(`${baseUrl}/post/search`, { searchString, authorId, page, limit })
+    .then((res) => res.data)
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
 }
 
 /** 取得特定貼文內容 */

@@ -19,7 +19,8 @@ function HomePage() {
     ['homepagePost'],
     ({ pageParam = 1 }) => getPartialPosts(pageParam),
     {
-      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
+      getNextPageParam: (lastPage) =>
+        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
     }
   );
 
@@ -32,7 +33,10 @@ function HomePage() {
   const postList =
     isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.posts] : acc),
+          [] as PostDataType[]
+        );
 
   /** 監聽頁面滾動，到底就 fetchNextPage（由 react-query 自己管 page 狀態，避免 stale closure） */
   useEffect(() => {

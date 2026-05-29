@@ -12,17 +12,14 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ProfileArticle(props: { userId: string; identify: boolean }) {
   const { userId, identify } = props;
-  let nextPage = -1; // 下一頁指標，如果為「-1」表示最後一頁了
 
   // 使用 useInfiniteQuery 取得貼文
-  const { data, fetchNextPage, isLoading } = useInfiniteQuery(
+  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
     ['profileArticle', userId],
     ({ pageParam = 1 }) => getSearchArticle('', userId, pageParam),
     {
-      getNextPageParam: (lastPage) => {
-        nextPage = lastPage.nextPage;
-        return nextPage > 0 ? nextPage : undefined;
-      },
+      getNextPageParam: (lastPage) =>
+        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
       keepPreviousData: false,
     }
   );
@@ -35,22 +32,24 @@ function ProfileArticle(props: { userId: string; identify: boolean }) {
   const articleList =
     isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.articles] : acc),
+          [] as ArticleDataType[]
+        );
 
   /** 滾動判斷fetch新資料 */
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 350
-    ) {
-      if (nextPage > 0) fetchNextPage();
-    }
-  };
-
   useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 350
+      ) {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [nextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (!isLoading && articleList.length === 0 && !isEmpty(data)) {
     if (identify)
@@ -72,7 +71,7 @@ function ProfileArticle(props: { userId: string; identify: boolean }) {
       <ArticleListDynamic
         articleListData={articleList}
         isLoading={isLoading}
-        atBottom={nextPage < 0}
+        atBottom={!hasNextPage}
       />
     </div>
   );

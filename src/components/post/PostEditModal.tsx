@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { get, isEmpty } from 'lodash';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 // --- api ---
 import { updatePost } from 'api/post';
 // --- functions / types ---
@@ -30,6 +30,7 @@ interface stateType {
 
 function PostEditModal() {
   const dispatchSlice = useDispatch();
+  const queryClient = useQueryClient();
   const postState = useSelector((state: stateType) => state.post);
   const userId = useSelector((state: stateType) => state.user.userData?.userId) as string;
   const [firstLoad, setFirstLoad] = useState(true);
@@ -103,6 +104,10 @@ function PostEditModal() {
   const editPostMutation = useMutation((formData: FormData) => updatePost(formData), {
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status')) === 2) {
+        // 失效所有貼文 cache（含 detail 與列表），讓 react-query 自動取回最新內容
+        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost', 'postDetail'].forEach(
+          (key) => queryClient.invalidateQueries({ queryKey: [key] })
+        );
         swal
           .fire({
             title: '貼文已修改',
@@ -111,7 +116,6 @@ function PostEditModal() {
           })
           .then(() => {
             handleClose(false);
-            window.location.reload();
           });
       } else if (handleStatus(get(res, 'status')) === 4) {
         handleApiError(res);

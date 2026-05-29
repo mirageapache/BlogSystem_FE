@@ -35,20 +35,15 @@ export async function getArticles(): Promise<ArticleApiType> {
 /** (動態)取得文章資料
  * @param page 要取得的資料頁碼
  */
-export async function getPartialArticles(page: number): Promise<ArticlePageListType> {
-  let result = null;
-  if (page > 0) {
-    result = await axios
-      .post(`${baseUrl}/article/partial`, { page, limit })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((error) => {
-        if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
-        return error.response;
-      });
-  }
-  return result;
+export async function getPartialArticles(page: number): Promise<ArticlePageListType | null> {
+  if (page <= 0) return null;
+  return axios
+    .post(`${baseUrl}/article/partial`, { page, limit })
+    .then((res) => res.data)
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
 }
 
 /** 取得特定文章內容 */
@@ -69,20 +64,15 @@ export async function getSearchArticle(
   searchString?: string,
   authorId?: string,
   page?: number
-): Promise<ArticlePageListType> {
-  let result = null;
-  if (page && page > 0) {
-    result = await axios
-      .post(`${baseUrl}/article/search`, { searchString, authorId, page, limit })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((error) => {
-        if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
-        return error.response;
-      });
-  }
-  return result;
+): Promise<ArticlePageListType | null> {
+  if (!page || page <= 0) return null;
+  return axios
+    .post(`${baseUrl}/article/search`, { searchString, authorId, page, limit })
+    .then((res) => res.data)
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
 }
 
 /** 新增文章 */

@@ -23,7 +23,8 @@ function ExploreArticle() {
         ? getPartialArticles(pageParam)
         : getSearchArticle(searchString, '', pageParam),
     {
-      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
+      getNextPageParam: (lastPage) =>
+        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
       keepPreviousData: false,
     }
   );
@@ -36,7 +37,10 @@ function ExploreArticle() {
   const articleList =
     isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.articles], [] as ArticleDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.articles] : acc),
+          [] as ArticleDataType[]
+        );
 
   /** 滾動判斷fetch新資料 */
   useEffect(() => {

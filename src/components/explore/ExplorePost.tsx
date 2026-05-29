@@ -23,7 +23,8 @@ function ExplorePost() {
         ? getPartialPosts(pageParam)
         : getSearchPost(searchString, '', pageParam),
     {
-      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
+      getNextPageParam: (lastPage) =>
+        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
       // 當 searchString 改變時，重置頁面
       keepPreviousData: false,
     }
@@ -37,7 +38,10 @@ function ExplorePost() {
   const postList =
     isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.posts] : acc),
+          [] as PostDataType[]
+        );
 
   /** 滾動判斷fetch新資料 */
   useEffect(() => {

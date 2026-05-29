@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { get, isEmpty } from 'lodash';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
@@ -21,6 +21,7 @@ import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
+  const queryClient = useQueryClient();
   const [content, setContent] = useState(''); // 內容
   const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
   const [image, setImage] = useState(''); // 處理 image preview
@@ -62,6 +63,10 @@ function PostCreateModal() {
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status')) === 2) {
         const swal = withReactContent(Swal);
+        // 失效所有貼文列表 cache，新貼文自動拉回
+        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
+          queryClient.invalidateQueries({ queryKey: [key] })
+        );
         swal
           .fire({
             title: '貼文已發佈',
@@ -70,7 +75,6 @@ function PostCreateModal() {
           })
           .then(() => {
             handleClose();
-            window.location.reload();
           });
       } else if (handleStatus(get(res, 'status')) === 4) {
         handleApiError(res);
