@@ -12,19 +12,17 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ProfileFollowed(props: { userId: string; identify: boolean }) {
   const { userId, identify } = props;
-  let nextPage = -1;
 
-  const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
-    ['followed', userId],
-    ({ pageParam = 1 }) => getFollowerList(userId, pageParam),
-    {
-      getNextPageParam: (lastPage) => {
-        nextPage = lastPage.nextPage;
-        return nextPage > 0 ? nextPage : undefined;
-      },
-      keepPreviousData: false,
-    }
-  );
+  const { data, fetchNextPage, isLoading, refetch, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery(
+      ['followed', userId],
+      ({ pageParam = 1 }) => getFollowerList(userId, pageParam),
+      {
+        getNextPageParam: (lastPage) =>
+          lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
+        keepPreviousData: false,
+      }
+    );
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置
@@ -34,22 +32,24 @@ function ProfileFollowed(props: { userId: string; identify: boolean }) {
   const followList =
     isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.followList] : acc),
+          [] as UserDataType[]
+        );
 
-  /** 滾動判斷fetch新資料 */
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 350
-    ) {
-      if (nextPage > 0) fetchNextPage();
-    }
-  };
-
+  /** 滾動判斷fetch新資料（交給 react-query 的 hasNextPage / isFetchingNextPage，避免 stale closure） */
   useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 350
+      ) {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [nextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (!isLoading && followList.length === 0 && !isEmpty(data)) {
     if (identify)
@@ -65,7 +65,7 @@ function ProfileFollowed(props: { userId: string; identify: boolean }) {
       <UserListDynamic
         userListData={followList}
         isLoading={isLoading}
-        atBottom={nextPage < 0}
+        atBottom={!hasNextPage}
         refetch={refetch}
         type="followed"
       />

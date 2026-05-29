@@ -168,10 +168,10 @@
 ---
 
 ### Phase 0 完成驗收標準
-- [ ] `npm test` 全綠
-- [ ] `npm start` 開發環境無 React warning（包含 Hooks 規則、deps 警告）
-- [ ] 手動 smoke test：首頁滾動載入、Explore 搜尋切換、新增/刪除貼文、編輯個人資料
-- [ ] git commit message：`fix: 修正 P0/P1/P2 程式面缺陷（pre-upgrade hardening）`
+- [x] `npm test` 全綠
+- [x] `npm start` 開發環境無 React warning（包含 Hooks 規則、deps 警告）
+- [x] 手動 smoke test：首頁滾動載入、Explore 搜尋切換、新增/刪除貼文、編輯個人資料
+- [x] git commit message：`fix: 修正 P0/P1/P2 程式面缺陷（pre-upgrade hardening）`
 
 ---
 

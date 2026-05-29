@@ -12,7 +12,7 @@ interface getFollowListType extends AxResponseType {
 
 /** 動態取得追蹤資料 型別 */
 interface FollowPageListType extends AxResponseType {
-  followList: any;
+  followList: UserDataType[];
   nextPage: number;
   data: UserDataType[];
 }
