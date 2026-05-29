@@ -78,7 +78,7 @@ function SignInPopup() {
         const res = await GuestSignIn();
         if (handleStatus(get(res, 'status', 0)) === 2) {
           localStorage.setItem('hasSession', '1');
-          sliceDispatch(setUserData(GUEST_USER_DATA as any));
+          sliceDispatch(setUserData(GUEST_USER_DATA));
           swal
             .fire({
               title: '已以訪客身份登入',

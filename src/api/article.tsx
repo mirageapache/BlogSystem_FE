@@ -13,7 +13,7 @@ interface ArticleApiType extends AxResponseType {
 
 /** 動態取得文章資料 型別 */
 interface ArticlePageListType extends AxResponseType {
-  articles: any;
+  articles: ArticleDataType[];
   nextPage: number;
   data: ArticleDataType[];
 }

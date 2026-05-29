@@ -60,7 +60,7 @@ export const passwordCheck = (value: string, allValues: unknown) => {
 /**
  * Email檢核
  */
-export const isEmail = (value: string) => {
+export const isEmail = (value: string, errorMessage?: string): string | undefined => {
   if (!value) return undefined;
-  return validator.isEmail(value);
+  return validator.isEmail(value) ? undefined : errorMessage || 'Email格式錯誤';
 };

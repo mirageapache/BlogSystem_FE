@@ -13,7 +13,7 @@ interface PostApiType extends AxResponseType {
 
 /** 動態取得貼文資料 型別 */
 interface PostPageListType extends AxResponseType {
-  posts: any;
+  posts: PostDataType[];
   nextPage: number;
   data: PostDataType[];
 }

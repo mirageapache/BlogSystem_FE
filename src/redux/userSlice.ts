@@ -4,12 +4,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserProfileType } from 'types/userType';
 
 export interface UserStateType {
-  userData: UserProfileType | undefined;
+  userData: UserProfileType | null;
 }
 
 /** user state 預設值 */
-const initState = {
-  userData: undefined,
+const initState: UserStateType = {
+  userData: null,
 };
 
 /** User Slice Function */

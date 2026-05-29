@@ -12,7 +12,7 @@ interface GetUserProfileType extends AxResponseType {
 
 /** 動態取得使用者資料 型別 */
 interface UserPageListType extends AxResponseType {
-  userList: any;
+  userList: UserDataType[];
   nextPage: number;
   data: UserDataType[];
 }

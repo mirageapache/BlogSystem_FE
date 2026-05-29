@@ -1,10 +1,12 @@
+import { UserProfileType } from 'types/userType';
+
 export const ERR_NETWORK_MSG = '與伺服器連線異常，請稍候再試！';
 
 /** 訪客身份識別 id（後端不會回傳 user data，前端用此值在 redux 顯示固定訪客資訊） */
 export const GUEST_USER_ID = 'guest';
 
 /** 訪客固定資料 — 在訪客登入時填入 redux userData，讓 UI 有資料可顯示 */
-export const GUEST_USER_DATA = {
+export const GUEST_USER_DATA: UserProfileType = {
   _id: GUEST_USER_ID,
   userId: GUEST_USER_ID,
   email: '',

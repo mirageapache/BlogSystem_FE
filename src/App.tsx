@@ -70,7 +70,7 @@ function App() {
         // 若 rawData 直接是 user object（userId 在頂層），也支援
         const user = get(rawData, 'userData') || rawData;
         if (isEmpty(user) || isEmpty(get(user, 'userId'))) {
-          sliceDispatch(setUserData(GUEST_USER_DATA as any));
+          sliceDispatch(setUserData(GUEST_USER_DATA));
         } else {
           sliceDispatch(setUserData(user as UserProfileType));
         }
