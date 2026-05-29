@@ -18,20 +18,6 @@ interface PostPageListType extends AxResponseType {
   data: PostDataType[];
 }
 
-/** 取得所有貼文 */
-export async function getAllPosts(): Promise<PostApiType> {
-  const result = await axios
-    .get(`${baseUrl}/post/all`)
-    .then((res) => {
-      const postData = res.data;
-      return postData;
-    })
-    .catch((error) => {
-      return error;
-    });
-  return result;
-}
-
 /** (動態)取得貼文資料
  * @param page 要取得的資料頁碼
  */

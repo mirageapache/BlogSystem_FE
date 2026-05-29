@@ -14,6 +14,8 @@ export const API_ERROR_CODE = {
   INVALID: 'INVALID',
   UPLOAD_ERR: 'UPLOAD_ERR',
   SYSTEM_ERR: 'SYSTEM_ERR',
+  UN_AUTH: 'UN_AUTH',
+  RATE_LIMIT: 'RATE_LIMIT',
 } as const;
 
 /** 錯誤提醒(一般型式) */
@@ -42,6 +44,18 @@ export const handleApiError = (res: any): boolean => {
   const status = get(res, 'status');
   const code = get(res, 'data.code');
   const message = get(res, 'data.message');
+
+  // token 失效：UI（清狀態 + 彈登入）已由 api/index.tsx 的 axios interceptor 全域處理，
+  // 此處僅回報「已處理」讓 caller 停止後續流程，避免重複跳提示。
+  if (status === 401 && code === API_ERROR_CODE.UN_AUTH) {
+    return true;
+  }
+
+  // 請求過於頻繁（限速）
+  if (status === 429 || code === API_ERROR_CODE.RATE_LIMIT) {
+    errorAlert(message || '操作過於頻繁，請稍後再試');
+    return true;
+  }
 
   if (status === 403 && code === API_ERROR_CODE.GUEST_FORBIDDEN) {
     swal

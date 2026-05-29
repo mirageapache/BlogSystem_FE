@@ -145,12 +145,11 @@ function PostEditModal() {
     }
 
     // 建立FormData
+    // 後端不再採信 body 的 image / imageId；圖片變更只認 imageFile（換圖）或 removeImage（移除）
     const formData = new FormData();
     formData.set('postId', postId);
     formData.set('content', content);
     formData.set('status', '1');
-    formData.set('image', image);
-    formData.set('imageId', postData.imageId);
     formData.set('removeImage', removeImage.toString());
     formData.set('hashTags', JSON.stringify(hashTagArr));
     // 只有真的選了新檔案才 append；避免 null 被序列化為字串 "null"
