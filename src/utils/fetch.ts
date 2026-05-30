@@ -12,6 +12,7 @@ export const API_ERROR_CODE = {
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
   INVALID: 'INVALID',
+  INVALID_PARAM: 'INVALID_PARAM',
   UPLOAD_ERR: 'UPLOAD_ERR',
   SYSTEM_ERR: 'SYSTEM_ERR',
   UN_AUTH: 'UN_AUTH',
@@ -81,7 +82,10 @@ export const handleApiError = (res: any): boolean => {
     return true;
   }
 
-  if (status === 400 && code === API_ERROR_CODE.INVALID) {
+  if (
+    status === 400 &&
+    (code === API_ERROR_CODE.INVALID || code === API_ERROR_CODE.INVALID_PARAM)
+  ) {
     errorAlert(message || '參數有誤，請重新確認');
     return true;
   }

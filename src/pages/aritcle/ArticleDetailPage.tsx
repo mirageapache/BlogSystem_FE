@@ -203,6 +203,11 @@ function ArticleDetailPage() {
   /** 修改文章 */
   const handleSubmit = () => {
     if (guardVisitorAction()) return;
+    // title 為後端必填欄位，空白會撞 500，前端先擋並給提示
+    if (isEmpty(title.trim())) {
+      errorAlert('請輸入文章標題');
+      return;
+    }
     const contentState = editorState.getCurrentContent();
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
@@ -257,7 +262,7 @@ function ArticleDetailPage() {
             <ArticleInfoPanel
               articleData={articleData}
               commentInput={commentInput}
-              title={articleData.title}
+              title={title}
               hasContent // 待修改
               handleSubmit={handleSubmit}
             />

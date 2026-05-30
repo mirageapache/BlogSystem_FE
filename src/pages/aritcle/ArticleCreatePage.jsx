@@ -111,6 +111,11 @@ function ArticleCreatePage() {
   /** 發佈文章 */
   const handleSubmit = () => {
     if (guardVisitorAction()) return;
+    // title 為後端必填欄位，空白會撞 500，前端先擋並給提示
+    if (isEmpty(title.trim())) {
+      errorAlert('請輸入文章標題');
+      return;
+    }
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
     createArticleMutate({ content: contentString });

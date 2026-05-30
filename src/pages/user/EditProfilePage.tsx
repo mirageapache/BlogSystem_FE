@@ -133,7 +133,8 @@ function EditProfilePage() {
       formData.append('name', name);
       formData.append('account', account);
       formData.append('bio', bio);
-      formData.append('language', language);
+      // 後端只接受 'zh' / 'en'，正規化舊資料（如 'zh-TW' / 'en-US'）避免撞 400 INVALID_PARAM
+      formData.append('language', language.startsWith('en') ? 'en' : 'zh');
       formData.append('emailPrompt', emailPrompt.toString());
       formData.append('mobilePrompt', mobilePrompt.toString());
       formData.append('removeAvatar', removeAvatar.toString());
