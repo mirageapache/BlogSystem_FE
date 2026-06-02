@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { get, isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -54,7 +54,8 @@ function ArticleInfoPanel({
   const navigate = useNavigate();
 
   /** 喜歡/取消喜歡 mutation */
-  const likeMutation = useMutation((action: boolean) => toggleLikeArticle(article._id, action), {
+  const likeMutation = useMutation({
+    mutationFn: (action: boolean) => toggleLikeArticle(article._id, action),
     onSuccess: (res) => {
       if (handleApiError(res)) return;
       if (res?.updateResult) setArticle(res.updateResult);
@@ -81,7 +82,8 @@ function ArticleInfoPanel({
   };
 
   /** 刪除文章 mutation */
-  const deleteMutation = useMutation(() => deleteArticle(articleData._id), {
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteArticle(articleData._id),
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status', 0)) === 2) {
         swal

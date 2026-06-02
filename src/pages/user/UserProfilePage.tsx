@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { get, isEmpty } from 'lodash';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -44,14 +44,17 @@ function UserProfilePage() {
   if (currentUserId === userId) {
     // own [current user]
     identify = true;
-    fetchProfile = useQuery(['getOwnProfile', userId], () => getOwnProfile(), {
+    fetchProfile = useQuery({
+      queryKey: ['getOwnProfile', userId],
+      queryFn: () => getOwnProfile(),
       enabled: isEmpty(userStateData) || userStateData!._id === '',
     }) as UserResultType;
   } else {
     // others [其他user]
-    fetchProfile = useQuery(['getUserProfile', userId], () =>
-      getUserProfile(userId!)
-    ) as UserResultType;
+    fetchProfile = useQuery({
+      queryKey: ['getUserProfile', userId],
+      queryFn: () => getUserProfile(userId!),
+    }) as UserResultType;
     dispatch(setActivePage('explore')); // 不是currentUser 頁籤改為 explore
   }
 

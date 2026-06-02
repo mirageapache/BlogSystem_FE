@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { get, isEmpty } from 'lodash';
 // --- components ---
 import ArticleListDynamic from 'components/article/ArticleListDynamic';
@@ -14,15 +14,13 @@ function ProfileArticle(props: { userId: string; identify: boolean }) {
   const { userId, identify } = props;
 
   // 使用 useInfiniteQuery 取得貼文
-  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    ['profileArticle', userId],
-    ({ pageParam = 1 }) => getSearchArticle('', userId, pageParam),
-    {
-      getNextPageParam: (lastPage) =>
-        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
-      keepPreviousData: false,
-    }
-  );
+  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['profileArticle', userId],
+    queryFn: ({ pageParam }) => getSearchArticle('', userId, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
+  });
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置

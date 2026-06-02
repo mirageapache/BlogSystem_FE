@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { get, isEmpty } from 'lodash';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
@@ -59,7 +59,8 @@ function PostCreateModal() {
   };
 
   /** 新增貼文 mutation */
-  const createPostMutation = useMutation((formData: FormData) => createPost(formData), {
+  const createPostMutation = useMutation({
+    mutationFn: (formData: FormData) => createPost(formData),
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status')) === 2) {
         const swal = withReactContent(Swal);
@@ -180,7 +181,7 @@ function PostCreateModal() {
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
                 onClick={handleSubmit}
               >
-                {createPostMutation.isLoading ? (
+                {createPostMutation.isPending ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>發佈</>

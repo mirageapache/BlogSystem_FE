@@ -4,7 +4,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -48,7 +48,8 @@ function PostInfoPanel(props: { postData: PostDataType }) {
   /** 喜歡/取消喜歡 mutation
    * 後端回傳 updateResult 後，同步更新 react-query 內所有含此貼文的 cache，由 props 自然帶下來
    */
-  const likeMutation = useMutation((action: boolean) => toggleLikePost(postData._id, action), {
+  const likeMutation = useMutation({
+    mutationFn: (action: boolean) => toggleLikePost(postData._id, action),
     onSuccess: (res) => {
       if (handleApiError(res)) return;
       if (!res?.updateResult) return;

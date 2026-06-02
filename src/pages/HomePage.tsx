@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { get, isEmpty } from 'lodash';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 // --- components ---
 import PostListDynamic from 'components/post/PostListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
@@ -15,14 +15,13 @@ function HomePage() {
   const dispatch = useDispatch();
 
   /** 取得文章（無限滾動） */
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    ['homepagePost'],
-    ({ pageParam = 1 }) => getPartialPosts(pageParam),
-    {
-      getNextPageParam: (lastPage) =>
-        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
-    }
-  );
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['homepagePost'],
+    queryFn: ({ pageParam }) => getPartialPosts(pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
+  });
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置

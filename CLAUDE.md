@@ -28,7 +28,7 @@ Required env vars (see `.env.example`): `VITE_API_URL`. The deploy base path is 
 ## Architecture
 
 ### Entry & providers
-`src/index.tsx` wraps `<App/>` in this provider order (outer → inner): `QueryClientProvider` (react-query) → redux `Provider` → `CookiesProvider` → `BrowserRouter` (basename = `import.meta.env.BASE_URL`). All four are load-bearing; tests in `src/test/` use `redux-mock-store` and you must mirror this wrapping when adding new tests. (`CookiesProvider`/`react-cookie` is slated for removal in Phase 2 — JWT is HttpOnly so the frontend never reads cookies.)
+`src/index.tsx` wraps `<App/>` in this provider order (outer → inner): `QueryClientProvider` (`@tanstack/react-query` v5) → redux `Provider` → `CookiesProvider` → `BrowserRouter` (basename = `import.meta.env.BASE_URL`). All four are load-bearing; tests in `src/test/` use `redux-mock-store` and you must mirror this wrapping when adding new tests. (`CookiesProvider`/`react-cookie` is slated for removal in Phase 2 — JWT is HttpOnly so the frontend never reads cookies.)
 
 ### Routing & layout
 `src/App.tsx` is the single `<Routes>` table. Every page renders inside a fixed three-column layout: `SideBar` (desktop left rail), the routed page (center), and `BottomMenu` (mobile bottom nav). Layout class strings are centralized in `src/constants/LayoutConstants.ts` — reuse `SIDEBAR_FRAME` / `SIDEBAR_CONTAINER_FRAME` / `BOTTOM_MENU_FRAME` rather than re-deriving Tailwind classes.
@@ -38,7 +38,7 @@ Global modals (`ModalSection`, `SignInPopup`, `SignUpPopup`, `FindPassword`) are
 ### State: Redux Toolkit + react-query coexist
 Two independent state systems, used for different things:
 - **Redux** (`src/redux/`, store in `configStore.ts`) holds cross-cutting UI/session state: `system` (dark mode, active page, explore tag, edit mode), `login` (popup visibility), `user` (current user profile), `post`. (`redux-form` was removed in Phase 1.2 — it was dead code; the misspelled `src/utils/reudxFormValidates.ts` is now unused and scheduled for deletion in Phase 2. Do not import from it.)
-- **react-query** handles server data fetching/caching for lists and details.
+- **react-query** (`@tanstack/react-query` v5, migrated off `react-query` v3 in Phase 1.4) handles server data fetching/caching for lists and details. All hooks use the v5 object signature: `useQuery({ queryKey, queryFn, ...options })`, `useMutation({ mutationFn, onSuccess, onError })`, `useInfiniteQuery({ queryKey, queryFn, initialPageParam, getNextPageParam })`. `queryKey` must be an array; `useInfiniteQuery` requires an explicit `initialPageParam` (this project uses `1`) and its `queryFn` reads `{ pageParam }`. On mutations, the loading flag is `isPending` (v3's `isLoading`); queries still expose `isLoading` (= first load).
 
 Auth flow lives in `App.tsx`: on mount, if redux has no `userData` and `localStorage.hasSession` is set, call `getMe()`. The backend issues JWT as an HttpOnly cookie and resolves the user from it server-side; `axios.defaults.withCredentials = true` (see `src/api/index.tsx`) so every request carries the cookie. The frontend never reads the JWT or user id from the browser — derive the current user from redux `state.user.userData`.
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { get, isEmpty } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
 // --- components ---
@@ -16,14 +16,12 @@ function ExploreUser() {
   const searchString = searchParams.get('search') || '';
 
   const { data, fetchNextPage, isLoading, refetch, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery(
-      ['exploreUser', searchString],
-      ({ pageParam = 1 }) => getSearchUserList(pageParam, searchString),
-      {
-        getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
-        keepPreviousData: false,
-      }
-    );
+    useInfiniteQuery({
+      queryKey: ['exploreUser', searchString],
+      queryFn: ({ pageParam }) => getSearchUserList(pageParam, searchString),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
+    });
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置

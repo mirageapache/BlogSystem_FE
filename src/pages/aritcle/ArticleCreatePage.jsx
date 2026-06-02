@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { get, isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 // --- components ---
@@ -79,34 +79,32 @@ function ArticleCreatePage() {
   };
 
   /** 新增文章 mutation */
-  const { mutate: createArticleMutate, isLoading } = useMutation(
-    ({ content }) => createArticle(title, content),
-    {
-      onSuccess: (res) => {
-        if (handleStatus(get(res, 'status')) === 2) {
-          const swal = withReactContent(Swal);
-          swal
-            .fire({
-              title: '文章已發佈',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then((result) => {
-              if (result.isConfirmed) navigate('/');
-            });
-        } else if (handleStatus(get(res, 'status')) === 4) {
-          handleApiError(res);
-        } else if (handleStatus(get(res, 'status')) === 5) {
-          errorAlert(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          errorAlert(ERR_NETWORK_MSG);
-        }
-      },
-      onError: () => {
-        errorAlert();
-      },
-    }
-  );
+  const { mutate: createArticleMutate, isPending: isLoading } = useMutation({
+    mutationFn: ({ content }) => createArticle(title, content),
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status')) === 2) {
+        const swal = withReactContent(Swal);
+        swal
+          .fire({
+            title: '文章已發佈',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then((result) => {
+            if (result.isConfirmed) navigate('/');
+          });
+      } else if (handleStatus(get(res, 'status')) === 4) {
+        handleApiError(res);
+      } else if (handleStatus(get(res, 'status')) === 5) {
+        errorAlert(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        errorAlert(ERR_NETWORK_MSG);
+      }
+    },
+    onError: () => {
+      errorAlert();
+    },
+  });
 
   /** 發佈文章 */
   const handleSubmit = () => {

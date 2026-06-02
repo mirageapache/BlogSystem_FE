@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { get, isEmpty } from 'lodash';
 // --- components
 import UserListDynamic from 'components/user/UserListDynamic';
@@ -14,15 +14,13 @@ function ProfileFollowing(props: { userId: string; identify: boolean }) {
   const { userId, identify } = props;
 
   const { data, fetchNextPage, isLoading, refetch, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery(
-      ['following', userId],
-      ({ pageParam = 1 }) => getFollowingList(userId, pageParam),
-      {
-        getNextPageParam: (lastPage) =>
-          lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
-        keepPreviousData: false,
-      }
-    );
+    useInfiniteQuery({
+      queryKey: ['following', userId],
+      queryFn: ({ pageParam }) => getFollowingList(userId, pageParam),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
+    });
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置

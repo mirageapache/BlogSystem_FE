@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { UserDataType } from 'types/userType';
@@ -25,7 +25,8 @@ function FollowBtn({ user, refetch }: PropType) {
   };
 
   /** 追蹤 mutation */
-  const followMutation = useMutation(({ targetId }: { targetId: string }) => followUser(targetId), {
+  const followMutation = useMutation({
+    mutationFn: ({ targetId }: { targetId: string }) => followUser(targetId),
     onSuccess: (res) => {
       if (res.status === 200) refetch();
       else if (handleStatus(get(res, 'status', 0)) === 4) handleApiError(res);
@@ -34,37 +35,33 @@ function FollowBtn({ user, refetch }: PropType) {
   });
 
   /** 取消追蹤 mutation */
-  const unfollowMutation = useMutation(
-    ({ targetId }: { targetId: string }) => unfollowUser(targetId),
-    {
-      onSuccess: (res) => {
-        if (res.status === 200) {
-          toggleDropdown('');
-          refetch();
-        } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          handleApiError(res);
-        }
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const unfollowMutation = useMutation({
+    mutationFn: ({ targetId }: { targetId: string }) => unfollowUser(targetId),
+    onSuccess: (res) => {
+      if (res.status === 200) {
+        toggleDropdown('');
+        refetch();
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        handleApiError(res);
+      }
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 更改訂閱狀態 */
-  const changeState = useMutation(
-    ({ targetId, state }: { targetId: string; state: number }) =>
+  const changeState = useMutation({
+    mutationFn: ({ targetId, state }: { targetId: string; state: number }) =>
       changeFollowState(targetId, state),
-    {
-      onSuccess: (res) => {
-        if (res.status === 200) {
-          toggleDropdown('');
-          refetch();
-        } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          handleApiError(res);
-        }
-      },
-      onError: () => errorAlert(),
-    }
-  );
+    onSuccess: (res) => {
+      if (res.status === 200) {
+        toggleDropdown('');
+        refetch();
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        handleApiError(res);
+      }
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 追蹤(含訪客守衛) */
   const handleFollow = () => {

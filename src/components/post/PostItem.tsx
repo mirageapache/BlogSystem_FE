@@ -7,7 +7,7 @@ import DOMPurify from 'dompurify';
 import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
@@ -57,7 +57,8 @@ function PostItem(props: { postData: PostDataType }) {
   };
 
   /** 刪除貼文 mutation */
-  const deleteMutation = useMutation(() => deletePost(postData._id), {
+  const deleteMutation = useMutation({
+    mutationFn: () => deletePost(postData._id),
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status', 0)) === 2) {
         // 失效所有貼文列表 cache，由 react-query 自動 refetch

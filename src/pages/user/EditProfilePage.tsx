@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
@@ -57,7 +57,9 @@ function EditProfilePage() {
     if (isEmpty(userId)) sliceDispatch(setSignInPop(true));
   }, [userId]);
 
-  const getUserData = useQuery('editProfile', () => getOwnProfile(), {
+  const getUserData = useQuery({
+    queryKey: ['editProfile'],
+    queryFn: () => getOwnProfile(),
     enabled: !!userId && firstLoad,
   });
   const { isLoading, data } = getUserData;

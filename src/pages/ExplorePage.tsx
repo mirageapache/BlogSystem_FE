@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { faSearch, faTag, faUsers, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -56,7 +56,10 @@ function ExplorePage() {
     if (!isEmpty(tag)) dispatch(setExploreTag(tag!));
   }, [tag]);
 
-  const { data } = useQuery(['search', searchString], () => getSearchCount(searchString));
+  const { data } = useQuery({
+    queryKey: ['search', searchString],
+    queryFn: () => getSearchCount(searchString),
+  });
   const article = get(data, 'article', 0);
   const post = get(data, 'post', 0);
   let user = get(data, 'user', 0);
