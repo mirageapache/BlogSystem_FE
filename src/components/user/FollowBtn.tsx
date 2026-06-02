@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useMutation } from 'react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { UserDataType } from 'types/userType';
 import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
 import { get } from 'lodash';
@@ -93,7 +93,7 @@ function FollowBtn({ user, refetch }: PropType) {
           onClick={() => toggleDropdown(user._id)}
         >
           追蹤中
-          <FontAwesomeIcon icon={icon({ name: 'caret-down', style: 'solid' })} className="ml-1" />
+          <FontAwesomeIcon icon={faCaretDown} className="ml-1" />
         </button>
       ) : (
         <button

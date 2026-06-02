@@ -7,8 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from 'react-query';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { faHeart as faHeartSolid, faSquarePen, faShare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faLink,
+  faHeart as faHeartSolid,
+  faSquarePen,
+  faShare,
+} from '@fortawesome/free-solid-svg-icons';
+import { faLine } from '@fortawesome/free-brands-svg-icons';
+
 import { faHeart as faHeartRegular, faComment } from '@fortawesome/free-regular-svg-icons';
 // --- functions / types ---
 import { toggleLikePost } from 'api/post';
@@ -174,10 +180,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                     className="flex items-center gap-2 w-full p-1"
                     onClick={copyLink}
                   >
-                    <FontAwesomeIcon
-                      icon={icon({ name: 'link', style: 'solid' })}
-                      className="w-6 h-6 text-orange-500"
-                    />
+                    <FontAwesomeIcon icon={faLink} className="w-6 h-6 text-orange-500" />
                     <p>複製連結</p>
                   </button>
                   <span
@@ -193,7 +196,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                     onClick={shareToFB}
                   >
                     <FontAwesomeIcon
-                      icon={icon({ name: 'facebook', style: 'brands' })}
+                      icon={faFacebook}
                       className="w-6 h-6 text-blue-600"
                     />
                     <p>分享至FaceBook</p>
@@ -205,10 +208,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                     className="flex items-center gap-2 w-full p-1"
                     onClick={shareToLine}
                   >
-                    <FontAwesomeIcon
-                      icon={icon({ name: 'line', style: 'brands' })}
-                      className="w-6 h-6 text-green-600"
-                    />
+                    <FontAwesomeIcon icon={faLine} className="w-6 h-6 text-green-600" />
                     <p>分享至Line</p>
                   </button>
                 </li>

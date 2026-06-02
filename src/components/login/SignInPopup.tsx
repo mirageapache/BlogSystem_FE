@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { get, isEmpty } from 'lodash';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -151,7 +151,7 @@ function SignInPopup() {
             onClick={handleClose}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="w-5 h-5 m-1 text-gray-700 dark:text-gray-400"
             />
           </button>
@@ -199,10 +199,7 @@ function SignInPopup() {
                 onClick={() => submitSignIn()}
               >
                 {isLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>登入</>
                 )}
@@ -213,10 +210,7 @@ function SignInPopup() {
                 onClick={() => submitSignIn('visitor')}
               >
                 {isVisitorLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>以訪客身份登入</>
                 )}

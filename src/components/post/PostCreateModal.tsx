@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useRef, useState } from 'react';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleXmark, faImage, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
@@ -118,7 +118,7 @@ function PostCreateModal() {
             onClick={handleClose}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="h-6 w-6 m-1 text-gray-500 hover:text-red-500"
             />
           </button>
@@ -148,7 +148,7 @@ function PostCreateModal() {
                 >
                   <FontAwesomeIcon
                     className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
-                    icon={icon({ name: 'circle-xmark', style: 'solid' })}
+                    icon={faCircleXmark}
                   />
                 </button>
               </div>
@@ -161,7 +161,7 @@ function PostCreateModal() {
           <div>
             <label htmlFor="postImage">
               <FontAwesomeIcon
-                icon={icon({ name: 'image', style: 'solid' })}
+                icon={faImage}
                 className="h-6 w-6 m-1 cursor-pointer text-gray-500 hover:text-orange-500"
               />
             </label>
@@ -181,10 +181,7 @@ function PostCreateModal() {
                 onClick={handleSubmit}
               >
                 {createPostMutation.isLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>發佈</>
                 )}

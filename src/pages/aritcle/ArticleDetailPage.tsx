@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import {
   AtomicBlockUtils,
   ContentState,
@@ -242,10 +242,7 @@ function ArticleDetailPage() {
               else window.history.back();
             }}
           >
-            <FontAwesomeIcon
-              icon={icon({ name: 'circle-left', style: 'solid' })}
-              className="w-7 h-7"
-            />
+            <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
           </button>
           <div className="flex justify-between items-center w-full xl:border-b-[1px] dark:border-gray-700">
             {/* 作者資訊 */}
@@ -333,10 +330,7 @@ function ArticleDetailPage() {
                 onClick={submitComment}
               >
                 {commentLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 m-1.5"
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
                 ) : (
                   '回覆'
                 )}

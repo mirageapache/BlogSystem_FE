@@ -4,7 +4,7 @@
 import React, { useRef, useState } from 'react';
 import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { get, isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-query';
@@ -135,10 +135,7 @@ function ArticleCreatePage() {
               if (isClose) window.history.back();
             }}
           >
-            <FontAwesomeIcon
-              icon={icon({ name: 'circle-left', style: 'solid' })}
-              className="w-7 h-7"
-            />
+            <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
           </button>
         </div>
         <p className="text-2xl font-bold">建立文章</p>
@@ -150,10 +147,7 @@ function ArticleCreatePage() {
               onClick={handleSubmit}
             >
               {isLoading ? (
-                <FontAwesomeIcon
-                  icon={icon({ name: 'spinner', style: 'solid' })}
-                  className="animate-spin h-5 w-5 m-1.5"
-                />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
               ) : (
                 <p className="text-[14px] sm:text-[16px]">發佈</p>
               )}

@@ -13,7 +13,8 @@ import './index.css';
 // import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-const basename = process.env.PUBLIC_URL;
+// Vite 以 import.meta.env.BASE_URL 提供部署 base path（對應 vite.config 的 base，預設 '/'）
+const basename = import.meta.env.BASE_URL;
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

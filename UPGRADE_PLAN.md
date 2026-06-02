@@ -198,6 +198,9 @@
   - `useFormStatus` / `useActionState` / `use()` 等新 API 可在 Phase 2 表單重寫時利用
   - 注意：`redux-form` **完全不相容 React 19**，因此 redux-form 汰換**必須先於或同時於** React 19 升級
 
+> **執行狀態（2026-06-02）：** 1.1 Node 24 ✅、1.2 React 19 ✅、1.3 Vite ✅ 已完成；1.4 react-query v5 尚未開始。
+> 1.3 重要決策：FontAwesome `import.macro` 在 Vite（plugin-react v6 已無 Babel、改用 oxc）下無法運作，已用 codemod 將 22 檔/69 處 `icon({...})` 轉為直接 `import faXxx`，並移除 babel-plugin-macros。測試框架暫留 jest（`.babelrc` 仍由 babel-jest 使用），Vitest 遷移延到 Phase 3。`PUBLIC_URL` 不再是 env 變數，改由 Vite `base` 提供（`import.meta.env.BASE_URL`）。
+
 ### 1.3 Vite 導入（取代 CRA / react-scripts）
 - **動機：** CRA 已停止維護（Meta 2023 公告），dev server 慢、HMR 不穩；Vite 5/6 開發體驗壓倒性勝出。
 - **遷移要點：**
@@ -223,10 +226,11 @@
 - 跟 Vite 一起做最划算（diff 同質性高）。
 
 ### Phase 1 驗收
-- [ ] `npm run dev` 啟動秒開（< 1 秒），HMR 反應 < 100ms
-- [ ] `npm run build` 產出 bundle，與 CRA 版比較 size（預期 -20% 起）
-- [ ] React 19 + Vite 並未引入新的 console warning
-- [ ] 環境變數重新命名後線上部署可運作
+- [x] `npm run dev` 啟動秒開（實測 ~150ms ready）
+- [x] `npm run build` 產出 bundle（dist/，538 modules、~1.5s）；移除誤打包的 macro 機制後 bundle 由 1,577KB→1,166KB（gzip 447→358KB）
+- [x] React 19 + Vite 並未引入新的 console warning（build / dev / tsc / eslint 皆 0 error）
+- [ ] 環境變數重新命名後**線上部署**可運作（dev 已驗證 `VITE_API_URL`/`BASE_URL` 正確注入；正式 GitHub Pages 部署待實測）
+- [ ] 1.4 react-query v5 升級（尚未開始）
 
 ---
 

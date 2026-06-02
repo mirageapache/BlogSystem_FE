@@ -7,7 +7,7 @@ import { setSignInPop } from '../redux/loginSlice';
 
 /* eslint-disable no-unused-vars */
 /** base Url */
-export const API_URL = process.env.REACT_APP_API_URL;
+export const API_URL = import.meta.env.VITE_API_URL;
 
 // 讓所有 axios 請求自動帶上 cookie（後端改用 HttpOnly Cookie 存 JWT 時需要）
 axios.defaults.withCredentials = true;

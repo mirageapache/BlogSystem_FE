@@ -1,6 +1,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faHome, faPenNib, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faCompass, faUser } from '@fortawesome/free-regular-svg-icons';
 import { get, isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -51,7 +52,7 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
           onMouseLeave={() => setShowTip(false)}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+            <FontAwesomeIcon icon={faPenToSquare} />
           </div>
           <span className="ml-3 font-bold hidden lg:block">建立貼文</span>
         </button>
@@ -106,7 +107,7 @@ function SideBar() {
           activeItem={activePage === '' || activePage === 'home'}
           changeItem={() => sliceDispatch(setActivePage('home'))}
         >
-          <FontAwesomeIcon icon={icon({ name: 'home' })} />
+          <FontAwesomeIcon icon={faHome} />
         </SideBarItem>
         <SideBarItem
           href="/explore"
@@ -115,7 +116,7 @@ function SideBar() {
           activeItem={activePage === 'explore'}
           changeItem={() => sliceDispatch(setActivePage('explore'))}
         >
-          <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
+          <FontAwesomeIcon icon={faCompass} />
         </SideBarItem>
         {checkLogin() && !checkVisitor() && (
           <>
@@ -126,7 +127,7 @@ function SideBar() {
               activeItem={activePage === 'inbox'}
               changeItem={() => sliceDispatch(setActivePage('inbox'))}
             >
-              <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
+              <FontAwesomeIcon icon={faInbox} />
             </SideBarItem>
             <SideBarItem
               href="/activity"
@@ -135,7 +136,7 @@ function SideBar() {
               activeItem={activePage === 'activity'}
               changeItem={() => sliceDispatch(setActivePage('activity'))}
             >
-              <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
+              <FontAwesomeIcon icon={faBell} />
             </SideBarItem> */}
             <SideBarItem
               href={checkLogin() ? `/user/profile/${userId}` : ''}
@@ -150,7 +151,7 @@ function SideBar() {
                 }
               }}
             >
-              <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
+              <FontAwesomeIcon icon={faUser} />
             </SideBarItem>
             <SideBarItem
               href="/article/create"
@@ -162,10 +163,10 @@ function SideBar() {
                 sliceDispatch(setEditMode(true));
               }}
             >
-              <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
+              <FontAwesomeIcon icon={faPenNib} />
             </SideBarItem>
             <SideBarItem href="" text="建立貼文" count={0} activeItem={false} changeItem={() => {}}>
-              <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+              <FontAwesomeIcon icon={faPenToSquare} />
             </SideBarItem>
           </>
         )}

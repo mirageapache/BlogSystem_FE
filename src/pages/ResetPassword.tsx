@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { get, isEmpty, isEqual } from 'lodash';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -117,10 +117,7 @@ function ResetPassword() {
               onClick={handleReset}
             >
               {isLoading ? (
-                <FontAwesomeIcon
-                  icon={icon({ name: 'spinner', style: 'solid' })}
-                  className="animate-spin h-5 w-5"
-                />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5" />
               ) : (
                 <>重設</>
               )}

@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faInfoCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 // --- constant ---
 import { FORM_CONTROL } from 'constants/LayoutConstants';
 // --- components ---
@@ -237,7 +237,7 @@ function EditProfilePage() {
                   電子郵件
                 </label>
                 <p className="text-xs ml-1 text-orange-500 dark:text-orange-400">
-                  <FontAwesomeIcon icon={icon({ name: 'info-circle', style: 'solid' })} />
+                  <FontAwesomeIcon icon={faInfoCircle} />
                   修改後即更換登入系統及電子報接收之Email
                 </p>
               </div>
@@ -381,10 +381,7 @@ function EditProfilePage() {
                 onClick={submitEditProfile}
               >
                 {updateLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>修改</>
                 )}

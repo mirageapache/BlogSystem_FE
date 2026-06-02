@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { get, isEmpty } from 'lodash';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
 import UserInfoPanel from 'components/user/UserInfoPanel';
@@ -107,10 +107,7 @@ function PostDetailPage() {
           className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500"
           onClick={() => history.back()}
         >
-          <FontAwesomeIcon
-            icon={icon({ name: 'circle-left', style: 'solid' })}
-            className="w-7 h-7"
-          />
+          <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
         </button>
       </div>
       <div className="w-minus50 sm:w-full">
@@ -199,10 +196,7 @@ function PostDetailPage() {
               onClick={submitComment}
             >
               {commentLoading ? (
-                <FontAwesomeIcon
-                  icon={icon({ name: 'spinner', style: 'solid' })}
-                  className="animate-spin h-5 w-5 m-1.5"
-                />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
               ) : (
                 '回覆'
               )}
