@@ -29,7 +29,7 @@ interface StateType {
 
 interface PropTypes {
   articleData: ArticleDataType;
-  commentInput: React.RefObject<HTMLDivElement>;
+  commentInput: React.RefObject<HTMLDivElement | null>;
   title: string;
   hasContent: boolean;
   handleSubmit: () => void;

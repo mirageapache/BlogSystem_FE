@@ -193,7 +193,7 @@
 - **現況：** React 18.2
 - **目標：** React **19.x**
 - **重點變更：**
-  - `ReactDOM.render` 已徹底移除（已用 createRoot，OK）
+  - `ReactDOM.render` 已徹底移除（已用 createRoot，OK）g
   - `forwardRef` 在 19 已不必要（function component 可直接接 `ref` prop）
   - `useFormStatus` / `useActionState` / `use()` 等新 API 可在 Phase 2 表單重寫時利用
   - 注意：`redux-form` **完全不相容 React 19**，因此 redux-form 汰換**必須先於或同時於** React 19 升級
