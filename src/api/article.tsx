@@ -40,7 +40,7 @@ export async function getArticleDetail(articleId: string): Promise<ArticleApiTyp
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

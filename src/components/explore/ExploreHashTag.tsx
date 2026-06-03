@@ -33,7 +33,10 @@ function ExploreHashTag() {
     get(data, 'pages[0].data.code', '') !== '' ||
     get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.posts] : acc),
+          [] as PostDataType[]
+        );
 
   /** 滾動判斷fetch新資料 */
   useEffect(() => {

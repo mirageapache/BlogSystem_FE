@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { get, isEmpty } from 'lodash';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -30,44 +30,45 @@ function UserProfilePage() {
   const [activeStyle, setActiveStyle] = useState(''); // 頁籤樣式控制
   const { userId } = useParams(); // 網址列的userId
   const currentUserId = useSelector((state: StateType) => state.user.userData?.userId);
-  let identify = false; // 身分驗證 true => own / false => others
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const userStateData = useSelector((state: StateType) => state.user.userData);
-  let fetchProfile: UserResultType; // 取得profile的回傳useQuery資料
-  let userData: UserProfileType | undefined;
+  const identify = currentUserId === userId; // 身分驗證 true => own / false => others
 
-  if (userId === undefined) navigate('/');
+  /** 取得使用者資料：hook 必須無條件呼叫，own/others 共用單一 useQuery，用 queryKey/queryFn 分流。
+   * own 已有 redux 資料時不重打；others 一律抓；userId 缺失時停用。 */
+  const fetchProfile = useQuery({
+    queryKey: identify ? ['getOwnProfile', userId] : ['getUserProfile', userId],
+    queryFn: () => (identify ? getOwnProfile() : getUserProfile(userId!)),
+    enabled:
+      userId !== undefined && (!identify || isEmpty(userStateData) || userStateData!._id === ''),
+  }) as UserResultType;
 
-  /** 取得使用者資料 */
-  if (currentUserId === userId) {
-    // own [current user]
-    identify = true;
-    fetchProfile = useQuery({
-      queryKey: ['getOwnProfile', userId],
-      queryFn: () => getOwnProfile(),
-      enabled: isEmpty(userStateData) || userStateData!._id === '',
-    }) as UserResultType;
-  } else {
-    // others [其他user]
-    fetchProfile = useQuery({
-      queryKey: ['getUserProfile', userId],
-      queryFn: () => getUserProfile(userId!),
-    }) as UserResultType;
-    dispatch(setActivePage('explore')); // 不是currentUser 頁籤改為 explore
-  }
-
-  const { isLoading, error, data, refetch } = fetchProfile as UserResultType;
+  const { isLoading, error, data, refetch } = fetchProfile;
   const fetchStatus = get(data, 'status', 404);
+
+  // userData 純運算推導（副作用集中於下方 effect，不在 render 期 dispatch）
+  let userData: UserProfileType | undefined;
   if (identify && !isEmpty(userStateData)) {
     userData = userStateData as UserProfileType;
-  } else if (fetchStatus === 401) {
-    // 未登入
-    dispatch(setSignInPop(true));
-  } else {
+  } else if (fetchStatus !== 401) {
     userData = get(data, 'data', {}) as UserProfileType;
   }
+
+  // userId 缺失 → 導回首頁
+  useEffect(() => {
+    if (userId === undefined) navigate('/');
+  }, [userId]);
+
+  // 瀏覽他人頁面 → 頁籤切到 explore
+  useEffect(() => {
+    if (!identify) dispatch(setActivePage('explore'));
+  }, [identify]);
+
+  // 後端回傳未登入 → 彈出登入框
+  useEffect(() => {
+    if (fetchStatus === 401) dispatch(setSignInPop(true));
+  }, [fetchStatus]);
 
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {

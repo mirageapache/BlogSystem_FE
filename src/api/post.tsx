@@ -56,7 +56,7 @@ export async function getPostDetail(postId: string): Promise<PostApiType> {
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

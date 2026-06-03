@@ -26,7 +26,7 @@ export async function createComment(
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
@@ -39,7 +39,7 @@ export async function updateComment(formData: FormData): Promise<CommentApiType>
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

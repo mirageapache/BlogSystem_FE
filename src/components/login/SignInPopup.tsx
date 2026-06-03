@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { get, isEmpty } from 'lodash';
 import { faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 // --- functions / types ---
@@ -20,6 +21,7 @@ import FormInput from '../form/FormInput';
 
 function SignInPopup() {
   const sliceDispatch = useDispatch();
+  const navigate = useNavigate();
   const [email, setEmail] = useState(''); // 紀錄email資料
   const [password, setPassword] = useState(''); // 紀錄密碼資料
   const [emailError, setEmailError] = useState(''); // 紀錄email錯誤訊息
@@ -59,10 +61,10 @@ function SignInPopup() {
         timerProgressBar: true,
       })
       .then(() => {
-        const { location } = window;
-        const pathname = get(location, 'pathname', '');
+        const pathname = get(window, 'location.pathname', '');
         if (pathname === '/user/editProfile') {
-          location.href = `${location.host}/user/profile/${res.data.userData.userId}`; // 導到userProfilePage
+          // 用 router navigate（自動帶 basename、client-side 導頁），避免 location.host 缺少 scheme 的錯誤跳轉
+          navigate(`/user/profile/${res.data.userData.userId}`); // 導到userProfilePage
         }
         handleClose();
       });
