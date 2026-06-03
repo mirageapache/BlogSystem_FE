@@ -283,7 +283,14 @@
 
 ### 2.1.1 TypeScript 4.9 → 5.x（解鎖 zod v4）
 
-> **狀態：待執行。** 由 2.1 衍生：zod 與 `@hookform/resolvers` 之所以釘在 v3，唯一原因是專案仍在 **TypeScript 4.9.5**，無法解析 zod v4 的 `.d.cts` 型別（需 TS ≥5.5）。升級 TS 後即可換回 zod v4 + resolvers v5。
+> **狀態：完成 ✅（2026-06-03）。**
+> - TypeScript `4.9.5` → **`5.9.3`**；全量 `tsc --noEmit` 僅浮出 1 處型別錯誤：`UserProfilePage` 的 `useQuery(...) as UserResultType`（TS 5.x 起對「不充分重疊」的 `as` 直轉更嚴格），依 TS 建議改為經 `unknown` 轉型。
+> - zod `3.23.8` → **`4.4.3`**、`@hookform/resolvers` `3.10.0` → **`5.4.0`**；zod v4 型別在 TS 5.9 下解析正常（原阻塞解除）。
+> - schema 收斂為 v4 慣用法：`refine` 的 `message:` → `error:`。**例外**：email 欄位刻意保留 deprecated 的 `.email()` 方法形式（非頂層 `z.email()`），以維持「空值→必填、非空→格式」的分層訊息與 SignIn 測試斷言。
+> - eslint：`@typescript-eslint@6.16` 官方標稱支援 TS <5.4，實測在 5.9 下僅印警告、`eslint src` EXIT 0（既有 9 個 warning 與本次無關）。升級 typescript-eslint 留待測試/CI 階段，避免動到 airbnb config 連鎖。
+> - 驗收：`tsc --noEmit` / `eslint` / `vite build` / jest 皆通過（jest 僅剩既有 PostList/ArticleList 的 React 19 component-call 斷言問題）。
+>
+> 以下為原始規劃內容。
 
 - **目標版本：** TypeScript **5.4+**（建議 5.4 / 5.5，與 zod v4 需求對齊）。
 - **動機 / 範圍：**
