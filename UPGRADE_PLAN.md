@@ -304,6 +304,18 @@
 
 ### 2.2 draft-js → Tiptap
 
+> **狀態：完成 ✅（2026-06-03）。** 改用 **Tiptap v3.24**（非原規劃的 v2；v3 支援 React 19 且 StarterKit 已內含 Underline/Link/ListKeymap）。
+> - **內容格式改為 HTML 字串**（`editor.getHTML()`），不再是 draft-js raw state JSON；後端 `content` 本就是字串，**無 schema 變更**。
+> - **資料遷移決策**：本案視為 demo／作品集，舊 raw-JSON 文章可重建 → **不做轉換、不保留相容層**，前端完全移除 draft-js（免 draft→HTML shim）。
+> - 安裝：`@tiptap/react`、`@tiptap/starter-kit`、`@tiptap/extension-image`、`@tiptap/extension-text-style`（含 `Color`）、`@tiptap/extension-highlight`。共用設定置於 `src/utils/tiptap.ts`。
+> - 移除依賴：`draft-js`、`draft-js-export-html`、`immutable`、`@types/draft-js`、`@types/prismjs`（後兩者連同 `src/types/draft-js-prism.d.ts`）。
+> - 改寫檔案：`EditorToolBar`（改操作 editor 命令、訂閱 transaction 反映 active 狀態、含 12 文字色 + 9 標示色 + 標題/清單/引用/code/**重新啟用插入圖片**）、`EditorToolItem`（改為呈現型按鈕）、`ArticleCreatePage`、`ArticleDetailPage`、`ArticleItem`（預覽直接 `DOMPurify.sanitize(content)`）、`editor.scss`（draft class → `.ProseMirror`）。
+> - 刪除：`EditorComponent/AtomicBlock.tsx`（圖片改由 Tiptap Image 擴充處理）、`constants/CustomStyleMap.ts`。
+> - 一併移除 `vite.config.ts` 為 draft-js 加的 `define.global` shim（draft-js 已不在）。**請本機重啟 dev server 確認無 `global is not defined`**；若有其他 CJS 套件仍需要，補回一行即可。
+> - 驗收：`tsc --noEmit` / `eslint`（改動檔，僅既有 `react/no-danger` warning）/ `vite build` / jest 皆通過（jest 僅剩既有 PostList/ArticleList 的 React 19 component-call 斷言）。
+>
+> 以下為原始規劃內容。
+
 - **現況：** `draft-js` 0.11.7（Meta 已棄坑 2022 年起無更新）、`immutable@3` 連帶受拖累。
 - **目標：** **Tiptap v2**（基於 ProseMirror，模組化、React/Vue 都支援）
 - **遷移要點：**

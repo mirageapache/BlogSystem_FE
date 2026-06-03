@@ -4,12 +4,6 @@ import react from '@vitejs/plugin-react';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  define: {
-    // draft-js 等舊 CommonJS 套件會引用 Node 的全域 `global`，
-    // 瀏覽器無此物件。CRA(webpack) 會自動 shim，Vite 不會，
-    // 故將 `global` 映射到瀏覽器的 `globalThis`（draft-js 為 Phase 2 移除目標）。
-    global: 'globalThis',
-  },
   resolve: {
     // 原生解析 tsconfig.json 的 baseUrl:"src" 與 paths（constants/*），
     // 取代 vite-tsconfig-paths plugin（Vite 8 起內建支援）。

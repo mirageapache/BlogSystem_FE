@@ -60,11 +60,16 @@ zod is on **v4** (4.4.x) with `@hookform/resolvers` **v5**, unblocked by the **T
 ### Styling
 Tailwind (config at `tailwind.config.js`) + SCSS in `src/styles/`. Dark mode is class-based: `App.tsx` puts `darkMode` (`''` or `'dark'`) on the root div, persisted in `localStorage` via `sysSlice.setDarkMode`. New components should use `dark:` variants rather than reading the redux flag directly.
 
+### Rich text editor (Tiptap)
+Article content uses **Tiptap v3** (`@tiptap/react` + `StarterKit`), migrated off draft-js in Phase 2.2. Shared extension config lives in `src/utils/tiptap.ts` (`editorExtensions`): StarterKit (which in v3 already bundles Bold/Italic/Underline/Strike/Code/CodeBlock/Blockquote/Heading/lists/Link) plus `TextStyle` + `Color` (both imported from `@tiptap/extension-text-style`), `Highlight` (multicolor), and `Image` (`allowBase64`, in-content images are inlined as base64). `EditorToolBar` takes the `editor` instance and drives `editor.chain().focus().…().run()` commands, reflecting active state via `editor.isActive(...)`; it subscribes to the editor's `transaction` event with a `forceUpdate` so the toolbar re-renders on every change (Tiptap v3's `useEditor` doesn't re-render the component per keystroke by default). `EditorToolItem` is now a presentational button (`onClick` + `isActive`).
+
+**Content is stored as an HTML string** (`editor.getHTML()` on create/update; Tiptap loads it directly via `content` / `setContent`) — NOT draft-js raw-state JSON. There is no backend schema change (the `content` field was always a string). List previews (`ArticleItem`) render `DOMPurify.sanitize(content)` via `dangerouslySetInnerHTML`. Editor output styling is scoped to `.ProseMirror` in `src/styles/editor.scss` (headings, code blocks, lists, images; blockquote is global). Pre-2.2 articles stored as draft-js JSON are NOT auto-migrated (treated as disposable demo data per the Phase 2.2 decision).
+
 ### FontAwesome icons
 Icons are imported directly, e.g. `import { faCircleLeft } from '@fortawesome/free-solid-svg-icons'` then `<FontAwesomeIcon icon={faCircleLeft} />`. The old `import.macro` (babel-plugin-macros) approach was removed in Phase 1.3 — it does not work under Vite's babel-free transform. Map by style: `solid` → `free-solid-svg-icons`, `regular` → `free-regular-svg-icons`, `brands` → `free-brands-svg-icons`.
 
 ### Notable quirks
 - `src/pages/aritcle/` is misspelled (should be "article"); imports throughout reference this path — leave it unless doing a coordinated rename.
-- `crypto-browserify` / `bcryptjs` remain in `package.json` but are unused in `src/` (scheduled for removal in Phase 2). `draft-js`, `moment`, `react-cookie` are likewise Phase 2 removal targets.
+- `crypto-browserify` / `bcryptjs` remain in `package.json` but are unused in `src/` (scheduled for removal in Phase 2). `moment`, `react-cookie` are likewise Phase 2 removal targets. (`draft-js` / `draft-js-export-html` / `immutable` were removed in Phase 2.2 along with the Tiptap migration.)
 - Vite entry is the root `index.html` (not `public/index.html`); `public/` is served at `/`. PostCSS/Tailwind run via `postcss.config.js`.
 - Facebook share is intentionally paused (see commit `789992f`).

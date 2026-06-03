@@ -1,35 +1,81 @@
-// 程式碼區塊
-.public-DraftStyleDefault-pre {
-  background-color: #d1d5db;
-  color: #1f2937;
-  padding: 1em;
-  border-radius: 5px;
-  overflow-x: auto;
-  white-space: pre-wrap;
+// Tiptap 編輯器內容樣式（.ProseMirror 為 Tiptap 的渲染容器，編輯與唯讀皆套用）
+.ProseMirror {
+  &:focus {
+    outline: none;
+  }
+
+  // 標題（Tailwind preflight 會壓平 h1~h6，這裡還原階層）
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+  }
+  h3 {
+    font-size: 1.25em;
+    font-weight: 700;
+  }
+  h4 {
+    font-size: 1.1em;
+    font-weight: 700;
+  }
+  h5 {
+    font-size: 1em;
+    font-weight: 700;
+  }
+  h6 {
+    font-size: 0.9em;
+    font-weight: 700;
+  }
+
+  // 程式碼區塊
+  pre {
+    background-color: #d1d5db;
+    color: #1f2937;
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    font-family: 'Source Code Pro', monospace;
+
+    code {
+      background: none;
+      padding: 0;
+    }
+  }
+
+  // 行內程式碼
+  code {
+    font-family: 'Source Code Pro', monospace;
+    padding: 0.2em 0.4em;
+  }
+
+  // 項目清單
+  ul {
+    list-style-type: disc;
+    padding: revert;
+  }
+
+  // 編號清單
+  ol {
+    list-style-type: decimal;
+    padding: revert;
+  }
+
+  // 內嵌圖片
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
-.public-DraftStyleDefault-pre > pre {
-  font-family: 'Source Code Pro', monospace;
-  padding: 0.2em 0.4em;
-}
-
-// 引用區塊
+// 引用區塊（編輯器與文章預覽共用）
 blockquote {
   margin-left: 20px !important;
   border-left: 4px solid #f97316;
   padding-left: 10px;
-}
-
-// 項目清單
-.public-DraftStyleDefault-ul {
-  list-style-type: disc;
-  padding: revert;
-}
-
-// 編號清單
-.public-DraftStyleDefault-ol {
-  list-style-type: decimal;
-  padding: revert;
 }
 
 /* 對所有元素應用 */
@@ -44,6 +90,6 @@ blockquote {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #E2E8F0; /* 例如：淺灰色 */
+  background-color: #e2e8f0; /* 例如：淺灰色 */
   border-radius: 10px;
 }
