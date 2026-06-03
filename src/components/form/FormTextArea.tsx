@@ -1,65 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { FORM_CONTROL } from 'constants/LayoutConstants';
+/* eslint-disable react/require-default-props */
+import React from 'react';
 import { isEmpty } from 'lodash';
+import { UseFormRegisterReturn } from 'react-hook-form';
+import { FORM_CONTROL } from 'constants/LayoutConstants';
 
-/** FormTextAreaPropsType 型別 */
+/** FormTextAreaPropsType 型別
+ * 改為 react-hook-form 相容：欄位狀態與驗證交由 useForm 管理，
+ * 透過 registration（register(name) 的回傳）綁定 textarea，error 由 formState 傳入。
+ */
 interface FormTextAreaPropsType {
-  name: string;
   placeholder: string;
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  errorMsg: string;
-  setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
-  disabled: boolean;
+  registration: UseFormRegisterReturn;
+  errorMsg?: string;
+  disabled?: boolean;
 }
 
-function FormTextArea({
-  name,
-  placeholder,
-  value,
-  setValue,
-  errorMsg,
-  setErrorMsg,
-  disabled,
-}: FormTextAreaPropsType) {
-  const [showErrorTip, setShowErrorTip] = useState(!isEmpty(errorMsg)); // 顯示/隱藏欄位錯誤提示
-  let activeStyle = '';
-  if (showErrorTip) {
-    activeStyle = 'm-1.5 border-2 border-red-500 bg-yellow-100 dark:bg-gray-950'; // with error style
-  } else {
-    activeStyle = 'border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'; // normal style
-  }
-
-  useEffect(() => {
-    if (errorMsg) setShowErrorTip(true);
-  }, [errorMsg]);
-
-  function onBlur(e: any) {
-    setErrorMsg('');
-    setShowErrorTip(false);
-    if (e.target.value.length > 200) {
-      setErrorMsg('自我介紹最多200字');
-      setShowErrorTip(true);
-    }
-  }
-
-  function onFocus() {
-    setShowErrorTip(false);
-  }
+function FormTextArea({ placeholder, registration, errorMsg, disabled }: FormTextAreaPropsType) {
+  const showErrorTip = !isEmpty(errorMsg); // 由 RHF 的 error 決定是否顯示提示
+  const activeStyle = showErrorTip
+    ? 'm-1.5 border-2 border-red-500 bg-yellow-100 dark:bg-gray-950' // with error style
+    : 'border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'; // normal style
 
   return (
     <div className="relative">
       <textarea
-        name={name}
-        value={value}
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...registration}
         placeholder={placeholder}
         className={`rounded-md resize-none focus:border-2 ${FORM_CONTROL} ${activeStyle}`}
         rows={3}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        onChange={(e) => {
-          if (e.target.value.length < 200) setValue(e.target.value);
-        }}
         disabled={disabled}
       />
       {showErrorTip && <p className="text-red-500 text-sm mt-[-6px]">{errorMsg}</p>}

@@ -241,13 +241,22 @@
 
 ### 2.1 redux-form → react-hook-form + zod
 
-> **執行狀態（2026-06-03）：** 第一批 ✅。盤點發現 **redux-form 早在 Phase 1.2 即被當 dead code 移除**（`package.json` 與 `src/` 皆無殘留、`reudxFormValidates.ts` 也已刪），故 2.1 實質工作是「將手動 `useState`+`FormInput` 表單現代化為 react-hook-form + zod」。
+> **執行狀態（2026-06-03）：** 第一批 ✅、第二批 ✅。盤點發現 **redux-form 早在 Phase 1.2 即被當 dead code 移除**（`package.json` 與 `src/` 皆無殘留、`reudxFormValidates.ts` 也已刪），故 2.1 實質工作是「將手動 `useState`+`FormInput` 表單現代化為 react-hook-form + zod」。
+>
+> **第一批（auth 表單）：**
 > - 已改寫 4 個 auth 表單：`SignInPopup` / `SignUpPopup` / `FindPassword` / `ResetPassword`。
 > - `components/form/FormInput` 重構為 RHF 相容（`registration` + `errorMsg`，移除 `value/setValue/name/handleEnter` 與內部 onBlur 驗證）。
 > - 新增 `src/schemas/auth.ts`（zod schema），刪除死碼 `src/utils/formValidates.ts`；`validator` 套件就此無人使用（併入 2.3 移除）。
-> - **版本決策**：zod 釘在 **v3（3.23.x）**、`@hookform/resolvers` 釘 **v3**。因專案仍是 **TypeScript 4.9.5**，zod v4 的型別定義需 TS ≥5.5 才能解析（4.9 下 tsc 直接噴 parse error）。**建議另立一步把 TypeScript 升到 5.x**，即可換回 zod v4。
-> - 測試：`SignInPopup` / `SignUpPopup` 兩個 suite 由原本失敗轉為**全綠**（補上 `MemoryRouter` 包裝供 `useNavigate`，並對齊登入成功的 Swal `timer` 斷言）。tsc/eslint/build 全綠。
-> - **待辦（第二批）**：`EditProfilePage` 尚未進 RHF（含頭像/FormData），目前 name/account/email 以 inline 受控 input 暫代，行為不變。
+> - 測試：`SignInPopup` / `SignUpPopup` 兩個 suite 由原本失敗轉為**全綠**（補上 `MemoryRouter` 包裝供 `useNavigate`，並對齊登入成功的 Swal `timer` 斷言）。
+>
+> **第二批（EditProfilePage）：**
+> - `EditProfilePage` 全面進 RHF：email/account/name/bio/language/emailPrompt/mobilePrompt 皆改 `register`，由新增的 `src/schemas/user.ts`（`editProfileSchema`）驗證；移除約 10 個 `useState`+對應 error state 與手動 isEmpty/length 檢核。
+> - `components/form/FormTextArea` 一併重構為 RHF 相容（`registration` + `errorMsg`，bio 200 字上限移入 zod）。
+> - 頭像（預覽 + `imageFile`/`removeAvatar` FormData）因含檔案上傳/預覽邏輯仍留 local state；`onSubmit` 以驗證後的值 + 頭像 state 組 `FormData` 呼叫 `updateProfile`。
+> - async 載入資料改用 `reset(values)`（在 react-query 資料到達的 `useEffect` 內），順帶把 `language` 在 reset 時正規化為 `zh`/`en`（修正舊資料 `zh-TW` 會讓下拉選項顯示空白的小 bug）；並補上 email 格式驗證與修正帳號 label 的 `htmlFor` 複製貼上錯字。
+> - 測試：`EditProfilePage` 無既有測試（不需改測試）；tsc/eslint/build 全綠，jest 既有通過項不變。
+>
+> - **版本決策**：zod 釘在 **v3（3.23.x）**、`@hookform/resolvers` 釘 **v3**。因專案仍是 **TypeScript 4.9.5**，zod v4 的型別定義需 TS ≥5.5 才能解析（4.9 下 tsc 直接噴 parse error）。已另立 **2.1.1 TypeScript 5.x 升級**（見下）為解鎖前提。
 >
 > 以下為原始規劃內容。
 
@@ -271,6 +280,20 @@
       password: z.string().min(6, '密碼至少 6 字').max(20, '密碼最多 20 字'),
     });
     ```
+
+### 2.1.1 TypeScript 4.9 → 5.x（解鎖 zod v4）
+
+> **狀態：待執行。** 由 2.1 衍生：zod 與 `@hookform/resolvers` 之所以釘在 v3，唯一原因是專案仍在 **TypeScript 4.9.5**，無法解析 zod v4 的 `.d.cts` 型別（需 TS ≥5.5）。升級 TS 後即可換回 zod v4 + resolvers v5。
+
+- **目標版本：** TypeScript **5.4+**（建議 5.4 / 5.5，與 zod v4 需求對齊）。
+- **動機 / 範圍：**
+  - 解鎖 zod v4（`z.email()` 等新 API、更佳型別推導與效能）與 `@hookform/resolvers@^5`。
+  - 連帶讓其他依賴的較新型別定義可正常解析（為 Phase 3 Vitest、Phase 4/5 工具鏈鋪路）。
+- **風險與注意：**
+  - TS 5.x 移除部分已棄用旗標、`lib.d.ts` 內建型別更嚴格，可能浮出既有隱性型別錯誤 → 以 `tsc --noEmit` 全量掃描逐一修。
+  - 確認 `@typescript-eslint/*`、`ts-jest`/`.babelrc` 轉譯鏈與 5.x 相容（本專案測試走 babel，不直接吃 tsc，風險較低）。
+  - 升級後再執行：`zod@^4`、`@hookform/resolvers@^5`，並把 `src/schemas/*.ts` 的 v3 寫法（`message:` → `error:`、`z.string().email()` → `z.email()`）回收為 v4 慣用法。
+- **驗收：** `tsc --noEmit` / eslint / `vite build` / jest 全綠；zod 升回 v4 後表單行為與訊息不變。
 
 ### 2.2 draft-js → Tiptap
 

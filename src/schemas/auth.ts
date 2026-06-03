@@ -6,7 +6,9 @@ import { z } from 'zod';
  * 錯誤訊息沿用舊版字串，避免變更使用者體驗與既有測試斷言。
  */
 
-/** Email：必填 + 格式（先擋空字串再驗格式，兩段訊息語意清楚） */
+/** Email：必填 + 格式（先擋空字串再驗格式，兩段訊息語意清楚）
+ * 註：刻意沿用 `.email()` 方法形式而非 v4 頂層 `z.email()`——後者會讓空字串
+ * 直接觸發格式錯誤，無法保留「空值→必填、非空→格式」的分層訊息（亦對應測試斷言）。 */
 const email = z.string().trim().min(1, 'Email為必填欄位').email('Email格式錯誤');
 
 /** 密碼：必填 + 長度 6~20（上下界共用同一句長度提示，與舊版一致） */
@@ -28,7 +30,7 @@ export const signUpSchema = z
   .object({ email, password, confirmPassword })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
-    message: '確認密碼與密碼不相符',
+    error: '確認密碼與密碼不相符',
   });
 export type SignUpFormType = z.infer<typeof signUpSchema>;
 
@@ -41,6 +43,6 @@ export const resetPwdSchema = z
   .object({ password, confirmPassword })
   .refine((data) => data.password === data.confirmPassword, {
     path: ['confirmPassword'],
-    message: '確認密碼與密碼不相符',
+    error: '確認密碼與密碼不相符',
   });
 export type ResetPwdFormType = z.infer<typeof resetPwdSchema>;
