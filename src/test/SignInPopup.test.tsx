@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { Store, AnyAction } from 'redux';
 import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
+import { MemoryRouter } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { SignIn } from '../api/auth';
 import SignInPopup from '../components/login/SignInPopup';
@@ -31,7 +32,9 @@ describe('登入功能(SignIn)', () => {
   test('登入元件顯示', () => {
     render(
       <Provider store={store}>
-        <SignInPopup />
+        <MemoryRouter>
+          <SignInPopup />
+        </MemoryRouter>
       </Provider>
     );
 
@@ -43,7 +46,9 @@ describe('登入功能(SignIn)', () => {
   test('測試表單欄位必填', async () => {
     render(
       <Provider store={store}>
-        <SignInPopup />
+        <MemoryRouter>
+          <SignInPopup />
+        </MemoryRouter>
       </Provider>
     );
     userEvent.click(screen.getByText('登入'));
@@ -63,7 +68,9 @@ describe('登入功能(SignIn)', () => {
 
     render(
       <Provider store={store}>
-        <SignInPopup />
+        <MemoryRouter>
+          <SignInPopup />
+        </MemoryRouter>
       </Provider>
     );
 
@@ -80,6 +87,8 @@ describe('登入功能(SignIn)', () => {
         title: '登入成功',
         icon: 'success',
         confirmButtonText: '確認',
+        timer: 2000,
+        timerProgressBar: true,
       });
     });
   });

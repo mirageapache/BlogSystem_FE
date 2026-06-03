@@ -1,51 +1,38 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable default-case */
 /* eslint-disable react/require-default-props */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import validator from 'validator';
-import { checkLength } from '../../utils/formValidates';
+import { UseFormRegisterReturn } from 'react-hook-form';
 import { FORM_CONTROL } from '../../constants/LayoutConstants';
 
-/** FormInputProps 型別 */
+/** FormInputProps 型別
+ * 改為 react-hook-form 相容：欄位狀態與驗證交由 useForm 管理，
+ * 透過 registration（register(name) 的回傳）綁定 input，error 由 formState 傳入。
+ */
 interface FormInputPropsType {
-  name: string;
   type: string;
   ispwd: boolean;
   placeholder: string;
   classname?: string;
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  errorMsg: string;
-  setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
-  handleEnter: (value: string) => void;
+  registration: UseFormRegisterReturn;
+  errorMsg?: string;
   disabled?: boolean;
 }
 
 function FormInput({
-  name,
   type,
   ispwd,
   placeholder,
   classname = '',
-  value,
-  setValue,
+  registration,
   errorMsg,
-  setErrorMsg,
-  handleEnter,
   disabled,
 }: FormInputPropsType) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [hidePassword, setHidePassword] = useState(ispwd); // 隱藏密碼
-  const [showErrorTip, setShowErrorTip] = useState(!isEmpty(errorMsg)); // 顯示/隱藏欄位錯誤提示
   const pwdtype = hidePassword ? 'password' : 'text'; // 控制密碼顯示/隱藏的input type
   const inputType = ispwd ? pwdtype : type;
-
-  useEffect(() => {
-    if (errorMsg) setShowErrorTip(true);
-  }, [errorMsg]);
+  const showErrorTip = !isEmpty(errorMsg); // 由 RHF 的 error 決定是否顯示提示
 
   /** 顯示/隱藏密碼控制 */
   const showToggle = hidePassword ? (
@@ -66,61 +53,15 @@ function FormInput({
     />
   );
 
-  /** input on blur */
-  function onBlur(e: any) {
-    setErrorMsg('');
-    setShowErrorTip(false);
-    const formValue = e.target.value;
-    let text = '';
-    switch (name) {
-      case 'email':
-        text = 'Email';
-        if (!validator.isEmail(value)) {
-          setErrorMsg('Email格式錯誤');
-          setShowErrorTip(true);
-        }
-        break;
-      case 'password':
-        text = '密碼';
-        if (checkLength(value, 6, 20)) {
-          setErrorMsg('密碼長度須介於6至20字元');
-          setShowErrorTip(true);
-        }
-        break;
-      case 'confirmPassword':
-        text = '確認密碼';
-        if (checkLength(value, 6, 20)) {
-          setErrorMsg('確認密碼長度須介於6至20字元');
-          setShowErrorTip(true);
-        }
-        break;
-      case 'account':
-        text = '帳號';
-        break;
-      case 'name':
-        text = '名稱';
-        break;
-    }
-    if (isEmpty(formValue)) {
-      setErrorMsg(`${text}必填`);
-      setShowErrorTip(true);
-    }
-  }
-
-  /** input on focus */
-  function onFocus() {
-    setErrorMsg('');
-    setShowErrorTip(false);
-  }
-
   return (
     <div className="relative">
       <span className="relative">
         <input
-          ref={inputRef}
-          name={name}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...registration}
           type={inputType}
           placeholder={placeholder}
+          disabled={disabled}
           className={`${FORM_CONTROL} ${classname}
           ${
             showErrorTip
@@ -128,18 +69,6 @@ function FormInput({
               : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 focus:border-b-2'
           }
           `}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onChange={(e) => {
-            setValue(e.target.value);
-            setErrorMsg('');
-            if (isEmpty(e.target.value)) setErrorMsg(`${name}欄位必填`);
-          }}
-          onKeyUp={(e) => {
-            handleEnter(e.key);
-          }}
-          value={value}
-          disabled={disabled}
         />
         {ispwd && showToggle}
       </span>

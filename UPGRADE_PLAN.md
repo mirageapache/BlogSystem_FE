@@ -241,6 +241,16 @@
 
 ### 2.1 redux-form → react-hook-form + zod
 
+> **執行狀態（2026-06-03）：** 第一批 ✅。盤點發現 **redux-form 早在 Phase 1.2 即被當 dead code 移除**（`package.json` 與 `src/` 皆無殘留、`reudxFormValidates.ts` 也已刪），故 2.1 實質工作是「將手動 `useState`+`FormInput` 表單現代化為 react-hook-form + zod」。
+> - 已改寫 4 個 auth 表單：`SignInPopup` / `SignUpPopup` / `FindPassword` / `ResetPassword`。
+> - `components/form/FormInput` 重構為 RHF 相容（`registration` + `errorMsg`，移除 `value/setValue/name/handleEnter` 與內部 onBlur 驗證）。
+> - 新增 `src/schemas/auth.ts`（zod schema），刪除死碼 `src/utils/formValidates.ts`；`validator` 套件就此無人使用（併入 2.3 移除）。
+> - **版本決策**：zod 釘在 **v3（3.23.x）**、`@hookform/resolvers` 釘 **v3**。因專案仍是 **TypeScript 4.9.5**，zod v4 的型別定義需 TS ≥5.5 才能解析（4.9 下 tsc 直接噴 parse error）。**建議另立一步把 TypeScript 升到 5.x**，即可換回 zod v4。
+> - 測試：`SignInPopup` / `SignUpPopup` 兩個 suite 由原本失敗轉為**全綠**（補上 `MemoryRouter` 包裝供 `useNavigate`，並對齊登入成功的 Swal `timer` 斷言）。tsc/eslint/build 全綠。
+> - **待辦（第二批）**：`EditProfilePage` 尚未進 RHF（含頭像/FormData），目前 name/account/email 以 inline 受控 input 暫代，行為不變。
+>
+> 以下為原始規劃內容。
+
 - **現況：** `redux-form` v8.3，**最後一次更新 2022 年**，作者已棄坑；與 React 19 不相容（依賴舊版 React class API）。
 - **替代方案推薦：**
 

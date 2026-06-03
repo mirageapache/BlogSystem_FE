@@ -14,7 +14,6 @@ import { FORM_CONTROL } from 'constants/LayoutConstants';
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import Avatar from 'components/user/Avatar';
-import FormInput from 'components/form/FormInput';
 import FormTextArea from 'components/form/FormTextArea';
 // --- api/types ---
 import { getOwnProfile, updateProfile } from 'api/user';
@@ -243,18 +242,25 @@ function EditProfilePage() {
                   修改後即更換登入系統及電子報接收之Email
                 </p>
               </div>
-              <FormInput
+              {/* 註：本頁尚未遷移至 react-hook-form（2.1 第二批），先以受控 input 維持原行為 */}
+              <input
+                id="email"
                 type="email"
                 name="email"
-                ispwd={false}
                 placeholder="E-mail"
                 value={email}
-                setValue={setEmail}
-                errorMsg={emailError}
-                setErrorMsg={setEmailError}
-                handleEnter={() => {}}
                 disabled={isVisitor}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError('');
+                }}
+                className={`${FORM_CONTROL} ${
+                  emailError
+                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
+                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                }`}
               />
+              {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
             </div>
 
             <div className="mt-10">
@@ -262,18 +268,24 @@ function EditProfilePage() {
                 <span className="text-red-500">*</span>
                 帳號
               </label>
-              <FormInput
+              <input
+                id="account"
                 type="text"
                 name="account"
-                ispwd={false}
                 placeholder="帳號"
                 value={account}
-                setValue={setAccount}
-                errorMsg={accountError}
-                setErrorMsg={setAccountError}
-                handleEnter={() => {}}
                 disabled={isVisitor}
+                onChange={(e) => {
+                  setAccount(e.target.value);
+                  setAccountError('');
+                }}
+                className={`${FORM_CONTROL} ${
+                  accountError
+                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
+                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                }`}
               />
+              {accountError && <p className="text-red-500 text-sm">{accountError}</p>}
             </div>
 
             <div className="mt-10">
@@ -281,18 +293,24 @@ function EditProfilePage() {
                 <span className="text-red-500">*</span>
                 名稱
               </label>
-              <FormInput
+              <input
+                id="name"
                 type="text"
                 name="name"
-                ispwd={false}
                 placeholder="名稱"
                 value={name}
-                setValue={setName}
-                errorMsg={nameError}
-                setErrorMsg={setNameError}
-                handleEnter={() => {}}
                 disabled={isVisitor}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setNameError('');
+                }}
+                className={`${FORM_CONTROL} ${
+                  nameError
+                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
+                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                }`}
               />
+              {nameError && <p className="text-red-500 text-sm">{nameError}</p>}
             </div>
 
             <div className="mt-10">
