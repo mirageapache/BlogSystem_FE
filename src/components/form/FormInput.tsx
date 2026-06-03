@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import React, { useState } from 'react';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { UseFormRegisterReturn } from 'react-hook-form';

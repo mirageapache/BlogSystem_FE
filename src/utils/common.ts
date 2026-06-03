@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import Swal from 'sweetalert2';
 import { UserProfileType } from 'types/userType';
 import store from '../redux/configStore';

@@ -1,4 +1,5 @@
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 // --- components ---
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import NoSearchResult from 'components/tips/NoSearchResult';

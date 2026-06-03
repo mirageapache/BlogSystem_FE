@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 // --- constants ---
 import {
   SIDEBAR_FRAME,

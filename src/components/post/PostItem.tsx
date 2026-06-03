@@ -4,8 +4,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState } from 'react';
 import DOMPurify from 'dompurify';
-import moment from 'moment';
-import { get, isEmpty } from 'lodash';
+import dayjs from 'utils/dayjs';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -122,7 +123,7 @@ function PostItem(props: { postData: PostDataType }) {
                 <span
                   className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
                 >
-                  Created at {moment(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
+                  Created at {dayjs(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
                 </span>
               </span>
               {!isEmpty(postData.editedAt) && (
@@ -135,7 +136,7 @@ function PostItem(props: { postData: PostDataType }) {
                   <span
                     className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}
                   >
-                    Edited at {moment(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
+                    Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
                   </span>
                 </span>
               )}

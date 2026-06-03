@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { useSearchParams } from 'react-router-dom';
 // --- components ---
 import UserListDynamic from 'components/user/UserListDynamic';

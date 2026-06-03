@@ -28,7 +28,7 @@ Required env vars (see `.env.example`): `VITE_API_URL`. The deploy base path is 
 ## Architecture
 
 ### Entry & providers
-`src/index.tsx` wraps `<App/>` in this provider order (outer → inner): `QueryClientProvider` (`@tanstack/react-query` v5) → redux `Provider` → `CookiesProvider` → `BrowserRouter` (basename = `import.meta.env.BASE_URL`). All four are load-bearing; tests in `src/test/` use `redux-mock-store` and you must mirror this wrapping when adding new tests. (`CookiesProvider`/`react-cookie` is slated for removal in Phase 2 — JWT is HttpOnly so the frontend never reads cookies.)
+`src/index.tsx` wraps `<App/>` in this provider order (outer → inner): `QueryClientProvider` (`@tanstack/react-query` v5) → redux `Provider` → `BrowserRouter` (basename = `import.meta.env.BASE_URL`). All three are load-bearing; tests in `src/test/` use `redux-mock-store` and you must mirror this wrapping when adding new tests. (`CookiesProvider`/`react-cookie` was removed in Phase 2.3 — JWT is HttpOnly so the frontend never reads cookies.)
 
 ### Routing & layout
 `src/App.tsx` is the single `<Routes>` table. Every page renders inside a fixed three-column layout: `SideBar` (desktop left rail), the routed page (center), and `BottomMenu` (mobile bottom nav). Layout class strings are centralized in `src/constants/LayoutConstants.ts` — reuse `SIDEBAR_FRAME` / `SIDEBAR_CONTAINER_FRAME` / `BOTTOM_MENU_FRAME` rather than re-deriving Tailwind classes.
@@ -55,7 +55,7 @@ Forms use **react-hook-form** v7 with **zod** schemas via `@hookform/resolvers/z
 
 zod is on **v4** (4.4.x) with `@hookform/resolvers` **v5**, unblocked by the **TypeScript 5.9** upgrade in Phase 2.1.1 (zod v4's `.d.cts` type defs require TS ≥5.5; they failed to parse on the old TS 4.9.5). zod-v4 idioms: error customization uses `{ error: '...' }` (the v3 `{ message: '...' }` is deprecated). One deliberate exception: the email fields keep the deprecated **`.email()` method form** (`z.string().min(1, '…必填').email('…格式錯誤')`) rather than the top-level `z.email()`, because top-level `z.email()` makes an empty string fail as a format error and loses the layered "required → format" message ordering (which the SignIn test asserts).
 
-`EditProfilePage` is now migrated to RHF (Phase 2.1 batch 2): email/account/name/bio/language/emailPrompt/mobilePrompt are all `register`-ed and validated by `editProfileSchema`; only the avatar (preview + `imageFile`/`removeAvatar` FormData) remains in local `useState` because of its file-upload/preview logic, and `onSubmit` assembles the `FormData` from the validated values plus that avatar state. `src/utils/formValidates.ts` (the old manual-validation helpers) was deleted; the `validator` package is now unused and is a Phase 2.3 removal target.
+`EditProfilePage` is now migrated to RHF (Phase 2.1 batch 2): email/account/name/bio/language/emailPrompt/mobilePrompt are all `register`-ed and validated by `editProfileSchema`; only the avatar (preview + `imageFile`/`removeAvatar` FormData) remains in local `useState` because of its file-upload/preview logic, and `onSubmit` assembles the `FormData` from the validated values plus that avatar state. `src/utils/formValidates.ts` (the old manual-validation helpers) was deleted; the `validator` package was removed in Phase 2.3.
 
 ### Styling
 Tailwind (config at `tailwind.config.js`) + SCSS in `src/styles/`. Dark mode is class-based: `App.tsx` puts `darkMode` (`''` or `'dark'`) on the root div, persisted in `localStorage` via `sysSlice.setDarkMode`. New components should use `dark:` variants rather than reading the redux flag directly.
@@ -70,6 +70,6 @@ Icons are imported directly, e.g. `import { faCircleLeft } from '@fortawesome/fr
 
 ### Notable quirks
 - `src/pages/aritcle/` is misspelled (should be "article"); imports throughout reference this path — leave it unless doing a coordinated rename.
-- `crypto-browserify` / `bcryptjs` remain in `package.json` but are unused in `src/` (scheduled for removal in Phase 2). `moment`, `react-cookie` are likewise Phase 2 removal targets. (`draft-js` / `draft-js-export-html` / `immutable` were removed in Phase 2.2 along with the Tiptap migration.)
+- Phase 2.3 removed the dead/redundant deps: `crypto-browserify` + `bcryptjs` (frontend password hashing is security-theatre; were unused in `src/`), `validator` (unused after the RHF/zod migration), and `react-cookie` (JWT is HttpOnly). `moment` was replaced by `dayjs` (configured in `src/utils/dayjs.ts` with the `advancedFormat` plugin for the `Do` token) — the 3 date-tooltip call sites (`ArticleItem`, `PostItem`, `PostDetailPage`) import `dayjs` from there. `lodash` is kept but imported per-method (`import get from 'lodash/get'`, `lodash/isEmpty`, `lodash/isString`) across `src/` so Vite can tree-shake it — do NOT reintroduce `import { get } from 'lodash'`. (`draft-js` / `draft-js-export-html` / `immutable` were removed in Phase 2.2 along with the Tiptap migration.)
 - Vite entry is the root `index.html` (not `public/index.html`); `public/` is served at `/`. PostCSS/Tailwind run via `postcss.config.js`.
 - Facebook share is intentionally paused (see commit `789992f`).

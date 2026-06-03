@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { UserDataType } from 'types/userType';
 import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { guardVisitorAction } from 'utils/common';
 import { changeFollowState, followUser, unfollowUser } from 'api/follow';
 

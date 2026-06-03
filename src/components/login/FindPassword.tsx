@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { faInfoCircle, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React from 'react';
 /** FileInputPorps 型別 */
 interface FileInputPorpsType {

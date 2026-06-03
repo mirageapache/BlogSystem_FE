@@ -3,7 +3,8 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { faSearch, faTag, faUsers, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faFileLines, faNoteSticky } from '@fortawesome/free-regular-svg-icons';
 // --- components ---

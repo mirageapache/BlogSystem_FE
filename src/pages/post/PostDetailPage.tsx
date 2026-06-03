@@ -3,8 +3,9 @@ import React, { useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { get, isEmpty } from 'lodash';
-import moment from 'moment';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import dayjs from 'utils/dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 // --- components ---
@@ -131,7 +132,7 @@ function PostDetailPage() {
               <span
                 className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
               >
-                Created at {moment(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
+                Created at {dayjs(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
               </span>
             </span>
             {!isEmpty(postData.editedAt) && (
@@ -142,7 +143,7 @@ function PostDetailPage() {
               >
                 <small className="text-gray-400">(已編輯)</small>
                 <span className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}>
-                  Edited at {moment(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
+                  Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
                 </span>
               </span>
             )}

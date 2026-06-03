@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import React from 'react';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { UseFormRegisterReturn } from 'react-hook-form';
 import { FORM_CONTROL } from 'constants/LayoutConstants';
 

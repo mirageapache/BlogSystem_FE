@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 // --- components
 import UserListDynamic from 'components/user/UserListDynamic';
 import NoSearchResult from 'components/tips/NoSearchResult';

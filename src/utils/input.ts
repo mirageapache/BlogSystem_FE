@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 /** 處理 hash tag */
 export const handleHashTag = (inputContent: string) => {

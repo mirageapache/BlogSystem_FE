@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLink,

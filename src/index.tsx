@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { CookiesProvider } from 'react-cookie';
 
 // --- components ---
 import App from './App';
@@ -28,11 +27,9 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <CookiesProvider>
-          <BrowserRouter basename={basename}>
-            <App />
-          </BrowserRouter>
-        </CookiesProvider>
+        <BrowserRouter basename={basename}>
+          <App />
+        </BrowserRouter>
       </Provider>
     </QueryClientProvider>
   </React.StrictMode>

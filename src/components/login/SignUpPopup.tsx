@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 // --- functions / types ---

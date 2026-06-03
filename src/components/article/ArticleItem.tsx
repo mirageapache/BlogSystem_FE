@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState } from 'react';
 import DOMPurify from 'dompurify';
-import moment from 'moment';
+import dayjs from 'utils/dayjs';
 import { useNavigate } from 'react-router-dom';
 // --- components / functions ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
@@ -58,7 +58,7 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
             <span
               className={`top-[-50px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
             >
-              Created at {moment(createdAt).format('MMMM Do YYYY, h:mm:ss')}
+              Created at {dayjs(createdAt).format('MMMM Do YYYY, h:mm:ss')}
             </span>
           </span>
         </div>

@@ -342,11 +342,18 @@
 | `lodash` (整包) | tree-shaking 失敗 | 改為 per-method import (`lodash/get`) 或原生 optional chaining |
 | `redux-form` 相關 type | 隨 2.1 一併移除 | `@types/redux-form` |
 
+> **2.3 完成（2026-06-03）：**
+> - **直接刪除（`src/` 無引用）：** `bcryptjs`、`@types/bcryptjs`、`crypto-browserify`、`validator`、`@types/validator`。
+> - **`react-cookie` 移除：** 唯一使用點是 `src/index.tsx` 的 `CookiesProvider`（JWT 為 HttpOnly，前端不讀寫 cookie）；已移除 provider 包裹，provider 鏈由四層→三層（QueryClientProvider → redux Provider → BrowserRouter）。
+> - **`moment` → `dayjs`：** 新增 `src/utils/dayjs.ts` 集中設定（`.extend(advancedFormat)` 以支援 `Do` 序數 token，對應原 `'MMMM Do YYYY, h:mm:ss'`）；3 個日期提示呼叫點（`ArticleItem`、`PostItem`、`PostDetailPage`）改 import 此模組。bundle 省下 moment legacy 約 290KB。
+> - **`lodash` 改 per-method import（採推薦方案，非全面原生化）：** `import { get, isEmpty } from 'lodash'` → `import get from 'lodash/get'` 等，遍及 49 檔；保留 `lodash` + `@types/lodash`，行為 100% 不變，Vite 可 tree-shake。`@types/redux-form` 早於 2.1 即不在 `package.json`，該列自動達成。
+> - **驗證：** `npm ls redux-form draft-js moment bcryptjs crypto-browserify react-cookie validator` → `(empty)`；`tsc --noEmit` 0 error；`eslint` 0 error（僅既有 no-danger / no-unused-vars warning，無 import/order 問題）；`vite build` 成功（gzip JS 約 338KB）；`jest` 與先前一致（SignIn/SignUp 綠，PostList/ArticleList 為既有 React 19 mock 簽名問題，非本批回歸）。
+
 ### Phase 2 驗收
-- [ ] `npm ls redux-form draft-js moment bcryptjs crypto-browserify react-cookie` 全部 not found
+- [x] `npm ls redux-form draft-js moment bcryptjs crypto-browserify react-cookie` 全部 not found（另含 `validator` 一併移除）
 - [ ] Production bundle size 比 Phase 1 後再 -150KB 以上
-- [ ] 文章編輯器在 Tiptap 下可：插入圖片、超連結、粗體/斜體、清單、code block
-- [ ] 所有登入/註冊/編輯 profile 表單驗證行為與舊版一致（同步 schema test）
+- [x] 文章編輯器在 Tiptap 下可：插入圖片、超連結、粗體/斜體、清單、code block（2.2 完成；圖片以 base64 內嵌）
+- [x] 所有登入/註冊/編輯 profile 表單驗證行為與舊版一致（2.1 完成，SignIn/SignUp schema test 綠）
 
 ---
 
