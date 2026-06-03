@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { get, isEmpty } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
 // --- components ---
@@ -16,19 +16,16 @@ function ExplorePost() {
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
 
   // 使用 useInfiniteQuery 取得貼文
-  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    ['explorePost', searchString],
-    ({ pageParam = 1 }) =>
+  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['explorePost', searchString],
+    queryFn: ({ pageParam }) =>
       isEmpty(searchString)
         ? getPartialPosts(pageParam)
         : getSearchPost(searchString, '', pageParam),
-    {
-      getNextPageParam: (lastPage) =>
-        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
-      // 當 searchString 改變時，重置頁面
-      keepPreviousData: false,
-    }
-  );
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
+  });
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置

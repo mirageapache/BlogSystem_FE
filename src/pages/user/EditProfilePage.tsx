@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faInfoCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 // --- constant ---
 import { FORM_CONTROL } from 'constants/LayoutConstants';
 // --- components ---
@@ -57,7 +57,9 @@ function EditProfilePage() {
     if (isEmpty(userId)) sliceDispatch(setSignInPop(true));
   }, [userId]);
 
-  const getUserData = useQuery('editProfile', () => getOwnProfile(), {
+  const getUserData = useQuery({
+    queryKey: ['editProfile'],
+    queryFn: () => getOwnProfile(),
     enabled: !!userId && firstLoad,
   });
   const { isLoading, data } = getUserData;
@@ -133,7 +135,8 @@ function EditProfilePage() {
       formData.append('name', name);
       formData.append('account', account);
       formData.append('bio', bio);
-      formData.append('language', language);
+      // 後端只接受 'zh' / 'en'，正規化舊資料（如 'zh-TW' / 'en-US'）避免撞 400 INVALID_PARAM
+      formData.append('language', language.startsWith('en') ? 'en' : 'zh');
       formData.append('emailPrompt', emailPrompt.toString());
       formData.append('mobilePrompt', mobilePrompt.toString());
       formData.append('removeAvatar', removeAvatar.toString());
@@ -236,7 +239,7 @@ function EditProfilePage() {
                   電子郵件
                 </label>
                 <p className="text-xs ml-1 text-orange-500 dark:text-orange-400">
-                  <FontAwesomeIcon icon={icon({ name: 'info-circle', style: 'solid' })} />
+                  <FontAwesomeIcon icon={faInfoCircle} />
                   修改後即更換登入系統及電子報接收之Email
                 </p>
               </div>
@@ -380,10 +383,7 @@ function EditProfilePage() {
                 onClick={submitEditProfile}
               >
                 {updateLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>修改</>
                 )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { QueryClientProvider, QueryClient } from 'react-query';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
@@ -13,7 +13,8 @@ import './index.css';
 // import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-const basename = process.env.PUBLIC_URL;
+// Vite 以 import.meta.env.BASE_URL 提供部署 base path（對應 vite.config 的 base，預設 '/'）
+const basename = import.meta.env.BASE_URL;
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

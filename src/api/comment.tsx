@@ -10,20 +10,6 @@ interface CommentApiType extends AxResponseType {
   data: CommentDataType;
 }
 
-/** 取得貼文留言 */
-export async function getComment(): Promise<CommentApiType> {
-  const result = await axios
-    .get(`${baseUrl}/comment/`)
-    .then((res) => {
-      const { data } = res.data;
-      return data;
-    })
-    .catch((error) => {
-      return error;
-    });
-  return result;
-}
-
 /** 新增留言
  * @id 貼文或文章 id
  * @content 留言內容
@@ -40,7 +26,7 @@ export async function createComment(
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
@@ -53,7 +39,7 @@ export async function updateComment(formData: FormData): Promise<CommentApiType>
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

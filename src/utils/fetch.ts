@@ -12,6 +12,11 @@ export const API_ERROR_CODE = {
   FORBIDDEN: 'FORBIDDEN',
   NOT_FOUND: 'NOT_FOUND',
   INVALID: 'INVALID',
+  INVALID_PARAM: 'INVALID_PARAM',
+  UPLOAD_ERR: 'UPLOAD_ERR',
+  SYSTEM_ERR: 'SYSTEM_ERR',
+  UN_AUTH: 'UN_AUTH',
+  RATE_LIMIT: 'RATE_LIMIT',
 } as const;
 
 /** 錯誤提醒(一般型式) */
@@ -41,6 +46,18 @@ export const handleApiError = (res: any): boolean => {
   const code = get(res, 'data.code');
   const message = get(res, 'data.message');
 
+  // token 失效：UI（清狀態 + 彈登入）已由 api/index.tsx 的 axios interceptor 全域處理，
+  // 此處僅回報「已處理」讓 caller 停止後續流程，避免重複跳提示。
+  if (status === 401 && code === API_ERROR_CODE.UN_AUTH) {
+    return true;
+  }
+
+  // 請求過於頻繁（限速）
+  if (status === 429 || code === API_ERROR_CODE.RATE_LIMIT) {
+    errorAlert(message || '操作過於頻繁，請稍後再試');
+    return true;
+  }
+
   if (status === 403 && code === API_ERROR_CODE.GUEST_FORBIDDEN) {
     swal
       .fire({
@@ -65,8 +82,23 @@ export const handleApiError = (res: any): boolean => {
     return true;
   }
 
-  if (status === 400 && code === API_ERROR_CODE.INVALID) {
+  if (
+    status === 400 &&
+    (code === API_ERROR_CODE.INVALID || code === API_ERROR_CODE.INVALID_PARAM)
+  ) {
     errorAlert(message || '參數有誤，請重新確認');
+    return true;
+  }
+
+  // 圖片上傳失敗（檔案過大 / 副檔名不符），後端訊息較具體可直接顯示
+  if (status === 400 && code === API_ERROR_CODE.UPLOAD_ERR) {
+    errorAlert(message || '圖片上傳失敗，請確認檔案大小與格式');
+    return true;
+  }
+
+  // 5xx 統一友善文案，避免洩漏後端錯誤細節
+  if (status >= 500 || code === API_ERROR_CODE.SYSTEM_ERR) {
+    errorAlert('系統發生錯誤，請稍後再試');
     return true;
   }
 

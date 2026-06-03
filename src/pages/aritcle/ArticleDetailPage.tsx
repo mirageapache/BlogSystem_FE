@@ -1,12 +1,10 @@
-/* eslint-disable no-restricted-globals */
-/* eslint-disable react/no-danger */
 import { useEffect, useRef, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import {
   AtomicBlockUtils,
   ContentState,
@@ -53,7 +51,10 @@ function ArticleDetailPage() {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const editorRef = useRef(null);
   const editMode = useSelector((state: StateType) => state.system.editMode); // 編輯模式
-  const { isLoading, data, refetch } = useQuery(['articleDetail', id], () => getArticleDetail(id!));
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ['articleDetail', id],
+    queryFn: () => getArticleDetail(id!),
+  });
   const articleData = get(data, 'data');
 
   const [title, setTitle] = useState(''); // article title
@@ -92,23 +93,21 @@ function ArticleDetailPage() {
   };
 
   /** 回覆貼文 mutation */
-  const { mutate: CommentMutation, isLoading: commentLoading } = useMutation(
-    ({ articleId, content }: { articleId: string; content: string }) =>
+  const { mutate: CommentMutation, isPending: commentLoading } = useMutation({
+    mutationFn: ({ articleId, content }: { articleId: string; content: string }) =>
       createComment(articleId, content, 'article'),
-    {
-      onSuccess: (res) => {
-        if (res.status === 200) {
-          commentInput.current!.innerText = '';
-          setCommentContent('');
-          refetch();
-        } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          handleApiError(res);
-        }
-      },
-      onError: () => errorAlert(),
-      // error type:未登入、沒有內容
-    }
-  );
+    onSuccess: (res) => {
+      if (res.status === 200) {
+        commentInput.current!.innerText = '';
+        setCommentContent('');
+        refetch();
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        handleApiError(res);
+      }
+    },
+    onError: () => errorAlert(),
+    // error type:未登入、沒有內容
+  });
 
   /** 回覆貼文 */
   const submitComment = () => {
@@ -172,37 +171,41 @@ function ArticleDetailPage() {
   };
 
   /** 編輯文章 mutation */
-  const editArticleMutation = useMutation(
-    ({ content }: { content: string }) => updateArticle(articleData!._id, title, content),
-    {
-      onSuccess: (res) => {
-        if (handleStatus(get(res, 'status')) === 2) {
-          const swal = withReactContent(Swal);
-          swal
-            .fire({
-              title: '文章已更新',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then((result) => {
-              refetch();
-              if (result.isConfirmed) dispatch(setEditMode(false));
-            });
-        } else if (handleStatus(get(res, 'status')) === 4) {
-          handleApiError(res);
-        } else if (handleStatus(get(res, 'status')) === 5) {
-          errorAlert(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          errorAlert(ERR_NETWORK_MSG);
-        }
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const editArticleMutation = useMutation({
+    mutationFn: ({ content }: { content: string }) =>
+      updateArticle(articleData!._id, title, content),
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status')) === 2) {
+        const swal = withReactContent(Swal);
+        swal
+          .fire({
+            title: '文章已更新',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then((result) => {
+            refetch();
+            if (result.isConfirmed) dispatch(setEditMode(false));
+          });
+      } else if (handleStatus(get(res, 'status')) === 4) {
+        handleApiError(res);
+      } else if (handleStatus(get(res, 'status')) === 5) {
+        errorAlert(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        errorAlert(ERR_NETWORK_MSG);
+      }
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 修改文章 */
   const handleSubmit = () => {
     if (guardVisitorAction()) return;
+    // title 為後端必填欄位，空白會撞 500，前端先擋並給提示
+    if (isEmpty(title.trim())) {
+      errorAlert('請輸入文章標題');
+      return;
+    }
     const contentState = editorState.getCurrentContent();
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
@@ -237,10 +240,7 @@ function ArticleDetailPage() {
               else window.history.back();
             }}
           >
-            <FontAwesomeIcon
-              icon={icon({ name: 'circle-left', style: 'solid' })}
-              className="w-7 h-7"
-            />
+            <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
           </button>
           <div className="flex justify-between items-center w-full xl:border-b-[1px] dark:border-gray-700">
             {/* 作者資訊 */}
@@ -257,7 +257,7 @@ function ArticleDetailPage() {
             <ArticleInfoPanel
               articleData={articleData}
               commentInput={commentInput}
-              title={articleData.title}
+              title={title}
               hasContent // 待修改
               handleSubmit={handleSubmit}
             />
@@ -328,10 +328,7 @@ function ArticleDetailPage() {
                 onClick={submitComment}
               >
                 {commentLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 m-1.5"
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
                 ) : (
                   '回覆'
                 )}

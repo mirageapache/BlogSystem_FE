@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { get, isEmpty } from 'lodash';
 import { useSearchParams } from 'react-router-dom';
 // --- components ---
@@ -16,15 +16,12 @@ function ExploreHashTag() {
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
 
   // 使用 useInfiniteQuery 取得貼文
-  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
-    ['exploreHashTag', searchString],
-    ({ pageParam = 1 }) => getSearchHashTag(searchString, pageParam),
-    {
-      getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
-      // 當 searchString 改變時，重置頁面
-      keepPreviousData: false,
-    }
-  );
+  const { data, fetchNextPage, isLoading, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['exploreHashTag', searchString],
+    queryFn: ({ pageParam }) => getSearchHashTag(searchString, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (lastPage?.nextPage > 0 ? lastPage.nextPage : undefined),
+  });
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置
@@ -36,7 +33,10 @@ function ExploreHashTag() {
     get(data, 'pages[0].data.code', '') !== '' ||
     get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.posts], [] as PostDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.posts] : acc),
+          [] as PostDataType[]
+        );
 
   /** 滾動判斷fetch新資料 */
   useEffect(() => {

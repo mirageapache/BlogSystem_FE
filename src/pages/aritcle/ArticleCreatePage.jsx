@@ -4,10 +4,10 @@
 import React, { useRef, useState } from 'react';
 import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { get, isEmpty } from 'lodash';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 // --- components ---
@@ -79,38 +79,41 @@ function ArticleCreatePage() {
   };
 
   /** 新增文章 mutation */
-  const { mutate: createArticleMutate, isLoading } = useMutation(
-    ({ content }) => createArticle(title, content),
-    {
-      onSuccess: (res) => {
-        if (handleStatus(get(res, 'status')) === 2) {
-          const swal = withReactContent(Swal);
-          swal
-            .fire({
-              title: '文章已發佈',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then((result) => {
-              if (result.isConfirmed) navigate('/');
-            });
-        } else if (handleStatus(get(res, 'status')) === 4) {
-          handleApiError(res);
-        } else if (handleStatus(get(res, 'status')) === 5) {
-          errorAlert(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          errorAlert(ERR_NETWORK_MSG);
-        }
-      },
-      onError: () => {
-        errorAlert();
-      },
-    }
-  );
+  const { mutate: createArticleMutate, isPending: isLoading } = useMutation({
+    mutationFn: ({ content }) => createArticle(title, content),
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status')) === 2) {
+        const swal = withReactContent(Swal);
+        swal
+          .fire({
+            title: '文章已發佈',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then((result) => {
+            if (result.isConfirmed) navigate('/');
+          });
+      } else if (handleStatus(get(res, 'status')) === 4) {
+        handleApiError(res);
+      } else if (handleStatus(get(res, 'status')) === 5) {
+        errorAlert(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        errorAlert(ERR_NETWORK_MSG);
+      }
+    },
+    onError: () => {
+      errorAlert();
+    },
+  });
 
   /** 發佈文章 */
   const handleSubmit = () => {
     if (guardVisitorAction()) return;
+    // title 為後端必填欄位，空白會撞 500，前端先擋並給提示
+    if (isEmpty(title.trim())) {
+      errorAlert('請輸入文章標題');
+      return;
+    }
     const rawContent = convertToRaw(contentState);
     const contentString = JSON.stringify(rawContent);
     createArticleMutate({ content: contentString });
@@ -130,10 +133,7 @@ function ArticleCreatePage() {
               if (isClose) window.history.back();
             }}
           >
-            <FontAwesomeIcon
-              icon={icon({ name: 'circle-left', style: 'solid' })}
-              className="w-7 h-7"
-            />
+            <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
           </button>
         </div>
         <p className="text-2xl font-bold">建立文章</p>
@@ -145,10 +145,7 @@ function ArticleCreatePage() {
               onClick={handleSubmit}
             >
               {isLoading ? (
-                <FontAwesomeIcon
-                  icon={icon({ name: 'spinner', style: 'solid' })}
-                  className="animate-spin h-5 w-5 m-1.5"
-                />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
               ) : (
                 <p className="text-[14px] sm:text-[16px]">發佈</p>
               )}

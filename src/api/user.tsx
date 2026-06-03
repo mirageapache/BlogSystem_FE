@@ -17,19 +17,6 @@ interface UserPageListType extends AxResponseType {
   data: UserDataType[];
 }
 
-/** 取得所有使用者 */
-export async function getAllUserList(): Promise<GetUserProfileType> {
-  const result = await axios
-    .get(`${baseUrl}/user`)
-    .then((res) => {
-      return res;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-  return result;
-}
-
 /** 取得搜尋使用者清單(含follow資料)
  * @searchString [搜尋字串]
  * @page 要取得的資料頁碼

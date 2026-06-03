@@ -4,7 +4,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import validator from 'validator';
 import { checkLength } from '../../utils/formValidates';
 import { FORM_CONTROL } from '../../constants/LayoutConstants';
@@ -50,7 +50,7 @@ function FormInput({
   /** 顯示/隱藏密碼控制 */
   const showToggle = hidePassword ? (
     <FontAwesomeIcon
-      icon={icon({ name: 'eye-slash', style: 'solid' })}
+      icon={faEyeSlash}
       className="absolute mt-3.5 right-0 h-6 w-6 text-gray-700 cursor-pointer"
       onClick={() => {
         setHidePassword(false);
@@ -58,7 +58,7 @@ function FormInput({
     />
   ) : (
     <FontAwesomeIcon
-      icon={icon({ name: 'eye', style: 'solid' })}
+      icon={faEye}
       className="absolute mt-3.5 right-0 h-6 w-6 text-gray-700 cursor-pointer"
       onClick={() => {
         setHidePassword(true);

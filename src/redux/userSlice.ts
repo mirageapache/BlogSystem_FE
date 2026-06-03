@@ -21,8 +21,12 @@ const userSlice = createSlice({
     setUserData(state: UserStateType, action: PayloadAction<UserProfileType>) {
       state.userData = action.payload;
     },
+    /** 清除User資料（登出 / token 失效時用） */
+    clearUserData(state: UserStateType) {
+      state.userData = null;
+    },
   },
 });
 
-export const { setUserData } = userSlice.actions;
+export const { setUserData, clearUserData } = userSlice.actions;
 export default userSlice.reducer;

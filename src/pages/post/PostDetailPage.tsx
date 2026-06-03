@@ -1,12 +1,12 @@
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { get, isEmpty } from 'lodash';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
 import UserInfoPanel from 'components/user/UserInfoPanel';
@@ -40,9 +40,10 @@ function PostDetailPage() {
   const commentInput = useRef<HTMLDivElement>(null); // 輸入框div
 
   const { id } = useParams();
-  const { isLoading, error, data, refetch } = useQuery(['postDetail', id], () =>
-    getPostDetail(id!)
-  );
+  const { isLoading, error, data, refetch } = useQuery({
+    queryKey: ['postDetail', id],
+    queryFn: () => getPostDetail(id!),
+  });
   const postData = get(data, 'data');
   const commentList = get(postData, 'comments', []) as CommentDataType[];
 
@@ -55,23 +56,21 @@ function PostDetailPage() {
   };
 
   /** 回覆貼文 mutation */
-  const { mutate: CommentMutation, isLoading: commentLoading } = useMutation(
-    ({ postId, content }: { postId: string; content: string }) =>
+  const { mutate: CommentMutation, isPending: commentLoading } = useMutation({
+    mutationFn: ({ postId, content }: { postId: string; content: string }) =>
       createComment(postId, content, 'post'),
-    {
-      onSuccess: (res) => {
-        if (res.status === 200) {
-          commentInput.current!.innerText = '';
-          setCommentContent('');
-          refetch();
-        } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          handleApiError(res);
-        }
-      },
-      onError: () => errorAlert(),
-      // error type:未登入、沒有內容
-    }
-  );
+    onSuccess: (res) => {
+      if (res.status === 200) {
+        commentInput.current!.innerText = '';
+        setCommentContent('');
+        refetch();
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        handleApiError(res);
+      }
+    },
+    onError: () => errorAlert(),
+    // error type:未登入、沒有內容
+  });
 
   /** 回覆貼文 */
   const submitComment = () => {
@@ -107,10 +106,7 @@ function PostDetailPage() {
           className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500"
           onClick={() => history.back()}
         >
-          <FontAwesomeIcon
-            icon={icon({ name: 'circle-left', style: 'solid' })}
-            className="w-7 h-7"
-          />
+          <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
         </button>
       </div>
       <div className="w-minus50 sm:w-full">
@@ -199,10 +195,7 @@ function PostDetailPage() {
               onClick={submitComment}
             >
               {commentLoading ? (
-                <FontAwesomeIcon
-                  icon={icon({ name: 'spinner', style: 'solid' })}
-                  className="animate-spin h-5 w-5 m-1.5"
-                />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
               ) : (
                 '回覆'
               )}

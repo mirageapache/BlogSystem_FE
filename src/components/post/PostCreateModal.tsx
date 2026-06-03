@@ -2,12 +2,12 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useRef, useState } from 'react';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleXmark, faImage, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import { get, isEmpty } from 'lodash';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
@@ -59,7 +59,8 @@ function PostCreateModal() {
   };
 
   /** 新增貼文 mutation */
-  const createPostMutation = useMutation((formData: FormData) => createPost(formData), {
+  const createPostMutation = useMutation({
+    mutationFn: (formData: FormData) => createPost(formData),
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status')) === 2) {
         const swal = withReactContent(Swal);
@@ -100,7 +101,7 @@ function PostCreateModal() {
     formData.set('status', '1');
     formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    if (imageFile) formData.set('imageFile', imageFile);
+    if (imageFile instanceof File) formData.set('imageFile', imageFile);
 
     createPostMutation.mutate(formData);
   };
@@ -118,7 +119,7 @@ function PostCreateModal() {
             onClick={handleClose}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="h-6 w-6 m-1 text-gray-500 hover:text-red-500"
             />
           </button>
@@ -148,7 +149,7 @@ function PostCreateModal() {
                 >
                   <FontAwesomeIcon
                     className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
-                    icon={icon({ name: 'circle-xmark', style: 'solid' })}
+                    icon={faCircleXmark}
                   />
                 </button>
               </div>
@@ -161,7 +162,7 @@ function PostCreateModal() {
           <div>
             <label htmlFor="postImage">
               <FontAwesomeIcon
-                icon={icon({ name: 'image', style: 'solid' })}
+                icon={faImage}
                 className="h-6 w-6 m-1 cursor-pointer text-gray-500 hover:text-orange-500"
               />
             </label>
@@ -180,11 +181,8 @@ function PostCreateModal() {
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
                 onClick={handleSubmit}
               >
-                {createPostMutation.isLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                {createPostMutation.isPending ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>發佈</>
                 )}

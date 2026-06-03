@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import React from 'react';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEditMode, SysStateType } from 'redux/sysSlice';
@@ -33,7 +33,7 @@ function BackwardBtn() {
           }
         }}
       >
-        <FontAwesomeIcon icon={icon({ name: 'circle-left', style: 'solid' })} className="w-7 h-7" />
+        <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
       </button>
     </div>
   );

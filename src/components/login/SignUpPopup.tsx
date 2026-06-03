@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import { get, isEmpty, isEqual } from 'lodash';
 import Swal from 'sweetalert2';
@@ -109,7 +109,7 @@ function SignUpPopup() {
             onClick={handleClose}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="w-5 h-5 m-1 text-gray-900 dark:text-gray-100"
             />
           </button>
@@ -170,10 +170,7 @@ function SignUpPopup() {
                 onClick={submitSignUp}
               >
                 {isLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5"
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5" />
                 ) : (
                   <>註冊</>
                 )}

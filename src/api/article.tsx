@@ -18,20 +18,6 @@ interface ArticlePageListType extends AxResponseType {
   data: ArticleDataType[];
 }
 
-/** 取得所有文章 */
-export async function getArticles(): Promise<ArticleApiType> {
-  const result = await axios
-    .get(`${baseUrl}/article`)
-    .then((res) => {
-      const articleData = res.data;
-      return articleData;
-    })
-    .catch((error) => {
-      return error;
-    });
-  return result;
-}
-
 /** (動態)取得文章資料
  * @param page 要取得的資料頁碼
  */
@@ -54,7 +40,7 @@ export async function getArticleDetail(articleId: string): Promise<ArticleApiTyp
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

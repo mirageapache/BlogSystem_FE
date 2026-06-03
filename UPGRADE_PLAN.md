@@ -181,20 +181,26 @@
 
 ### 1.1 Node 升級
 - **現況推測：** Node 16/18（CRA 5 + react-scripts 時代）
-- **目標：** Node **20 LTS**（2026 年標準；Node 22 為 current）
+- **目標：** Node **24 LTS**（2026-05 時 Node 24 為 Active LTS、Node 26 為 current；Node 20 已 EOL、Node 22 進入 maintenance）
+- **過渡期注意：** react-scripts 5 在 Node 24 下啟動會出現 unsupported engine 警告（不影響運作）。因 Phase 1 後段就會拔 CRA 換 Vite，警告期間很短可接受；Vite 5/6 + React 19 + react-query v5 對 Node 24 是正式支援。
 - **動作：**
-  - 新增 `.nvmrc` 與 `package.json` engines 欄位：`"engines": { "node": ">=20.0.0" }`
+  - 新增 `.nvmrc`（內容：`24`）
+  - `package.json` engines 欄位設 `"engines": { "node": ">=24.0.0 <25.0.0" }`（鎖在 LTS 偶數版區間，避免有人在奇數版 Node 25 上安裝）
   - 開發團隊各自 `nvm use`
-  - CI runner 設 `node-version: 20`
+  - CI runner 設 `node-version: 24`（GitHub Actions `actions/setup-node@v4`）
 
 ### 1.2 React 升級
 - **現況：** React 18.2
 - **目標：** React **19.x**
 - **重點變更：**
-  - `ReactDOM.render` 已徹底移除（已用 createRoot，OK）
+  - `ReactDOM.render` 已徹底移除（已用 createRoot，OK）g
   - `forwardRef` 在 19 已不必要（function component 可直接接 `ref` prop）
   - `useFormStatus` / `useActionState` / `use()` 等新 API 可在 Phase 2 表單重寫時利用
   - 注意：`redux-form` **完全不相容 React 19**，因此 redux-form 汰換**必須先於或同時於** React 19 升級
+
+> **執行狀態（2026-06-02）：** 1.1 Node 24 ✅、1.2 React 19 ✅、1.3 Vite ✅、1.4 react-query v5 ✅ 已完成。Phase 1 已全部完成（除「線上部署實測」一項待驗）。
+> 1.3 重要決策：FontAwesome `import.macro` 在 Vite（plugin-react v6 已無 Babel、改用 oxc）下無法運作，已用 codemod 將 22 檔/69 處 `icon({...})` 轉為直接 `import faXxx`，並移除 babel-plugin-macros。測試框架暫留 jest（`.babelrc` 仍由 babel-jest 使用），Vitest 遷移延到 Phase 3。`PUBLIC_URL` 不再是 env 變數，改由 Vite `base` 提供（`import.meta.env.BASE_URL`）。
+> 1.4 重要決策：`@tanstack/react-query@5.100.x`。全專案 19 處 hook 改 v5 物件式（9 個 `useInfiniteQuery`、5 個 `useQuery`、約 13 個 `useMutation`）。`useInfiniteQuery` 補上必填 `initialPageParam: 1` 並移除已棄用的 `keepPreviousData: false`（本來就是預設值）；mutation 的 `isLoading` 一律改 `isPending`（JSX 讀取點同步更新或以 `isPending: isLoading` 別名沿用）；`useQuery('editProfile', …)` 的字串 key 改為陣列 `['editProfile']`。`queryClient.setQueryData/setQueriesData/invalidateQueries` 在 v5 簽名相容，無需改動。安裝沿用 `--legacy-peer-deps`（`@cloudinary/react` 僅支援 React ≤18，屬 Phase 2 死碼清理對象）。
 
 ### 1.3 Vite 導入（取代 CRA / react-scripts）
 - **動機：** CRA 已停止維護（Meta 2023 公告），dev server 慢、HMR 不穩；Vite 5/6 開發體驗壓倒性勝出。
@@ -213,18 +219,21 @@
   - 更新：`package.json` scripts → `dev` / `build` / `preview` / `test`
   - 全專案 `process.env.REACT_APP_API_URL` → `import.meta.env.VITE_API_URL`（grep 替換約 5~10 處）
 
-### 1.4 react-query → @tanstack/react-query v5
-- v3 已是 legacy，新版 API 變動：
-  - `useQuery('key', fn)` → `useQuery({ queryKey: ['key'], queryFn: fn })`
-  - `isLoading` 拆為 `isPending` / `isFetching`
-  - `keepPreviousData` → `placeholderData: keepPreviousData`
-- 跟 Vite 一起做最划算（diff 同質性高）。
+### 1.4 react-query → @tanstack/react-query v5 ✅
+- v3 已是 legacy，新版 API 變動（實際套用結果）：
+  - `useQuery('key', fn, opts)` → `useQuery({ queryKey: ['key'], queryFn: fn, ...opts })`；`queryKey` 一律須為陣列
+  - `useMutation(fn, opts)` → `useMutation({ mutationFn: fn, ...opts })`；mutation 的 `isLoading` → `isPending`
+  - `useInfiniteQuery`：改物件式 + **新增必填 `initialPageParam: 1`** + `queryFn: ({ pageParam }) => …`；移除已棄用且為預設的 `keepPreviousData: false`
+  - query 的 `isLoading` v5 仍存在（= 首次載入），語意不變故保留；`RqResponseType` 型別無需改動
+  - `queryClient` 的 `setQueryData / setQueriesData / invalidateQueries` 簽名相容，無改動
+- 驗證：tsc 0 error、eslint 0 error（9 既有 warning）、`vite build` 545 modules 成功、jest 10 過/3 既有失敗（與遷移前一致）。
 
 ### Phase 1 驗收
-- [ ] `npm run dev` 啟動秒開（< 1 秒），HMR 反應 < 100ms
-- [ ] `npm run build` 產出 bundle，與 CRA 版比較 size（預期 -20% 起）
-- [ ] React 19 + Vite 並未引入新的 console warning
-- [ ] 環境變數重新命名後線上部署可運作
+- [x] `npm run dev` 啟動秒開（實測 ~150ms ready）
+- [x] `npm run build` 產出 bundle（dist/，538 modules、~1.5s）；移除誤打包的 macro 機制後 bundle 由 1,577KB→1,166KB（gzip 447→358KB）
+- [x] React 19 + Vite 並未引入新的 console warning（build / dev / tsc / eslint 皆 0 error）
+- [ ] 環境變數重新命名後**線上部署**可運作（dev 已驗證 `VITE_API_URL`/`BASE_URL` 正確注入；正式 GitHub Pages 部署待實測）
+- [x] 1.4 react-query v5 升級（19 處 hook 改物件式 API；tsc/eslint/build/jest 皆通過）
 
 ---
 

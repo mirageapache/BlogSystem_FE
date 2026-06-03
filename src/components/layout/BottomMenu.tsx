@@ -1,6 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faHome, faSquarePlus, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCompass } from '@fortawesome/free-regular-svg-icons';
 import { get, isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,7 +35,7 @@ function BottomMenu() {
         }}
       >
         <FontAwesomeIcon
-          icon={icon({ name: 'home', style: 'solid' })}
+          icon={faHome}
           className={`w-5 h-5 text-gray-500 ${activePage === '' ? 'text-orange-500' : ''}  ${
             activePage === 'home' ? 'text-orange-500' : ''
           }`}
@@ -51,7 +52,7 @@ function BottomMenu() {
         }}
       >
         <FontAwesomeIcon
-          icon={icon({ name: 'compass', style: 'regular' })}
+          icon={faCompass}
           className={`w-5 h-5 text-gray-500  ${activePage === 'explore' ? 'text-orange-500' : ''}`}
         />
       </Link>
@@ -66,10 +67,7 @@ function BottomMenu() {
             sliceDispatch(setSignInPop(true));
           }}
         >
-          <FontAwesomeIcon
-            icon={icon({ name: 'user', style: 'solid' })}
-            className="w-5 h-5 text-gray-500"
-          />
+          <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-gray-500" />
         </button>
       ) : (
         // 已登入狀態 => 顯示建立(文章、貼文)&個人頁面
@@ -84,10 +82,7 @@ function BottomMenu() {
                 sliceDispatch(setShowCreateModal(true));
               }}
             >
-              <FontAwesomeIcon
-                icon={icon({ name: 'square-plus', style: 'solid' })}
-                className="w-5 h-5 text-gray-500"
-              />
+              <FontAwesomeIcon icon={faSquarePlus} className="w-5 h-5 text-gray-500" />
             </button>
           )}
           <Link
@@ -99,7 +94,7 @@ function BottomMenu() {
             }}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'user', style: 'solid' })}
+              icon={faUser}
               className={`w-5 h-5 text-gray-500 ${activePage === 'user' ? 'text-orange-500' : ''}`}
             />
           </Link>

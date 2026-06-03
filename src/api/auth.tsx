@@ -39,7 +39,7 @@ export async function Auth() {
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }

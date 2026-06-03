@@ -1,7 +1,7 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 // --- functions ---
 import { bgColorConvert } from '../../utils/common';
 
@@ -28,10 +28,7 @@ function Avatar(props: {
     }
     return (
       <span className={`${size} rounded-full flex justify-center items-center border`}>
-        <FontAwesomeIcon
-          icon={icon({ name: 'user', style: 'solid' })}
-          className="w-8 h-8 text-gray-500"
-        />
+        <FontAwesomeIcon icon={faUser} className="w-8 h-8 text-gray-500" />
       </span>
     );
   }

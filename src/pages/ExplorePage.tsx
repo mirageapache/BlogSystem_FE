@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { get, isEmpty } from 'lodash';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faSearch, faTag, faUsers, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faFileLines, faNoteSticky } from '@fortawesome/free-regular-svg-icons';
 // --- components ---
 import ExplorePost from 'components/explore/ExplorePost';
 import ExploreArticle from 'components/explore/ExploreArticle';
@@ -55,7 +56,10 @@ function ExplorePage() {
     if (!isEmpty(tag)) dispatch(setExploreTag(tag!));
   }, [tag]);
 
-  const { data } = useQuery(['search', searchString], () => getSearchCount(searchString));
+  const { data } = useQuery({
+    queryKey: ['search', searchString],
+    queryFn: () => getSearchCount(searchString),
+  });
   const article = get(data, 'article', 0);
   const post = get(data, 'post', 0);
   let user = get(data, 'user', 0);
@@ -112,12 +116,12 @@ function ExplorePage() {
             className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 outline-none"
           />
           <FontAwesomeIcon
-            icon={icon({ name: 'search', style: 'solid' })}
+            icon={faSearch}
             className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 text-gray-500 dark:text-gray-100"
           />
           {/* 清除搜尋字串 */}
           <FontAwesomeIcon
-            icon={icon({ name: 'xmark', style: 'solid' })}
+            icon={faXmark}
             onClick={() => {
               navigate(`/explore`);
             }}
@@ -135,7 +139,7 @@ function ExplorePage() {
             >
               <p className="hidden md:inline-block">文章</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'file-lines', style: 'regular' })}
+                icon={faFileLines}
                 className={`${iconStyle} ${exploreTag === 'article' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && article > 0 && (
@@ -152,7 +156,7 @@ function ExplorePage() {
             >
               <p className="hidden md:inline-block">貼文</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'note-sticky', style: 'regular' })}
+                icon={faNoteSticky}
                 className={`${iconStyle} ${exploreTag === 'post' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && post > 0 && (
@@ -169,7 +173,7 @@ function ExplorePage() {
             >
               <p className="hidden md:inline-block">用戶</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'users', style: 'solid' })}
+                icon={faUsers}
                 className={`${iconStyle} ${exploreTag === 'user' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && user > 0 && (
@@ -182,7 +186,7 @@ function ExplorePage() {
             <button type="button" className={tabButtonStyle} onClick={() => handleTabActive('tag')}>
               <p className="hidden md:inline-block">標籤</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'tag', style: 'solid' })}
+                icon={faTag}
                 className={`${iconStyle} ${exploreTag === 'tag' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && hashtag > 0 && (
