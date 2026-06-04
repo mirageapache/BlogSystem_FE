@@ -25,6 +25,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
     css: false, // 不處理 CSS（等同舊 jest 的 identity-obj-proxy）
+    // 測試環境固定 API base URL，讓 msw 能以絕對網址攔截 api 層的 axios 請求
+    // （正式環境由 .env 的 VITE_API_URL 提供；測試時 import.meta.env 預設為空）。
+    env: { VITE_API_URL: 'http://localhost/api' },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

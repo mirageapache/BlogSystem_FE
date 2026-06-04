@@ -373,7 +373,19 @@
 > - 驗證：`vitest run` 13/13 綠、`tsc --noEmit` 0 error、`eslint` 0 error（僅既有 9 warning）、`vite build` 成功。
 > - 註：`.babelrc` + `@babel/preset-*` 原僅供 babel-jest，現 @vitejs/plugin-react 預設不讀 `.babelrc`，屬無害殘留，留待後續清理。
 >
-> **後續批次（未開始）：** msw 取代 axios mock；補測 fetch.ts handleApiError / zod schema 邊界 / input.ts handleHashTag / dateTime.ts / redux slices / infinite scroll；推進覆蓋率至目標。
+> **第二批：msw 導入 + 核心 utils/schema/slice 補測（完成 ✅，2026-06-04）**
+> - 安裝 `msw@2`，建立 `src/test/msw/{server,handlers}.ts`，於 `setupTests.ts` 以 `beforeAll/afterEach/afterAll` 管理生命週期（`onUnhandledRequest: 'error'`）。`vite.config.ts` 加 `test.env.VITE_API_URL = 'http://localhost/api'`，讓 msw 能以絕對網址攔截 api 層 axios 請求。
+> - 新增 6 個測試檔：
+>   - `fetch.test.ts`：`handleStatus`（百位數）+ `handleApiError` 全部錯誤碼分支（401/429/RATE_LIMIT/403 GUEST/403 FORBIDDEN/404/400 INVALID·INVALID_PARAM·UPLOAD_ERR/5xx/SYSTEM_ERR/未涵蓋）→ fetch.ts **lines 100%**。
+>   - `schemas.test.ts`：signIn/signUp/findPwd/resetPwd/editProfile 的邊界（email 必填先於格式、密碼 5/6/20/21 字、confirmPassword 一致性、bio 200/201 字）。
+>   - `input.test.ts`：`handleHashTag`（純文字、英文/中文 hashtag、同行多標籤、多行、空字串、純空白）。
+>   - `dateTime.test.ts`：`calcTimeDiff`/`formatDateTime`（以 `vi.setSystemTime` 固定基準，涵蓋相對時間、2~6 天、同年跨週、跨年、未來時間）/`formateDate`/`formateMonth`。
+>   - `slices.test.ts`：sys/login/user/post 四個 slice 的每個 reducer state transition（含 setDarkMode toggle + localStorage）。
+>   - `auth.api.test.ts`：以 msw 攔截 `SignIn`，驗證「成功回 res、4xx 回 error.response」慣例（證明 msw + axios + jsdom 串通）。
+> - 結果：**10 suite / 88 test 全綠**；`tsc --noEmit` 0 error、`eslint` 0 error、`vite build` 成功。eslint override 範圍加入 `src/setupTests.ts`。
+> - 覆蓋率現況：被鎖定的純邏輯模組（fetch/schemas/input/dateTime/slices）覆蓋高（fetch.ts 100% lines）；但**全域 lines 僅約 14%**，因元件/頁面層尚未補測——要達標 70%/60% 需另寫元件測試（屬後續批次，非本批「核心 utils」範圍）。
+>
+> **後續批次（未開始）：** infinite scroll（`useInfiniteQuery` 的 `hasNextPage=false` 不再 fetchNextPage）；視需要補關鍵元件/頁面測試以拉高全域覆蓋率至 70%/60%。
 >
 > 以下為原始規劃內容。
 
