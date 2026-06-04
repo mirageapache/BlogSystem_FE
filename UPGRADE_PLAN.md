@@ -405,6 +405,24 @@
 
 ### 3.2 E2E Test（Playwright）
 
+> **第一批：Playwright 架構 + smoke set（route mock）（完成 ✅，2026-06-04）**
+> - 安裝 `@playwright/test@1.60` + Chromium binary（`npx playwright install chromium`）。新增 `playwright.config.ts`、`e2e/` 目錄、`npm run e2e` / `e2e:ui` / `e2e:report` scripts。
+> - **後端策略：route mock。** 後端為獨立 repo、smoke set 不依賴 test DB，故用 `page.route` 在瀏覽器端攔截 axios 請求並回假資料，CI 即可完整跑完且 deterministic。共用工具與假資料在 `e2e/fixtures/mockApi.ts`（`installApiFallback` 以 API origin `http://localhost:3500` 界定保底攔截；個別端點用 host-agnostic 的 `**<path>` glob）。
+>   - ⚠️ 踩雷：保底攔截一開始用「path 段」RegExp（`/(post|article|user…)/`），結果連 Vite dev server 提供的前端模組（`/src/pages/post/…`、`/src/api/…`）都被攔成 `{}`，整個 app 變白頁。**必須以 origin（非 path 段）界定**，因後端 API（:3500）與 dev 資產（:4399）天然不同 origin。
+> - **埠號用 4399（非開發慣用的 3000）**：3000 被 Docker、5173 等被其他本機專案佔用；`webServer` 以 `npm run dev -- --port 4399 --strictPort` 啟動，`--strictPort` 確保埠固定不跳號。
+> - 12 個 smoke spec（chromium）涵蓋 journey #1/#2/#3 的可 mock 段：
+>   - `home.spec`：訪客瀏覽首頁動態（貼文內容/作者/到底提示）、未登入 header 顯示登入/註冊。
+>   - `explore.spec`：四分頁呈現、切到「貼文」載入內容、搜尋字串反映到網址 query。
+>   - `auth.spec`：登入 popup 開啟、空白送出觸發欄位驗證、正確帳密 200 → popup 關閉並切換已登入、以訪客身份登入、註冊 popup 開啟。
+>   - `navigation.spec`：側欄連結導向 /explore、未知路徑顯示 404。
+>   - 選擇器：專案無 `data-testid`，一律用 role/text/placeholder/aria-label；同名連結（離屏的 `#main-menu` vs 側欄）以 `section.lg:w-60` 限定範圍。
+> - **vitest 隔離**：vitest 預設 glob 會撿走 `e2e/*.spec.ts`，已在 `vite.config.ts` test 加 `include: ['src/**/*.{test,spec}.{ts,tsx}']` + `exclude: [...,'e2e']`。`.gitignore` 加 `test-results`/`playwright-report`/`playwright/.cache`。
+> - 結果：**12/12 綠（~4.5s）**；`tsc --noEmit` 0 error、`vitest run` 仍 10 suite / 88 test 全綠。
+>
+> **後續批次（未開始）：** full set（journey #2 發文→編輯→刪除、#4 個資頭貼、#5 留言按讚，可續用 route mock 或改打 staging API）；多瀏覽器（firefox/webkit）；可選的真實後端整合測試（需 test DB）。
+>
+> 以下為原始規劃內容。
+
 - **為什麼是 Playwright 不是 Cypress：** 多 browser 引擎、平行執行更快、API 對 TypeScript 友善、官方支援度高。
 - **核心 user journey：**
   1. 訪客瀏覽首頁、Explore 切換 tag、搜尋

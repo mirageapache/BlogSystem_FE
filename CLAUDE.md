@@ -19,11 +19,17 @@ npm run test:watch   # vitest watch mode
 npm run coverage     # vitest run --coverage (v8 provider)
 npm run test -- src/test/PostList.test.tsx   # Run a single test file
 npm run deploy       # gh-pages publish of dist/ (runs predeploy build first)
+npm run e2e          # Playwright E2E smoke set (chromium); auto-starts the dev server
+npm run e2e:ui       # Playwright UI mode (watch/debug)
+npm run e2e:report   # open the last HTML report
+npm run e2e -- e2e/auth.spec.ts   # run a single E2E spec
 ```
 
 Test note: tests run on **Vitest** (v4, migrated off jest in Phase 3.1), reusing `vite.config.ts` (the `test` block: `globals: true`, `environment: 'jsdom'`, `setupFiles: './src/setupTests.ts'`, `css: false`). `globals: true` provides `describe/test/expect/vi` without imports — `src/vitest.d.ts` (`/// <reference types="vitest/globals" />`) supplies the TS types, and `.eslintrc.json` declares them as globals in an `overrides` block scoped to test files. Use **`vi`** (not `jest`) for mocks: `vi.mock`, `vi.fn`, `vi.mocked(x)`. Two gotchas vs jest: (1) `vi.mock` factories are hoisted and **cannot** reference outer variables (jest's `mock`-prefix exception does not apply) — use `vi.hoisted(() => ({...}))`; (2) ESM default-export mocks must return `{ default: ... }` (e.g. `vi.mock('./Foo', () => ({ default: vi.fn() }))`). React 19 calls function components with a single `(props)` arg (no legacy context), so assert props via `vi.mocked(Cmp).mock.calls[i][0]` rather than `toHaveBeenCalledWith(props, {})`.
 
 API-layer tests use **msw** (`src/test/msw/server.ts`, started/reset/closed in `setupTests.ts` with `onUnhandledRequest: 'error'`) to intercept real axios requests rather than mocking the api module. Because `API_URL = import.meta.env.VITE_API_URL` is empty in tests, `vite.config.ts` sets `test.env.VITE_API_URL = 'http://localhost/api'` so msw handlers match absolute URLs (e.g. `http.post('http://localhost/api/auth/signin', ...)`); add per-test handlers with `server.use(...)`. Pure-logic suites (`fetch`/`schemas`/`input`/`dateTime`/`slices`) need no msw — they don't issue requests. For `formatDateTime` (reads `new Date()`), fix "now" with `vi.useFakeTimers()` + `vi.setSystemTime(...)`.
+
+E2E note: **Playwright** (`@playwright/test`, added Phase 3.2) lives in `e2e/`, configured by the root `playwright.config.ts` (NOT vitest). The smoke set is **route-mock-based** — `e2e/fixtures/mockApi.ts`'s `installApiFallback(page)` intercepts the backend API *origin* (`http://localhost:3500`, from `.env`'s `VITE_API_URL`) and individual endpoints are mocked with host-agnostic `**<path>` globs (later-registered routes win, so per-spec mocks override the fallback). **Scope the fallback by origin, never by path segment** — a path-segment matcher also swallows Vite's own dev module requests (`/src/pages/post/…`) and white-screens the app. The E2E dev server runs on a dedicated port **4399** (`--strictPort`), not the usual 3000 (Docker/other local apps squat on 3000/5173). The app exposes **no `data-testid`**, so specs use role/text/placeholder/aria-label; disambiguate the duplicate nav links (off-screen `#main-menu` vs the desktop sidebar) by scoping to `section.lg:w-60`. Vitest's default glob would pick up `e2e/*.spec.ts`, so `vite.config.ts` pins `test.include` to `src/**` and excludes `e2e`.
 
 There is **no `npm run lint`** script — run ESLint directly if needed (`npx eslint src --ext .ts,.tsx,.jsx`). The config extends `airbnb` + `prettier` + `plugin:react/recommended` (`.eslintrc.json`).
 

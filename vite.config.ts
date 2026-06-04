@@ -23,6 +23,9 @@ export default defineConfig({
     // Phase 3.1：由 jest 平移至 vitest
     globals: true, // 提供全域 describe/test/expect/vi，沿用既有測試免逐檔 import
     environment: 'jsdom',
+    // 只收 src 內的單元測試；e2e/ 下的 Playwright .spec.ts 由 playwright 跑，勿讓 vitest 撿走
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['node_modules', 'dist', 'e2e'],
     setupFiles: './src/setupTests.ts',
     css: false, // 不處理 CSS（等同舊 jest 的 identity-obj-proxy）
     // 測試環境固定 API base URL，讓 msw 能以絕對網址攔截 api 層的 axios 請求
