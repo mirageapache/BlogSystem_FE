@@ -9,24 +9,27 @@ import Swal from 'sweetalert2';
 import { SignIn } from '../api/auth';
 import SignInPopup from '../components/login/SignInPopup';
 
-jest.mock('../api/auth', () => ({
-  SignIn: jest.fn(),
+// vitest 的 vi.mock 工廠會被提升至檔案頂端，無法引用外層變數（jest 的 mock 前綴例外在此不適用），
+// 故以 vi.hoisted 建立共用的 mock Swal 實例供兩個 mock 工廠取用。
+const { mockSwal } = vi.hoisted(() => ({
+  mockSwal: { fire: vi.fn().mockResolvedValue({ isConfirmed: true }) },
 }));
 
-jest.mock('sweetalert2', () => ({
-  fire: jest.fn().mockResolvedValue({ isConfirmed: true }),
+vi.mock('../api/auth', () => ({
+  SignIn: vi.fn(),
 }));
-const mockSwal = Swal;
-jest.mock('sweetalert2-react-content', () => jest.fn(() => mockSwal));
+
+vi.mock('sweetalert2', () => ({ default: mockSwal }));
+vi.mock('sweetalert2-react-content', () => ({ default: vi.fn(() => mockSwal) }));
 
 const mockStore = configureStore([]);
-const mockedSignIn = SignIn as jest.Mock;
+const mockedSignIn = vi.mocked(SignIn);
 
 describe('登入功能(SignIn)', () => {
   let store: Store<unknown, AnyAction>;
   beforeEach(() => {
     store = mockStore({});
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
   });
 
   test('登入元件顯示', () => {

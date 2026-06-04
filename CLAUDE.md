@@ -14,12 +14,14 @@ UI text and most code comments are in Traditional Chinese — preserve that conv
 npm run dev          # Vite dev server on http://localhost:3000 (npm start is an alias)
 npm run build        # Vite production build (output: dist/)
 npm run preview      # Serve the production build locally
-npm test             # jest (one-shot, jsdom) — same as npm run jest
-npm run jest -- src/test/PostList.test.tsx   # Run a single test file
+npm test             # vitest run (one-shot, jsdom)
+npm run test:watch   # vitest watch mode
+npm run coverage     # vitest run --coverage (v8 provider)
+npm run test -- src/test/PostList.test.tsx   # Run a single test file
 npm run deploy       # gh-pages publish of dist/ (runs predeploy build first)
 ```
 
-Test note: tests still run on **jest** (standalone, via `.babelrc` + `jest.config.js`), independent of the build tool. Migration to Vitest is deferred to Phase 3. 3 of the existing suites currently have pre-existing assertion-level failures (SignIn/SignUp flow mocks) — to be fixed in the test phase, not transform errors.
+Test note: tests run on **Vitest** (v4, migrated off jest in Phase 3.1), reusing `vite.config.ts` (the `test` block: `globals: true`, `environment: 'jsdom'`, `setupFiles: './src/setupTests.ts'`, `css: false`). `globals: true` provides `describe/test/expect/vi` without imports — `src/vitest.d.ts` (`/// <reference types="vitest/globals" />`) supplies the TS types, and `.eslintrc.json` declares them as globals in an `overrides` block scoped to test files. Use **`vi`** (not `jest`) for mocks: `vi.mock`, `vi.fn`, `vi.mocked(x)`. Two gotchas vs jest: (1) `vi.mock` factories are hoisted and **cannot** reference outer variables (jest's `mock`-prefix exception does not apply) — use `vi.hoisted(() => ({...}))`; (2) ESM default-export mocks must return `{ default: ... }` (e.g. `vi.mock('./Foo', () => ({ default: vi.fn() }))`). React 19 calls function components with a single `(props)` arg (no legacy context), so assert props via `vi.mocked(Cmp).mock.calls[i][0]` rather than `toHaveBeenCalledWith(props, {})`.
 
 There is **no `npm run lint`** script — run ESLint directly if needed (`npx eslint src --ext .ts,.tsx,.jsx`). The config extends `airbnb` + `prettier` + `plugin:react/recommended` (`.eslintrc.json`).
 
@@ -48,7 +50,7 @@ All HTTP lives in `src/api/*.tsx`, one file per resource (`auth`, `user`, `post`
 Image uploads now go through the backend: create/edit forms send a `FormData` with an `imageFile` field (and `removeImage` flag) to the post/article endpoints. The old client-side Cloudinary `uploadImage` helper was removed.
 
 ### Path resolution
-`tsconfig.json` sets `baseUrl: "src"` plus an explicit alias for `constants/*`. Three places consume this and must stay in sync when adding aliases: (1) Vite resolves them natively via `resolve.tsconfigPaths: true` in `vite.config.ts`; (2) `jest.config.js` mirrors it with `moduleDirectories: ['node_modules', 'src']` plus a `constants/*` mapper. Imports like `components/post/PostItem` or `constants/LayoutConstants` resolve from `src/`.
+`tsconfig.json` sets `baseUrl: "src"` plus an explicit alias for `constants/*`. Vite resolves them natively via `resolve.tsconfigPaths: true` in `vite.config.ts`, and Vitest reuses that same `vite.config.ts` resolution — so there is now a single source of truth (the old `jest.config.js` `moduleDirectories`/`constants/*` mapper was removed with the Phase 3.1 Vitest migration). Imports like `components/post/PostItem` or `constants/LayoutConstants` resolve from `src/`.
 
 ### Forms (react-hook-form + zod)
 Forms use **react-hook-form** v7 with **zod** schemas via `@hookform/resolvers/zod` (Phase 2.1). Validation schemas live in `src/schemas/` (`src/schemas/auth.ts` for sign-in/up, find/reset password; `src/schemas/user.ts` for the edit-profile form) — error message strings are kept in Traditional Chinese and matched to the existing test assertions. The shared `components/form/FormInput` and `components/form/FormTextArea` are RHF-compatible: pass `registration={register('field')}` and `errorMsg={errors.field?.message}` (they no longer take `value`/`setValue`/`name`/`handleEnter`). Submit via `<form onSubmit={handleSubmit(onSubmit)}>` with a `type="submit"` button; native Enter submits, so the old `handleEnter` prop is gone. For async-loaded forms (e.g. EditProfilePage fetches the profile via react-query), seed RHF with `reset(values)` inside the data-arrival `useEffect` rather than per-field `useState`.

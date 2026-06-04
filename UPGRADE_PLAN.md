@@ -363,6 +363,20 @@
 
 ### 3.1 Unit Test（Vitest + React Testing Library）
 
+> **第一批：Vitest 基礎建設 + 既有測試平移（完成 ✅，2026-06-04）**
+> - 安裝 `vitest@4.1.8` + `@vitest/coverage-v8` + `jsdom`（Vitest 4 的 peer 明確支援 `vite ^8`）。
+> - 設定併入既有 `vite.config.ts` 的 `test` 區塊（改由 `vitest/config` 匯入 `defineConfig` 以取得型別）：`globals: true`、`environment: 'jsdom'`、`setupFiles: './src/setupTests.ts'`、`css: false`、coverage 用 v8 provider。新增 `src/vitest.d.ts`（`/// <reference types="vitest/globals" />`）供 TS 認得全域 API。
+> - 4 個既有測試（SignIn/SignUp/ArticleList/PostList）由 jest 平移至 vitest：`jest.*` → `vi.*`、`as jest.Mock` → `vi.mocked()`。**兩個 vitest 陷阱**已處理：(1) `vi.mock` 工廠會被提升、不能引用外層變數（jest 的 `mock` 前綴例外不適用）→ 改用 `vi.hoisted` 建立共用 mock Swal；(2) ESM default-export mock 要回傳 `{ default: ... }`。
+> - **順帶修掉兩個既有失敗**：`PostList`/`ArticleList` 原本斷言 `toHaveBeenCalledWith(props, {})` 在 React 19 失敗（函式元件改為單一 `(props)` 參數、移除 legacy context）→ 改為比對 `vi.mocked(Cmp).mock.calls[i][0]`。**現 4 suite / 13 test 全綠。**
+> - 移除 jest 工具鏈：`jest`、`babel-jest`、`jest-environment-jsdom`、`ts-jest`、`@types/jest`、`identity-obj-proxy`，刪除 `jest.config.js`。`package.json` scripts 改 `test: vitest run` / `test:watch` / `coverage`。
+> - eslint：移除全域 `env.jest`，改在 `overrides` 對測試檔宣告 vitest 全域（`vi`/`describe`/`test`/`expect`...）；`eslint src` 0 error。
+> - 驗證：`vitest run` 13/13 綠、`tsc --noEmit` 0 error、`eslint` 0 error（僅既有 9 warning）、`vite build` 成功。
+> - 註：`.babelrc` + `@babel/preset-*` 原僅供 babel-jest，現 @vitejs/plugin-react 預設不讀 `.babelrc`，屬無害殘留，留待後續清理。
+>
+> **後續批次（未開始）：** msw 取代 axios mock；補測 fetch.ts handleApiError / zod schema 邊界 / input.ts handleHashTag / dateTime.ts / redux slices / infinite scroll；推進覆蓋率至目標。
+>
+> 以下為原始規劃內容。
+
 - **基礎設定：**
   - `vitest` + `@testing-library/react` + `@testing-library/user-event` + `@testing-library/jest-dom`
   - 將現有 `src/test/*.test.tsx` 從 jest 平移到 vitest（API 高度相容）
