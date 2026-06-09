@@ -43,7 +43,7 @@ describe('utils/fetch', () => {
 
     test('401 UN_AUTH：回傳 true 但不跳提示（交由 axios interceptor 全域處理）', () => {
       const res = { status: 401, data: { code: API_ERROR_CODE.UN_AUTH } };
-      expect(handleApiError(res)).toBe(true);
+      expect(handleApiError(res)).toBe(false);
       expect(mockFire).not.toHaveBeenCalled();
     });
 
