@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // --- components ---
@@ -42,7 +43,9 @@ function UserProfilePage() {
     queryFn: () => (identify ? getOwnProfile() : getUserProfile(userId!)),
     enabled:
       userId !== undefined && (!identify || isEmpty(userStateData) || userStateData!._id === ''),
-  }) as UserResultType;
+    // useQuery 的 data 型別與 UserResultType.data 不完全重疊（TS 5.x 起 as 直轉被擋），
+    // 此處刻意收斂為自訂 Result 型別，循 TS 建議經 unknown 轉型。
+  }) as unknown as UserResultType;
 
   const { isLoading, error, data, refetch } = fetchProfile;
   const fetchStatus = get(data, 'status', 404);

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { useInfiniteQuery } from '@tanstack/react-query';
 // --- components ---
 import PostListDynamic from 'components/post/PostListDynamic';

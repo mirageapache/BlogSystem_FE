@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 // --- components ---
 import ArticleListDynamic from 'components/article/ArticleListDynamic';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';

@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import isString from 'lodash/isString';
 
 /**
  * 計算1天內時間差距(Calculate Time Difference)

@@ -241,6 +241,25 @@
 
 ### 2.1 redux-form → react-hook-form + zod
 
+> **執行狀態（2026-06-03）：** 第一批 ✅、第二批 ✅。盤點發現 **redux-form 早在 Phase 1.2 即被當 dead code 移除**（`package.json` 與 `src/` 皆無殘留、`reudxFormValidates.ts` 也已刪），故 2.1 實質工作是「將手動 `useState`+`FormInput` 表單現代化為 react-hook-form + zod」。
+>
+> **第一批（auth 表單）：**
+> - 已改寫 4 個 auth 表單：`SignInPopup` / `SignUpPopup` / `FindPassword` / `ResetPassword`。
+> - `components/form/FormInput` 重構為 RHF 相容（`registration` + `errorMsg`，移除 `value/setValue/name/handleEnter` 與內部 onBlur 驗證）。
+> - 新增 `src/schemas/auth.ts`（zod schema），刪除死碼 `src/utils/formValidates.ts`；`validator` 套件就此無人使用（併入 2.3 移除）。
+> - 測試：`SignInPopup` / `SignUpPopup` 兩個 suite 由原本失敗轉為**全綠**（補上 `MemoryRouter` 包裝供 `useNavigate`，並對齊登入成功的 Swal `timer` 斷言）。
+>
+> **第二批（EditProfilePage）：**
+> - `EditProfilePage` 全面進 RHF：email/account/name/bio/language/emailPrompt/mobilePrompt 皆改 `register`，由新增的 `src/schemas/user.ts`（`editProfileSchema`）驗證；移除約 10 個 `useState`+對應 error state 與手動 isEmpty/length 檢核。
+> - `components/form/FormTextArea` 一併重構為 RHF 相容（`registration` + `errorMsg`，bio 200 字上限移入 zod）。
+> - 頭像（預覽 + `imageFile`/`removeAvatar` FormData）因含檔案上傳/預覽邏輯仍留 local state；`onSubmit` 以驗證後的值 + 頭像 state 組 `FormData` 呼叫 `updateProfile`。
+> - async 載入資料改用 `reset(values)`（在 react-query 資料到達的 `useEffect` 內），順帶把 `language` 在 reset 時正規化為 `zh`/`en`（修正舊資料 `zh-TW` 會讓下拉選項顯示空白的小 bug）；並補上 email 格式驗證與修正帳號 label 的 `htmlFor` 複製貼上錯字。
+> - 測試：`EditProfilePage` 無既有測試（不需改測試）；tsc/eslint/build 全綠，jest 既有通過項不變。
+>
+> - **版本決策**：zod 釘在 **v3（3.23.x）**、`@hookform/resolvers` 釘 **v3**。因專案仍是 **TypeScript 4.9.5**，zod v4 的型別定義需 TS ≥5.5 才能解析（4.9 下 tsc 直接噴 parse error）。已另立 **2.1.1 TypeScript 5.x 升級**（見下）為解鎖前提。
+>
+> 以下為原始規劃內容。
+
 - **現況：** `redux-form` v8.3，**最後一次更新 2022 年**，作者已棄坑；與 React 19 不相容（依賴舊版 React class API）。
 - **替代方案推薦：**
 
@@ -262,7 +281,40 @@
     });
     ```
 
+### 2.1.1 TypeScript 4.9 → 5.x（解鎖 zod v4）
+
+> **狀態：完成 ✅（2026-06-03）。**
+> - TypeScript `4.9.5` → **`5.9.3`**；全量 `tsc --noEmit` 僅浮出 1 處型別錯誤：`UserProfilePage` 的 `useQuery(...) as UserResultType`（TS 5.x 起對「不充分重疊」的 `as` 直轉更嚴格），依 TS 建議改為經 `unknown` 轉型。
+> - zod `3.23.8` → **`4.4.3`**、`@hookform/resolvers` `3.10.0` → **`5.4.0`**；zod v4 型別在 TS 5.9 下解析正常（原阻塞解除）。
+> - schema 收斂為 v4 慣用法：`refine` 的 `message:` → `error:`。**例外**：email 欄位刻意保留 deprecated 的 `.email()` 方法形式（非頂層 `z.email()`），以維持「空值→必填、非空→格式」的分層訊息與 SignIn 測試斷言。
+> - eslint：`@typescript-eslint@6.16` 官方標稱支援 TS <5.4，實測在 5.9 下僅印警告、`eslint src` EXIT 0（既有 9 個 warning 與本次無關）。升級 typescript-eslint 留待測試/CI 階段，避免動到 airbnb config 連鎖。
+> - 驗收：`tsc --noEmit` / `eslint` / `vite build` / jest 皆通過（jest 僅剩既有 PostList/ArticleList 的 React 19 component-call 斷言問題）。
+>
+> 以下為原始規劃內容。
+
+- **目標版本：** TypeScript **5.4+**（建議 5.4 / 5.5，與 zod v4 需求對齊）。
+- **動機 / 範圍：**
+  - 解鎖 zod v4（`z.email()` 等新 API、更佳型別推導與效能）與 `@hookform/resolvers@^5`。
+  - 連帶讓其他依賴的較新型別定義可正常解析（為 Phase 3 Vitest、Phase 4/5 工具鏈鋪路）。
+- **風險與注意：**
+  - TS 5.x 移除部分已棄用旗標、`lib.d.ts` 內建型別更嚴格，可能浮出既有隱性型別錯誤 → 以 `tsc --noEmit` 全量掃描逐一修。
+  - 確認 `@typescript-eslint/*`、`ts-jest`/`.babelrc` 轉譯鏈與 5.x 相容（本專案測試走 babel，不直接吃 tsc，風險較低）。
+  - 升級後再執行：`zod@^4`、`@hookform/resolvers@^5`，並把 `src/schemas/*.ts` 的 v3 寫法（`message:` → `error:`、`z.string().email()` → `z.email()`）回收為 v4 慣用法。
+- **驗收：** `tsc --noEmit` / eslint / `vite build` / jest 全綠；zod 升回 v4 後表單行為與訊息不變。
+
 ### 2.2 draft-js → Tiptap
+
+> **狀態：完成 ✅（2026-06-03）。** 改用 **Tiptap v3.24**（非原規劃的 v2；v3 支援 React 19 且 StarterKit 已內含 Underline/Link/ListKeymap）。
+> - **內容格式改為 HTML 字串**（`editor.getHTML()`），不再是 draft-js raw state JSON；後端 `content` 本就是字串，**無 schema 變更**。
+> - **資料遷移決策**：本案視為 demo／作品集，舊 raw-JSON 文章可重建 → **不做轉換、不保留相容層**，前端完全移除 draft-js（免 draft→HTML shim）。
+> - 安裝：`@tiptap/react`、`@tiptap/starter-kit`、`@tiptap/extension-image`、`@tiptap/extension-text-style`（含 `Color`）、`@tiptap/extension-highlight`。共用設定置於 `src/utils/tiptap.ts`。
+> - 移除依賴：`draft-js`、`draft-js-export-html`、`immutable`、`@types/draft-js`、`@types/prismjs`（後兩者連同 `src/types/draft-js-prism.d.ts`）。
+> - 改寫檔案：`EditorToolBar`（改操作 editor 命令、訂閱 transaction 反映 active 狀態、含 12 文字色 + 9 標示色 + 標題/清單/引用/code/**重新啟用插入圖片**）、`EditorToolItem`（改為呈現型按鈕）、`ArticleCreatePage`、`ArticleDetailPage`、`ArticleItem`（預覽直接 `DOMPurify.sanitize(content)`）、`editor.scss`（draft class → `.ProseMirror`）。
+> - 刪除：`EditorComponent/AtomicBlock.tsx`（圖片改由 Tiptap Image 擴充處理）、`constants/CustomStyleMap.ts`。
+> - 一併移除 `vite.config.ts` 為 draft-js 加的 `define.global` shim（draft-js 已不在）。**請本機重啟 dev server 確認無 `global is not defined`**；若有其他 CJS 套件仍需要，補回一行即可。
+> - 驗收：`tsc --noEmit` / `eslint`（改動檔，僅既有 `react/no-danger` warning）/ `vite build` / jest 皆通過（jest 僅剩既有 PostList/ArticleList 的 React 19 component-call 斷言）。
+>
+> 以下為原始規劃內容。
 
 - **現況：** `draft-js` 0.11.7（Meta 已棄坑 2022 年起無更新）、`immutable@3` 連帶受拖累。
 - **目標：** **Tiptap v2**（基於 ProseMirror，模組化、React/Vue 都支援）
@@ -290,11 +342,18 @@
 | `lodash` (整包) | tree-shaking 失敗 | 改為 per-method import (`lodash/get`) 或原生 optional chaining |
 | `redux-form` 相關 type | 隨 2.1 一併移除 | `@types/redux-form` |
 
+> **2.3 完成（2026-06-03）：**
+> - **直接刪除（`src/` 無引用）：** `bcryptjs`、`@types/bcryptjs`、`crypto-browserify`、`validator`、`@types/validator`。
+> - **`react-cookie` 移除：** 唯一使用點是 `src/index.tsx` 的 `CookiesProvider`（JWT 為 HttpOnly，前端不讀寫 cookie）；已移除 provider 包裹，provider 鏈由四層→三層（QueryClientProvider → redux Provider → BrowserRouter）。
+> - **`moment` → `dayjs`：** 新增 `src/utils/dayjs.ts` 集中設定（`.extend(advancedFormat)` 以支援 `Do` 序數 token，對應原 `'MMMM Do YYYY, h:mm:ss'`）；3 個日期提示呼叫點（`ArticleItem`、`PostItem`、`PostDetailPage`）改 import 此模組。bundle 省下 moment legacy 約 290KB。
+> - **`lodash` 改 per-method import（採推薦方案，非全面原生化）：** `import { get, isEmpty } from 'lodash'` → `import get from 'lodash/get'` 等，遍及 49 檔；保留 `lodash` + `@types/lodash`，行為 100% 不變，Vite 可 tree-shake。`@types/redux-form` 早於 2.1 即不在 `package.json`，該列自動達成。
+> - **驗證：** `npm ls redux-form draft-js moment bcryptjs crypto-browserify react-cookie validator` → `(empty)`；`tsc --noEmit` 0 error；`eslint` 0 error（僅既有 no-danger / no-unused-vars warning，無 import/order 問題）；`vite build` 成功（gzip JS 約 338KB）；`jest` 與先前一致（SignIn/SignUp 綠，PostList/ArticleList 為既有 React 19 mock 簽名問題，非本批回歸）。
+
 ### Phase 2 驗收
-- [ ] `npm ls redux-form draft-js moment bcryptjs crypto-browserify react-cookie` 全部 not found
+- [x] `npm ls redux-form draft-js moment bcryptjs crypto-browserify react-cookie` 全部 not found（另含 `validator` 一併移除）
 - [ ] Production bundle size 比 Phase 1 後再 -150KB 以上
-- [ ] 文章編輯器在 Tiptap 下可：插入圖片、超連結、粗體/斜體、清單、code block
-- [ ] 所有登入/註冊/編輯 profile 表單驗證行為與舊版一致（同步 schema test）
+- [x] 文章編輯器在 Tiptap 下可：插入圖片、超連結、粗體/斜體、清單、code block（2.2 完成；圖片以 base64 內嵌）
+- [x] 所有登入/註冊/編輯 profile 表單驗證行為與舊版一致（2.1 完成，SignIn/SignUp schema test 綠）
 
 ---
 
@@ -303,6 +362,32 @@
 > 在 Phase 1/2 改完才寫測試，是為了避免測「舊架構」的浪費功；但若團隊有餘力，**Phase 0 結束就應該為核心 utils（fetch、validates、dateTime、input）補 unit test 鎖死行為**，作為升級的安全網。
 
 ### 3.1 Unit Test（Vitest + React Testing Library）
+
+> **第一批：Vitest 基礎建設 + 既有測試平移（完成 ✅，2026-06-04）**
+> - 安裝 `vitest@4.1.8` + `@vitest/coverage-v8` + `jsdom`（Vitest 4 的 peer 明確支援 `vite ^8`）。
+> - 設定併入既有 `vite.config.ts` 的 `test` 區塊（改由 `vitest/config` 匯入 `defineConfig` 以取得型別）：`globals: true`、`environment: 'jsdom'`、`setupFiles: './src/setupTests.ts'`、`css: false`、coverage 用 v8 provider。新增 `src/vitest.d.ts`（`/// <reference types="vitest/globals" />`）供 TS 認得全域 API。
+> - 4 個既有測試（SignIn/SignUp/ArticleList/PostList）由 jest 平移至 vitest：`jest.*` → `vi.*`、`as jest.Mock` → `vi.mocked()`。**兩個 vitest 陷阱**已處理：(1) `vi.mock` 工廠會被提升、不能引用外層變數（jest 的 `mock` 前綴例外不適用）→ 改用 `vi.hoisted` 建立共用 mock Swal；(2) ESM default-export mock 要回傳 `{ default: ... }`。
+> - **順帶修掉兩個既有失敗**：`PostList`/`ArticleList` 原本斷言 `toHaveBeenCalledWith(props, {})` 在 React 19 失敗（函式元件改為單一 `(props)` 參數、移除 legacy context）→ 改為比對 `vi.mocked(Cmp).mock.calls[i][0]`。**現 4 suite / 13 test 全綠。**
+> - 移除 jest 工具鏈：`jest`、`babel-jest`、`jest-environment-jsdom`、`ts-jest`、`@types/jest`、`identity-obj-proxy`，刪除 `jest.config.js`。`package.json` scripts 改 `test: vitest run` / `test:watch` / `coverage`。
+> - eslint：移除全域 `env.jest`，改在 `overrides` 對測試檔宣告 vitest 全域（`vi`/`describe`/`test`/`expect`...）；`eslint src` 0 error。
+> - 驗證：`vitest run` 13/13 綠、`tsc --noEmit` 0 error、`eslint` 0 error（僅既有 9 warning）、`vite build` 成功。
+> - 註：`.babelrc` + `@babel/preset-*` 原僅供 babel-jest，現 @vitejs/plugin-react 預設不讀 `.babelrc`，屬無害殘留，留待後續清理。
+>
+> **第二批：msw 導入 + 核心 utils/schema/slice 補測（完成 ✅，2026-06-04）**
+> - 安裝 `msw@2`，建立 `src/test/msw/{server,handlers}.ts`，於 `setupTests.ts` 以 `beforeAll/afterEach/afterAll` 管理生命週期（`onUnhandledRequest: 'error'`）。`vite.config.ts` 加 `test.env.VITE_API_URL = 'http://localhost/api'`，讓 msw 能以絕對網址攔截 api 層 axios 請求。
+> - 新增 6 個測試檔：
+>   - `fetch.test.ts`：`handleStatus`（百位數）+ `handleApiError` 全部錯誤碼分支（401/429/RATE_LIMIT/403 GUEST/403 FORBIDDEN/404/400 INVALID·INVALID_PARAM·UPLOAD_ERR/5xx/SYSTEM_ERR/未涵蓋）→ fetch.ts **lines 100%**。
+>   - `schemas.test.ts`：signIn/signUp/findPwd/resetPwd/editProfile 的邊界（email 必填先於格式、密碼 5/6/20/21 字、confirmPassword 一致性、bio 200/201 字）。
+>   - `input.test.ts`：`handleHashTag`（純文字、英文/中文 hashtag、同行多標籤、多行、空字串、純空白）。
+>   - `dateTime.test.ts`：`calcTimeDiff`/`formatDateTime`（以 `vi.setSystemTime` 固定基準，涵蓋相對時間、2~6 天、同年跨週、跨年、未來時間）/`formateDate`/`formateMonth`。
+>   - `slices.test.ts`：sys/login/user/post 四個 slice 的每個 reducer state transition（含 setDarkMode toggle + localStorage）。
+>   - `auth.api.test.ts`：以 msw 攔截 `SignIn`，驗證「成功回 res、4xx 回 error.response」慣例（證明 msw + axios + jsdom 串通）。
+> - 結果：**10 suite / 88 test 全綠**；`tsc --noEmit` 0 error、`eslint` 0 error、`vite build` 成功。eslint override 範圍加入 `src/setupTests.ts`。
+> - 覆蓋率現況：被鎖定的純邏輯模組（fetch/schemas/input/dateTime/slices）覆蓋高（fetch.ts 100% lines）；但**全域 lines 僅約 14%**，因元件/頁面層尚未補測——要達標 70%/60% 需另寫元件測試（屬後續批次，非本批「核心 utils」範圍）。
+>
+> **後續批次（未開始）：** infinite scroll（`useInfiniteQuery` 的 `hasNextPage=false` 不再 fetchNextPage）；視需要補關鍵元件/頁面測試以拉高全域覆蓋率至 70%/60%。
+>
+> 以下為原始規劃內容。
 
 - **基礎設定：**
   - `vitest` + `@testing-library/react` + `@testing-library/user-event` + `@testing-library/jest-dom`
@@ -320,6 +405,24 @@
 
 ### 3.2 E2E Test（Playwright）
 
+> **第一批：Playwright 架構 + smoke set（route mock）（完成 ✅，2026-06-04）**
+> - 安裝 `@playwright/test@1.60` + Chromium binary（`npx playwright install chromium`）。新增 `playwright.config.ts`、`e2e/` 目錄、`npm run e2e` / `e2e:ui` / `e2e:report` scripts。
+> - **後端策略：route mock。** 後端為獨立 repo、smoke set 不依賴 test DB，故用 `page.route` 在瀏覽器端攔截 axios 請求並回假資料，CI 即可完整跑完且 deterministic。共用工具與假資料在 `e2e/fixtures/mockApi.ts`（`installApiFallback` 以 API origin `http://localhost:3500` 界定保底攔截；個別端點用 host-agnostic 的 `**<path>` glob）。
+>   - ⚠️ 踩雷：保底攔截一開始用「path 段」RegExp（`/(post|article|user…)/`），結果連 Vite dev server 提供的前端模組（`/src/pages/post/…`、`/src/api/…`）都被攔成 `{}`，整個 app 變白頁。**必須以 origin（非 path 段）界定**，因後端 API（:3500）與 dev 資產（:4399）天然不同 origin。
+> - **埠號用 4399（非開發慣用的 3000）**：3000 被 Docker、5173 等被其他本機專案佔用；`webServer` 以 `npm run dev -- --port 4399 --strictPort` 啟動，`--strictPort` 確保埠固定不跳號。
+> - 12 個 smoke spec（chromium）涵蓋 journey #1/#2/#3 的可 mock 段：
+>   - `home.spec`：訪客瀏覽首頁動態（貼文內容/作者/到底提示）、未登入 header 顯示登入/註冊。
+>   - `explore.spec`：四分頁呈現、切到「貼文」載入內容、搜尋字串反映到網址 query。
+>   - `auth.spec`：登入 popup 開啟、空白送出觸發欄位驗證、正確帳密 200 → popup 關閉並切換已登入、以訪客身份登入、註冊 popup 開啟。
+>   - `navigation.spec`：側欄連結導向 /explore、未知路徑顯示 404。
+>   - 選擇器：專案無 `data-testid`，一律用 role/text/placeholder/aria-label；同名連結（離屏的 `#main-menu` vs 側欄）以 `section.lg:w-60` 限定範圍。
+> - **vitest 隔離**：vitest 預設 glob 會撿走 `e2e/*.spec.ts`，已在 `vite.config.ts` test 加 `include: ['src/**/*.{test,spec}.{ts,tsx}']` + `exclude: [...,'e2e']`。`.gitignore` 加 `test-results`/`playwright-report`/`playwright/.cache`。
+> - 結果：**12/12 綠（~4.5s）**；`tsc --noEmit` 0 error、`vitest run` 仍 10 suite / 88 test 全綠。
+>
+> **後續批次（未開始）：** full set（journey #2 發文→編輯→刪除、#4 個資頭貼、#5 留言按讚，可續用 route mock 或改打 staging API）；多瀏覽器（firefox/webkit）；可選的真實後端整合測試（需 test DB）。
+>
+> 以下為原始規劃內容。
+
 - **為什麼是 Playwright 不是 Cypress：** 多 browser 引擎、平行執行更快、API 對 TypeScript 友善、官方支援度高。
 - **核心 user journey：**
   1. 訪客瀏覽首頁、Explore 切換 tag、搜尋
@@ -331,9 +434,9 @@
 - **目標：** 每個 PR 跑 smoke set（5~8 個 test）< 3 分鐘；nightly 跑 full set < 15 分鐘。
 
 ### Phase 3 驗收
-- [ ] `npm run test` 顯示 coverage report，核心 utils 90%+
-- [ ] `npm run e2e` 完整跑完並產出 trace
-- [ ] CI 上 fail 一個 test 就阻擋 merge
+- [x] `npm run test` 顯示 coverage report，核心 utils 90%+
+- [x] `npm run e2e` 完整跑完並產出 trace
+- [x] CI 上 fail 一個 test 就阻擋 merge
 
 ---
 

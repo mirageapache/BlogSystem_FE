@@ -4,7 +4,7 @@ import { CommentDataType } from 'types/commentType';
 
 // --- components ---
 import Avatar from 'components/user/Avatar';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { formatDateTime } from 'utils/dateTime';
 import { Link } from 'react-router-dom';
 

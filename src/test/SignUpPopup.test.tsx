@@ -7,26 +7,27 @@ import configureStore from 'redux-mock-store';
 import { SignUp } from '../api/auth';
 import SignUpPopup from '../components/login/SignUpPopup';
 
-jest.mock('../api/auth', () => ({
-  SignUp: jest.fn(),
+// vi.mock 工廠會被提升至頂端、無法引用外層變數，以 vi.hoisted 建立共用 mock Swal 實例。
+const { mockSwal } = vi.hoisted(() => ({
+  mockSwal: { fire: vi.fn().mockResolvedValue({ isConfirmed: true }) },
 }));
 
-jest.mock('sweetalert2', () => ({
-  fire: jest.fn().mockResolvedValue({ isConfirmed: true }),
+vi.mock('../api/auth', () => ({
+  SignUp: vi.fn(),
 }));
 
-const mockSwal = Swal;
-jest.mock('sweetalert2-react-content', () => jest.fn(() => mockSwal));
+vi.mock('sweetalert2', () => ({ default: mockSwal }));
+vi.mock('sweetalert2-react-content', () => ({ default: vi.fn(() => mockSwal) }));
 
 const mockStore = configureStore([]);
-const mockedSignUp = SignUp as jest.Mock;
+const mockedSignUp = vi.mocked(SignUp);
 
 describe('註冊功能(SignUp)', () => {
   let store: Store<unknown, AnyAction>;
 
   beforeEach(() => {
     store = mockStore({}); // 初始化 Redux store 狀態
-    store.dispatch = jest.fn();
+    store.dispatch = vi.fn();
   });
 
   test('元件顯示', () => {

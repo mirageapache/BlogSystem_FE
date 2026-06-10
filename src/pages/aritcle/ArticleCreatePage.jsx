@@ -1,82 +1,39 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-restricted-globals */
-import React, { useRef, useState } from 'react';
-import { Editor, EditorState, RichUtils, AtomicBlockUtils, convertToRaw } from 'draft-js';
+import React, { useState } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 // --- components ---
 import EditorToolBar from 'components/common/EditorToolBar';
-import AtomicBlock from 'components/common/EditorComponent/AtomicBlock';
 // --- functions / types ---
 import { createArticle } from 'api/article';
 import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
 import { checkCancelEdit, guardVisitorAction } from 'utils/common';
-import { customStyleMap } from 'constants/CustomStyleMap';
+import { editorExtensions } from 'utils/tiptap';
 import '../../styles/editor.scss';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ArticleCreatePage() {
   const [title, setTitle] = useState('');
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty()); // 編輯內容
-  const contentState = editorState.getCurrentContent();
-  const editorRef = useRef(null);
-  const hasContent =
-    editorState.getCurrentContent().hasText() || // hasTest() 判斷Editor內是否有內容
-    editorState.getCurrentContent().getBlockMap().first().getType() !== 'unstyled'; // .getBlockMap().first().getType() 判斷第一段內容的類型是否有被定義
+  const [isContentEmpty, setIsContentEmpty] = useState(true); // 編輯器是否為空（控制發佈按鈕）
   const navigate = useNavigate();
 
-  /** 渲染 Atomic 區塊 */
-  const blockRendererFn = (contentBlock) => {
-    const type = contentBlock.getType();
-    if (type === 'atomic') {
-      // 插入圖片
-      return {
-        component: AtomicBlock,
-        editable: false,
-      };
-    }
-    return null;
-  };
+  // Tiptap 編輯器；內容以 HTML 字串存取
+  const editor = useEditor({
+    extensions: editorExtensions,
+    content: '',
+    onUpdate: ({ editor: e }) => setIsContentEmpty(e.isEmpty),
+  });
 
-  // 在Editor 中插入 Atomic 區塊
-  const insertAtomicBlock = (src) => {
-    const contentStateWithEntity = contentState.createEntity('image', 'IMMUTABLE', { src });
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, ' ');
-    return EditorState.forceSelection(
-      newEditorState,
-      newEditorState.getCurrentContent().getSelectionAfter()
-    );
-  };
-
-  /** 觸發上傳圖片input */
-  const handleFileInput = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target && event.target.result) {
-        const src = event.target.result;
-        setEditorState(insertAtomicBlock(src));
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  /** 字型樣式設定 */
-  const toggleInlineStyle = (style) => {
-    setEditorState(RichUtils.toggleInlineStyle(editorState, style));
-  };
-
-  /** 字體類型設定 */
-  const toggleBlockType = (blockType) => {
-    setEditorState(RichUtils.toggleBlockType(editorState, blockType));
-  };
+  const hasContent = !isContentEmpty;
 
   /** 新增文章 mutation */
   const { mutate: createArticleMutate, isPending: isLoading } = useMutation({
@@ -114,8 +71,7 @@ function ArticleCreatePage() {
       errorAlert('請輸入文章標題');
       return;
     }
-    const rawContent = convertToRaw(contentState);
-    const contentString = JSON.stringify(rawContent);
+    const contentString = editor ? editor.getHTML() : '';
     createArticleMutate({ content: contentString });
   };
 
@@ -162,12 +118,7 @@ function ArticleCreatePage() {
       </div>
 
       {/* 文字編輯工具列 */}
-      {/* 字體、粗體、斜體、底線、刪除線、文字顏色、醒目提示顏色、對齊(左中右) */}
-      <EditorToolBar
-        toggleInlineStyle={toggleInlineStyle}
-        toggleBlockType={toggleBlockType}
-        handleFileInput={handleFileInput}
-      />
+      <EditorToolBar editor={editor} />
       <div className="mb-2">
         <input
           type="text"
@@ -179,25 +130,15 @@ function ArticleCreatePage() {
       </div>
       <div
         className="relative max-h-minus280 h-minus280 overflow-y-auto"
-        onClick={() => {
-          if (editorRef.current) {
-            editorRef.current.focus();
-          }
-        }}
+        onClick={() => editor?.commands.focus()}
       >
         {/* 文章內容 */}
         {!hasContent && (
-          <div id="placeholder" className="absolute text-gray-500">
+          <div id="placeholder" className="absolute text-gray-500 pointer-events-none">
             從這裡開始你的故事...
           </div>
         )}
-        <Editor
-          editorState={editorState}
-          onChange={setEditorState}
-          customStyleMap={customStyleMap}
-          ref={editorRef}
-          blockRendererFn={blockRendererFn}
-        />
+        <EditorContent editor={editor} />
       </div>
     </div>
   );

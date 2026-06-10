@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
 import PostItem from './PostItem';

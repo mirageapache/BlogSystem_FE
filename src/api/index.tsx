@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { AxResponseType } from 'types/apiType';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import store from '../redux/configStore';
 import { clearUserData } from '../redux/userSlice';
 import { setSignInPop } from '../redux/loginSlice';

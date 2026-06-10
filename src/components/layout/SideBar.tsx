@@ -2,7 +2,8 @@ import { ReactNode, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faPenNib, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { faCompass, faUser } from '@fortawesome/free-regular-svg-icons';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // --- functions ---

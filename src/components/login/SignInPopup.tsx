@@ -1,9 +1,10 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
 import { faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -16,17 +17,19 @@ import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
 import { SignIn, GuestSignIn } from '../../api/auth';
 import { handleStatus } from '../../utils/fetch';
 import { ERR_NETWORK_MSG, GUEST_USER_DATA } from '../../constants/StringConstants';
+import { signInSchema, SignInFormType } from '../../schemas/auth';
 // --- components ---
 import FormInput from '../form/FormInput';
 
 function SignInPopup() {
   const sliceDispatch = useDispatch();
   const navigate = useNavigate();
-  const [email, setEmail] = useState(''); // 紀錄email資料
-  const [password, setPassword] = useState(''); // 紀錄密碼資料
-  const [emailError, setEmailError] = useState(''); // 紀錄email錯誤訊息
-  const [passwordError, setPasswordError] = useState(''); // 紀錄密碼錯誤訊息
-  const [errorMsg, setErrorMsg] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormType>({ resolver: zodResolver(signInSchema) });
+  const [errorMsg, setErrorMsg] = useState(''); // 後端回傳的錯誤訊息（如帳密錯誤）
   const [isLoading, setIsLoading] = useState(false);
   const [isVisitorLoading, setIsVisitorLoading] = useState(false);
   const swal = withReactContent(Swal);
@@ -70,73 +73,53 @@ function SignInPopup() {
       });
   };
 
-  /** 送出登入資料 */
-  const submitSignIn = async (role?: string) => {
-    // 訪客登入：直接向後端取得 guest token，不需要帳密
-    // 後端只回傳臨時 token、不回傳 user data，前端填入固定的 GUEST_USER_DATA 讓 UI 有資料顯示
-    if (role === 'visitor') {
-      setIsVisitorLoading(true);
-      try {
-        const res = await GuestSignIn();
-        if (handleStatus(get(res, 'status', 0)) === 2) {
-          localStorage.setItem('hasSession', '1');
-          sliceDispatch(setUserData(GUEST_USER_DATA));
-          swal
-            .fire({
-              title: '已以訪客身份登入',
-              text: '訪客僅可瀏覽內容，無法進行喜歡、留言等操作',
-              icon: 'info',
-              confirmButtonText: '確認',
-              timer: 2000,
-              timerProgressBar: true,
-            })
-            .then(() => {
-              handleClose();
-            });
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          setErrorMsg(ERR_NETWORK_MSG);
-        }
-      } catch (error) {
-        // handle error
+  /** 訪客登入：直接向後端取得 guest token，不需要帳密
+   * 後端只回傳臨時 token、不回傳 user data，前端填入固定的 GUEST_USER_DATA 讓 UI 有資料顯示 */
+  const submitVisitor = async () => {
+    setIsVisitorLoading(true);
+    try {
+      const res = await GuestSignIn();
+      if (handleStatus(get(res, 'status', 0)) === 2) {
+        localStorage.setItem('hasSession', '1');
+        sliceDispatch(setUserData(GUEST_USER_DATA));
+        swal
+          .fire({
+            title: '已以訪客身份登入',
+            text: '訪客僅可瀏覽內容，無法進行喜歡、留言等操作',
+            icon: 'info',
+            confirmButtonText: '確認',
+            timer: 2000,
+            timerProgressBar: true,
+          })
+          .then(() => {
+            handleClose();
+          });
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        setErrorMsg(ERR_NETWORK_MSG);
       }
-      setIsVisitorLoading(false);
-      return;
+    } catch (error) {
+      // handle error
     }
-
-    // 一般登入
-    setErrorMsg('');
-    setIsLoading(true);
-    if (isEmpty(email)) {
-      setEmailError('Email為必填欄位');
-      setIsLoading(false);
-      return;
-    }
-    if (isEmpty(password)) {
-      setPasswordError('密碼為必填欄位');
-      setIsLoading(false);
-      return;
-    }
-
-    if (isEmpty(emailError) && isEmpty(passwordError)) {
-      try {
-        const res = await SignIn({ email, password });
-        if (handleStatus(get(res, 'status', 0)) === 2) {
-          handleSignInSuccess(res);
-        } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          setErrorMsg(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          setErrorMsg(ERR_NETWORK_MSG);
-        }
-      } catch (error) {
-        // handle error
-      }
-    }
-    setIsLoading(false);
+    setIsVisitorLoading(false);
   };
 
-  /** handleEnter */
-  const handleEnter = (value: string) => {
-    if (value === 'Enter') submitSignIn();
+  /** 送出登入資料（欄位驗證已由 zod schema 於 handleSubmit 完成） */
+  const onSubmit = async ({ email, password }: SignInFormType) => {
+    setErrorMsg('');
+    setIsLoading(true);
+    try {
+      const res = await SignIn({ email, password });
+      if (handleStatus(get(res, 'status', 0)) === 2) {
+        handleSignInSuccess(res);
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        setErrorMsg(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        setErrorMsg(ERR_NETWORK_MSG);
+      }
+    } catch (error) {
+      // handle error
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -160,32 +143,24 @@ function SignInPopup() {
         </div>
         {/* popup body */}
         <div className="pt-4 pb-8 px-6 flex justify-center items-center">
-          <form className="w-full max-w-80">
+          <form className="w-full max-w-80" onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-6 w-full">
               <div>
                 <FormInput
                   type="email"
-                  name="email"
                   ispwd={false}
                   placeholder="E-mail"
-                  value={email}
-                  setValue={setEmail}
-                  errorMsg={emailError}
-                  setErrorMsg={setEmailError}
-                  handleEnter={() => {}}
+                  registration={register('email')}
+                  errorMsg={errors.email?.message}
                 />
               </div>
               <div className="my-3">
                 <FormInput
                   type="password"
-                  name="password"
                   ispwd
                   placeholder="password"
-                  value={password}
-                  setValue={setPassword}
-                  errorMsg={passwordError}
-                  setErrorMsg={setPasswordError}
-                  handleEnter={handleEnter}
+                  registration={register('password')}
+                  errorMsg={errors.password?.message}
                 />
               </div>
             </div>
@@ -196,9 +171,8 @@ function SignInPopup() {
             )}
             <div className="mt-4">
               <button
-                type="button"
+                type="submit"
                 className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
-                onClick={() => submitSignIn()}
               >
                 {isLoading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
@@ -209,7 +183,7 @@ function SignInPopup() {
               <button
                 type="button"
                 className="flex justify-center items-center w-full h-10 my-4 px-4 py-2 text-lg rounded-md bg-transparent border border-gray-500"
-                onClick={() => submitSignIn('visitor')}
+                onClick={submitVisitor}
               >
                 {isVisitorLoading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />

@@ -2,20 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import {
-  AtomicBlockUtils,
-  ContentState,
-  convertFromHTML,
-  convertFromRaw,
-  convertToRaw,
-  Editor,
-  EditorState,
-  RichUtils,
-} from 'draft-js';
-import { customStyleMap } from 'constants/CustomStyleMap';
+import { useEditor, EditorContent } from '@tiptap/react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 // --- api / functions / types ---
@@ -23,6 +14,7 @@ import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
 import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
 import { guardVisitorAction } from 'utils/common';
+import { editorExtensions } from 'utils/tiptap';
 import { CommentDataType } from 'types/commentType';
 import { setSignInPop } from 'redux/loginSlice';
 import { UserStateType } from '../../redux/userSlice';
@@ -34,10 +26,10 @@ import ArticleInfoPanel from '../../components/article/ArticleInfoPanel';
 import NoSearchResult from '../../components/tips/NoSearchResult';
 import ArticleLoading from '../../components/article/ArticleLoading';
 import CommentList from '../../components/comment/CommentList';
-import AtomicBlock from '../../components/common/EditorComponent/AtomicBlock';
 import EditorToolBar from '../../components/common/EditorToolBar';
 import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
 import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
+import '../../styles/editor.scss';
 
 interface StateType {
   system: SysStateType;
@@ -48,8 +40,6 @@ function ArticleDetailPage() {
   const dispatch = useDispatch();
   const userId = useSelector((state: StateType) => state.user.userData?.userId); // user id
   const { id } = useParams(); // article id
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
-  const editorRef = useRef(null);
   const editMode = useSelector((state: StateType) => state.system.editMode); // 編輯模式
   const { isLoading, data, refetch } = useQuery({
     queryKey: ['articleDetail', id],
@@ -58,25 +48,26 @@ function ArticleDetailPage() {
   const articleData = get(data, 'data');
 
   const [title, setTitle] = useState(''); // article title
+
+  // Tiptap 編輯器（內容為 HTML）；非編輯模式時唯讀
+  const editor = useEditor({
+    extensions: editorExtensions,
+    content: '',
+    editable: editMode,
+  });
+
+  // init article content（內容已是 HTML，Tiptap 直接載入）
   useEffect(() => {
-    // init article content
-    if (articleData) {
-      try {
-        const rawContent = JSON.parse(articleData.content);
-        const contentState = convertFromRaw(rawContent);
-        setEditorState(EditorState.createWithContent(contentState));
-      } catch {
-        // 內容為 HTML 格式（舊資料或其他編輯器產出），改用 convertFromHTML 解析
-        const blocksFromHTML = convertFromHTML(articleData.content);
-        const contentState = ContentState.createFromBlockArray(
-          blocksFromHTML.contentBlocks,
-          blocksFromHTML.entityMap
-        );
-        setEditorState(EditorState.createWithContent(contentState));
-      }
+    if (articleData && editor) {
+      editor.commands.setContent(articleData.content || '');
       setTitle(articleData.title);
     }
-  }, [articleData]);
+  }, [articleData, editor]);
+
+  // 編輯模式切換時同步 editor 可編輯狀態
+  useEffect(() => {
+    editor?.setEditable(editMode);
+  }, [editMode, editor]);
 
   // comment data
   const commentList = get(articleData, 'comments', []) as CommentDataType[];
@@ -122,54 +113,6 @@ function ArticleDetailPage() {
     CommentMutation({ articleId: id!, content: commentContent });
   };
 
-  /** 渲染 Atomic 區塊 */
-  const blockRendererFn = (contentBlock: { getType: () => any }) => {
-    const type = contentBlock.getType();
-    if (type === 'atomic') {
-      // 插入圖片
-      return {
-        component: AtomicBlock,
-        editable: false,
-      };
-    }
-    return null;
-  };
-
-  // 在Editor 中插入 Atomic 區塊
-  const insertAtomicBlock = (src: string | ArrayBuffer) => {
-    const contentState = editorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity('image', 'IMMUTABLE', { src });
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, ' ');
-    return EditorState.forceSelection(
-      newEditorState,
-      newEditorState.getCurrentContent().getSelectionAfter()
-    );
-  };
-
-  /** 觸發上傳圖片input */
-  const handleFileInput = (e: { target: { files: any[] } }) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target && event.target.result) {
-        const src = event.target.result;
-        setEditorState(insertAtomicBlock(src));
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  /** 字型樣式設定 */
-  const toggleInlineStyle = (style: string) => {
-    setEditorState(RichUtils.toggleInlineStyle(editorState, style));
-  };
-
-  /** 字體類型設定 */
-  const toggleBlockType = (blockType: string) => {
-    setEditorState(RichUtils.toggleBlockType(editorState, blockType));
-  };
-
   /** 編輯文章 mutation */
   const editArticleMutation = useMutation({
     mutationFn: ({ content }: { content: string }) =>
@@ -206,9 +149,7 @@ function ArticleDetailPage() {
       errorAlert('請輸入文章標題');
       return;
     }
-    const contentState = editorState.getCurrentContent();
-    const rawContent = convertToRaw(contentState);
-    const contentString = JSON.stringify(rawContent);
+    const contentString = editor ? editor.getHTML() : '';
     editArticleMutation.mutate({ content: contentString });
   };
 
@@ -266,11 +207,7 @@ function ArticleDetailPage() {
         <div className="flex flex-col w-full">
           {editMode ? (
             <>
-              <EditorToolBar
-                toggleInlineStyle={toggleInlineStyle}
-                toggleBlockType={toggleBlockType}
-                handleFileInput={handleFileInput}
-              />
+              <EditorToolBar editor={editor} />
               <div className="mb-2">
                 <input
                   type="text"
@@ -289,14 +226,7 @@ function ArticleDetailPage() {
           <div
             className={`relative p-0.5 ${editMode ? 'max-h-minus325 h-minus325 overflow-y-auto' : ''}`}
           >
-            <Editor
-              editorState={editorState}
-              readOnly={!editMode}
-              onChange={setEditorState}
-              customStyleMap={customStyleMap}
-              ref={editorRef}
-              blockRendererFn={blockRendererFn}
-            />
+            <EditorContent editor={editor} />
           </div>
         </div>
         {/* comments Section */}

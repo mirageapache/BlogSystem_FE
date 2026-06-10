@@ -1,4 +1,5 @@
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import store from '../redux/configStore';

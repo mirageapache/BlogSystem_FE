@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';

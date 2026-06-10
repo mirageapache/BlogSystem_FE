@@ -13,7 +13,8 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { faBell, faCompass } from '@fortawesome/free-regular-svg-icons';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';

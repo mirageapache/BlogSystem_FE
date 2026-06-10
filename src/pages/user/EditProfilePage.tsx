@@ -1,8 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useNavigate } from 'react-router-dom';
@@ -14,11 +18,11 @@ import { FORM_CONTROL } from 'constants/LayoutConstants';
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 import Avatar from 'components/user/Avatar';
-import FormInput from 'components/form/FormInput';
 import FormTextArea from 'components/form/FormTextArea';
 // --- api/types ---
 import { getOwnProfile, updateProfile } from 'api/user';
 import { UserProfileType } from 'types/userType';
+import { editProfileSchema, EditProfileFormType } from 'schemas/user';
 import { guardVisitorAction, scrollToTop } from '../../utils/common';
 import { setSignInPop } from '../../redux/loginSlice';
 import { errorAlert, handleApiError, handleStatus } from '../../utils/fetch';
@@ -37,17 +41,14 @@ function EditProfilePage() {
   const [avatar, setAvatar] = useState<string>(''); // 處理avatar image preview
   const [avatarFile, setAvatarFile] = useState<any>(null); // 處理avatar file upload
   const [removeAvatar, setRemoveAvatar] = useState<boolean>(false); // 處理avatar image preview
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [account, setAccount] = useState('');
-  const [accountError, setAccountError] = useState('');
-  const [name, setName] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [bio, setBio] = useState('');
-  const [bioError, setBioError] = useState('');
-  const [language, setLanguage] = useState('');
-  const [emailPrompt, setEmailPrompt] = useState(false);
-  const [mobilePrompt, setMobilePrompt] = useState(false);
+
+  // 文字/設定欄位改由 react-hook-form 管理；avatar 因含預覽與檔案上傳邏輯仍維持 local state
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<EditProfileFormType>({ resolver: zodResolver(editProfileSchema) });
 
   const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [updateLoading, setUpdateLoading] = useState(false);
@@ -76,13 +77,16 @@ function EditProfilePage() {
   useEffect(() => {
     if (firstLoad && !isEmpty(userData)) {
       setAvatar(userData.avatar);
-      setEmail(userData.email);
-      setAccount(userData.account);
-      setName(userData.name);
-      setBio(userData.bio);
-      setLanguage(userData.language);
-      setEmailPrompt(userData.emailPrompt === true);
-      setMobilePrompt(userData.mobilePrompt === true);
+      reset({
+        email: userData.email,
+        account: userData.account,
+        name: userData.name,
+        bio: userData.bio ?? '',
+        // 後端只接受 'zh' / 'en'，正規化舊資料（如 'zh-TW' / 'en-US'）以對應下拉選項
+        language: userData.language?.startsWith('en') ? 'en' : 'zh',
+        emailPrompt: userData.emailPrompt === true,
+        mobilePrompt: userData.mobilePrompt === true,
+      });
       setFirstLoad(false);
     }
   }, [userData]);
@@ -103,70 +107,47 @@ function EditProfilePage() {
     }
   };
 
-  /** 送出編輯資料 */
-  const submitEditProfile = async () => {
+  /** 送出編輯資料（欄位驗證已由 zod schema 於 handleSubmit 完成） */
+  const onSubmit = async (variables: EditProfileFormType) => {
     if (guardVisitorAction()) return;
     setUpdateLoading(true);
-    // 資料驗證
-    if (isEmpty(email)) {
-      setEmailError('Email欄位必填');
-      setUpdateLoading(false);
-      return;
-    }
-    if (isEmpty(account)) {
-      setAccountError('帳號欄位必填');
-      setUpdateLoading(false);
-      return;
-    }
-    if (isEmpty(name)) {
-      setNameError('名稱欄位必填');
-      setUpdateLoading(false);
-      return;
-    }
-    if (bio.length > 200) {
-      setBioError('自我介紹最多200字');
-      setUpdateLoading(false);
-      return;
-    }
 
-    if (isEmpty(emailError) && isEmpty(accountError) && isEmpty(nameError) && isEmpty(bioError)) {
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('name', name);
-      formData.append('account', account);
-      formData.append('bio', bio);
-      // 後端只接受 'zh' / 'en'，正規化舊資料（如 'zh-TW' / 'en-US'）避免撞 400 INVALID_PARAM
-      formData.append('language', language.startsWith('en') ? 'en' : 'zh');
-      formData.append('emailPrompt', emailPrompt.toString());
-      formData.append('mobilePrompt', mobilePrompt.toString());
-      formData.append('removeAvatar', removeAvatar.toString());
-      formData.append('avatar', avatar);
-      formData.append('avatarId', userData.avatarId);
-      // 只有真的選了新檔案才 append；avatarFile 可能是 null（沒選過）或 ''（按了移除頭貼）
-      if (avatarFile instanceof File) formData.append('imageFile', avatarFile);
+    const formData = new FormData();
+    formData.append('email', variables.email);
+    formData.append('name', variables.name);
+    formData.append('account', variables.account);
+    formData.append('bio', variables.bio);
+    // 後端只接受 'zh' / 'en'（reset 時已正規化，這裡再守一次避免撞 400 INVALID_PARAM）
+    formData.append('language', variables.language === 'en' ? 'en' : 'zh');
+    formData.append('emailPrompt', variables.emailPrompt.toString());
+    formData.append('mobilePrompt', variables.mobilePrompt.toString());
+    formData.append('removeAvatar', removeAvatar.toString());
+    formData.append('avatar', avatar);
+    formData.append('avatarId', userData.avatarId);
+    // 只有真的選了新檔案才 append；avatarFile 可能是 null（沒選過）或 ''（按了移除頭貼）
+    if (avatarFile instanceof File) formData.append('imageFile', avatarFile);
 
-      try {
-        const result = await updateProfile(formData);
-        if (handleStatus(get(result, 'status', 0)) === 2) {
-          swal
-            .fire({
-              title: '修改成功',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then(() => {
-              navigate(`/user/profile/${userId}`);
-              sliceDispatch(setUserData(result.data as UserProfileType));
-              scrollToTop();
-            });
-        } else if (handleStatus(get(result, 'status', 0)) === 4) {
-          handleApiError(result);
-        } else {
-          errorAlert(get(result, 'data.message', ''));
-        }
-      } catch (error) {
-        errorAlert();
+    try {
+      const result = await updateProfile(formData);
+      if (handleStatus(get(result, 'status', 0)) === 2) {
+        swal
+          .fire({
+            title: '修改成功',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            navigate(`/user/profile/${userId}`);
+            sliceDispatch(setUserData(result.data as UserProfileType));
+            scrollToTop();
+          });
+      } else if (handleStatus(get(result, 'status', 0)) === 4) {
+        handleApiError(result);
+      } else {
+        errorAlert(get(result, 'data.message', ''));
       }
+    } catch (error) {
+      errorAlert();
     }
     setUpdateLoading(false);
   };
@@ -178,7 +159,7 @@ function EditProfilePage() {
     const isVisitor = userData.userRole === -1;
     return (
       <div className="w-full sm:max-w-[600px] p-5">
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           {/* avatar */}
           <div className="flex flex-col items-center w-full mb-5 pb-5 border-b-[1px] dark:border-gray-700">
             <Avatar
@@ -243,37 +224,39 @@ function EditProfilePage() {
                   修改後即更換登入系統及電子報接收之Email
                 </p>
               </div>
-              <FormInput
+              <input
+                id="email"
                 type="email"
-                name="email"
-                ispwd={false}
                 placeholder="E-mail"
-                value={email}
-                setValue={setEmail}
-                errorMsg={emailError}
-                setErrorMsg={setEmailError}
-                handleEnter={() => {}}
                 disabled={isVisitor}
+                {...register('email')}
+                className={`${FORM_CONTROL} ${
+                  errors.email
+                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
+                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                }`}
               />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             </div>
 
             <div className="mt-10">
-              <label htmlFor="name" className="font-bold">
+              <label htmlFor="account" className="font-bold">
                 <span className="text-red-500">*</span>
                 帳號
               </label>
-              <FormInput
+              <input
+                id="account"
                 type="text"
-                name="account"
-                ispwd={false}
                 placeholder="帳號"
-                value={account}
-                setValue={setAccount}
-                errorMsg={accountError}
-                setErrorMsg={setAccountError}
-                handleEnter={() => {}}
                 disabled={isVisitor}
+                {...register('account')}
+                className={`${FORM_CONTROL} ${
+                  errors.account
+                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
+                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                }`}
               />
+              {errors.account && <p className="text-red-500 text-sm">{errors.account.message}</p>}
             </div>
 
             <div className="mt-10">
@@ -281,18 +264,19 @@ function EditProfilePage() {
                 <span className="text-red-500">*</span>
                 名稱
               </label>
-              <FormInput
+              <input
+                id="name"
                 type="text"
-                name="name"
-                ispwd={false}
                 placeholder="名稱"
-                value={name}
-                setValue={setName}
-                errorMsg={nameError}
-                setErrorMsg={setNameError}
-                handleEnter={() => {}}
                 disabled={isVisitor}
+                {...register('name')}
+                className={`${FORM_CONTROL} ${
+                  errors.name
+                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
+                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                }`}
               />
+              {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
             </div>
 
             <div className="mt-10">
@@ -300,12 +284,9 @@ function EditProfilePage() {
                 自我介紹
               </label>
               <FormTextArea
-                name={name}
                 placeholder="來說說你的故事吧！"
-                value={bio}
-                setValue={setBio}
-                errorMsg={bioError}
-                setErrorMsg={setBioError}
+                registration={register('bio')}
+                errorMsg={errors.bio?.message}
                 disabled={isVisitor}
               />
             </div>
@@ -319,10 +300,9 @@ function EditProfilePage() {
                   系統語言
                 </label>
                 <select
-                  name="language"
-                  value={language}
+                  id="language"
+                  {...register('language')}
                   className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-700 rounded-md focus:border-2`}
-                  onChange={(e) => setLanguage(e.target.value)}
                   disabled={isVisitor}
                 >
                   <option value="zh" className="">
@@ -340,11 +320,10 @@ function EditProfilePage() {
                   是否開啟Email通知推播
                 </label>
                 <input
-                  name="emailPrompt"
+                  id="emailPrompt"
                   type="checkbox"
                   className="w-5 h-5"
-                  checked={emailPrompt}
-                  onChange={(e) => setEmailPrompt(e.target.checked)}
+                  {...register('emailPrompt')}
                 />
               </div>
             </div>
@@ -354,11 +333,10 @@ function EditProfilePage() {
                   是否開啟手機通知推播
                 </label>
                 <input
-                  name="mobilePrompt"
+                  id="mobilePrompt"
                   type="checkbox"
                   className="w-5 h-5"
-                  checked={mobilePrompt}
-                  onChange={(e) => setMobilePrompt(e.target.checked)}
+                  {...register('mobilePrompt')}
                 />
               </div>
             </div>
@@ -378,9 +356,8 @@ function EditProfilePage() {
             </button>
             {!isVisitor && (
               <button
-                type="button"
+                type="submit"
                 className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
-                onClick={submitEditProfile}
               >
                 {updateLoading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
