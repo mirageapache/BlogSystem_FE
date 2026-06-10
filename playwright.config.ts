@@ -24,7 +24,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: E2E_BASE_URL,
-    trace: 'on-first-retry', // 第一次重試即留 trace，方便除錯
+    trace: 'retain-on-failure', // 每個 test 都錄，通過即丟棄、只保留失敗的 trace 供除錯
     screenshot: 'only-on-failure',
   },
   projects: [

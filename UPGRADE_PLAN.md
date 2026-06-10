@@ -434,9 +434,9 @@
 - **目標：** 每個 PR 跑 smoke set（5~8 個 test）< 3 分鐘；nightly 跑 full set < 15 分鐘。
 
 ### Phase 3 驗收
-- [ ] `npm run test` 顯示 coverage report，核心 utils 90%+
-- [ ] `npm run e2e` 完整跑完並產出 trace
-- [ ] CI 上 fail 一個 test 就阻擋 merge
+- [x] `npm run test` 顯示 coverage report，核心 utils 90%+
+- [x] `npm run e2e` 完整跑完並產出 trace
+- [x] CI 上 fail 一個 test 就阻擋 merge
 
 ---
 
