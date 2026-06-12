@@ -7,9 +7,12 @@ import { Provider } from 'react-redux';
 // --- components ---
 import App from './App';
 import store from './redux/configStore';
+import { initSentry } from './sentry';
 // --- styles ---
 import './index.css';
 // import reportWebVitals from "./reportWebVitals";
+
+initSentry(); // 初始化 Sentry 錯誤監控
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 // Vite 以 import.meta.env.BASE_URL 提供部署 base path（對應 vite.config 的 base，預設 '/'）

@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
+import * as Sentry from '@sentry/react';
+
 // --- constants ---
 import {
   SIDEBAR_FRAME,
@@ -87,50 +89,66 @@ function App() {
   }, [userId, userData]);
 
   return (
-    <div className={`font-sans ${sysState.darkMode}`}>
-      <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-        <Header />
-        <main className="mb-auto mt-[52px] sm:mt-16 flex-grow flex justify-center">
-          <div className="w-full flex justify-between">
-            <section className={SIDEBAR_FRAME}>
-              <SideBar />
-            </section>
-            <section className={SIDEBAR_CONTAINER_FRAME}>
-              <Routes>
-                {/* WebSite */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="explore" element={<ExplorePage />} />
+    <Sentry.ErrorBoundary
+      fallback={
+        <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
+          <h1 className="text-2xl font-bold">發生未預期的錯誤</h1>
+          <p className="text-gray-500">系統已記錄此問題，請重新整理頁面再試一次。</p>
+          <button
+            type="button"
+            className="rounded bg-orange-500 px-4 py-2 text-white"
+            onClick={() => window.location.reload()}
+          >
+            重新整理
+          </button>
+        </div>
+      }
+    >
+      <div className={`font-sans ${sysState.darkMode}`}>
+        <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+          <Header />
+          <main className="mb-auto mt-[52px] sm:mt-16 flex-grow flex justify-center">
+            <div className="w-full flex justify-between">
+              <section className={SIDEBAR_FRAME}>
+                <SideBar />
+              </section>
+              <section className={SIDEBAR_CONTAINER_FRAME}>
+                <Routes>
+                  {/* WebSite */}
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="explore" element={<ExplorePage />} />
 
-                {/* Article */}
-                <Route path="article/:id" element={<ArticleDetailPage />} />
-                <Route path="article/create" element={<ArticleCreatePage />} />
-                {/* Post */}
-                <Route path="post/:id" element={<PostDetailPage />} />
+                  {/* Article */}
+                  <Route path="article/:id" element={<ArticleDetailPage />} />
+                  <Route path="article/create" element={<ArticleCreatePage />} />
+                  {/* Post */}
+                  <Route path="post/:id" element={<PostDetailPage />} />
 
-                {/* User */}
-                <Route path="user/profile/:userId" element={<UserProfilePage />} />
-                <Route path="user/editProfile" element={<EditProfilePage />} />
+                  {/* User */}
+                  <Route path="user/profile/:userId" element={<UserProfilePage />} />
+                  <Route path="user/editProfile" element={<EditProfilePage />} />
 
-                {/* Reset PWD */}
-                <Route path="reset_password/:token" element={<ResetPassword />} />
+                  {/* Reset PWD */}
+                  <Route path="reset_password/:token" element={<ResetPassword />} />
 
-                {/* 404 */}
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </section>
-            <section className={BOTTOM_MENU_FRAME}>
-              <BottomMenu />
-            </section>
-          </div>
-        </main>
+                  {/* 404 */}
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </section>
+              <section className={BOTTOM_MENU_FRAME}>
+                <BottomMenu />
+              </section>
+            </div>
+          </main>
 
-        <ModalSection />
-        {/* 登入&註冊 Popup */}
-        {loginState.showSignInPop && <SignInPopup />}
-        {loginState.showSignUpPop && <SignUpPopup />}
-        {loginState.showForgetPwd && <FindPassword />}
+          <ModalSection />
+          {/* 登入&註冊 Popup */}
+          {loginState.showSignInPop && <SignInPopup />}
+          {loginState.showSignUpPop && <SignUpPopup />}
+          {loginState.showForgetPwd && <FindPassword />}
+        </div>
       </div>
-    </div>
+    </Sentry.ErrorBoundary>
   );
 }
 
