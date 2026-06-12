@@ -2,6 +2,7 @@ import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import * as Sentry from '@sentry/react';
 import store from '../redux/configStore';
 import { setSignInPop } from '../redux/loginSlice';
 
@@ -32,6 +33,30 @@ export const errorAlert = (errorMsg?: string) => {
 /** 處理API狀態碼 */
 export const handleStatus = (apiStatus: number) => {
   return Math.floor(apiStatus / 100);
+};
+
+/**
+ * 將「非預期」的 API 錯誤上報 Sentry
+ * 預期內的業務錯誤 (401/403/404/429/驗證失敗) 屬正常流程，不上報以免雜訊
+ * 只有 5XX 與無法辨識的回應 (含網路不通、無 response) 才送
+ */
+const reportApiError = (res: any, reason: string) => {
+  const status = get(res, 'status');
+  const code = get(res, 'data.code');
+  const message = get(res, 'data.message');
+  const url = get(res, 'config.url');
+  const method = get(res, 'config.method');
+
+  Sentry.captureException(
+    new Error(`[API] ${reason}（${method ?? '-'} ${url ?? '-'} → ${status ?? 'no-response'}）`),
+    {
+      level: 'error',
+      // 依「狀態碼 + 後端錯誤碼」 分組，避免所有 API 錯誤被併成同一個 issue
+      fingerprint: ['api-error', String(status ?? 'network'), code ?? 'unknown'],
+      tags: { api_status: status ? String(status) : 'network', api_code: code ?? 'unknown' },
+      extra: { url, method, status, code, message },
+    }
+  );
 };
 
 /** 統一處理寫入 API 的 4xx 錯誤回應
@@ -99,9 +124,14 @@ export const handleApiError = (res: any): boolean => {
 
   // 5xx 統一友善文案，避免洩漏後端錯誤細節
   if (status >= 500 || code === API_ERROR_CODE.SYSTEM_ERR) {
+    reportApiError(res, '伺服器錯誤');
     errorAlert('系統發生錯誤，請稍後再試');
     return true;
   }
 
+  // 無法辨識的回應（可能是網路錯誤導致沒有 response）也上報 Sentry，方便追蹤
+  if (status === undefined || status >= 400) {
+    reportApiError(res, '未預期的 API 錯誤');
+  }
   return false;
 };
