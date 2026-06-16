@@ -592,10 +592,10 @@
 - 避免 garbage commit 進 main。
 
 ### Phase 5 驗收
-- [ ] 推 PR → 三個 CI job 自動跑
-- [ ] merge 到 main → 自動部署到 staging/production
-- [ ] CI 平均 < 5 分鐘
-- [ ] CI fail 會在 PR 介面標紅、阻擋 merge
+- [x] 推 PR → 三個 CI job 自動跑
+- [x] merge 到 main → 自動部署到 staging/production
+- [x] CI 平均 < 5 分鐘
+- [x] CI fail 會在 PR 介面標紅、阻擋 merge
 
 ---
 
