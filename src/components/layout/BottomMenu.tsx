@@ -24,38 +24,35 @@ function BottomMenu() {
   const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const activePage = get(systemState, 'activePage');
 
+  const isHome = activePage === '' || activePage === 'home';
+  const iconClass = (active: boolean) =>
+    `w-6 h-6 transition-colors ${active ? 'text-brand' : 'text-muted'}`;
+  const linkClass = 'w-1/3 flex justify-center items-center h-full cursor-pointer';
+
   return (
     <div className="w-full h-full flex items-center">
       {/* home page */}
       <Link
         to="/"
-        className="w-1/3 flex justify-center py-3 cursor-pointer"
+        className={linkClass}
         onClick={() => {
           sliceDispatch(setActivePage('home'));
           scrollToTop();
         }}
       >
-        <FontAwesomeIcon
-          icon={faHome}
-          className={`w-5 h-5 text-gray-500 ${activePage === '' ? 'text-orange-500' : ''}  ${
-            activePage === 'home' ? 'text-orange-500' : ''
-          }`}
-        />
+        <FontAwesomeIcon icon={faHome} className={iconClass(isHome)} />
       </Link>
 
       {/* explore page */}
       <Link
         to="/explore"
-        className="w-1/3 flex justify-center py-3 cursor-pointer"
+        className={linkClass}
         onClick={() => {
           sliceDispatch(setActivePage('explore'));
           scrollToTop();
         }}
       >
-        <FontAwesomeIcon
-          icon={faCompass}
-          className={`w-5 h-5 text-gray-500  ${activePage === 'explore' ? 'text-orange-500' : ''}`}
-        />
+        <FontAwesomeIcon icon={faCompass} className={iconClass(activePage === 'explore')} />
       </Link>
 
       {isEmpty(userId) ? (
@@ -63,12 +60,12 @@ function BottomMenu() {
         <button
           aria-label="user"
           type="button"
-          className="w-1/3 flex justify-center py-3 cursor-pointer"
+          className={linkClass}
           onClick={() => {
             sliceDispatch(setSignInPop(true));
           }}
         >
-          <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-gray-500" />
+          <FontAwesomeIcon icon={faUser} className={iconClass(false)} />
         </button>
       ) : (
         // 已登入狀態 => 顯示建立(文章、貼文)&個人頁面
@@ -77,27 +74,24 @@ function BottomMenu() {
             <button
               aria-label="user"
               type="button"
-              className="w-1/3 flex justify-center py-3 cursor-pointer"
+              className={linkClass}
               onClick={() => {
                 if (guardVisitorAction()) return;
                 sliceDispatch(setShowCreateModal(true));
               }}
             >
-              <FontAwesomeIcon icon={faSquarePlus} className="w-5 h-5 text-gray-500" />
+              <FontAwesomeIcon icon={faSquarePlus} className={iconClass(false)} />
             </button>
           )}
           <Link
             to={`/user/profile/${userId}`}
-            className="w-1/3 flex justify-center py-3 cursor-pointer"
+            className={linkClass}
             onClick={() => {
               sliceDispatch(setActivePage('user'));
               scrollToTop();
             }}
           >
-            <FontAwesomeIcon
-              icon={faUser}
-              className={`w-5 h-5 text-gray-500 ${activePage === 'user' ? 'text-orange-500' : ''}`}
-            />
+            <FontAwesomeIcon icon={faUser} className={iconClass(activePage === 'user')} />
           </Link>
         </>
       )}

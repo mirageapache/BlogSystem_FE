@@ -44,7 +44,7 @@ function Header() {
   window.addEventListener('resize', screenWidthChange);
 
   return (
-    <header className="fixed z-20 flex justify-center w-full bg-white dark:bg-gray-950 border-b-[1px] dark:border-gray-700">
+    <header className="fixed z-20 flex justify-center w-full bg-paper/80 backdrop-blur-md border-b border-line">
       <div className="w-full flex justify-between py-2 px-4">
         <div className="block sm:hidden">
           <span className="flex justify-center items-center w-9 h-9">
@@ -58,7 +58,9 @@ function Header() {
             onClick={() => dispatch(setActivePage('home'))}
           >
             <img className="w-8 h-8 sm:w-11 sm:h-11 mr-1 sm:mr-2.5" src={brand} alt="logo" />
-            <h3 className="font-mono text-[20px] sm:text-3xl font-semibold">ReactBlog</h3>
+            <h3 className="font-serif text-[20px] sm:text-3xl font-semibold tracking-tight">
+              ReactBlog
+            </h3>
           </Link>
         </div>
         <nav className="flex items-center text-lg">
@@ -71,11 +73,11 @@ function Header() {
                 placeholder="搜尋..."
                 onChange={(e) => setSearchString(e.target.value)}
                 onKeyUp={(e) => handleSearch(e.key)}
-                className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
+                className="p-4 pl-10 w-40 h-9 text-base rounded-full bg-surface-2 border border-line transition-all duration-300 ease-in-out focus:w-80 focus:border-brand outline-none placeholder:text-muted"
               />
               <FontAwesomeIcon
                 icon={faSearch}
-                className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 text-gray-500 dark:text-gray-100"
+                className="absolute h-4 w-4 m-2 ml-3.5 stroke-0 text-muted"
               />
             </div>
           )}
@@ -86,13 +88,10 @@ function Header() {
               <button
                 aria-label="toggleMenu"
                 type="button"
-                className="flex justify-center items-center mx-1.5"
+                className="flex justify-center items-center mx-1 p-1.5 rounded-lg text-ink hover:bg-surface-2 transition-colors"
                 onClick={() => setToggleMenuAnimation('translate-x-0')}
               >
-                <FontAwesomeIcon
-                  icon={faBars}
-                  className="h-6 w-6 m-1 text-gray-900 dark:text-gray-100"
-                />
+                <FontAwesomeIcon icon={faBars} className="h-6 w-6" />
               </button>
             </>
           ) : (
@@ -100,20 +99,20 @@ function Header() {
               {/* 登入 */}
               <button
                 type="button"
-                className="flex items-center rounded-full text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
+                className="flex items-center rounded-full text-white bg-brand hover:bg-brand-strong p-2 md:px-4 md:py-1 font-medium transition-colors"
                 onClick={() => dispatch(setSignInPop(true))}
               >
                 <p className="hidden md:inline-block">登入</p>
-                <FontAwesomeIcon icon={faUser} className="h-5 w-5 md:hidden dark:opacity-100" />
+                <FontAwesomeIcon icon={faUser} className="h-5 w-5 md:hidden" />
               </button>
               {/* 註冊 */}
               <button
                 type="button"
-                className="hidden md:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 text-gray-400 border border-gray-400 dark:text-gray-300"
+                className="hidden md:flex items-center rounded-full ml-2 p-2 md:px-4 md:py-1 font-medium text-ink-soft border border-line-strong hover:text-brand hover:border-brand transition-colors"
                 onClick={() => dispatch(setSignUpPop(true))}
               >
                 <p className="hidden md:inline-block">註冊</p>
-                <FontAwesomeIcon icon={faUserPlus} className="h-5 w-5 md:hidden dark:opacity-100" />
+                <FontAwesomeIcon icon={faUserPlus} className="h-5 w-5 md:hidden" />
               </button>
             </div>
           )}

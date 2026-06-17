@@ -52,38 +52,36 @@ interface StateType {
 function MenuItem({ href, text, count, activeItem, children, handleClick }: ItemPropsType) {
   const sliceDispatch = useDispatch();
 
+  const menuItemBase =
+    'flex items-center gap-3 my-1 px-3 py-3 rounded-lg text-lg cursor-pointer transition-colors';
+  const menuItemStyle = activeItem
+    ? 'bg-brand-soft text-brand'
+    : 'text-ink-soft hover:bg-surface-2 hover:text-brand';
+
   return (
     <li className="menu-item">
       {text === '建立貼文' ? (
         <button
           type="button"
-          className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
-            activeItem ? 'text-orange-500' : ''
-          }`}
+          className={`w-full ${menuItemBase} ${menuItemStyle}`}
           onClick={() => {
             handleClick(); // 關閉選單
             if (guardVisitorAction()) return;
             sliceDispatch(setShowCreateModal(true));
           }}
         >
-          <div className="flex items-center">
+          <span className="flex items-center w-6 justify-center">
             <FontAwesomeIcon icon={faPenToSquare} />
-          </div>
-          <span className="ml-3 font-bold ">{text}</span>
+          </span>
+          <span className="font-semibold">{text}</span>
         </button>
       ) : (
-        <Link
-          to={href}
-          className={`flex my-1.5 text-xl text-gray-700 fill-gray-700 dark:text-gray-300 dark:fill-gray-300 cursor-pointer hover:text-orange-500 hover:fill-orange-500 py-3  ${
-            activeItem ? 'text-orange-500' : ''
-          }`}
-          onClick={handleClick}
-        >
-          <span className="flex items-center">{children}</span>
-          <span className="ml-3 font-bold">
+        <Link to={href} className={`${menuItemBase} ${menuItemStyle}`} onClick={handleClick}>
+          <span className="flex items-center w-6 justify-center">{children}</span>
+          <span className="font-semibold">
             {text}
             {!isEmpty(count) && (
-              <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+              <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-brand cursor-pointer">
                 {count}
               </span>
             )}
@@ -130,15 +128,19 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
 
   return (
     <nav id="main-menu" className="fixed">
+      {/* 遮罩：開啟時淡入並模糊背景 */}
       <button
+        aria-label="closeMenuOverlay"
         type="button"
-        className={`w-full h-full top-0 left-0 text-transparent ${
-          toggleMenuAnimation === 'translate-x-full' ? 'none' : 'fixed'
+        className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-300 ${
+          toggleMenuAnimation === 'translate-x-full'
+            ? 'pointer-events-none opacity-0'
+            : 'opacity-100'
         }`}
         onClick={closeMenu}
       />
       <div
-        className={`fixed z-50 top-0 right-0 w-full sm:max-w-[300px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-white opacity-[0.98] dark:bg-gray-950 dark:opacity-[0.98] border-l-[1px] border-gray-300 dark:border-gray-700`}
+        className={`fixed z-50 top-0 right-0 w-full sm:max-w-[320px] h-full flex flex-col transform duration-300 ease-in-out ${toggleMenuAnimation} bg-paper border-l border-line shadow-pop`}
       >
         <div className="z-10 w-full flex justify-end py-2 px-4">
           {/* 關閉選單 */}
@@ -148,14 +150,11 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             className="flex jsutify-center m-1"
             onClick={closeMenu}
           >
-            <FontAwesomeIcon
-              icon={faXmark}
-              className="h-7 w-7 m-1 text-gray-900 dark:text-gray-100"
-            />
+            <FontAwesomeIcon icon={faXmark} className="h-7 w-7 m-1 text-ink" />
           </button>
         </div>
         {checkLogin() && (
-          <div className="px-3 border-b-[1px] border-gray-400 dark:border-gray-70">
+          <div className="px-3 border-b border-line">
             {isEmpty(userData) ? (
               <UserLoading withBorder={false} />
             ) : (
@@ -173,7 +172,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                   name={userData.name}
                   avatarUrl={userData.avatar}
                   bgColor={userData.bgColor}
-                  className="my-2 py-2 px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="my-2 py-2 px-3 rounded-lg hover:bg-surface-2 transition-colors"
                   menuLink
                 />
               </Link>
@@ -265,31 +264,33 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             </ul>
           </div>
         </div>
-        <div className="flex justify-between items-center p-3 border-t-[1px] border-gray-300 dark:border-gray-700">
+        <div className="flex justify-between items-center p-3 border-t border-line">
           {/* 深色模式切換 */}
           <button
             aria-label="darkMode"
             type="button"
-            className="w-14 h-7 flex items-center border border-gray-400 rounded-full px-2 bg-gray-150 dark:bg-gray-700"
+            className="w-14 h-7 flex items-center border border-line-strong rounded-full px-2 bg-surface-2 transition-colors"
             onClick={() => {
               dispatch(setDarkMode());
             }}
           >
             <FontAwesomeIcon
               icon={faSun}
-              className="h-5 w-5 text-gray-900 translate-x-0 opacity-100 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-0"
+              className="h-5 w-5 text-brand translate-x-0 opacity-100 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-0"
             />
             <FontAwesomeIcon
               icon={faMoon}
-              className="absolute h-5 w-5 text-white translate-x-0 opacity-0 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-100"
+              className="absolute h-5 w-5 text-brand translate-x-0 opacity-0 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-100"
             />
           </button>
 
-          <button aria-label="logout" type="button" className="p-2" onClick={handleLogout}>
-            <FontAwesomeIcon
-              icon={faRightFromBracket}
-              className="h-5 w-5 text-gray-700 dark:text-gray-300"
-            />
+          <button
+            aria-label="logout"
+            type="button"
+            className="p-2 rounded-lg text-ink-soft hover:text-brand hover:bg-surface-2 transition-colors"
+            onClick={handleLogout}
+          >
+            <FontAwesomeIcon icon={faRightFromBracket} className="h-5 w-5" />
           </button>
         </div>
       </div>
