@@ -109,3 +109,41 @@ p {
 ::selection {
   background: rgb(var(--c-brand) / 0.22);
 }
+
+/* --- Modal／Popup 進場動畫（尊重 prefers-reduced-motion） ---
+   遮罩淡入、面板輕微上浮，營造柔和的浮起感；
+   開啟「減少動態」偏好時則完全停用。 */
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-overlay-in {
+  animation: overlayIn 0.16s ease-out both;
+}
+
+.animate-pop-in {
+  animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-overlay-in,
+  .animate-pop-in {
+    animation: none;
+  }
+}

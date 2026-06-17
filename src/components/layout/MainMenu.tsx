@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faHome,
@@ -126,8 +127,15 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
       });
   };
 
-  return (
-    <nav id="main-menu" className="fixed">
+  // 透過 Portal 掛載到 document.body，避免被 Header 的 backdrop-blur（backdrop-filter）
+  // 變成 fixed 定位的容器塊，導致遮罩與面板被侷限在 Header 區域內。
+  //
+  // nav 本身為 position:fixed，會自成一個 stacking context；內部遮罩(z-40)/面板(z-50)
+  // 只決定「容器內部」的堆疊順序，無法把整個選單抬升到 App 其他定位元素之上。
+  // 因此在 nav 外層指定 z-[60]（高於全站最高的 z-50），讓整個選單疊在
+  // SideBar(z-10)、Header(z-20)、編輯器工具列(z-40) 等之上。
+  return createPortal(
+    <nav id="main-menu" className="fixed z-[60]">
       {/* 遮罩：開啟時淡入並模糊背景 */}
       <button
         aria-label="closeMenuOverlay"
@@ -294,7 +302,8 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
           </button>
         </div>
       </div>
-    </nav>
+    </nav>,
+    document.body
   );
 }
 export default MainMenu;

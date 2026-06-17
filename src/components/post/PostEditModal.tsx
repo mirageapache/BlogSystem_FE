@@ -21,7 +21,7 @@ import { handleHashTag } from 'utils/input';
 import { UserStateType } from '../../redux/userSlice';
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
-import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
+import { GRAY_BG_PANEL, WHITE_SPACER, BTN_PRIMARY } from '../../constants/LayoutConstants';
 import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 interface stateType {
@@ -162,19 +162,19 @@ function PostEditModal() {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-30">
-      <div className="fixed w-full h-dvh rounded-lg sm:max-w-[600px] sm:h-auto bg-white dark:bg-gray-800 z-40">
+      <div className="animate-pop-in fixed w-full h-dvh sm:rounded-card sm:max-w-[600px] sm:h-auto bg-surface sm:border sm:border-line sm:shadow-pop z-40">
         {/* modal header */}
-        <div className="flex justify-between items-center w-full py-2 px-5 border-b-[1px] border-gray-300 dark:border-gray-700">
-          <h3 className="text-xl font-bold">編輯貼文</h3>
+        <div className="flex justify-between items-center w-full py-2 px-5 border-b border-line">
+          <h3 className="text-xl font-bold text-ink">編輯貼文</h3>
           <button
             aria-label="close"
             type="button"
-            className="flex jsutify-center m-1"
+            className="flex justify-center m-1"
             onClick={() => handleClose(true)}
           >
             <FontAwesomeIcon
               icon={faXmark}
-              className="h-6 w-6 m-1 text-gray-500 hover:text-red-500"
+              className="h-6 w-6 m-1 text-muted hover:text-ink transition-colors"
             />
           </button>
         </div>
@@ -185,15 +185,15 @@ function PostEditModal() {
             id="edit-container"
             contentEditable
             ref={contentRef}
-            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto"
+            className="w-full h-minus240 sm:h-auto sm:min-h-80 sm:max-h-70vh outline-none overflow-y-auto text-ink"
             onInput={handleOnInput}
           />
 
           {/* image preview */}
           {!isEmpty(image) && (
-            <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-gray-400 border-t-[1px] pt-2">
+            <div className="flex w-full h-24 overflow-y-hidden overflow-x-auto border-line border-t pt-2">
               <div className="relative">
-                <img src={image} alt="postImg" className="h-24 min-w-24 object-cover" />
+                <img src={image} alt="postImg" className="h-24 min-w-24 object-cover rounded-md" />
                 <button
                   aria-label="close"
                   type="button"
@@ -201,7 +201,7 @@ function PostEditModal() {
                   onClick={handleDeleteImage}
                 >
                   <FontAwesomeIcon
-                    className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
+                    className="absolute top-[-8px] right-[-8px] w-5 h-5 text-muted hover:text-red-500 transition-colors z-30"
                     icon={faCircleXmark}
                   />
                 </button>
@@ -211,12 +211,12 @@ function PostEditModal() {
         </div>
 
         {/* modal footer */}
-        <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto flex justify-between py-3 px-5 text-right border-t-[1px] border-gray-300 dark:border-gray-700">
+        <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto flex justify-between items-center py-3 px-5 text-right bg-surface border-t border-line sm:rounded-b-card">
           <div>
             <label htmlFor="postImage">
               <FontAwesomeIcon
                 icon={faImage}
-                className="h-6 w-6 m-1 cursor-pointer text-gray-500 hover:text-orange-500"
+                className="h-6 w-6 m-1 cursor-pointer text-muted hover:text-brand transition-colors"
               />
             </label>
             <input
@@ -228,26 +228,18 @@ function PostEditModal() {
             />
           </div>
           <div>
-            {!isEmpty(content) || content.length !== 0 ? (
-              <button
-                type="button"
-                className="flex justify-center items-center w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
-                onClick={handleSubmit}
-              >
-                {editPostMutation.isPending ? (
-                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
-                ) : (
-                  <>確認</>
-                )}
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-gray-600"
-              >
-                確認
-              </button>
-            )}
+            <button
+              type="button"
+              disabled={isEmpty(content) || editPostMutation.isPending}
+              className={`${BTN_PRIMARY} w-40 sm:w-24 py-1.5 rounded-full`}
+              onClick={handleSubmit}
+            >
+              {editPostMutation.isPending ? (
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
+              ) : (
+                <>確認</>
+              )}
+            </button>
           </div>
         </div>
       </div>

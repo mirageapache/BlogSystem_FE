@@ -73,7 +73,7 @@ function Header() {
                 placeholder="搜尋..."
                 onChange={(e) => setSearchString(e.target.value)}
                 onKeyUp={(e) => handleSearch(e.key)}
-                className="p-4 pl-10 w-40 h-9 text-base rounded-full bg-surface-2 border border-line transition-all duration-300 ease-in-out focus:w-80 focus:border-brand outline-none placeholder:text-muted"
+                className="p-4 pl-10 w-40 h-9 text-base rounded-full bg-surface-2 border border-line transition-all duration-300 ease-in-out focus:w-80 focus:border-brand outline-none focus-visible:outline-none placeholder:text-muted"
               />
               <FontAwesomeIcon
                 icon={faSearch}

@@ -13,7 +13,12 @@ import withReactContent from 'sweetalert2-react-content';
 // --- functions / types ---
 import { setUserData } from '../../redux/userSlice';
 import { setForgetPwd, setSignInPop, setSignUpPop } from '../../redux/loginSlice';
-import { GRAY_BG_PANEL } from '../../constants/LayoutConstants';
+import {
+  GRAY_BG_PANEL,
+  BTN_PRIMARY,
+  BTN_SECONDARY,
+  BTN_TEXT,
+} from '../../constants/LayoutConstants';
 import { SignIn, GuestSignIn } from '../../api/auth';
 import { handleStatus } from '../../utils/fetch';
 import { ERR_NETWORK_MSG, GUEST_USER_DATA } from '../../constants/StringConstants';
@@ -125,19 +130,19 @@ function SignInPopup() {
   return (
     <div className="fixed w-full h-full z-30 flex justify-center items-center select-none">
       <div className={GRAY_BG_PANEL} onClick={handleClose} />
-      <div className="absolute z-10 w-full min-[320px]:w-11/12 max-w-[400px] border bg-white dark:bg-gray-950 dark:border-gray-700 opacity-100 rounded-md">
+      <div className="animate-pop-in absolute z-10 w-full min-[320px]:w-11/12 max-w-[400px] border border-line bg-surface shadow-pop rounded-card">
         {/* popup header */}
-        <div className="flex justify-between border-b-[1px] dark:border-gray-700 p-4">
-          <h2 className="text-2xl text-orange-500 font-semibold">歡迎回來</h2>
+        <div className="flex justify-between items-center border-b border-line p-4">
+          <h2 className="text-2xl text-ink">歡迎回來</h2>
           <button
             aria-label="close"
             type="button"
-            className="flex jsutify-center m-1"
+            className="flex justify-center m-1"
             onClick={handleClose}
           >
             <FontAwesomeIcon
               icon={faXmark}
-              className="w-5 h-5 m-1 text-gray-700 dark:text-gray-400"
+              className="w-5 h-5 m-1 text-muted hover:text-ink transition-colors"
             />
           </button>
         </div>
@@ -172,7 +177,8 @@ function SignInPopup() {
             <div className="mt-4">
               <button
                 type="submit"
-                className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
+                disabled={isLoading || isVisitorLoading}
+                className={`${BTN_PRIMARY} w-full h-10 px-4 py-2 text-lg rounded-lg`}
               >
                 {isLoading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
@@ -182,7 +188,8 @@ function SignInPopup() {
               </button>
               <button
                 type="button"
-                className="flex justify-center items-center w-full h-10 my-4 px-4 py-2 text-lg rounded-md bg-transparent border border-gray-500"
+                disabled={isLoading || isVisitorLoading}
+                className={`${BTN_SECONDARY} w-full h-10 my-4 px-4 py-2 text-lg rounded-lg`}
                 onClick={submitVisitor}
               >
                 {isVisitorLoading ? (
@@ -192,23 +199,23 @@ function SignInPopup() {
                 )}
               </button>
             </div>
-            <div className="flex max-[420px]:flex-col justify-center mt-4">
+            <div className="flex max-[420px]:flex-col justify-center mt-4 text-ink-soft">
               <span className="flex">
                 沒有帳戶？
                 <button
                   type="button"
-                  className="text-blue-600 cursor-pointer"
+                  className={`${BTN_TEXT} cursor-pointer`}
                   onClick={directSignUp}
                 >
                   前往註冊
                 </button>
               </span>
-              <span className="mx-2 hidden min-[421px]:block">|</span>
+              <span className="mx-2 hidden min-[421px]:block text-line-strong">|</span>
               <span>
                 忘記密碼？
                 <button
                   type="button"
-                  className="text-blue-600 cursor-pointer"
+                  className={`${BTN_TEXT} cursor-pointer`}
                   onClick={findPassword}
                 >
                   找回密碼
