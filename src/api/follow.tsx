@@ -12,7 +12,7 @@ interface getFollowListType extends AxResponseType {
 
 /** 動態取得追蹤資料 型別 */
 interface FollowPageListType extends AxResponseType {
-  followList: any;
+  followList: UserDataType[];
   nextPage: number;
   data: UserDataType[];
 }
@@ -44,12 +44,9 @@ export async function getFollowerList(userId: string, page: number): Promise<Fol
 }
 
 /** 追蹤 */
-export async function followUser(userId: string, targetId: string): Promise<getFollowListType> {
-  const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-  };
+export async function followUser(targetId: string): Promise<getFollowListType> {
   const result = await axios
-    .post(`${baseUrl}/follow/follow`, { userId, targetId }, config)
+    .post(`${baseUrl}/follow/follow`, { targetId })
     .then((res) => {
       return res;
     })
@@ -60,12 +57,9 @@ export async function followUser(userId: string, targetId: string): Promise<getF
 }
 
 /** 取消追蹤 */
-export async function unfollowUser(userId: string, targetId: string): Promise<getFollowListType> {
-  const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-  };
+export async function unfollowUser(targetId: string): Promise<getFollowListType> {
   const result = await axios
-    .post(`${baseUrl}/follow/unfollow`, { userId, targetId }, config)
+    .post(`${baseUrl}/follow/unfollow`, { targetId })
     .then((res) => {
       return res;
     })
@@ -77,15 +71,11 @@ export async function unfollowUser(userId: string, targetId: string): Promise<ge
 
 /** 更改訂閱狀態 */
 export async function changeFollowState(
-  userId: string,
   targetId: string,
   state: number
 ): Promise<getFollowListType> {
-  const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-  };
   const result = await axios
-    .patch(`${baseUrl}/follow/changeState`, { userId, targetId, state }, config)
+    .patch(`${baseUrl}/follow/changeState`, { targetId, state })
     .then((res) => {
       return res;
     })

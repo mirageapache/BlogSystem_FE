@@ -2,18 +2,19 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useRef, useState } from 'react';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleXmark, faImage, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { get, isEmpty } from 'lodash';
-import { useMutation } from 'react-query';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 // --- api ---
 import { createPost } from 'api/post';
 // --- functions / types ---
-import { getCookies } from 'utils/common';
-import { errorAlert, handleStatus } from 'utils/fetch';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { guardVisitorAction } from 'utils/common';
 import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
@@ -21,6 +22,7 @@ import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
+  const queryClient = useQueryClient();
   const [content, setContent] = useState(''); // 內容
   const [hashTagArr, setHashTagArr] = useState<string[]>([]); // hash tag
   const [image, setImage] = useState(''); // 處理 image preview
@@ -58,31 +60,34 @@ function PostCreateModal() {
   };
 
   /** 新增貼文 mutation */
-  const createPostMutation = useMutation(
-    ({ userId, formData }: { userId: string; formData: FormData }) => createPost(userId, formData),
-    {
-      onSuccess: (res) => {
-        if (handleStatus(get(res, 'status')) === 2) {
-          const swal = withReactContent(Swal);
-          swal
-            .fire({
-              title: '貼文已發佈',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then(() => {
-              handleClose();
-              window.location.reload();
-            });
-        } else if (handleStatus(get(res, 'status')) === 5) {
-          errorAlert(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          errorAlert(ERR_NETWORK_MSG);
-        }
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const createPostMutation = useMutation({
+    mutationFn: (formData: FormData) => createPost(formData),
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status')) === 2) {
+        const swal = withReactContent(Swal);
+        // 失效所有貼文列表 cache，新貼文自動拉回
+        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
+          queryClient.invalidateQueries({ queryKey: [key] })
+        );
+        swal
+          .fire({
+            title: '貼文已發佈',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            handleClose();
+          });
+      } else if (handleStatus(get(res, 'status')) === 4) {
+        handleApiError(res);
+      } else if (handleStatus(get(res, 'status')) === 5) {
+        errorAlert(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        errorAlert(ERR_NETWORK_MSG);
+      }
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 發佈貼文 */
   const handleSubmit = async () => {
@@ -90,17 +95,16 @@ function PostCreateModal() {
     if (isEmpty(content) || content.length === 0) {
       return;
     }
-    const userId = getCookies('uid') as string;
+    if (guardVisitorAction()) return;
 
     const formData = new FormData();
-    formData.set('author', userId);
     formData.set('content', content);
     formData.set('status', '1');
     formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    if (imageFile) formData.set('imageFile', imageFile);
+    if (imageFile instanceof File) formData.set('imageFile', imageFile);
 
-    createPostMutation.mutate({ userId, formData });
+    createPostMutation.mutate(formData);
   };
 
   return (
@@ -116,7 +120,7 @@ function PostCreateModal() {
             onClick={handleClose}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="h-6 w-6 m-1 text-gray-500 hover:text-red-500"
             />
           </button>
@@ -146,7 +150,7 @@ function PostCreateModal() {
                 >
                   <FontAwesomeIcon
                     className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
-                    icon={icon({ name: 'circle-xmark', style: 'solid' })}
+                    icon={faCircleXmark}
                   />
                 </button>
               </div>
@@ -159,7 +163,7 @@ function PostCreateModal() {
           <div>
             <label htmlFor="postImage">
               <FontAwesomeIcon
-                icon={icon({ name: 'image', style: 'solid' })}
+                icon={faImage}
                 className="h-6 w-6 m-1 cursor-pointer text-gray-500 hover:text-orange-500"
               />
             </label>
@@ -178,11 +182,8 @@ function PostCreateModal() {
                 className="w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
                 onClick={handleSubmit}
               >
-                {createPostMutation.isLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                {createPostMutation.isPending ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>發佈</>
                 )}

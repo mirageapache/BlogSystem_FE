@@ -1,7 +1,7 @@
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { setShowCreateModal } from 'redux/postSlice';
 
@@ -17,7 +17,7 @@ function NoSearchResult({ msgOne, msgTwo, type }: propsType) {
   return (
     <div className="flex flex-col justify-center items-center max-h-80 mt-10">
       <FontAwesomeIcon
-        icon={icon({ name: 'search', style: 'solid' })}
+        icon={faSearch}
         className="h-8 w-8 m-5 stroke-0 text-gray-500 dark:text-gray-100"
       />
       <p className="text-2xl sm:text-3xl m-1">{!isEmpty(msgOne) ? msgOne : '搜尋不到相關資料！'}</p>

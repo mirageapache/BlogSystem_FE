@@ -1,13 +1,17 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import { useSelector } from 'react-redux';
 // --- api/type ---
 import { UserDataType } from 'types/userType';
-import { getCookies } from '../../utils/common';
-// --- components ---
 import UserInfoPanel from './UserInfoPanel';
+import { UserStateType } from '../../redux/userSlice';
 import FollowBtn from './FollowBtn';
+
+interface StateType {
+  user: UserStateType;
+}
 
 interface PropType {
   user: UserDataType;
@@ -15,7 +19,7 @@ interface PropType {
 }
 
 function FollowingItem({ user, refetch }: PropType) {
-  const currentUser = getCookies('uid');
+  const currentUser = useSelector((state: StateType) => state.user.userData?.userId);
 
   return (
     <div
@@ -32,7 +36,7 @@ function FollowingItem({ user, refetch }: PropType) {
       />
       {!isEmpty(currentUser) && user._id !== currentUser && (
         <div className="relative flex items-center">
-          <FollowBtn user={user} currentUser={currentUser!} refetch={refetch} />
+          <FollowBtn user={user} refetch={refetch} />
         </div>
       )}
     </div>

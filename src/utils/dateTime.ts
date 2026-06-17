@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import isString from 'lodash/isString';
 
 /**
  * 計算1天內時間差距(Calculate Time Difference)
@@ -33,10 +33,11 @@ export const formatDateTime = (datetime: string) => {
   const currentDate = new Date();
   const inputDate = new Date(datetime);
 
-  const diffDays = Math.abs(currentDate.getDate() - inputDate.getDate());
+  // 用毫秒差計算實際間隔天數，避免跨月時 getDate() 相減產生負數或誤判
+  const diffDays = Math.floor(Math.abs(currentDate.getTime() - inputDate.getTime()) / 86400000);
 
   if (inputDate.getFullYear() === currentDate.getFullYear()) {
-    if (inputDate.getMonth() === currentDate.getMonth() && diffDays < 7) {
+    if (diffDays < 7) {
       if (diffDays > 1) {
         // 少於一週以天數顯示
         return `${diffDays}天`;

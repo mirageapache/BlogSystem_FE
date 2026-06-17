@@ -33,7 +33,8 @@
       {
         "devDependencies": true,
         "optionalDependencies": true,
-        "peerDependencies": true
+        "peerDependencies": true,
+        "packageDir": "./"
       }
     ],
     "max-len": [
@@ -56,9 +57,24 @@
   },
   "env": {
     "browser": true,
-    "jest": true,
     "node": true
   },
+  "overrides": [
+    {
+      "files": ["src/test/**", "src/setupTests.ts", "**/*.test.ts", "**/*.test.tsx"],
+      "globals": {
+        "vi": "readonly",
+        "describe": "readonly",
+        "it": "readonly",
+        "test": "readonly",
+        "expect": "readonly",
+        "beforeEach": "readonly",
+        "afterEach": "readonly",
+        "beforeAll": "readonly",
+        "afterAll": "readonly"
+      }
+    }
+  ],
   "settings": {
     "react": {
       "pragma": "React",

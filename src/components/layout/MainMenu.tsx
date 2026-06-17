@@ -2,8 +2,19 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { get, isEmpty } from 'lodash';
+import {
+  faHome,
+  faInbox,
+  faMoon,
+  faPenNib,
+  faPenToSquare,
+  faRightFromBracket,
+  faSun,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCompass } from '@fortawesome/free-regular-svg-icons';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -15,7 +26,7 @@ import UserLoading from 'components/user/UserLoading';
 import { SysStateType, setActivePage, setDarkMode, setEditMode } from '../../redux/sysSlice';
 import { UserStateType } from '../../redux/userSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
-import { checkLogin, deleteCookie, scrollToTop } from '../../utils/common';
+import { checkLogin, checkVisitor, guardVisitorAction, scrollToTop } from '../../utils/common';
 
 /** Toggle Menu 參數型別 */
 type ItemPropsType = {
@@ -42,7 +53,7 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
   const sliceDispatch = useDispatch();
 
   return (
-    <li>
+    <li className="menu-item">
       {text === '建立貼文' ? (
         <button
           type="button"
@@ -51,11 +62,12 @@ function MenuItem({ href, text, count, activeItem, children, handleClick }: Item
           }`}
           onClick={() => {
             handleClick(); // 關閉選單
+            if (guardVisitorAction()) return;
             sliceDispatch(setShowCreateModal(true));
           }}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+            <FontAwesomeIcon icon={faPenToSquare} />
           </div>
           <span className="ml-3 font-bold ">{text}</span>
         </button>
@@ -99,13 +111,14 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
 
   /** 登出 */
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    deleteCookie('uid');
+    localStorage.removeItem('hasSession'); // 清除登入提示 flag
     swal
       .fire({
         title: '已成功登出',
         icon: 'info',
         confirmButtonText: '確認',
+        timer: 2000,
+        timerProgressBar: true,
       })
       .then(() => {
         closeMenu();
@@ -116,7 +129,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
   };
 
   return (
-    <nav className="fixed">
+    <nav id="main-menu" className="fixed">
       <button
         type="button"
         className={`w-full h-full top-0 left-0 text-transparent ${
@@ -136,7 +149,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             onClick={closeMenu}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="h-7 w-7 m-1 text-gray-900 dark:text-gray-100"
             />
           </button>
@@ -155,7 +168,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                 }}
               >
                 <UserInfoPanel
-                  userId={userData._id}
+                  userId={userData.userId}
                   account={userData.account}
                   name={userData.name}
                   avatarUrl={userData.avatar}
@@ -181,7 +194,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                   scrollToTop();
                 }}
               >
-                <FontAwesomeIcon icon={icon({ name: 'home' })} />
+                <FontAwesomeIcon icon={faHome} />
               </MenuItem>
               <MenuItem
                 href="/explore"
@@ -194,9 +207,9 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                   scrollToTop();
                 }}
               >
-                <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
+                <FontAwesomeIcon icon={faCompass} />
               </MenuItem>
-              {checkLogin() && (
+              {checkLogin() && !checkVisitor() && (
                 <>
                   {/* <MenuItem
                     href="/inbox"
@@ -209,7 +222,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                       scrollToTop();
                     }}
                   >
-                    <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
+                    <FontAwesomeIcon icon={faInbox} />
                   </MenuItem> */}
                   {/* <MenuItem
                     href="/activity"
@@ -222,7 +235,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                       scrollToTop();
                     }}
                   >
-                    <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
+                    <FontAwesomeIcon icon={faBell} />
                   </MenuItem> */}
                   <MenuItem
                     href="/article/create"
@@ -236,7 +249,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                       scrollToTop();
                     }}
                   >
-                    <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
+                    <FontAwesomeIcon icon={faPenNib} />
                   </MenuItem>
                   <MenuItem
                     href=""
@@ -245,7 +258,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     activeItem={false}
                     handleClick={closeMenu}
                   >
-                    <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+                    <FontAwesomeIcon icon={faPenToSquare} />
                   </MenuItem>
                 </>
               )}
@@ -263,18 +276,18 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             }}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'sun', style: 'solid' })}
+              icon={faSun}
               className="h-5 w-5 text-gray-900 translate-x-0 opacity-100 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-0"
             />
             <FontAwesomeIcon
-              icon={icon({ name: 'moon', style: 'solid' })}
+              icon={faMoon}
               className="absolute h-5 w-5 text-white translate-x-0 opacity-0 transform duration-300 ease-linear dark:translate-x-5 dark:opacity-100"
             />
           </button>
 
           <button aria-label="logout" type="button" className="p-2" onClick={handleLogout}>
             <FontAwesomeIcon
-              icon={icon({ name: 'right-from-bracket', style: 'solid' })}
+              icon={faRightFromBracket}
               className="h-5 w-5 text-gray-700 dark:text-gray-300"
             />
           </button>

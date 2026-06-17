@@ -1,15 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import React from 'react';
-import { CommonFieldProps } from 'redux-form';
-
 /** FileInputPorps 型別 */
 interface FileInputPorpsType {
   name: string;
   id: string;
   classname: string;
-  input: CommonFieldProps & { value: any };
   setAvatarFile: (file: FileList) => void;
   setAvatar: (file: FileList) => void;
   setRemoveAvatar: () => void;

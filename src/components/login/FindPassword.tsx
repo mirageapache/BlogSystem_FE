@@ -1,10 +1,11 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { get, isEmpty } from 'lodash';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import get from 'lodash/get';
+import { faInfoCircle, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -12,15 +13,19 @@ import withReactContent from 'sweetalert2-react-content';
 import { setForgetPwd, setSignInPop } from 'redux/loginSlice';
 import { GRAY_BG_PANEL } from 'constants/LayoutConstants';
 import { FindPwd } from 'api/auth';
+import { findPwdSchema, FindPwdFormType } from 'schemas/auth';
 // --- components ---
 import FormInput from 'components/form/FormInput';
 import { handleStatus } from 'utils/fetch';
 
 function FindPassword() {
   const sliceDispatch = useDispatch();
-  const [email, setEmail] = useState(''); // 紀錄email資料
-  const [emailError, setEmailError] = useState(''); // 紀錄email錯誤訊息
-  const [errorMsg, setErrorMsg] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FindPwdFormType>({ resolver: zodResolver(findPwdSchema) });
+  const [errorMsg, setErrorMsg] = useState(''); // 後端回傳的錯誤訊息
   const [isLoading, setIsLoading] = useState(false);
   const swal = withReactContent(Swal);
 
@@ -35,42 +40,29 @@ function FindPassword() {
     sliceDispatch(setSignInPop(true));
   };
 
-  /** 送出資料 */
-  const submitSignIn = async () => {
+  /** 送出資料（email 驗證已由 zod schema 於 handleSubmit 完成） */
+  const onSubmit = async ({ email }: FindPwdFormType) => {
     setErrorMsg('');
     setIsLoading(true);
-    if (isEmpty(email)) {
-      setEmailError('Email為必填欄位');
-      setIsLoading(false);
-      return;
-    }
-
-    if (isEmpty(emailError)) {
-      try {
-        const res = await FindPwd(email);
-        if (handleStatus(get(res, 'status', 0)) === 2) {
-          swal
-            .fire({
-              title: '已寄送重置密碼連結至信箱',
-              icon: 'info',
-              confirmButtonText: '確認',
-            })
-            .then(() => {
-              BackToLogin();
-            });
-        } else if (handleStatus(get(res, 'status', 0)) === 4) {
-          setErrorMsg(get(res, 'data.message', ''));
-        }
-      } catch (error) {
-        // console.log(error);
+    try {
+      const res = await FindPwd(email);
+      if (handleStatus(get(res, 'status', 0)) === 2) {
+        swal
+          .fire({
+            title: '已寄送重置密碼連結至信箱',
+            icon: 'info',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            BackToLogin();
+          });
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        setErrorMsg(get(res, 'data.message', ''));
       }
+    } catch (error) {
+      // console.log(error);
     }
     setIsLoading(false);
-  };
-
-  /** handleEnter */
-  const handleEnter = (value: string) => {
-    if (value === 'Enter') submitSignIn();
   };
 
   return (
@@ -87,7 +79,7 @@ function FindPassword() {
             onClick={handleClose}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="w-5 h-5 m-1 text-gray-700 dark:text-gray-400"
             />
           </button>
@@ -95,27 +87,20 @@ function FindPassword() {
         {/* popup body */}
         <div className="pt-4 pb-8 px-6 flex flex-col justify-center items-center">
           <div className="flex gap-1 mb-4 text-gray-500">
-            <FontAwesomeIcon
-              icon={icon({ name: 'info-circle', style: 'solid' })}
-              className="mt-1 text-orange-500"
-            />
+            <FontAwesomeIcon icon={faInfoCircle} className="mt-1 text-orange-500" />
             <p>
               請輸入你註冊時的E-mail，系統將寄送「重設密碼」的連結至你的信箱，重設後即可使用新密碼進行登入
             </p>
           </div>
-          <form className="w-full max-w-80">
+          <form className="w-full max-w-80" onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-6 w-full">
               <div>
                 <FormInput
                   type="email"
-                  name="email"
                   ispwd={false}
                   placeholder="E-mail"
-                  value={email}
-                  setValue={setEmail}
-                  errorMsg={emailError}
-                  setErrorMsg={setEmailError}
-                  handleEnter={handleEnter}
+                  registration={register('email')}
+                  errorMsg={errors.email?.message}
                 />
               </div>
             </div>
@@ -126,15 +111,11 @@ function FindPassword() {
             )}
             <div className="mt-4">
               <button
-                type="button"
+                type="submit"
                 className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
-                onClick={submitSignIn}
               >
                 {isLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>重置密碼</>
                 )}

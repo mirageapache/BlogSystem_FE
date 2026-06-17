@@ -31,20 +31,15 @@ export async function SignIn(param: SignInParamType) {
   return result;
 }
 
-/** 身分驗證
- * redux 必須存有 userId 才可進行身分驗證
- */
-export async function Auth(userId: string) {
-  const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-  };
+/** 身分驗證（後端從 JWT 解析使用者身份） */
+export async function Auth() {
   const result = await axios
-    .post(`${baseUrl}/auth/checkAuth`, { id: userId }, config)
+    .post(`${baseUrl}/auth/checkAuth`)
     .then((res) => {
       return res;
     })
     .catch((error) => {
-      return error;
+      return error.response;
     });
   return result;
 }
@@ -80,6 +75,30 @@ export async function ResetPwd(token: string, password: string, confirmPassword:
       return res;
     })
     .catch((error) => {
+      return error.response;
+    });
+  return result;
+}
+
+/** 訪客登入 */
+export async function GuestSignIn() {
+  const result = await axios
+    .post(`${baseUrl}/auth/guest`)
+    .then((res) => res)
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
+  return result;
+}
+
+/** 取得目前登入的使用者資料（後端從 HttpOnly cookie 解析 JWT） */
+export async function getMe() {
+  const result = await axios
+    .get(`${baseUrl}/auth/me`)
+    .then((res) => res)
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
       return error.response;
     });
   return result;

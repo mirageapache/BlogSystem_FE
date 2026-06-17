@@ -1,12 +1,15 @@
 import { ReactNode, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { get, isEmpty } from 'lodash';
+import { faHome, faPenNib, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faCompass, faUser } from '@fortawesome/free-regular-svg-icons';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 // --- functions ---
-import { checkLogin, getCookies, scrollToTop } from 'utils/common';
+import { checkLogin, checkVisitor, guardVisitorAction, scrollToTop } from 'utils/common';
 import { SysStateType, setActivePage, setEditMode } from '../../redux/sysSlice';
+import { UserStateType } from '../../redux/userSlice';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { HINT_LABEL } from '../../constants/LayoutConstants';
 import { setSignInPop } from '../../redux/loginSlice';
@@ -23,6 +26,7 @@ type ItemProps = {
 
 interface StateType {
   system: SysStateType;
+  user: UserStateType;
 }
 
 const activeStyle = 'text-orange-500 hover:text-orange-500 hover:fill-orange-500';
@@ -41,12 +45,15 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
           type="button"
           ref={tooltip}
           className={`flex my-1.5 ml-3 text-xl cursor-pointer py-4 ${normalStyle}`}
-          onClick={() => sliceDispatch(setShowCreateModal(true))}
+          onClick={() => {
+            if (guardVisitorAction()) return;
+            sliceDispatch(setShowCreateModal(true));
+          }}
           onMouseEnter={() => setShowTip(true)}
           onMouseLeave={() => setShowTip(false)}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+            <FontAwesomeIcon icon={faPenToSquare} />
           </div>
           <span className="ml-3 font-bold hidden lg:block">建立貼文</span>
         </button>
@@ -89,7 +96,7 @@ function SideBar() {
   const sliceDispatch = useDispatch();
   const systemState = useSelector((state: StateType) => state.system);
   const activePage = get(systemState, 'activePage');
-  const userId = getCookies('uid');
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
 
   return (
     <div className="text-left h-fit sm:px-1">
@@ -101,7 +108,7 @@ function SideBar() {
           activeItem={activePage === '' || activePage === 'home'}
           changeItem={() => sliceDispatch(setActivePage('home'))}
         >
-          <FontAwesomeIcon icon={icon({ name: 'home' })} />
+          <FontAwesomeIcon icon={faHome} />
         </SideBarItem>
         <SideBarItem
           href="/explore"
@@ -110,24 +117,9 @@ function SideBar() {
           activeItem={activePage === 'explore'}
           changeItem={() => sliceDispatch(setActivePage('explore'))}
         >
-          <FontAwesomeIcon icon={icon({ name: 'compass', style: 'regular' })} />
+          <FontAwesomeIcon icon={faCompass} />
         </SideBarItem>
-        <SideBarItem
-          href={checkLogin() ? `/user/profile/${userId}` : ''}
-          text="個人資料"
-          count={0}
-          activeItem={activePage === 'user'}
-          changeItem={() => {
-            if (checkLogin()) {
-              sliceDispatch(setActivePage('user'));
-            } else {
-              sliceDispatch(setSignInPop(true));
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={icon({ name: 'user', style: 'regular' })} />
-        </SideBarItem>
-        {checkLogin() && (
+        {checkLogin() && !checkVisitor() && (
           <>
             {/* <SideBarItem
               href="/inbox"
@@ -136,7 +128,7 @@ function SideBar() {
               activeItem={activePage === 'inbox'}
               changeItem={() => sliceDispatch(setActivePage('inbox'))}
             >
-              <FontAwesomeIcon icon={icon({ name: 'inbox' })} />
+              <FontAwesomeIcon icon={faInbox} />
             </SideBarItem>
             <SideBarItem
               href="/activity"
@@ -145,8 +137,23 @@ function SideBar() {
               activeItem={activePage === 'activity'}
               changeItem={() => sliceDispatch(setActivePage('activity'))}
             >
-              <FontAwesomeIcon icon={icon({ name: 'bell', style: 'regular' })} />
+              <FontAwesomeIcon icon={faBell} />
             </SideBarItem> */}
+            <SideBarItem
+              href={checkLogin() ? `/user/profile/${userId}` : ''}
+              text="個人資料"
+              count={0}
+              activeItem={activePage === 'user'}
+              changeItem={() => {
+                if (checkLogin()) {
+                  sliceDispatch(setActivePage('user'));
+                } else {
+                  sliceDispatch(setSignInPop(true));
+                }
+              }}
+            >
+              <FontAwesomeIcon icon={faUser} />
+            </SideBarItem>
             <SideBarItem
               href="/article/create"
               text="撰寫文章"
@@ -157,10 +164,10 @@ function SideBar() {
                 sliceDispatch(setEditMode(true));
               }}
             >
-              <FontAwesomeIcon icon={icon({ name: 'pen-nib', style: 'solid' })} />
+              <FontAwesomeIcon icon={faPenNib} />
             </SideBarItem>
             <SideBarItem href="" text="建立貼文" count={0} activeItem={false} changeItem={() => {}}>
-              <FontAwesomeIcon icon={icon({ name: 'pen-to-square', style: 'solid' })} />
+              <FontAwesomeIcon icon={faPenToSquare} />
             </SideBarItem>
           </>
         )}

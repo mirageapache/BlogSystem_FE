@@ -1,16 +1,14 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/no-danger */
-import { useEffect, useState } from 'react';
-import moment from 'moment';
+import { useState } from 'react';
+import DOMPurify from 'dompurify';
+import dayjs from 'utils/dayjs';
 import { useNavigate } from 'react-router-dom';
 // --- components / functions ---
 import UserInfoPanel from 'components/user/UserInfoPanel';
 import { formatDateTime } from 'utils/dateTime';
 import { ArticleDataType } from 'types/articleType';
 import { HINT_LABEL } from 'constants/LayoutConstants';
-import { convertFromRaw, EditorState } from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
 
 /** Article Tags 元件 */
 // function ArticleTag(props: { text: string }) {
@@ -28,19 +26,11 @@ import { stateToHTML } from 'draft-js-export-html';
 function ArticleItem(props: { articleData: ArticleDataType }) {
   const navigate = useNavigate();
   const { articleData } = props;
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
-  const contentState = editorState.getCurrentContent();
-  const htmlContent = stateToHTML(contentState);
   const [showCreateTip, setShowCreateTip] = useState(false);
   const { _id, title, author, createdAt } = articleData;
+  // 內容已是 HTML（Tiptap），預覽直接淨化後渲染
+  const htmlContent = DOMPurify.sanitize(articleData.content || '');
   // const tagsList = hashTags.map((tag) => <ArticleTag key={`${tag}-${_id}`} text={tag} />);
-
-  useEffect(() => {
-    if (articleData) {
-      const rawContent = JSON.parse(articleData.content);
-      setEditorState(EditorState.createWithContent(convertFromRaw(rawContent)));
-    }
-  }, [articleData]);
 
   return (
     <div
@@ -68,7 +58,7 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
             <span
               className={`top-[-50px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
             >
-              Created at {moment(createdAt).format('MMMM Do YYYY, h:mm:ss')}
+              Created at {dayjs(createdAt).format('MMMM Do YYYY, h:mm:ss')}
             </span>
           </span>
         </div>

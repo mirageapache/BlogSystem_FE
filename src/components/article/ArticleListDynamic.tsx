@@ -1,5 +1,5 @@
 import React from 'react';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 // --- components ---
 import ArticleItem from './ArticleItem';
 import ArticleLoading from './ArticleLoading';

@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faBars, faSearch, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
 // --- images ---
 import brand from '../../assets/images/brand.png';
 // --- components ---
@@ -73,7 +74,7 @@ function Header() {
                 className="p-4 pl-10 w-40 h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out focus:w-80 outline-none"
               />
               <FontAwesomeIcon
-                icon={icon({ name: 'search', style: 'solid' })}
+                icon={faSearch}
                 className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 text-gray-500 dark:text-gray-100"
               />
             </div>
@@ -89,7 +90,7 @@ function Header() {
                 onClick={() => setToggleMenuAnimation('translate-x-0')}
               >
                 <FontAwesomeIcon
-                  icon={icon({ name: 'bars', style: 'solid' })}
+                  icon={faBars}
                   className="h-6 w-6 m-1 text-gray-900 dark:text-gray-100"
                 />
               </button>
@@ -103,10 +104,7 @@ function Header() {
                 onClick={() => dispatch(setSignInPop(true))}
               >
                 <p className="hidden md:inline-block">登入</p>
-                <FontAwesomeIcon
-                  icon={icon({ name: 'user', style: 'regular' })}
-                  className="h-5 w-5 md:hidden dark:opacity-100"
-                />
+                <FontAwesomeIcon icon={faUser} className="h-5 w-5 md:hidden dark:opacity-100" />
               </button>
               {/* 註冊 */}
               <button
@@ -115,10 +113,7 @@ function Header() {
                 onClick={() => dispatch(setSignUpPop(true))}
               >
                 <p className="hidden md:inline-block">註冊</p>
-                <FontAwesomeIcon
-                  icon={icon({ name: 'user-plus', style: 'solid' })}
-                  className="h-5 w-5 md:hidden dark:opacity-100"
-                />
+                <FontAwesomeIcon icon={faUserPlus} className="h-5 w-5 md:hidden dark:opacity-100" />
               </button>
             </div>
           )}

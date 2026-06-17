@@ -12,38 +12,25 @@ interface GetUserProfileType extends AxResponseType {
 
 /** 動態取得使用者資料 型別 */
 interface UserPageListType extends AxResponseType {
-  userList: any;
+  userList: UserDataType[];
   nextPage: number;
   data: UserDataType[];
 }
 
-/** 取得所有使用者 */
-export async function getAllUserList(): Promise<GetUserProfileType> {
-  const result = await axios
-    .get(`${baseUrl}/user`)
-    .then((res) => {
-      return res;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-  return result;
-}
-
 /** 取得搜尋使用者清單(含follow資料)
  * @searchString [搜尋字串]
- * @userId [當前登入的使用者Id] - 用來判斷isFollow
  * @page 要取得的資料頁碼
+ *
+ * 當前登入者身份由後端從 JWT 取得，前端不必傳。
  */
 export async function getSearchUserList(
   page: number,
-  searchString?: string,
-  userId?: string
+  searchString?: string
 ): Promise<UserPageListType> {
   let result = null;
   if (page > 0) {
     result = await axios
-      .post(`${baseUrl}/user/getSearchUserList`, { searchString, userId, page, limit })
+      .post(`${baseUrl}/user/getSearchUserList`, { searchString, page, limit })
       .then((res) => {
         return res.data;
       })
@@ -55,11 +42,12 @@ export async function getSearchUserList(
 }
 
 /** 取得推薦使用者清單(含follow資料)
- * @userId [當前登入的使用者Id] - 用來判斷isFollow
+ *
+ * 當前登入者身份由後端從 JWT 取得，前端不必傳。
  */
-export async function getRecommendUserList(userId?: string): Promise<GetUserProfileType> {
+export async function getRecommendUserList(): Promise<GetUserProfileType> {
   const result = await axios
-    .post(`${baseUrl}/user/getRecommendUserList`, { userId })
+    .post(`${baseUrl}/user/getRecommendUserList`)
     .then((res) => {
       return res;
     })
@@ -69,16 +57,10 @@ export async function getRecommendUserList(userId?: string): Promise<GetUserProf
   return result;
 }
 
-/** 取得自己的使用者資料(須帶authToken做驗證) */
-export async function getOwnProfile(
-  userId: string,
-  authToken: string
-): Promise<GetUserProfileType> {
-  const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-  };
+/** 取得自己的使用者資料（後端從 JWT 解析身份） */
+export async function getOwnProfile(): Promise<GetUserProfileType> {
   const result = await axios
-    .post(`${baseUrl}/user/own/${userId}`, null, config)
+    .post(`${baseUrl}/user/own`, null)
     .then((res) => {
       return res;
     })
@@ -89,12 +71,9 @@ export async function getOwnProfile(
 }
 
 /** 取得一般使用者詳細資料 */
-export async function getUserProfile(
-  userId: string,
-  currentUserId: string
-): Promise<GetUserProfileType> {
+export async function getUserProfile(userId: string): Promise<GetUserProfileType> {
   const result = await axios
-    .post(`${baseUrl}/user/${userId}`, { currentUserId })
+    .post(`${baseUrl}/user/${userId}`)
     .then((res) => {
       return res;
     })
@@ -105,16 +84,9 @@ export async function getUserProfile(
 }
 
 /** 更新使用者資料 */
-export async function updateProfile(
-  formData: FormData,
-  userId: string,
-  authToken: string
-): Promise<GetUserProfileType> {
-  const config = {
-    headers: { Authorization: `Bearer ${authToken}` },
-  };
+export async function updateProfile(formData: FormData): Promise<GetUserProfileType> {
   const result = await axios
-    .patch(`${baseUrl}/user/own/${userId}`, formData, config)
+    .patch(`${baseUrl}/user/own`, formData)
     .then((res) => {
       return res;
     })

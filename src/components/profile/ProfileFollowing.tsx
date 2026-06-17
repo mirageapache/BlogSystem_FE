@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { useInfiniteQuery } from 'react-query';
-import { get, isEmpty } from 'lodash';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 // --- components
 import UserListDynamic from 'components/user/UserListDynamic';
 import NoSearchResult from 'components/tips/NoSearchResult';
@@ -12,19 +13,15 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ProfileFollowing(props: { userId: string; identify: boolean }) {
   const { userId, identify } = props;
-  let nextPage = -1;
 
-  const { data, fetchNextPage, isLoading, refetch } = useInfiniteQuery(
-    ['following', userId],
-    ({ pageParam = 1 }) => getFollowingList(userId, pageParam),
-    {
-      getNextPageParam: (lastPage) => {
-        nextPage = lastPage.nextPage;
-        return nextPage > 0 ? nextPage : undefined;
-      },
-      keepPreviousData: false,
-    }
-  );
+  const { data, fetchNextPage, isLoading, refetch, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ['following', userId],
+      queryFn: ({ pageParam }) => getFollowingList(userId, pageParam),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage && lastPage.nextPage > 0 ? lastPage.nextPage : undefined,
+    });
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; // 防止瀏覽器紀錄前一個滾動位置
@@ -32,28 +29,28 @@ function ProfileFollowing(props: { userId: string; identify: boolean }) {
   }, []);
 
   const followList =
-    isEmpty(data) ||
-    get(data, 'pages[0].data.code', '') !== '' ||
-    get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
+    isEmpty(data) || get(data, 'pages[0].code', undefined) === 'ERR_NETWORK'
       ? []
-      : data!.pages.reduce((acc, page) => [...acc, ...page.followList], [] as UserDataType[]);
+      : data!.pages.reduce(
+          (acc, page) => (page ? [...acc, ...page.followList] : acc),
+          [] as UserDataType[]
+        );
 
-  /** 滾動判斷fetch新資料 */
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 350
-    ) {
-      if (nextPage > 0) fetchNextPage();
-    }
-  };
-
+  /** 滾動判斷fetch新資料（交給 react-query 的 hasNextPage / isFetchingNextPage，避免 stale closure） */
   useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 350
+      ) {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [nextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (get(data, 'pages[0].data.code', undefined) === 'NOT_FOUND') {
+  if (!isLoading && followList.length === 0 && !isEmpty(data)) {
     if (identify)
       return (
         <NoSearchResult msgOne="你還沒有追蹤任何人喔" msgTwo="快去尋找有趣的人吧" type="user" />
@@ -69,7 +66,7 @@ function ProfileFollowing(props: { userId: string; identify: boolean }) {
       <UserListDynamic
         userListData={followList}
         isLoading={isLoading}
-        atBottom={nextPage < 0}
+        atBottom={!hasNextPage}
         refetch={refetch}
         type="following"
       />

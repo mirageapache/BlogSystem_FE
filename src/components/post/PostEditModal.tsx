@@ -2,20 +2,23 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useRef, useState } from 'react';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleXmark, faImage, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-import { get, isEmpty } from 'lodash';
-import { useMutation } from 'react-query';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 // --- api ---
 import { updatePost } from 'api/post';
 // --- functions / types ---
 import { useDispatch, useSelector } from 'react-redux';
-import { getCookies } from 'utils/common';
-import { errorAlert, handleStatus } from 'utils/fetch';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { guardVisitorAction } from 'utils/common';
 import { handleHashTag } from 'utils/input';
 // --- components ---
+// --- components ---
+import { UserStateType } from '../../redux/userSlice';
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
 import { GRAY_BG_PANEL, WHITE_SPACER } from '../../constants/LayoutConstants';
@@ -23,11 +26,14 @@ import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
 
 interface stateType {
   post: PostStateType;
+  user: UserStateType;
 }
 
 function PostEditModal() {
   const dispatchSlice = useDispatch();
+  const queryClient = useQueryClient();
   const postState = useSelector((state: stateType) => state.post);
+  const userId = useSelector((state: stateType) => state.user.userData?.userId) as string;
   const [firstLoad, setFirstLoad] = useState(true);
   const { postId, postData } = postState;
 
@@ -96,38 +102,41 @@ function PostEditModal() {
   };
 
   /** 編輯貼文 mutation */
-  const editPostMutation = useMutation(
-    ({ userId, formData }: { userId: string; formData: FormData }) => updatePost(userId, formData),
-    {
-      onSuccess: (res) => {
-        if (handleStatus(get(res, 'status')) === 2) {
-          swal
-            .fire({
-              title: '貼文已修改',
-              icon: 'success',
-              confirmButtonText: '確認',
-            })
-            .then(() => {
-              handleClose(false);
-              window.location.reload();
-            });
-        } else if (handleStatus(get(res, 'status')) === 5) {
-          errorAlert(get(res, 'data.message'));
-        } else if (get(res, 'code') === 'ERR_NETWORK') {
-          errorAlert(ERR_NETWORK_MSG);
-        }
-      },
-      onError: () => errorAlert(),
-    }
-  );
+  const editPostMutation = useMutation({
+    mutationFn: (formData: FormData) => updatePost(formData),
+    onSuccess: (res) => {
+      if (handleStatus(get(res, 'status')) === 2) {
+        // 失效所有貼文 cache（含 detail 與列表），讓 react-query 自動取回最新內容
+        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost', 'postDetail'].forEach(
+          (key) => queryClient.invalidateQueries({ queryKey: [key] })
+        );
+        swal
+          .fire({
+            title: '貼文已修改',
+            icon: 'success',
+            confirmButtonText: '確認',
+          })
+          .then(() => {
+            handleClose(false);
+          });
+      } else if (handleStatus(get(res, 'status')) === 4) {
+        handleApiError(res);
+      } else if (handleStatus(get(res, 'status')) === 5) {
+        errorAlert(get(res, 'data.message'));
+      } else if (get(res, 'code') === 'ERR_NETWORK') {
+        errorAlert(ERR_NETWORK_MSG);
+      }
+    },
+    onError: () => errorAlert(),
+  });
 
   /** 編輯貼文 */
   const handleSubmit = () => {
     // 驗證content內容
     if (isEmpty(content) || content.length === 0) return;
+    if (guardVisitorAction()) return;
 
     // 判斷登入操作者與作者id是否相同
-    const userId = getCookies('uid') as string;
     if (userId !== authorId) {
       swal.fire({
         title: '操作異常!',
@@ -138,17 +147,17 @@ function PostEditModal() {
     }
 
     // 建立FormData
+    // 後端不再採信 body 的 image / imageId；圖片變更只認 imageFile（換圖）或 removeImage（移除）
     const formData = new FormData();
     formData.set('postId', postId);
     formData.set('content', content);
     formData.set('status', '1');
-    formData.set('image', image);
-    formData.set('imageId', postData.imageId);
     formData.set('removeImage', removeImage.toString());
     formData.set('hashTags', JSON.stringify(hashTagArr));
-    formData.set('imageFile', imageFile);
+    // 只有真的選了新檔案才 append；避免 null 被序列化為字串 "null"
+    if (imageFile instanceof File) formData.set('imageFile', imageFile);
 
-    editPostMutation.mutate({ userId, formData });
+    editPostMutation.mutate(formData);
   };
 
   return (
@@ -164,7 +173,7 @@ function PostEditModal() {
             onClick={() => handleClose(true)}
           >
             <FontAwesomeIcon
-              icon={icon({ name: 'xmark', style: 'solid' })}
+              icon={faXmark}
               className="h-6 w-6 m-1 text-gray-500 hover:text-red-500"
             />
           </button>
@@ -193,7 +202,7 @@ function PostEditModal() {
                 >
                   <FontAwesomeIcon
                     className="absolute top-[-8px] right-[-8px] w-5 h-5 text-gray-500 hover:text-red-500 z-30"
-                    icon={icon({ name: 'circle-xmark', style: 'solid' })}
+                    icon={faCircleXmark}
                   />
                 </button>
               </div>
@@ -206,7 +215,7 @@ function PostEditModal() {
           <div>
             <label htmlFor="postImage">
               <FontAwesomeIcon
-                icon={icon({ name: 'image', style: 'solid' })}
+                icon={faImage}
                 className="h-6 w-6 m-1 cursor-pointer text-gray-500 hover:text-orange-500"
               />
             </label>
@@ -225,11 +234,8 @@ function PostEditModal() {
                 className="flex justify-center items-center w-40 sm:w-24 py-1.5 text-white rounded-md bg-green-600"
                 onClick={handleSubmit}
               >
-                {editPostMutation.isLoading ? (
-                  <FontAwesomeIcon
-                    icon={icon({ name: 'spinner', style: 'solid' })}
-                    className="animate-spin h-5 w-5 "
-                  />
+                {editPostMutation.isPending ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
                 ) : (
                   <>確認</>
                 )}

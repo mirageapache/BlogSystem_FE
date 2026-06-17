@@ -1,12 +1,13 @@
-/* eslint-disable react/no-danger */
 /* eslint-disable no-restricted-globals */
 import React, { useRef, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import DOMPurify from 'dompurify';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { get, isEmpty } from 'lodash';
-import moment from 'moment';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import dayjs from 'utils/dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { faCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 // --- components ---
 import NoSearchResult from 'components/tips/NoSearchResult';
 import UserInfoPanel from 'components/user/UserInfoPanel';
@@ -18,15 +19,21 @@ import { getPostDetail } from 'api/post';
 import { formatDateTime } from 'utils/dateTime';
 import { handleHashTag } from 'utils/input';
 import { createComment } from 'api/comment';
-import { errorAlert } from 'utils/fetch';
-import { getCookies } from 'utils/common';
-import { useDispatch } from 'react-redux';
+import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
+import { guardVisitorAction } from 'utils/common';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSignInPop } from 'redux/loginSlice';
+import { UserStateType } from 'redux/userSlice';
 import { CommentDataType } from 'types/commentType';
 import { HINT_LABEL } from 'constants/LayoutConstants';
 
+interface StateType {
+  user: UserStateType;
+}
+
 function PostDetailPage() {
   const dispatch = useDispatch();
+  const userId = useSelector((state: StateType) => state.user.userData?.userId);
   const [showCreateTip, setShowCreateTip] = useState(false); // 判斷是否顯示"建立貼文日期"提示
   const [showEditTip, setShowEditTip] = useState(false); // 判斷是否顯示"編輯貼文日期"提示
   const [commentContent, setCommentContent] = useState(''); // 留言內容
@@ -34,9 +41,10 @@ function PostDetailPage() {
   const commentInput = useRef<HTMLDivElement>(null); // 輸入框div
 
   const { id } = useParams();
-  const { isLoading, error, data, refetch } = useQuery(['postDetail', id], () =>
-    getPostDetail(id!)
-  );
+  const { isLoading, error, data, refetch } = useQuery({
+    queryKey: ['postDetail', id],
+    queryFn: () => getPostDetail(id!),
+  });
   const postData = get(data, 'data');
   const commentList = get(postData, 'comments', []) as CommentDataType[];
 
@@ -49,33 +57,33 @@ function PostDetailPage() {
   };
 
   /** 回覆貼文 mutation */
-  const { mutate: CommentMutation, isLoading: commentLoading } = useMutation(
-    ({ postId, userId, content }: { postId: string; userId: string; content: string }) =>
-      createComment(postId, userId, content, 'post'),
-    {
-      onSuccess: (res) => {
-        if (res.status === 200) {
-          commentInput.current!.innerText = '';
-          setCommentContent('');
-          refetch();
-        }
-      },
-      onError: () => errorAlert(),
-      // error type:未登入、沒有內容
-    }
-  );
+  const { mutate: CommentMutation, isPending: commentLoading } = useMutation({
+    mutationFn: ({ postId, content }: { postId: string; content: string }) =>
+      createComment(postId, content, 'post'),
+    onSuccess: (res) => {
+      if (res.status === 200) {
+        commentInput.current!.innerText = '';
+        setCommentContent('');
+        refetch();
+      } else if (handleStatus(get(res, 'status', 0)) === 4) {
+        handleApiError(res);
+      }
+    },
+    onError: () => errorAlert(),
+    // error type:未登入、沒有內容
+  });
 
   /** 回覆貼文 */
   const submitComment = () => {
     if (commentContent.trim().length === 0) return; // 檢查有沒有留言內容
-    const userId = getCookies('uid') as string;
 
     if (isEmpty(userId)) {
       dispatch(setSignInPop(true));
       return;
     }
+    if (guardVisitorAction()) return;
 
-    CommentMutation({ postId: id!, userId, content: commentContent });
+    CommentMutation({ postId: id!, content: commentContent });
   };
 
   if (isLoading) return <PostLoading withBorder={false} />;
@@ -99,10 +107,7 @@ function PostDetailPage() {
           className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500"
           onClick={() => history.back()}
         >
-          <FontAwesomeIcon
-            icon={icon({ name: 'circle-left', style: 'solid' })}
-            className="w-7 h-7"
-          />
+          <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
         </button>
       </div>
       <div className="w-minus50 sm:w-full">
@@ -127,7 +132,7 @@ function PostDetailPage() {
               <span
                 className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
               >
-                Created at {moment(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
+                Created at {dayjs(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
               </span>
             </span>
             {!isEmpty(postData.editedAt) && (
@@ -138,7 +143,7 @@ function PostDetailPage() {
               >
                 <small className="text-gray-400">(已編輯)</small>
                 <span className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}>
-                  Edited at {moment(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
+                  Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
                 </span>
               </span>
             )}
@@ -157,7 +162,7 @@ function PostDetailPage() {
             <div
               id="post-container"
               className="text-gray-600 dark:text-gray-300"
-              dangerouslySetInnerHTML={{ __html: postData.content }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(postData.content) }}
             />
           </div>
 
@@ -191,10 +196,7 @@ function PostDetailPage() {
               onClick={submitComment}
             >
               {commentLoading ? (
-                <FontAwesomeIcon
-                  icon={icon({ name: 'spinner', style: 'solid' })}
-                  className="animate-spin h-5 w-5 m-1.5"
-                />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
               ) : (
                 '回覆'
               )}

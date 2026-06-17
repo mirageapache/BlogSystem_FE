@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { get, isEmpty } from 'lodash';
-import { icon } from '@fortawesome/fontawesome-svg-core/import.macro';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import { faSearch, faTag, faUsers, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faFileLines, faNoteSticky } from '@fortawesome/free-regular-svg-icons';
 // --- components ---
 import ExplorePost from 'components/explore/ExplorePost';
 import ExploreArticle from 'components/explore/ExploreArticle';
@@ -20,8 +22,15 @@ interface stateType {
   system: SysStateType;
 }
 
+/** 頁籤底線位移樣式 — 依 exploreTag 查表，避免用 useEffect + setState 推導 */
+const UNDERLINE_MAP: Record<string, string> = {
+  article: 'translate-x-0',
+  post: 'translate-x-full',
+  user: 'translate-x-[200%]',
+  tag: 'translate-x-[300%]',
+};
+
 function ExplorePage() {
-  const [activeUnderLine, setActiveUnderLine] = useState(''); // 頁籤樣式控制
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -39,15 +48,19 @@ function ExplorePage() {
     dispatch(setExploreTag(tabValue));
   };
   const { tag } = useParams();
-  let exploreTag = '';
-  if (!isEmpty(tag) && tag !== '') {
-    exploreTag = tag!;
-    handleTabActive(tag!);
-  } else {
-    exploreTag = useSelector((state: stateType) => state.system.exploreTag); // 紀錄作用中的頁籤
-  }
+  // Hook 必須無條件呼叫；tag 存在時優先用 URL 上的值，否則用 redux store 內紀錄
+  const exploreTagFromStore = useSelector((state: stateType) => state.system.exploreTag);
+  const exploreTag = !isEmpty(tag) ? tag! : exploreTagFromStore;
 
-  const { data } = useQuery(['search', searchString], () => getSearchCount(searchString));
+  // URL 上的 tag 改變時同步到 redux（不可在 render 期直接 dispatch）
+  useEffect(() => {
+    if (!isEmpty(tag)) dispatch(setExploreTag(tag!));
+  }, [tag]);
+
+  const { data } = useQuery({
+    queryKey: ['search', searchString],
+    queryFn: () => getSearchCount(searchString),
+  });
   const article = get(data, 'article', 0);
   const post = get(data, 'post', 0);
   let user = get(data, 'user', 0);
@@ -81,24 +94,7 @@ function ExplorePage() {
     }
   }, [data, searchString]);
 
-  useEffect(() => {
-    switch (exploreTag) {
-      case 'article':
-        setActiveUnderLine('translate-x-0');
-        break;
-      case 'post':
-        setActiveUnderLine('translate-x-full');
-        break;
-      case 'user':
-        setActiveUnderLine('translate-x-[200%]');
-        break;
-      case 'tag':
-        setActiveUnderLine('translate-x-[300%]');
-        break;
-      default:
-        setActiveUnderLine('translate-x-0');
-    }
-  }, [exploreTag]);
+  const activeUnderLine = UNDERLINE_MAP[exploreTag] ?? UNDERLINE_MAP.article;
 
   return (
     <div className="w-full">
@@ -121,12 +117,12 @@ function ExplorePage() {
             className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 outline-none"
           />
           <FontAwesomeIcon
-            icon={icon({ name: 'search', style: 'solid' })}
+            icon={faSearch}
             className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 text-gray-500 dark:text-gray-100"
           />
           {/* 清除搜尋字串 */}
           <FontAwesomeIcon
-            icon={icon({ name: 'xmark', style: 'solid' })}
+            icon={faXmark}
             onClick={() => {
               navigate(`/explore`);
             }}
@@ -144,7 +140,7 @@ function ExplorePage() {
             >
               <p className="hidden md:inline-block">文章</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'file-lines', style: 'regular' })}
+                icon={faFileLines}
                 className={`${iconStyle} ${exploreTag === 'article' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && article > 0 && (
@@ -161,7 +157,7 @@ function ExplorePage() {
             >
               <p className="hidden md:inline-block">貼文</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'note-sticky', style: 'regular' })}
+                icon={faNoteSticky}
                 className={`${iconStyle} ${exploreTag === 'post' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && post > 0 && (
@@ -178,7 +174,7 @@ function ExplorePage() {
             >
               <p className="hidden md:inline-block">用戶</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'users', style: 'solid' })}
+                icon={faUsers}
                 className={`${iconStyle} ${exploreTag === 'user' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && user > 0 && (
@@ -191,7 +187,7 @@ function ExplorePage() {
             <button type="button" className={tabButtonStyle} onClick={() => handleTabActive('tag')}>
               <p className="hidden md:inline-block">標籤</p>
               <FontAwesomeIcon
-                icon={icon({ name: 'tag', style: 'solid' })}
+                icon={faTag}
                 className={`${iconStyle} ${exploreTag === 'tag' ? activeTabStyle : ''}`}
               />
               {!isEmpty(searchString) && hashtag > 0 && (

@@ -5,7 +5,9 @@ import PostListDynamic from '../components/post/PostListDynamic';
 import PostItem from '../components/post/PostItem';
 import { mockData } from './mockData';
 
-jest.mock('../components/post/PostItem', () => jest.fn(() => <div>Post Item</div>));
+vi.mock('../components/post/PostItem', () => ({
+  default: vi.fn(() => <div>Post Item</div>),
+}));
 
 describe('測試PostList元件', () => {
   test('測試貼文 loading 狀態', () => {
@@ -19,9 +21,11 @@ describe('測試PostList元件', () => {
     // 檢查渲染的 PostItem 元素數量是否與 mockPostData 長度一致
     expect(screen.getAllByText('Post Item').length).toBe(mockData.length);
 
-    mockData.forEach((post) => {
+    mockData.forEach((post, index) => {
       // 驗證每個 PostItem 是否接收到正確的 props
-      expect(PostItem).toHaveBeenCalledWith({ postData: post }, {});
+      // React 19 以單一參數 (props) 呼叫函式元件（移除了舊版 legacy context 第二參數），
+      // 故只比對第一個參數，避免斷言參數數量。
+      expect(vi.mocked(PostItem).mock.calls[index][0]).toEqual({ postData: post });
     });
   });
 
