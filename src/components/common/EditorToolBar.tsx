@@ -145,7 +145,7 @@ function EditorToolBar({ editor }: ToolBarPropsType) {
   }, [editor]);
 
   const dropdownStyle =
-    'fixed sm:absolute right-1 flex bg-white dark:bg-gray-900 z-40 shadow border border-gray-400 rounded-md p-1 text-gray-700 dark:text-gray-300';
+    'fixed sm:absolute right-1 flex bg-surface z-40 shadow-pop border border-line rounded-md p-1 text-ink-soft';
 
   /** 處理scroll bar橫向捲動 */
   const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
@@ -197,14 +197,14 @@ function EditorToolBar({ editor }: ToolBarPropsType) {
 
   return (
     <div
-      className="flex items-center min-h-10 mb-4 border-y-[1px] border-gray-300 dark:border-gray-700 overflow-x-auto"
+      className="flex items-center min-h-10 mb-4 border-y border-line overflow-x-auto"
       onWheel={handleWheel}
     >
       {/* 字體大小 */}
       <select
         name="fontSize"
         value={getBlockValue(editor)}
-        className="h-8 my-1 mr-2 border border-gray-500 rounded-md px-3 bg-inherit dark:bg-gray-900 cursor-pointer"
+        className="h-8 my-1 mr-2 border border-line-strong rounded-md px-3 bg-surface-2 text-ink cursor-pointer outline-none focus-visible:outline-none focus:border-brand"
         onChange={(e) => handleBlockChange(e.target.value)}
       >
         <option value="unstyled">一般文字</option>

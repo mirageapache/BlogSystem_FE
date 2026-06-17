@@ -18,8 +18,8 @@ interface FormTextAreaPropsType {
 function FormTextArea({ placeholder, registration, errorMsg, disabled }: FormTextAreaPropsType) {
   const showErrorTip = !isEmpty(errorMsg); // 由 RHF 的 error 決定是否顯示提示
   const activeStyle = showErrorTip
-    ? 'm-1.5 border-2 border-red-500 bg-yellow-100 dark:bg-gray-950' // with error style
-    : 'border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'; // normal style
+    ? 'border-2 border-red-500 bg-red-50 dark:bg-red-500/10' // with error style
+    : 'border-2 border-line-strong focus:border-brand'; // normal style
 
   return (
     <div className="relative">
@@ -27,11 +27,11 @@ function FormTextArea({ placeholder, registration, errorMsg, disabled }: FormTex
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...registration}
         placeholder={placeholder}
-        className={`rounded-md resize-none focus:border-2 ${FORM_CONTROL} ${activeStyle}`}
+        className={`rounded-md resize-none bg-transparent text-ink placeholder:text-muted focus-visible:outline-none ${FORM_CONTROL} ${activeStyle}`}
         rows={3}
         disabled={disabled}
       />
-      {showErrorTip && <p className="text-red-500 text-sm mt-[-6px]">{errorMsg}</p>}
+      {showErrorTip && <p className="text-red-500 text-sm mt-1">{errorMsg}</p>}
     </div>
   );
 }

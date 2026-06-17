@@ -99,7 +99,7 @@ function PostItem(props: { postData: PostDataType }) {
   };
 
   return (
-    <div className="flex text-left border-b-[1px] dark:border-gray-700 p-3 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+    <div className="flex text-left mb-4 p-4 sm:p-5 rounded-card bg-surface border border-line shadow-card hover:shadow-card-hover hover:border-line-strong transition-all duration-200 cursor-pointer">
       <div className="w-full" onClick={handleClickPost}>
         <div className="flex justify-between">
           <UserInfoPanel
@@ -117,9 +117,7 @@ function PostItem(props: { postData: PostDataType }) {
                 onMouseEnter={() => setShowCreateTip(true)}
                 onMouseLeave={() => setShowCreateTip(false)}
               >
-                <p className="text-gray-600 dark:text-gray-300 mt-1">
-                  {formatDateTime(postData.createdAt)}
-                </p>
+                <p className="text-sm text-muted mt-1">{formatDateTime(postData.createdAt)}</p>
                 <span
                   className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
                 >
@@ -132,7 +130,7 @@ function PostItem(props: { postData: PostDataType }) {
                   onMouseEnter={() => setShowEditTip(true)}
                   onMouseLeave={() => setShowEditTip(false)}
                 >
-                  <small className="text-gray-400">(已編輯)</small>
+                  <small className="text-muted">(已編輯)</small>
                   <span
                     className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}
                   >
@@ -146,7 +144,7 @@ function PostItem(props: { postData: PostDataType }) {
                 iconName={faTrashCan} // 透過props傳遞icon名稱
                 tipText="刪除"
                 count={undefined}
-                faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
+                faClass="text-muted hover:text-brand transition-colors"
                 tipClass="w-12"
                 handleClick={handleDelete}
               />
@@ -158,7 +156,7 @@ function PostItem(props: { postData: PostDataType }) {
           {!isEmpty(postData.image) && (
             <div className="">
               <img
-                className="w-full max-h-[500px] object-contain rounded-md"
+                className="w-full max-h-[500px] object-contain rounded-lg border border-line bg-surface-2"
                 src={postData.image}
                 alt="postImage"
               />
@@ -169,7 +167,7 @@ function PostItem(props: { postData: PostDataType }) {
           <div className="my-2">
             <div
               id="post-container"
-              className={`text-gray-600 dark:text-gray-300 ${
+              className={`text-ink-soft leading-relaxed ${
                 hiddenContent ? 'max-h-[300px] line-clamp-[3]' : ''
               }`}
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(postData.content) }}
@@ -177,7 +175,7 @@ function PostItem(props: { postData: PostDataType }) {
             {hiddenContent && (
               <button
                 type="button"
-                className="text-orange-500 hover:text-orange-600"
+                className="mt-1 font-medium text-brand hover:text-brand-strong transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   setHiddenContent(false);

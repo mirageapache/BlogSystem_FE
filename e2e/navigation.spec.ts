@@ -27,6 +27,6 @@ test.describe('導覽與路由', () => {
     await page.goto('/a-path-that-does-not-exist');
 
     await expect(page.getByText('404')).toBeVisible();
-    await expect(page.getByText('你查詢的頁面不存在！')).toBeVisible();
+    await expect(page.getByText('你查詢的頁面不存在')).toBeVisible();
   });
 });

@@ -13,6 +13,7 @@ import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 // --- components ---
 import EditorToolBar from 'components/common/EditorToolBar';
+import { BTN_PRIMARY } from 'constants/LayoutConstants';
 // --- functions / types ---
 import { createArticle } from 'api/article';
 import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
@@ -83,7 +84,7 @@ function ArticleCreatePage() {
           <button
             aria-label="back"
             type="button"
-            className="justify-center items-center p-2 text-gray-500 hover:text-orange-500 hidden sm:block"
+            className="justify-center items-center p-2 text-muted hover:text-brand transition-colors hidden sm:block"
             onClick={async () => {
               const isClose = await checkCancelEdit();
               if (isClose) window.history.back();
@@ -92,12 +93,12 @@ function ArticleCreatePage() {
             <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
           </button>
         </div>
-        <p className="text-2xl font-bold">建立文章</p>
+        <p className="font-serif text-2xl font-bold">建立文章</p>
         <div className="flex gap-2">
           {!isEmpty(title) && hasContent ? (
             <button
               type="button"
-              className="flex justify-center items-center w-16 sm:w-20 h-9 p-2 sm:py-1.5 text-white rounded-md bg-green-600"
+              className={`${BTN_PRIMARY} w-16 sm:w-20 h-9 p-2 sm:py-1.5 rounded-md`}
               onClick={handleSubmit}
             >
               {isLoading ? (
@@ -109,7 +110,7 @@ function ArticleCreatePage() {
           ) : (
             <button
               type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
+              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 rounded-md bg-surface-2 text-muted cursor-not-allowed"
             >
               <p className="text-[14px] sm:text-[16px]">發佈</p>
             </button>
@@ -124,7 +125,7 @@ function ArticleCreatePage() {
           type="text"
           name="title"
           placeholder="文章標題"
-          className="w-full text-2xl outline-none dark:text-white dark:bg-gray-950"
+          className="w-full text-2xl outline-none focus-visible:outline-none bg-transparent text-ink placeholder:text-muted"
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
@@ -134,7 +135,7 @@ function ArticleCreatePage() {
       >
         {/* 文章內容 */}
         {!hasContent && (
-          <div id="placeholder" className="absolute text-gray-500 pointer-events-none">
+          <div id="placeholder" className="absolute text-muted pointer-events-none">
             從這裡開始你的故事...
           </div>
         )}

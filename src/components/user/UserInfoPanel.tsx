@@ -34,14 +34,14 @@ function UserInfoPanel(props: {
         />
       </div>
       <div className="flex flex-col">
-        <p className="font-semibold text-lg leading-6">{name}</p>
+        <p className="font-semibold text-lg leading-6 text-ink">{name}</p>
         {menuLink ? (
-          <p className="text-[14px] text-gray-700 dark:text-gray-400">@{account}</p>
+          <p className="text-[14px] text-muted">@{account}</p>
         ) : (
           <button
             aria-label="account"
             type="button"
-            className="text-[14px] text-gray-700 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500 leading-4"
+            className="text-[14px] text-muted hover:text-brand transition-colors leading-4"
             onClick={(e) => {
               e.stopPropagation(); // 防止冒泡事件
               dispatch(setActivePage('user'));

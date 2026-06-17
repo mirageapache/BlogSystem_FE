@@ -9,6 +9,7 @@ import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
 import get from 'lodash/get';
 import { guardVisitorAction } from 'utils/common';
 import { changeFollowState, followUser, unfollowUser } from 'api/follow';
+import { BTN_PRIMARY, BTN_SECONDARY } from 'constants/LayoutConstants';
 
 interface PropType {
   user: UserDataType;
@@ -86,7 +87,7 @@ function FollowBtn({ user, refetch }: PropType) {
       {user.isFollow ? (
         <button
           type="button"
-          className="py-1 px-3 rounded-lg text-white bg-gray-500"
+          className={`${BTN_SECONDARY} py-1 px-3 rounded-full`}
           onClick={() => toggleDropdown(user._id)}
         >
           追蹤中
@@ -95,7 +96,7 @@ function FollowBtn({ user, refetch }: PropType) {
       ) : (
         <button
           type="button"
-          className="py-1 px-3 rounded-lg text-white bg-green-600"
+          className={`${BTN_PRIMARY} py-1 px-4 rounded-full`}
           onClick={handleFollow}
         >
           追蹤
@@ -104,11 +105,11 @@ function FollowBtn({ user, refetch }: PropType) {
       {/* 追蹤中下拉選單 */}
       {activeDropdown === user._id && (
         <>
-          <div className="absolute w-28 border rounded-lg py-2 px-1 top-12 right-0 bg-white dark:bg-gray-950 dark:border-gray-600 z-50">
+          <div className="absolute w-32 p-1.5 top-12 right-0 bg-surface border border-line rounded-lg shadow-pop z-50 text-ink-soft">
             {user.followState === 1 ? (
               <button
                 type="button"
-                className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                className="text-left w-full py-1.5 px-2 rounded-md hover:bg-surface-2 transition-colors"
                 onClick={() => handleChangeState(0)}
               >
                 關閉通知
@@ -116,7 +117,7 @@ function FollowBtn({ user, refetch }: PropType) {
             ) : (
               <button
                 type="button"
-                className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                className="text-left w-full py-1.5 px-2 rounded-md hover:bg-surface-2 transition-colors"
                 onClick={() => handleChangeState(1)}
               >
                 開啟通知
@@ -124,7 +125,7 @@ function FollowBtn({ user, refetch }: PropType) {
             )}
             <button
               type="button"
-              className="text-left w-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="text-left w-full py-1.5 px-2 rounded-md text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
               onClick={handleUnfollow}
             >
               取消追蹤

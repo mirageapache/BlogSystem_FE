@@ -23,7 +23,7 @@ function FollowingItem({ user, refetch }: PropType) {
 
   return (
     <div
-      className="flex justify-between px-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+      className="flex justify-between px-3 rounded-lg hover:bg-surface-2 transition-colors"
       key={user._id}
     >
       <UserInfoPanel

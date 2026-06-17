@@ -38,7 +38,7 @@ function FormInput({
   const showToggle = hidePassword ? (
     <FontAwesomeIcon
       icon={faEyeSlash}
-      className="absolute mt-3.5 right-0 h-6 w-6 text-gray-700 cursor-pointer"
+      className="absolute mt-3.5 right-0 h-6 w-6 text-muted hover:text-ink transition-colors cursor-pointer"
       onClick={() => {
         setHidePassword(false);
       }}
@@ -46,7 +46,7 @@ function FormInput({
   ) : (
     <FontAwesomeIcon
       icon={faEye}
-      className="absolute mt-3.5 right-0 h-6 w-6 text-gray-700 cursor-pointer"
+      className="absolute mt-3.5 right-0 h-6 w-6 text-muted hover:text-ink transition-colors cursor-pointer"
       onClick={() => {
         setHidePassword(true);
       }}
@@ -62,17 +62,17 @@ function FormInput({
           type={inputType}
           placeholder={placeholder}
           disabled={disabled}
-          className={`${FORM_CONTROL} ${classname}
+          className={`${FORM_CONTROL} ${classname} bg-transparent text-ink placeholder:text-muted border-b-2 focus-visible:outline-none
           ${
             showErrorTip
-              ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950 focus:border-b-2'
-              : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950 focus:border-b-2'
+              ? 'border-red-500 bg-red-50 dark:bg-red-500/10'
+              : 'border-line-strong focus:border-brand'
           }
           `}
         />
         {ispwd && showToggle}
       </span>
-      {showErrorTip && <p className="text-red-500 text-sm">{errorMsg}</p>}
+      {showErrorTip && <p className="text-red-500 text-sm mt-1">{errorMsg}</p>}
     </div>
   );
 }

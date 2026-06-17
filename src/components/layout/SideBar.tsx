@@ -29,8 +29,10 @@ interface StateType {
   user: UserStateType;
 }
 
-const activeStyle = 'text-orange-500 hover:text-orange-500 hover:fill-orange-500';
-const normalStyle = 'text-gray-700 dark:text-gray-300 hover:text-orange-500';
+const itemBase =
+  'flex items-center gap-3 my-1 px-3 py-3 rounded-lg text-lg cursor-pointer transition-colors';
+const activeStyle = 'bg-brand-soft text-brand';
+const normalStyle = 'text-ink-soft hover:bg-surface-2 hover:text-ink';
 
 /** SideBar Item 元件 */
 function SideBarItem({ href, text, count, children, activeItem, changeItem }: ItemProps) {
@@ -44,7 +46,7 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
         <button
           type="button"
           ref={tooltip}
-          className={`flex my-1.5 ml-3 text-xl cursor-pointer py-4 ${normalStyle}`}
+          className={`w-full ${itemBase} ${normalStyle}`}
           onClick={() => {
             if (guardVisitorAction()) return;
             sliceDispatch(setShowCreateModal(true));
@@ -52,17 +54,15 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
           onMouseEnter={() => setShowTip(true)}
           onMouseLeave={() => setShowTip(false)}
         >
-          <div className="flex items-center">
+          <span className="flex items-center w-6 justify-center">
             <FontAwesomeIcon icon={faPenToSquare} />
-          </div>
-          <span className="ml-3 font-bold hidden lg:block">建立貼文</span>
+          </span>
+          <span className="font-semibold hidden lg:block">建立貼文</span>
         </button>
       ) : (
         <Link
           to={href}
-          className={`flex my-1.5 ml-3 text-xl cursor-pointer py-4 ${
-            activeItem ? activeStyle : normalStyle
-          }`}
+          className={`${itemBase} ${activeItem ? activeStyle : normalStyle}`}
           ref={tooltip}
           onClick={() => {
             changeItem();
@@ -71,11 +71,11 @@ function SideBarItem({ href, text, count, children, activeItem, changeItem }: It
           onMouseEnter={() => setShowTip(true)}
           onMouseLeave={() => setShowTip(false)}
         >
-          <span className="flex items-center">{children}</span>
-          <span className="ml-3 font-bold hidden lg:block">
+          <span className="flex items-center w-6 justify-center">{children}</span>
+          <span className="font-semibold hidden lg:block">
             {text}
             {!isEmpty(count) && (
-              <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-orange-500 cursor-pointer">
+              <span className="rounded-full py-0.5 px-2 ml-3 text-xs text-white bg-brand cursor-pointer">
                 {count}
               </span>
             )}

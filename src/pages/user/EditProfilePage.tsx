@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
 // --- constant ---
-import { FORM_CONTROL } from 'constants/LayoutConstants';
+import { FORM_CONTROL, BTN_PRIMARY, BTN_SECONDARY } from 'constants/LayoutConstants';
 // --- components ---
 import Spinner from 'components/tips/Spinner';
 import BasicErrorPanel from 'components/tips/BasicErrorPanel';
@@ -161,7 +161,7 @@ function EditProfilePage() {
       <div className="w-full sm:max-w-[600px] p-5">
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* avatar */}
-          <div className="flex flex-col items-center w-full mb-5 pb-5 border-b-[1px] dark:border-gray-700">
+          <div className="flex flex-col items-center w-full mb-5 pb-5 border-b border-line">
             <Avatar
               name={userData.name}
               avatarUrl={avatar}
@@ -182,7 +182,7 @@ function EditProfilePage() {
               <div className="flex gap-2">
                 <label
                   htmlFor="avatar"
-                  className="mt-3 bg-gray-300 dark:bg-gray-700 rounded-md text-sm px-2 py-1 cursor-pointer"
+                  className="mt-3 bg-surface-2 text-ink-soft hover:bg-line rounded-md text-sm px-2 py-1 cursor-pointer transition-colors"
                 >
                   更新頭貼
                 </label>
@@ -197,7 +197,7 @@ function EditProfilePage() {
                 {!isEmpty(avatar) && (
                   <button
                     type="button"
-                    className="mt-3 bg-red-300 dark:bg-red-700 rounded-md text-sm px-2 py-1 cursor-pointer"
+                    className="mt-3 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-md text-sm px-2 py-1 cursor-pointer transition-colors"
                     onClick={() => {
                       setAvatar('');
                       setAvatarFile('');
@@ -212,14 +212,14 @@ function EditProfilePage() {
           </div>
 
           {/* user info */}
-          <div className="w-full pb-5 border-b-[1px] dark:border-gray-700">
+          <div className="w-full pb-5 border-b border-line">
             <div className="mt-10">
               <div className="flex items-center">
                 <label htmlFor="email" className="font-bold">
                   <span className="text-red-500">*</span>
                   電子郵件
                 </label>
-                <p className="text-xs ml-1 text-orange-500 dark:text-orange-400">
+                <p className="text-xs ml-1 text-brand">
                   <FontAwesomeIcon icon={faInfoCircle} />
                   修改後即更換登入系統及電子報接收之Email
                 </p>
@@ -230,10 +230,10 @@ function EditProfilePage() {
                 placeholder="E-mail"
                 disabled={isVisitor}
                 {...register('email')}
-                className={`${FORM_CONTROL} ${
+                className={`${FORM_CONTROL} bg-transparent text-ink placeholder:text-muted focus-visible:outline-none ${
                   errors.email
-                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
-                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                    ? 'border-b-2 border-red-500 bg-red-50 dark:bg-red-500/10'
+                    : 'border-b-2 border-line-strong focus:border-brand'
                 }`}
               />
               {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
@@ -250,10 +250,10 @@ function EditProfilePage() {
                 placeholder="帳號"
                 disabled={isVisitor}
                 {...register('account')}
-                className={`${FORM_CONTROL} ${
+                className={`${FORM_CONTROL} bg-transparent text-ink placeholder:text-muted focus-visible:outline-none ${
                   errors.account
-                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
-                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                    ? 'border-b-2 border-red-500 bg-red-50 dark:bg-red-500/10'
+                    : 'border-b-2 border-line-strong focus:border-brand'
                 }`}
               />
               {errors.account && <p className="text-red-500 text-sm">{errors.account.message}</p>}
@@ -270,10 +270,10 @@ function EditProfilePage() {
                 placeholder="名稱"
                 disabled={isVisitor}
                 {...register('name')}
-                className={`${FORM_CONTROL} ${
+                className={`${FORM_CONTROL} bg-transparent text-ink placeholder:text-muted focus-visible:outline-none ${
                   errors.name
-                    ? 'border-b-2 border-red-500 bg-yellow-100 dark:bg-gray-950'
-                    : 'border-b-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-950'
+                    ? 'border-b-2 border-red-500 bg-red-50 dark:bg-red-500/10'
+                    : 'border-b-2 border-line-strong focus:border-brand'
                 }`}
               />
               {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
@@ -302,7 +302,7 @@ function EditProfilePage() {
                 <select
                   id="language"
                   {...register('language')}
-                  className={`${FORM_CONTROL} border-[1px] border-gray-400 dark:border-gray-700 dark:bg-gray-700 rounded-md focus:border-2`}
+                  className={`${FORM_CONTROL} border border-line-strong bg-surface-2 text-ink rounded-md focus:border-brand`}
                   disabled={isVisitor}
                 >
                   <option value="zh" className="">
@@ -346,7 +346,7 @@ function EditProfilePage() {
           <div className="flex justify-end mt-16">
             <button
               type="button"
-              className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-gray-600"
+              className={`${BTN_SECONDARY} w-40 m-2 px-4 py-2 text-lg rounded-lg`}
               onClick={() => {
                 navigate(`/user/profile/${userId}`);
                 scrollToTop();
@@ -357,7 +357,7 @@ function EditProfilePage() {
             {!isVisitor && (
               <button
                 type="submit"
-                className="w-40 m-2 px-4 py-2 text-lg text-white rounded-md bg-green-600"
+                className={`${BTN_PRIMARY} w-40 m-2 px-4 py-2 text-lg rounded-lg`}
               >
                 {updateLoading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
