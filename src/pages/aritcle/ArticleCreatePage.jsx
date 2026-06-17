@@ -125,7 +125,7 @@ function ArticleCreatePage() {
           type="text"
           name="title"
           placeholder="文章標題"
-          className="w-full text-2xl outline-none bg-transparent text-ink placeholder:text-muted"
+          className="w-full text-2xl outline-none focus-visible:outline-none bg-transparent text-ink placeholder:text-muted"
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>

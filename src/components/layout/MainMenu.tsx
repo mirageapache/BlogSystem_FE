@@ -187,7 +187,7 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
             )}
           </div>
         )}
-        <div className="h-full py-2 px-8 opacity-100">
+        <div className="h-full p-2 opacity-100">
           <div className="text-left h-fit sm:px-1">
             <ul className="ml-2.5">
               <MenuItem

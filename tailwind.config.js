@@ -5,6 +5,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        // 品牌字樣（ReactBlog wordmark 專用）：Akaya Kanadaka 為單一字重的裝飾性 display 字體，
+        // 僅用於 logo，其餘標題仍用 serif；拉丁字後退至 Libre Bodoni，中文後退至系統字型。
+        brand: ['Akaya Kanadaka', 'Libre Bodoni', 'PingFang TC', 'Microsoft JhengHei', 'serif'],
         // 標題：襯線（拉丁字以 Libre Bodoni，中文 fallback 至系統無襯線，保持清晰）
         serif: [
           'Libre Bodoni',

@@ -114,7 +114,7 @@ function ExplorePage() {
                 setSearchParams({ search: e.target.value });
               }
             }}
-            className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-surface-2 border border-line text-ink placeholder:text-muted outline-none focus-visible:outline-none focus:border-brand transition-colors"
+            className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-surface-2 border border-line text-ink placeholder:text-muted outline-none focus-visible:outline-none focus:rounded-full focus:border-brand transition-colors"
           />
           <FontAwesomeIcon
             icon={faSearch}

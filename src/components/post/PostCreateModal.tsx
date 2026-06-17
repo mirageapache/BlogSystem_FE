@@ -109,7 +109,7 @@ function PostCreateModal() {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center z-30">
-      <div className="animate-pop-in fixed w-full h-dvh sm:rounded-card sm:max-w-[600px] sm:h-auto bg-surface sm:border sm:border-line sm:shadow-pop z-40">
+      <div className="animate-pop-in fixed w-full h-dvh sm:rounded-card sm:max-w-[600px] sm:h-auto bg-paper sm:border sm:border-line sm:shadow-pop z-40">
         {/* modal header */}
         <div className="flex justify-between items-center w-full py-2 px-5 border-b border-line">
           <h3 className="text-xl font-bold text-ink">建立貼文</h3>
@@ -159,7 +159,7 @@ function PostCreateModal() {
         </div>
 
         {/* modal footer */}
-        <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto flex justify-between items-center py-3 px-5 text-right bg-surface border-t border-line sm:rounded-b-card">
+        <div className="fixed w-full bottom-0 sm:relative sm:bottom-auto flex justify-between items-center py-3 px-5 text-right bg-paper border-t border-line sm:rounded-b-card">
           <div>
             <label htmlFor="postImage">
               <FontAwesomeIcon

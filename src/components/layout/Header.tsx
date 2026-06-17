@@ -58,9 +58,7 @@ function Header() {
             onClick={() => dispatch(setActivePage('home'))}
           >
             <img className="w-8 h-8 sm:w-11 sm:h-11 mr-1 sm:mr-2.5" src={brand} alt="logo" />
-            <h3 className="font-serif text-[20px] sm:text-3xl font-semibold tracking-tight">
-              ReactBlog
-            </h3>
+            <h3 className="font-brand text-[20px] sm:text-3xl tracking-tight">ReactBlog</h3>
           </Link>
         </div>
         <nav className="flex items-center text-lg">
@@ -73,7 +71,7 @@ function Header() {
                 placeholder="搜尋..."
                 onChange={(e) => setSearchString(e.target.value)}
                 onKeyUp={(e) => handleSearch(e.key)}
-                className="p-4 pl-10 w-40 h-9 text-base rounded-full bg-surface-2 border border-line transition-all duration-300 ease-in-out focus:w-80 focus:border-brand outline-none focus-visible:outline-none placeholder:text-muted"
+                className="p-4 pl-10 w-40 h-9 text-base rounded-full bg-surface-2 border border-line transition-all duration-300 ease-in-out focus:w-80 focus:rounded-full focus:border-brand outline-none focus-visible:outline-none placeholder:text-muted"
               />
               <FontAwesomeIcon
                 icon={faSearch}
