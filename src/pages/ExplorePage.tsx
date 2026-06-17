@@ -36,12 +36,12 @@ function ExplorePage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = searchParams.get('search') || ''; // 取得搜尋字串
   const tabButtonStyle =
-    'relative flex w-1/4 justify-center items-center py-1.5 hover:cursor-pointer outline-none'; // 頁籤按鈕樣式
-  const iconStyle = 'text-gray-500 md:hidden py-1'; // 頁籤通用樣式
-  const activeTabStyle = 'text-orange-500'; // 頁籤控制
+    'relative flex w-1/4 justify-center items-center py-1.5 hover:cursor-pointer outline-none transition-colors'; // 頁籤按鈕樣式
+  const iconStyle = 'text-muted md:hidden py-1'; // 頁籤通用樣式
+  const activeTabStyle = 'text-brand'; // 頁籤控制
   const countSpanStyle =
-    'sm:absolute sm:right-5 md:right-4 hidden sm:inline-block text-[12px] leading-5 px-3 bg-orange-500 text-white rounded-full'; // 數量標籤樣式
-  const countDotStyle = 'block sm:hidden absolute top-2 ml-8 w-2 h-2 bg-orange-500 rounded-full'; // 標籤點樣式
+    'sm:absolute sm:right-5 md:right-4 hidden sm:inline-block text-[12px] leading-5 px-3 bg-brand text-white rounded-full'; // 數量標籤樣式
+  const countDotStyle = 'block sm:hidden absolute top-2 ml-8 w-2 h-2 bg-brand rounded-full'; // 標籤點樣式
 
   /** 頁籤切換 */
   const handleTabActive = (tabValue: string) => {
@@ -114,11 +114,11 @@ function ExplorePage() {
                 setSearchParams({ search: e.target.value });
               }
             }}
-            className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-gray-200 dark:bg-gray-700 outline-none"
+            className="p-4 pl-10 w-full h-9 text-lg rounded-full bg-surface-2 border border-line text-ink placeholder:text-muted outline-none focus-visible:outline-none focus:border-brand transition-colors"
           />
           <FontAwesomeIcon
             icon={faSearch}
-            className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 text-gray-500 dark:text-gray-100"
+            className="absolute h-5 w-5 m-1.5 ml-3 stroke-0 text-muted"
           />
           {/* 清除搜尋字串 */}
           <FontAwesomeIcon
@@ -126,19 +126,23 @@ function ExplorePage() {
             onClick={() => {
               navigate(`/explore`);
             }}
-            className="absolute right-0 h-5 w-5 m-1.5 mr-3 stroke-0 text-gray-500 dark:text-gray-100 cursor-pointer"
+            className="absolute right-0 h-5 w-5 m-1.5 mr-3 stroke-0 text-muted hover:text-ink transition-colors cursor-pointer"
           />
         </div>
 
         {/* 頁籤 */}
         <div className="w-full max-w-[600px]">
-          <div className="text-lg flex border-b-[1px] border-gray-400 dark:text-gray-400">
+          <div className="text-lg flex border-b border-line text-ink-soft">
             <button
               type="button"
               className={tabButtonStyle}
               onClick={() => handleTabActive('article')}
             >
-              <p className="hidden md:inline-block">文章</p>
+              <p
+                className={`hidden md:inline-block ${exploreTag === 'article' ? activeTabStyle : ''}`}
+              >
+                文章
+              </p>
               <FontAwesomeIcon
                 icon={faFileLines}
                 className={`${iconStyle} ${exploreTag === 'article' ? activeTabStyle : ''}`}
@@ -155,7 +159,11 @@ function ExplorePage() {
               className={tabButtonStyle}
               onClick={() => handleTabActive('post')}
             >
-              <p className="hidden md:inline-block">貼文</p>
+              <p
+                className={`hidden md:inline-block ${exploreTag === 'post' ? activeTabStyle : ''}`}
+              >
+                貼文
+              </p>
               <FontAwesomeIcon
                 icon={faNoteSticky}
                 className={`${iconStyle} ${exploreTag === 'post' ? activeTabStyle : ''}`}
@@ -172,7 +180,11 @@ function ExplorePage() {
               className={tabButtonStyle}
               onClick={() => handleTabActive('user')}
             >
-              <p className="hidden md:inline-block">用戶</p>
+              <p
+                className={`hidden md:inline-block ${exploreTag === 'user' ? activeTabStyle : ''}`}
+              >
+                用戶
+              </p>
               <FontAwesomeIcon
                 icon={faUsers}
                 className={`${iconStyle} ${exploreTag === 'user' ? activeTabStyle : ''}`}
@@ -185,7 +197,9 @@ function ExplorePage() {
               )}
             </button>
             <button type="button" className={tabButtonStyle} onClick={() => handleTabActive('tag')}>
-              <p className="hidden md:inline-block">標籤</p>
+              <p className={`hidden md:inline-block ${exploreTag === 'tag' ? activeTabStyle : ''}`}>
+                標籤
+              </p>
               <FontAwesomeIcon
                 icon={faTag}
                 className={`${iconStyle} ${exploreTag === 'tag' ? activeTabStyle : ''}`}
@@ -200,7 +214,7 @@ function ExplorePage() {
           </div>
           <div className="flex justify-start -translate-y-0.5">
             <div
-              className={`border-b-[3px] border-orange-500 w-1/4 text-transparent ${activeUnderLine} transform duration-300 ease-in-out`}
+              className={`border-b-[3px] border-brand w-1/4 text-transparent ${activeUnderLine} transform duration-300 ease-in-out`}
             />
           </div>
         </div>

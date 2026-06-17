@@ -99,12 +99,12 @@ function PostDetailPage() {
   }
 
   return (
-    <div className="flex flex-col items-center border-b-[1px] dark:border-gray-700 w-full md:w-[600px] cursor-default">
+    <div className="flex flex-col items-center border-b border-line w-full md:w-[600px] cursor-default">
       <div className="hidden sm:flex items-center my-3 w-full">
         <button
           aria-label="back"
           type="button"
-          className="flex justify-center items-center p-2 text-gray-500 hover:text-orange-500"
+          className="flex justify-center items-center p-2 text-muted hover:text-brand transition-colors"
           onClick={() => history.back()}
         >
           <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
@@ -126,9 +126,7 @@ function PostDetailPage() {
               onMouseEnter={() => setShowCreateTip(true)}
               onMouseLeave={() => setShowCreateTip(false)}
             >
-              <p className="text-gray-600 dark:text-gray-300">
-                {formatDateTime(postData.createdAt)}
-              </p>
+              <p className="text-muted">{formatDateTime(postData.createdAt)}</p>
               <span
                 className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
               >
@@ -141,7 +139,7 @@ function PostDetailPage() {
                 onMouseEnter={() => setShowEditTip(true)}
                 onMouseLeave={() => setShowEditTip(false)}
               >
-                <small className="text-gray-400">(已編輯)</small>
+                <small className="text-muted">(已編輯)</small>
                 <span className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}>
                   Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
                 </span>
@@ -149,7 +147,7 @@ function PostDetailPage() {
             )}
           </div>
         </div>
-        <div className="sm:ml-[60px] border-b-[1px] border-gray-300 dark:border-gray-700 pb-3">
+        <div className="sm:ml-[60px] border-b border-line pb-3">
           {/* image */}
           {!isEmpty(postData.image) && (
             <div className="w-full">
@@ -161,7 +159,7 @@ function PostDetailPage() {
           <div className="my-2">
             <div
               id="post-container"
-              className="text-gray-600 dark:text-gray-300"
+              className="text-ink-soft"
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(postData.content) }}
             />
           </div>
@@ -175,7 +173,7 @@ function PostDetailPage() {
               ref={commentInput}
               contentEditable
               aria-placeholder="留言"
-              className="w-full mr-2 py-1.5 px-2 rounded-md outline-none bg-gray-100 dark:bg-gray-800"
+              className="w-full mr-2 py-1.5 px-2 rounded-md outline-none focus-visible:outline-none bg-surface-2 text-ink"
               onInput={handleCommentInput}
               onFocus={() => {
                 setShowPlaceholder(false);
@@ -185,14 +183,14 @@ function PostDetailPage() {
               }}
             />
             <span
-              className={`absolute mr-2 py-1.5 px-2 text-gray-500 ${showPlaceholder ? 'block' : 'hidden'}`}
+              className={`absolute mr-2 py-1.5 px-2 text-muted ${showPlaceholder ? 'block' : 'hidden'}`}
             >
               留言...
             </span>
             <button
               aria-label="reply"
               type="button"
-              className={`w-16 h-9 p-0.5 rounded-md text-white ${commentContent.length > 0 ? 'bg-green-600' : 'bg-gray-500'}`}
+              className={`w-16 h-9 p-0.5 rounded-md transition-colors ${commentContent.length > 0 ? 'bg-brand hover:bg-brand-strong text-white' : 'bg-surface-2 text-muted'}`}
               onClick={submitComment}
             >
               {commentLoading ? (

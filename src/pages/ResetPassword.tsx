@@ -13,6 +13,7 @@ import FormInput from 'components/form/FormInput';
 import { setSignInPop } from 'redux/loginSlice';
 import { handleStatus } from 'utils/fetch';
 import { resetPwdSchema, ResetPwdFormType } from 'schemas/auth';
+import { BTN_PRIMARY } from 'constants/LayoutConstants';
 
 function ResetPassword() {
   const { token } = useParams();
@@ -55,9 +56,9 @@ function ResetPassword() {
   };
 
   return (
-    <div className="flex justify-center items-center">
-      <div className="w-dvw p-8 sm:w-full sm:border sm:rounded-lg">
-        <h2>重設密碼</h2>
+    <div className="flex justify-center items-center w-full">
+      <div className="w-dvw p-8 sm:w-full sm:max-w-[420px] sm:border sm:border-line sm:bg-surface sm:rounded-card sm:shadow-card">
+        <h2 className="text-center mb-6">重設密碼</h2>
         <form className="sm:min-w-[350px]" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-6 w-full">
             <div className="my-3">
@@ -87,7 +88,7 @@ function ResetPassword() {
           <div className="mt-4">
             <button
               type="submit"
-              className="flex justify-center items-center w-full h-10 px-4 py-2 text-lg text-white rounded-md bg-green-600"
+              className={`${BTN_PRIMARY} w-full h-10 px-4 py-2 text-lg rounded-lg`}
             >
               {isLoading ? (
                 <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5" />

@@ -16,6 +16,7 @@ import ProfileFollowed from 'components/profile/ProfileFollowed';
 // --- api / type ---
 import { UserProfileType, UserResultType } from 'types/userType';
 import FollowBtn from 'components/user/FollowBtn';
+import { BTN_SECONDARY } from 'constants/LayoutConstants';
 import { getOwnProfile, getUserProfile } from '../../api/user';
 import { UserStateType } from '../../redux/userSlice';
 import { setSignInPop } from '../../redux/loginSlice';
@@ -114,7 +115,7 @@ function UserProfilePage() {
           </div>
           <div className="flex flex-col justify-center">
             <p className="text-3xl font-semibold">{userData.name}</p>
-            <p className="text-gray-500">@{userData.account}</p>
+            <p className="text-muted">@{userData.account}</p>
           </div>
         </div>
         {/* 追蹤狀態 */}
@@ -125,7 +126,7 @@ function UserProfilePage() {
             <Link
               to="/user/editProfile"
               type="button"
-              className="flex items-center rounded-lg text-white bg-sky-500 hover:bg-sky-700 p-2 md:px-4 md:py-1 dark:bg-sky-800"
+              className={`${BTN_SECONDARY} rounded-full p-2 md:px-4 md:py-1`}
             >
               <p>編輯</p>
             </Link>
@@ -133,7 +134,7 @@ function UserProfilePage() {
         )}
       </div>
       {!isEmpty(userData.bio) && (
-        <div className="bg-gray-100 dark:bg-gray-700 rounded-md p-2">
+        <div className="bg-surface-2 rounded-card p-3 text-ink-soft">
           <p>{userData.bio}</p>
         </div>
       )}
@@ -141,31 +142,31 @@ function UserProfilePage() {
       <div>
         {/* 頁籤 */}
         <div>
-          <div className="mt-4 text-lg flex border-b-[1px] border-gray-400 dark:text-gray-400">
+          <div className="mt-4 text-lg flex border-b border-line text-ink-soft">
             <button
               type="button"
-              className="flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none"
+              className={`flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none transition-colors ${activeTab === 'article' ? 'text-brand' : ''}`}
               onClick={() => handleTabActive('article')}
             >
               文章
             </button>
             <button
               type="button"
-              className="flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none"
+              className={`flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none transition-colors ${activeTab === 'post' ? 'text-brand' : ''}`}
               onClick={() => handleTabActive('post')}
             >
               貼文
             </button>
             <button
               type="button"
-              className="flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none"
+              className={`flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none transition-colors ${activeTab === 'follow' ? 'text-brand' : ''}`}
               onClick={() => handleTabActive('follow')}
             >
               追蹤
             </button>
             <button
               type="button"
-              className="flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none"
+              className={`flex w-1/4 justify-center py-1.5 hover:cursor-pointer outline-none transition-colors ${activeTab === 'follower' ? 'text-brand' : ''}`}
               onClick={() => handleTabActive('follower')}
             >
               粉絲
@@ -173,7 +174,7 @@ function UserProfilePage() {
           </div>
           <div className="flex justify-start -translate-y-0.5">
             <div
-              className={`border-b-[3px] border-orange-500 w-1/4 text-transparent ${activeStyle} transform duration-300 ease-in-out`}
+              className={`border-b-[3px] border-brand w-1/4 text-transparent ${activeStyle} transform duration-300 ease-in-out`}
             />
           </div>
         </div>

@@ -1,4 +1,27 @@
 // Tiptap 編輯器內容樣式（.ProseMirror 為 Tiptap 的渲染容器，編輯與唯讀皆套用）
+
+// 閱讀體驗：較寬鬆的行高、段落與連結樣式（編輯器與貼文內文 #post-container 共用）
+.ProseMirror,
+#post-container {
+  line-height: 1.75;
+
+  // 段落間距，避免段落彼此黏連
+  p {
+    margin: 0.75em 0;
+  }
+
+  // 連結：品牌色加底線，hover 加深
+  a {
+    color: rgb(var(--c-brand));
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: rgb(var(--c-brand-strong));
+    }
+  }
+}
+
 .ProseMirror {
   &:focus {
     outline: none;
@@ -30,12 +53,23 @@
     font-weight: 700;
   }
 
-  // 程式碼區塊
+  // 標題上下間距，提升閱讀層次
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 1.2em 0 0.5em;
+    line-height: 1.25;
+  }
+
+  // 程式碼區塊（底色／文字色隨深淺模式切換）
   pre {
-    background-color: #d1d5db;
-    color: #1f2937;
+    background-color: rgb(var(--c-surface-2));
+    color: rgb(var(--c-ink));
     padding: 1em;
-    border-radius: 5px;
+    border-radius: 8px;
     overflow-x: auto;
     white-space: pre-wrap;
     font-family: 'Source Code Pro', monospace;
@@ -49,6 +83,8 @@
   // 行內程式碼
   code {
     font-family: 'Source Code Pro', monospace;
+    background-color: rgb(var(--c-surface-2));
+    border-radius: 4px;
     padding: 0.2em 0.4em;
   }
 
@@ -68,28 +104,29 @@
   img {
     max-width: 100%;
     height: auto;
+    border-radius: 8px;
   }
 }
 
 // 引用區塊（編輯器與文章預覽共用）
 blockquote {
   margin-left: 20px !important;
-  border-left: 4px solid #f97316;
+  border-left: 4px solid rgb(var(--c-brand));
   padding-left: 10px;
+  color: rgb(var(--c-ink-soft));
 }
 
-/* 對所有元素應用 */
+/* 捲軸樣式（隨深淺模式切換，與 index.css 的 Firefox scrollbar-color 一致） */
 ::-webkit-scrollbar {
   width: 8px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #aaa; /* 例如：灰色 */
+  background-color: rgb(var(--c-line-strong));
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #e2e8f0; /* 例如：淺灰色 */
-  border-radius: 10px;
+  background-color: transparent;
 }

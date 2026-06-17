@@ -37,9 +37,9 @@ function EditorToolItem({
           type="button"
           aria-label={ariaLabel}
           aria-pressed={isActive}
-          className={`p-1 min-w-8 h-8 ${
-            isActive ? 'text-orange-500 bg-sky-100 dark:bg-sky-900' : 'text-gray-500'
-          } ${ariaLabel.substring(0, 2) === 'bg' ? '' : 'hover:text-orange-500'} hover:bg-sky-100 dark:hover:bg-sky-900 ${btnStyle}`}
+          className={`p-1 min-w-8 h-8 rounded-md transition-colors ${
+            isActive ? 'text-brand bg-brand-soft' : 'text-muted'
+          } ${ariaLabel.substring(0, 2) === 'bg' ? '' : 'hover:text-brand'} hover:bg-surface-2 ${btnStyle}`}
           onMouseDown={(e) => {
             // 防止點擊工具列時編輯區反白失焦
             e.preventDefault();

@@ -171,11 +171,11 @@ function ArticleDetailPage() {
   return (
     <div className="flex justify-center w-full md:w-[600px]">
       <div className="w-full mb-2 px-2 sm:px-5">
-        <div className=" flex items-center border-b-[1px] xl:border-b-0 dark:border-gray-700">
+        <div className=" flex items-center border-b xl:border-b-0 border-line">
           <button
             aria-label="back"
             type="button"
-            className="hidden sm:flex items-center mr-4 p-2 text-gray-500 hover:text-orange-500 xl:absolute xl:left-5"
+            className="hidden sm:flex items-center mr-4 p-2 text-muted hover:text-brand transition-colors xl:absolute xl:left-5"
             onClick={() => {
               if (editMode) dispatch(setEditMode(false));
               else window.history.back();
@@ -183,7 +183,7 @@ function ArticleDetailPage() {
           >
             <FontAwesomeIcon icon={faCircleLeft} className="w-7 h-7" />
           </button>
-          <div className="flex justify-between items-center w-full xl:border-b-[1px] dark:border-gray-700">
+          <div className="flex justify-between items-center w-full xl:border-b border-line">
             {/* 作者資訊 */}
             <UserInfoPanel
               userId={articleData.author._id}
@@ -231,13 +231,13 @@ function ArticleDetailPage() {
         </div>
         {/* comments Section */}
         {!editMode && (
-          <div className="relative mt-3 border-t-[1px]">
+          <div className="relative mt-3 border-t border-line">
             <div className="flex justify-between my-3">
               <div
                 ref={commentInput}
                 contentEditable
                 aria-placeholder="留言"
-                className="w-full mr-2 py-1.5 px-2 rounded-md outline-none bg-gray-100 dark:bg-gray-800"
+                className="w-full mr-2 py-1.5 px-2 rounded-md outline-none focus-visible:outline-none bg-surface-2 text-ink"
                 onInput={handleCommentInput}
                 onFocus={() => {
                   setShowPlaceholder(false);
@@ -247,14 +247,14 @@ function ArticleDetailPage() {
                 }}
               />
               <span
-                className={`absolute mr-2 py-1.5 px-2 text-gray-500 ${showPlaceholder ? 'block' : 'hidden'}`}
+                className={`absolute mr-2 py-1.5 px-2 text-muted ${showPlaceholder ? 'block' : 'hidden'}`}
               >
                 留言...
               </span>
               <button
                 aria-label="reply"
                 type="button"
-                className={`w-16 h-9 p-0.5 rounded-md text-white ${commentContent.length > 0 ? 'bg-green-600' : 'bg-gray-500'}`}
+                className={`w-16 h-9 p-0.5 rounded-md transition-colors ${commentContent.length > 0 ? 'bg-brand hover:bg-brand-strong text-white' : 'bg-surface-2 text-muted'}`}
                 onClick={submitComment}
               >
                 {commentLoading ? (
