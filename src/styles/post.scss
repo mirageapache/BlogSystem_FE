@@ -13,7 +13,11 @@
     word-wrap: break-word;
     
     .hash-tag {
-      color: rgb(65, 120, 241);
+      color: rgb(var(--c-brand));
+
+      &:hover {
+        color: rgb(var(--c-brand-strong));
+      }
     }
   }
 }

@@ -28,16 +28,14 @@ function PostInfoItem(props: PropsType) {
       >
         <button
           type="button"
-          className={`flex justify-center items-center ${faClass}`}
+          className={`flex justify-center items-center transition-colors ${faClass}`}
           onClick={(e) => handleClick(e)}
         >
           <FontAwesomeIcon icon={iconName} className="w-5 h-5 m-1.5" />
         </button>
         {!isEmpty(count) ||
           (count !== undefined && (
-            <p className="text-md font-bold text-center text-gray-400 dark:text-gray-100">
-              {count}
-            </p>
+            <p className="text-md font-bold text-center text-muted">{count}</p>
           ))}
         <span
           className={`top-[-25px] right-0 ${tipClass} ${HINT_LABEL} ${showTip ? 'block' : 'hidden'}`}

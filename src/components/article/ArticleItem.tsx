@@ -34,7 +34,7 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
 
   return (
     <div
-      className="text-left border-b-[1px] p-1 sm:p-2 dark:border-gray-700 last:border-b-0 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+      className="group text-left mb-4 p-4 sm:p-5 rounded-card bg-surface border border-line shadow-card hover:shadow-card-hover hover:border-line-strong transition-all duration-200 cursor-pointer"
       onClick={() => {
         navigate(`/article/${_id}`);
       }}
@@ -54,7 +54,7 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
             onMouseEnter={() => setShowCreateTip(true)}
             onMouseLeave={() => setShowCreateTip(false)}
           >
-            <p className="text-gray-600 dark:text-gray-300">{formatDateTime(createdAt)}</p>
+            <p className="text-sm text-muted">{formatDateTime(createdAt)}</p>
             <span
               className={`top-[-50px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
             >
@@ -63,12 +63,12 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
           </span>
         </div>
       </div>
-      <div className="pb-3">
-        <h2 className="font-semibold text-2xl xl:text-3xl">
-          <span className="hover:underline hover:text-orange-500">{title}</span>
+      <div className="pt-1 pb-1">
+        <h2 className="text-2xl xl:text-3xl text-ink leading-snug transition-colors group-hover:text-brand">
+          {title}
         </h2>
         <div
-          className="max-h-[150px] text-gray-600 dark:text-gray-300 line-clamp-5"
+          className="mt-2 max-h-[120px] text-ink-soft leading-relaxed line-clamp-3"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
       </div>

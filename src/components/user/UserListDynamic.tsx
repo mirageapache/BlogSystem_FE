@@ -49,7 +49,7 @@ function UserListDynamic({ userListData, isLoading, atBottom, refetch, type }: P
     <section className="w-full">
       <div>{userItems}</div>
       {atBottom ? (
-        <div className="my-5 text-center text-gray-500">- 已經沒有更多資料了 -</div>
+        <div className="my-5 text-center text-sm text-muted">- 已經沒有更多資料了 -</div>
       ) : (
         <UserLoading withBorder={false} />
       )}

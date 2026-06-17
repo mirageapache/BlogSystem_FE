@@ -131,7 +131,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             iconName={faHeartSolid}
             tipText="取消喜歡"
             count={likeCount || 0}
-            faClass="text-red-500 hover:text-gray-400"
+            faClass="text-red-500 hover:text-muted"
             tipClass="w-20"
             handleClick={handleLikePost}
           />
@@ -140,7 +140,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             iconName={faHeartRegular}
             tipText="喜歡"
             count={likeCount || 0}
-            faClass="text-gray-400 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500"
+            faClass="text-muted hover:text-red-500"
             tipClass="w-12"
             handleClick={handleLikePost}
           />
@@ -151,7 +151,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
           iconName={faComment}
           tipText="留言"
           count={commentCount || 0}
-          faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-500"
+          faClass="text-muted hover:text-blue-500"
           tipClass="w-12"
           handleClick={() => {}}
         />
@@ -164,7 +164,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             iconName={faShare}
             tipText="分享"
             count={postData.shareCount || undefined}
-            faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
+            faClass="text-muted hover:text-brand"
             tipClass="w-12"
             handleClick={() => setShowShareInfo(!showShareInfo)}
           />
@@ -174,14 +174,14 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                 className="fixed w-dvw h-dvh top-0 left-0"
                 onClick={() => setShowShareInfo(false)}
               />
-              <ul className="absolute top-[-180px] right-0 bg-white dark:bg-gray-900 z-40 w-[200px] shadow border border-gray-400 rounded-md p-2 text-gray-700 dark:text-gray-300">
-                <li className="relative p-1 hover:bg-gray-300 dark:hover:bg-gray-700">
+              <ul className="absolute top-[-180px] right-0 bg-surface z-40 w-[200px] shadow-pop border border-line rounded-lg p-2 text-ink-soft">
+                <li className="relative p-1 rounded-md hover:bg-surface-2 transition-colors">
                   <button
                     type="button"
                     className="flex items-center gap-2 w-full p-1"
                     onClick={copyLink}
                   >
-                    <FontAwesomeIcon icon={faLink} className="w-6 h-6 text-orange-500" />
+                    <FontAwesomeIcon icon={faLink} className="w-6 h-6 text-brand" />
                     <p>複製連結</p>
                   </button>
                   <span
@@ -203,7 +203,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
                     <p>分享至FaceBook</p>
                   </button>
                 </li> */}
-                <li className="p-1 hover:bg-gray-300 dark:hover:bg-gray-700">
+                <li className="p-1 rounded-md hover:bg-surface-2 transition-colors">
                   <button
                     type="button"
                     className="flex items-center gap-2 w-full p-1"
@@ -234,7 +234,7 @@ function PostInfoPanel(props: { postData: PostDataType }) {
             iconName={faSquarePen} // 透過props傳遞icon名稱
             tipText="編輯"
             count={undefined}
-            faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
+            faClass="text-muted hover:text-brand"
             tipClass="w-12"
             handleClick={handleClickEdit}
           />

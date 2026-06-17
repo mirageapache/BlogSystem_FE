@@ -130,7 +130,7 @@ function ArticleInfoPanel({
           {!isEmpty(title) && hasContent ? (
             <button
               type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-green-600 hover:bg-green-700"
+              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors"
               onClick={handleSubmit}
             >
               <p className="text-[14px] sm:text-[16px]">更新</p>
@@ -138,7 +138,7 @@ function ArticleInfoPanel({
           ) : (
             <button
               type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 text-white rounded-md bg-gray-600 cursor-default"
+              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium rounded-full bg-surface-2 text-muted border border-line cursor-not-allowed"
             >
               <p className="text-[14px] sm:text-[16px]">更新</p>
             </button>
@@ -152,7 +152,7 @@ function ArticleInfoPanel({
               iconName={faHeartSolid}
               tipText="取消喜歡"
               count={likeCount || 0}
-              faClass="text-red-500 hover:text-gray-400"
+              faClass="text-red-500 hover:text-muted"
               tipClass="w-20"
               handleClick={handleLikeArticle}
             />
@@ -161,7 +161,7 @@ function ArticleInfoPanel({
               iconName={faHeartRegular}
               tipText="喜歡"
               count={likeCount || 0}
-              faClass="text-gray-400 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500"
+              faClass="text-muted hover:text-red-500"
               tipClass="w-12"
               handleClick={handleLikeArticle}
             />
@@ -172,7 +172,7 @@ function ArticleInfoPanel({
             iconName={faComment}
             tipText="留言"
             count={commentCount || 0}
-            faClass="text-gray-400 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-500"
+            faClass="text-muted hover:text-blue-500"
             tipClass="w-12"
             handleClick={() => {
               commentInput.current?.focus();
@@ -186,7 +186,7 @@ function ArticleInfoPanel({
                 iconName={faSquarePen} // 透過props傳遞icon名稱
                 tipText="編輯"
                 count={undefined}
-                faClass="text-gray-400 dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-500"
+                faClass="text-muted hover:text-brand"
                 tipClass="w-12"
                 handleClick={handleClickEdit}
               />
@@ -194,7 +194,7 @@ function ArticleInfoPanel({
                 iconName={faTrashCan} // 透過props傳遞icon名稱
                 tipText="刪除"
                 count={undefined}
-                faClass="text-gray-400 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500"
+                faClass="text-muted hover:text-red-500"
                 tipClass="w-12"
                 handleClick={handleDelete}
               />
