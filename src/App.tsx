@@ -55,6 +55,12 @@ function App() {
   const userData = get(userState, 'userData', {});
   const userId = get(userData, 'userId', '');
 
+  /** 將深色模式 class 同步到 <html>，使 body／原生捲軸／回彈底色也跟著切換
+   *  （色彩 token 定義於 index.css 的 :root / .dark） */
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', sysState.darkMode === 'dark');
+  }, [sysState.darkMode]);
+
   /** 判斷是否已有使用者資料，若無則向後端確認
    * 訪客 token 後端不會回傳完整 user data，前端用固定 GUEST_USER_DATA 顯示
    * 用 ignore flag 避免快速登出/重登時舊回應覆蓋新 state
@@ -93,10 +99,10 @@ function App() {
       fallback={
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
           <h1 className="text-2xl font-bold">發生未預期的錯誤</h1>
-          <p className="text-gray-500">系統已記錄此問題，請重新整理頁面再試一次。</p>
+          <p className="text-muted">系統已記錄此問題，請重新整理頁面再試一次。</p>
           <button
             type="button"
-            className="rounded bg-orange-500 px-4 py-2 text-white"
+            className="rounded-lg bg-brand px-4 py-2 font-medium text-white transition-colors hover:bg-brand-strong"
             onClick={() => window.location.reload()}
           >
             重新整理
@@ -105,7 +111,7 @@ function App() {
       }
     >
       <div className={`font-sans ${sysState.darkMode}`}>
-        <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+        <div className="min-h-screen flex flex-col bg-paper text-ink">
           <Header />
           <main className="mb-auto mt-[52px] sm:mt-16 flex-grow flex justify-center">
             <div className="w-full flex justify-between">
