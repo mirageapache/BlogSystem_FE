@@ -1,26 +1,22 @@
 import axios from 'axios';
 import { API_URL } from './index';
-import { ArticleDataType } from '../types/articleType';
+import { ArticleDataType, MyArticleListType } from '../types/articleType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
-const limit = 5; // 每次取得資料數量
+const limit = 5;
 
-/** AritlceApi 型別 */
 interface ArticleApiType extends AxResponseType {
   data: ArticleDataType;
 }
 
-/** 動態取得文章資料 型別 */
 interface ArticlePageListType extends AxResponseType {
   articles: ArticleDataType[];
   nextPage: number;
   data: ArticleDataType[];
 }
 
-/** (動態)取得文章資料
- * @param page 要取得的資料頁碼
- */
+/** (動態)取得文章資料 */
 export async function getPartialArticles(page: number): Promise<ArticlePageListType | null> {
   if (page <= 0) return null;
   return axios
@@ -34,18 +30,13 @@ export async function getPartialArticles(page: number): Promise<ArticlePageListT
 
 /** 取得特定文章內容 */
 export async function getArticleDetail(articleId: string): Promise<ArticleApiType> {
-  const result = await axios
+  return axios
     .post(`${baseUrl}/article/detail`, { articleId })
-    .then((res) => {
-      return res;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-  return result;
+    .then((res) => res)
+    .catch((error) => error.response);
 }
 
-/** 取得搜尋文章 or 特定使用者的文章 */
+/** 取得搜尋文章 or 特定使用者的文章（僅回傳公開/限閱，草稿不在其中） */
 export async function getSearchArticle(
   searchString?: string,
   authorId?: string,
@@ -61,64 +52,79 @@ export async function getSearchArticle(
     });
 }
 
-/** 新增文章 */
-export async function createArticle(title: string, content: string): Promise<ArticleApiType> {
-  const result = await axios
-    .post(`${baseUrl}/article/create`, { title, content })
-    .then((res) => {
-      return res;
-    })
+/** 新增文章（草稿或發佈） */
+export async function createArticle(
+  title: string,
+  content: string,
+  status: number
+): Promise<ArticleApiType> {
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('content', content);
+  fd.append('status', String(status));
+  return axios
+    .post(`${baseUrl}/article/create`, fd)
+    .then((res) => res)
     .catch((error) => {
       if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
       return error.response;
     });
-  return result;
 }
 
-/** 編輯文章 */
+/** 編輯文章；status 未帶時後端維持原狀態不變 */
 export async function updateArticle(
   articleId: string,
   title: string,
-  content: string
+  content: string,
+  status?: number
 ): Promise<ArticleApiType> {
-  const result = await axios
-    .patch(`${baseUrl}/article/update`, { articleId, title, content })
-    .then((res) => {
-      return res;
-    })
+  const fd = new FormData();
+  fd.append('articleId', articleId);
+  fd.append('title', title);
+  fd.append('content', content);
+  if (status !== undefined) fd.append('status', String(status));
+  return axios
+    .patch(`${baseUrl}/article/update`, fd)
+    .then((res) => res)
     .catch((error) => {
       if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
       return error.response;
     });
-  return result;
 }
 
 /** 刪除文章 */
 export async function deleteArticle(articleId: string) {
-  const config = {
-    data: { articleId }, // 在 delete 請求中，必須在 config 裡加上 data
-  };
-  const result = await axios
-    .delete(`${baseUrl}/article/delete`, config)
-    .then((res) => {
-      return res;
-    })
+  return axios
+    .delete(`${baseUrl}/article/delete`, { data: { articleId } })
+    .then((res) => res)
     .catch((error) => {
       if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
       return error.response;
     });
-  return result;
 }
 
 /** 喜歡/取消喜歡文章 */
 export async function toggleLikeArticle(articleId: string, action: boolean) {
-  const result = await axios
+  return axios
     .patch(`${baseUrl}/article/toggleLikeAction`, { articleId, action })
-    .then((res) => {
-      return res.data;
-    })
+    .then((res) => res.data)
+    .catch((error) => error.response);
+}
+
+/** 取得登入者本人的所有文章（含草稿、下架） */
+export async function getMyArticleList(
+  page: number,
+  pageLimit?: number,
+  status?: number
+): Promise<MyArticleListType | null> {
+  if (page <= 0) return null;
+  const body: Record<string, number> = { page, limit: pageLimit ?? 20 };
+  if (status !== undefined) body.status = status;
+  return axios
+    .post(`${baseUrl}/article/myList`, body)
+    .then((res) => res.data)
     .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
       return error.response;
     });
-  return result;
 }
