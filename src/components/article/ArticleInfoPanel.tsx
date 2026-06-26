@@ -20,6 +20,7 @@ import { deleteArticle, toggleLikeArticle } from 'api/article';
 import { setSignInPop } from 'redux/loginSlice';
 import { setEditMode, SysStateType } from 'redux/sysSlice';
 import { UserStateType } from 'redux/userSlice';
+import { ARTICLE_STATUS } from 'constants/StringConstants';
 // --- components ---
 import ArticleInfoItem from './ArticleInfoItem';
 
@@ -33,7 +34,8 @@ interface PropTypes {
   commentInput: React.RefObject<HTMLDivElement | null>;
   title: string;
   hasContent: boolean;
-  handleSubmit: () => void;
+  handleSubmit: (status?: number) => void;
+  articleStatus: number;
 }
 
 function ArticleInfoPanel({
@@ -42,6 +44,7 @@ function ArticleInfoPanel({
   title,
   hasContent,
   handleSubmit,
+  articleStatus,
 }: PropTypes) {
   const currentUserId = useSelector((state: StateType) => state.user.userData?.userId);
   const dispatchSlice = useDispatch();
@@ -128,17 +131,43 @@ function ArticleInfoPanel({
       {editMode ? (
         <div className="flex gap-2">
           {!isEmpty(title) && hasContent ? (
-            <button
-              type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors"
-              onClick={handleSubmit}
-            >
-              <p className="text-[14px] sm:text-[16px]">更新</p>
-            </button>
+            <>
+              {/* 草稿或已下架：顯示「發佈」 */}
+              {(articleStatus === ARTICLE_STATUS.DRAFT ||
+                articleStatus === ARTICLE_STATUS.OFFLINE) && (
+                <button
+                  type="button"
+                  className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors"
+                  onClick={() => handleSubmit(ARTICLE_STATUS.PUBLIC)}
+                >
+                  <p className="text-[14px] sm:text-[16px]">發佈</p>
+                </button>
+              )}
+              {/* 公開或限閱：顯示「下架」 */}
+              {(articleStatus === ARTICLE_STATUS.PUBLIC ||
+                articleStatus === ARTICLE_STATUS.MEMBER) && (
+                <button
+                  type="button"
+                  className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium rounded-full border border-line text-ink hover:bg-surface-2 transition-colors"
+                  onClick={() => handleSubmit(ARTICLE_STATUS.OFFLINE)}
+                >
+                  <p className="text-[14px] sm:text-[16px]">下架</p>
+                </button>
+              )}
+              {/* 更新（維持原狀態，不傳 status） */}
+              <button
+                type="button"
+                className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors"
+                onClick={() => handleSubmit()}
+              >
+                <p className="text-[14px] sm:text-[16px]">更新</p>
+              </button>
+            </>
           ) : (
             <button
               type="button"
               className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium rounded-full bg-surface-2 text-muted border border-line cursor-not-allowed"
+              disabled
             >
               <p className="text-[14px] sm:text-[16px]">更新</p>
             </button>

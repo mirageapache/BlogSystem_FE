@@ -28,7 +28,7 @@ import ArticleLoading from '../../components/article/ArticleLoading';
 import CommentList from '../../components/comment/CommentList';
 import EditorToolBar from '../../components/common/EditorToolBar';
 import BasicErrorPanel from '../../components/tips/BasicErrorPanel';
-import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
+import { ERR_NETWORK_MSG, ARTICLE_STATUS } from '../../constants/StringConstants';
 import '../../styles/editor.scss';
 
 interface StateType {
@@ -115,17 +115,16 @@ function ArticleDetailPage() {
 
   /** 編輯文章 mutation */
   const editArticleMutation = useMutation({
-    mutationFn: ({ content }: { content: string }) =>
-      updateArticle(articleData!._id, title, content),
-    onSuccess: (res) => {
+    mutationFn: ({ content, status }: { content: string; status?: number }) =>
+      updateArticle(articleData!._id, title, content, status),
+    onSuccess: (res, { status }) => {
       if (handleStatus(get(res, 'status')) === 2) {
         const swal = withReactContent(Swal);
+        let alertTitle = '文章已更新';
+        if (status === ARTICLE_STATUS.OFFLINE) alertTitle = '文章已下架';
+        else if (status === ARTICLE_STATUS.DRAFT) alertTitle = '草稿已儲存';
         swal
-          .fire({
-            title: '文章已更新',
-            icon: 'success',
-            confirmButtonText: '確認',
-          })
+          .fire({ title: alertTitle, icon: 'success', confirmButtonText: '確認' })
           .then((result) => {
             refetch();
             if (result.isConfirmed) dispatch(setEditMode(false));
@@ -142,7 +141,7 @@ function ArticleDetailPage() {
   });
 
   /** 修改文章 */
-  const handleSubmit = () => {
+  const handleSubmit = (status?: number) => {
     if (guardVisitorAction()) return;
     // title 為後端必填欄位，空白會撞 500，前端先擋並給提示
     if (isEmpty(title.trim())) {
@@ -150,7 +149,7 @@ function ArticleDetailPage() {
       return;
     }
     const contentString = editor ? editor.getHTML() : '';
-    editArticleMutation.mutate({ content: contentString });
+    editArticleMutation.mutate({ content: contentString, status });
   };
 
   if (isLoading) return <ArticleLoading withBorder={false} />;
@@ -199,8 +198,9 @@ function ArticleDetailPage() {
               articleData={articleData}
               commentInput={commentInput}
               title={title}
-              hasContent // 待修改
+              hasContent
               handleSubmit={handleSubmit}
+              articleStatus={articleData.status}
             />
           </div>
         </div>
