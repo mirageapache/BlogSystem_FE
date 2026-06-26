@@ -10,6 +10,7 @@ import { getMyArticleList, updateArticle, deleteArticle } from 'api/article';
 import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
 import { ArticleDataType } from 'types/articleType';
 import { UserStateType } from 'redux/userSlice';
+import BasicErrorPanel from 'components/tips/BasicErrorPanel';
 
 interface StateType {
   user: UserStateType;
@@ -52,12 +53,17 @@ function MyArticlePage() {
 
   const articles: ArticleDataType[] = get(data, 'articles', []);
   const nextPage: number = get(data, 'nextPage', -1);
+  const isNetworkError = get(data, 'code') === 'ERR_NETWORK';
 
   const invalidateList = () => queryClient.invalidateQueries({ queryKey: ['myArticles'] });
 
   const changeStatusMutation = useMutation({
-    mutationFn: ({ article, newStatus }: { article: ArticleDataType; newStatus: number }) =>
-      updateArticle(article._id, article.title, article.content, newStatus),
+    mutationFn: ({ article, newStatus }: { article: ArticleDataType; newStatus: number }) => {
+      if (!article.content) {
+        return Promise.reject(new Error('content_missing'));
+      }
+      return updateArticle(article._id, article.title, article.content, newStatus);
+    },
     onSuccess: (res, { newStatus }) => {
       if (handleStatus(get(res, 'status')) === 2) {
         invalidateList();
@@ -72,7 +78,13 @@ function MyArticlePage() {
         errorAlert(ERR_NETWORK_MSG);
       }
     },
-    onError: () => errorAlert(),
+    onError: (err) => {
+      if ((err as Error).message === 'content_missing') {
+        errorAlert('請至文章詳細頁進行發佈操作');
+        return;
+      }
+      errorAlert();
+    },
   });
 
   const deleteMutation = useMutation({
@@ -149,7 +161,9 @@ function MyArticlePage() {
       {/* 文章清單 */}
       {isLoading && <div className="text-center text-muted py-8">載入中...</div>}
 
-      {!isLoading && articles.length === 0 && (
+      {!isLoading && isNetworkError && <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />}
+
+      {!isLoading && !isNetworkError && articles.length === 0 && (
         <div className="text-center text-muted py-8">
           {activeStatus === ARTICLE_STATUS.DRAFT ? '沒有草稿' : '沒有符合條件的文章'}
         </div>
