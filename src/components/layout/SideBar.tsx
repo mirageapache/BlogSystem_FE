@@ -1,6 +1,6 @@
 import { ReactNode, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faPenNib, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faPenNib, faPenToSquare, faFileLines } from '@fortawesome/free-solid-svg-icons';
 import { faCompass, faUser } from '@fortawesome/free-regular-svg-icons';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
@@ -165,6 +165,15 @@ function SideBar() {
               }}
             >
               <FontAwesomeIcon icon={faPenNib} />
+            </SideBarItem>
+            <SideBarItem
+              href={checkLogin() ? '/my-articles' : ''}
+              text="我的文章"
+              count={0}
+              activeItem={activePage === 'myArticles'}
+              changeItem={() => sliceDispatch(setActivePage('myArticles'))}
+            >
+              <FontAwesomeIcon icon={faFileLines} />
             </SideBarItem>
             <SideBarItem href="" text="建立貼文" count={0} activeItem={false} changeItem={() => {}}>
               <FontAwesomeIcon icon={faPenToSquare} />
