@@ -62,7 +62,7 @@ function PostItem(props: { postData: PostDataType }) {
     mutationFn: () => deletePost(postData._id),
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status', 0)) === 2) {
-        // 失效所有貼文列表 cache，由 react-query 自動 refetch
+        // 將四個頁面的貼文列表快取標為過期，讓各頁下次顯示時自動重新向後端拉取最新資料
         ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
           queryClient.invalidateQueries({ queryKey: [key] })
         );

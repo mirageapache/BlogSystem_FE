@@ -65,7 +65,7 @@ function PostCreateModal() {
     onSuccess: (res) => {
       if (handleStatus(get(res, 'status')) === 2) {
         const swal = withReactContent(Swal);
-        // 失效所有貼文列表 cache，新貼文自動拉回
+        // 將四個頁面的貼文列表快取標為過期，讓各頁下次顯示時自動重新向後端拉取最新資料
         ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
           queryClient.invalidateQueries({ queryKey: [key] })
         );

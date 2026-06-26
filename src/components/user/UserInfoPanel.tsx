@@ -36,7 +36,7 @@ function UserInfoPanel(props: {
       <div className="flex flex-col">
         <p className="font-semibold text-lg leading-6 text-ink">{name}</p>
         {menuLink ? (
-          <p className="text-[14px] text-muted">@{account}</p>
+          <p className="text-[14px] text-muted text-left">@{account}</p>
         ) : (
           <button
             aria-label="account"
@@ -49,7 +49,7 @@ function UserInfoPanel(props: {
               navigate(`/user/profile/${userId}`);
             }}
           >
-            <p>@{account}</p>
+            <p className="text-left">@{account}</p>
           </button>
         )}
       </div>
