@@ -11,23 +11,20 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
-// --- components ---
 import EditorToolBar from 'components/common/EditorToolBar';
 import { BTN_PRIMARY } from 'constants/LayoutConstants';
-// --- functions / types ---
+import { ARTICLE_STATUS, ERR_NETWORK_MSG } from 'constants/StringConstants';
 import { createArticle } from 'api/article';
 import { errorAlert, handleApiError, handleStatus } from 'utils/fetch';
 import { checkCancelEdit, guardVisitorAction } from 'utils/common';
 import { editorExtensions } from 'utils/tiptap';
 import '../../styles/editor.scss';
-import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 
 function ArticleCreatePage() {
   const [title, setTitle] = useState('');
-  const [isContentEmpty, setIsContentEmpty] = useState(true); // 編輯器是否為空（控制發佈按鈕）
+  const [isContentEmpty, setIsContentEmpty] = useState(true);
   const navigate = useNavigate();
 
-  // Tiptap 編輯器；內容以 HTML 字串存取
   const editor = useEditor({
     extensions: editorExtensions,
     content: '',
@@ -36,20 +33,20 @@ function ArticleCreatePage() {
 
   const hasContent = !isContentEmpty;
 
-  /** 新增文章 mutation */
   const { mutate: createArticleMutate, isPending: isLoading } = useMutation({
-    mutationFn: ({ content }) => createArticle(title, content),
-    onSuccess: (res) => {
+    mutationFn: ({ content, status }) => createArticle(title, content, status),
+    onSuccess: (res, { status }) => {
       if (handleStatus(get(res, 'status')) === 2) {
         const swal = withReactContent(Swal);
+        const isDraft = status === ARTICLE_STATUS.DRAFT;
         swal
           .fire({
-            title: '文章已發佈',
+            title: isDraft ? '草稿已儲存' : '文章已發佈',
             icon: 'success',
             confirmButtonText: '確認',
           })
           .then((result) => {
-            if (result.isConfirmed) navigate('/');
+            if (result.isConfirmed) navigate(isDraft ? '/my-articles' : '/');
           });
       } else if (handleStatus(get(res, 'status')) === 4) {
         handleApiError(res);
@@ -59,22 +56,20 @@ function ArticleCreatePage() {
         errorAlert(ERR_NETWORK_MSG);
       }
     },
-    onError: () => {
-      errorAlert();
-    },
+    onError: () => errorAlert(),
   });
 
-  /** 發佈文章 */
-  const handleSubmit = () => {
+  const handleSubmit = (status) => {
     if (guardVisitorAction()) return;
-    // title 為後端必填欄位，空白會撞 500，前端先擋並給提示
     if (isEmpty(title.trim())) {
       errorAlert('請輸入文章標題');
       return;
     }
-    const contentString = editor ? editor.getHTML() : '';
-    createArticleMutate({ content: contentString });
+    createArticleMutate({ content: editor ? editor.getHTML() : '', status });
   };
+
+  const canPublish = !isEmpty(title) && hasContent;
+  const canDraft = !isEmpty(title);
 
   return (
     <div className="w-full md:max-w-[600px] mx-2 sm:m-0">
@@ -95,11 +90,32 @@ function ArticleCreatePage() {
         </div>
         <p className="font-serif text-2xl font-bold">建立文章</p>
         <div className="flex gap-2">
-          {!isEmpty(title) && hasContent ? (
+          {/* 儲存草稿 */}
+          {canDraft ? (
+            <button
+              type="button"
+              className="flex justify-center items-center w-20 sm:w-24 h-9 px-2 rounded-md border border-line text-ink hover:bg-surface-2 transition-colors text-[13px] sm:text-[15px]"
+              onClick={() => handleSubmit(ARTICLE_STATUS.DRAFT)}
+              disabled={isLoading}
+            >
+              儲存草稿
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="flex justify-center items-center w-20 sm:w-24 h-9 px-2 rounded-md bg-surface-2 text-muted cursor-not-allowed text-[13px] sm:text-[15px]"
+              disabled
+            >
+              儲存草稿
+            </button>
+          )}
+          {/* 發佈 */}
+          {canPublish ? (
             <button
               type="button"
               className={`${BTN_PRIMARY} w-16 sm:w-20 h-9 p-2 sm:py-1.5 rounded-md`}
-              onClick={handleSubmit}
+              onClick={() => handleSubmit(ARTICLE_STATUS.PUBLIC)}
+              disabled={isLoading}
             >
               {isLoading ? (
                 <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 m-1.5" />
@@ -111,6 +127,7 @@ function ArticleCreatePage() {
             <button
               type="button"
               className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 rounded-md bg-surface-2 text-muted cursor-not-allowed"
+              disabled
             >
               <p className="text-[14px] sm:text-[16px]">發佈</p>
             </button>
@@ -133,7 +150,6 @@ function ArticleCreatePage() {
         className="relative max-h-minus280 h-minus280 overflow-y-auto"
         onClick={() => editor?.commands.focus()}
       >
-        {/* 文章內容 */}
         {!hasContent && (
           <div id="placeholder" className="absolute text-muted pointer-events-none">
             從這裡開始你的故事...
