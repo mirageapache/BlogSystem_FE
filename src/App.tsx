@@ -31,6 +31,7 @@ import EditProfilePage from './pages/user/EditProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import ArticleCreatePage from './pages/aritcle/ArticleCreatePage';
 import MyArticlePage from './pages/aritcle/MyArticlePage';
+import MyPostPage from './pages/post/MyPostPage';
 
 // --- functions / types ---
 import { SysStateType } from './redux/sysSlice';
@@ -131,6 +132,7 @@ function App() {
                   <Route path="my-articles" element={<MyArticlePage />} />
                   {/* Post */}
                   <Route path="post/:id" element={<PostDetailPage />} />
+                  <Route path="my-posts" element={<MyPostPage />} />
 
                   {/* User */}
                   <Route path="user/profile/:userId" element={<UserProfilePage />} />

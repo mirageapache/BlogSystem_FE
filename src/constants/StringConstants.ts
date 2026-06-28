@@ -34,3 +34,5 @@ export const ARTICLE_STATUS = {
   MEMBER: 2, // 發佈（限閱）
   OFFLINE: 3, // 下架
 } as const;
+
+export const POST_STATUS = ARTICLE_STATUS;
