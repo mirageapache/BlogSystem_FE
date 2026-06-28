@@ -58,7 +58,7 @@ function ArticleItem(props: { articleData: ArticleDataType }) {
             <span
               className={`top-[-50px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
             >
-              Created at {dayjs(createdAt).format('MMMM Do YYYY, h:mm:ss')}
+              Created at {dayjs(createdAt).format('MMMM Do YYYY, HH:mm:ss')}
             </span>
           </span>
         </div>

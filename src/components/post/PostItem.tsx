@@ -121,7 +121,7 @@ function PostItem(props: { postData: PostDataType }) {
                 <span
                   className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
                 >
-                  Created at {dayjs(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
+                  Created at {dayjs(postData.createdAt).format('MMMM Do YYYY, HH:mm:ss')}
                 </span>
               </span>
               {!isEmpty(postData.editedAt) && (
@@ -134,7 +134,7 @@ function PostItem(props: { postData: PostDataType }) {
                   <span
                     className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}
                   >
-                    Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
+                    Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, HH:mm:ss')}
                   </span>
                 </span>
               )}

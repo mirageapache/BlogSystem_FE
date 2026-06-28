@@ -99,7 +99,7 @@ function PostDetailPage() {
   }
 
   return (
-    <div className="flex flex-col items-center border-b border-line w-full md:w-[600px] cursor-default">
+    <div className="flex flex-col items-center border-b border-line w-full max-w-[700px] cursor-default">
       <div className="hidden sm:flex items-center my-3 w-full">
         <button
           aria-label="back"
@@ -130,7 +130,7 @@ function PostDetailPage() {
               <span
                 className={`top-[-25px] right-0 w-40 ${HINT_LABEL} ${showCreateTip ? 'block' : 'hidden'}`}
               >
-                Created at {dayjs(postData.createdAt).format('MMMM Do YYYY, h:mm:ss')}
+                Created at {dayjs(postData.createdAt).format('MMMM Do YYYY, HH:mm:ss')}
               </span>
             </span>
             {!isEmpty(postData.editedAt) && (
@@ -141,7 +141,7 @@ function PostDetailPage() {
               >
                 <small className="text-muted">(已編輯)</small>
                 <span className={`right-0 w-40 ${HINT_LABEL} ${showEditTip ? 'block' : 'hidden'}`}>
-                  Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, h:mm:ss')}
+                  Edited at {dayjs(postData.editedAt).format('MMMM Do YYYY, HH:mm:ss')}
                 </span>
               </span>
             )}
