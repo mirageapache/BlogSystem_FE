@@ -123,6 +123,8 @@ function ArticleDetailPage() {
         let alertTitle = '文章已更新';
         if (status === ARTICLE_STATUS.OFFLINE) alertTitle = '文章已下架';
         else if (status === ARTICLE_STATUS.DRAFT) alertTitle = '草稿已儲存';
+        else if (status === ARTICLE_STATUS.PUBLIC || status === ARTICLE_STATUS.MEMBER)
+          alertTitle = '文章已發佈';
         swal
           .fire({ title: alertTitle, icon: 'success', confirmButtonText: '確認' })
           .then((result) => {
@@ -168,9 +170,13 @@ function ArticleDetailPage() {
   }
 
   return (
-    <div className="flex justify-center w-full md:w-[600px]">
-      <div className="w-full mb-2 px-2 sm:px-5">
-        <div className=" flex items-center border-b xl:border-b-0 border-line">
+    <div
+      className={`flex justify-center w-full max-w-4xl ${editMode ? 'h-[calc(100dvh-100px)] sm:h-[calc(100dvh-64px)] overflow-hidden' : ''}`}
+    >
+      <div className={`w-full px-2 sm:px-5 ${editMode ? 'flex flex-col h-full' : 'mb-2'}`}>
+        <div
+          className={`flex items-center border-b xl:border-b-0 border-line ${editMode ? 'shrink-0' : ''}`}
+        >
           <button
             aria-label="back"
             type="button"
@@ -204,11 +210,13 @@ function ArticleDetailPage() {
             />
           </div>
         </div>
-        <div className="flex flex-col w-full">
+        <div className={`flex flex-col w-full ${editMode ? 'flex-1 min-h-0' : ''}`}>
           {editMode ? (
             <>
-              <EditorToolBar editor={editor} />
-              <div className="mb-2">
+              <div className="shrink-0">
+                <EditorToolBar editor={editor} />
+              </div>
+              <div className="shrink-0 mb-2">
                 <input
                   type="text"
                   name="title"
@@ -223,9 +231,7 @@ function ArticleDetailPage() {
             <h2 className="text-4xl my-4">{articleData.title}</h2>
           )}
           {/* 文章內文 */}
-          <div
-            className={`relative p-0.5 ${editMode ? 'max-h-minus325 h-minus325 overflow-y-auto' : ''}`}
-          >
+          <div className={`relative p-0.5 ${editMode ? 'flex-1 min-h-0 overflow-y-auto' : ''}`}>
             <EditorContent editor={editor} />
           </div>
         </div>

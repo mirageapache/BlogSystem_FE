@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import { useDispatch, useSelector } from 'react-redux';
@@ -56,6 +56,18 @@ function ArticleInfoPanel({
   const swal = withReactContent(Swal);
   const iscurrentUser = currentUserId === article.author._id;
   const navigate = useNavigate();
+  const [selectedStatus, setSelectedStatus] = useState(articleStatus);
+
+  useEffect(() => {
+    setSelectedStatus(articleStatus);
+  }, [articleStatus]);
+
+  const STATUS_OPTIONS = [
+    { value: ARTICLE_STATUS.DRAFT, label: '草稿' },
+    { value: ARTICLE_STATUS.PUBLIC, label: '發佈（公開）' },
+    { value: ARTICLE_STATUS.MEMBER, label: '發佈（限閱）' },
+    { value: ARTICLE_STATUS.OFFLINE, label: '下架' },
+  ];
 
   /** 喜歡/取消喜歡 mutation */
   const likeMutation = useMutation({
@@ -129,49 +141,27 @@ function ArticleInfoPanel({
   return (
     <div className="flex items-center">
       {editMode ? (
-        <div className="flex gap-2">
-          {!isEmpty(title) && hasContent ? (
-            <>
-              {/* 草稿或已下架：顯示「發佈」 */}
-              {(articleStatus === ARTICLE_STATUS.DRAFT ||
-                articleStatus === ARTICLE_STATUS.OFFLINE) && (
-                <button
-                  type="button"
-                  className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors"
-                  onClick={() => handleSubmit(ARTICLE_STATUS.PUBLIC)}
-                >
-                  <p className="text-[14px] sm:text-[16px]">發佈</p>
-                </button>
-              )}
-              {/* 公開或限閱：顯示「下架」 */}
-              {(articleStatus === ARTICLE_STATUS.PUBLIC ||
-                articleStatus === ARTICLE_STATUS.MEMBER) && (
-                <button
-                  type="button"
-                  className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium rounded-full border border-line text-ink hover:bg-surface-2 transition-colors"
-                  onClick={() => handleSubmit(ARTICLE_STATUS.OFFLINE)}
-                >
-                  <p className="text-[14px] sm:text-[16px]">下架</p>
-                </button>
-              )}
-              {/* 更新（維持原狀態，不傳 status） */}
-              <button
-                type="button"
-                className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors"
-                onClick={() => handleSubmit()}
-              >
-                <p className="text-[14px] sm:text-[16px]">更新</p>
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium rounded-full bg-surface-2 text-muted border border-line cursor-not-allowed"
-              disabled
-            >
-              <p className="text-[14px] sm:text-[16px]">更新</p>
-            </button>
-          )}
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedStatus}
+            disabled={isEmpty(title) || !hasContent}
+            onChange={(e) => setSelectedStatus(Number(e.target.value))}
+            className="h-9 px-2 rounded-md border border-line bg-paper text-ink text-sm disabled:text-muted disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-brand"
+          >
+            {STATUS_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={isEmpty(title) || !hasContent}
+            className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors disabled:bg-surface-2 disabled:text-muted disabled:border disabled:border-line disabled:cursor-not-allowed"
+            onClick={() => handleSubmit(selectedStatus)}
+          >
+            <p className="text-[14px] sm:text-[16px]">更新</p>
+          </button>
         </div>
       ) : (
         <div className="flex gap-4">
