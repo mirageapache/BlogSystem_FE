@@ -122,15 +122,13 @@ function MyArticlePage() {
   };
 
   if (!userId) {
-    return (
-      <div className="w-full max-w-[600px] p-4 text-center text-muted">請先登入才能查看文章</div>
-    );
+    return <div className="w-full max-w-4xl p-4 text-center text-muted">請先登入才能查看文章</div>;
   }
 
   return (
-    <div className="w-full max-w-[600px] p-2 sm:p-0">
+    <div className="w-full max-w-4xl mt-4 p-2 sm:p-0">
       <div className="flex justify-between items-center mb-4 px-2">
-        <h1 className="text-xl font-bold">我的文章</h1>
+        <h1 className="text-3xl font-bold">我的文章</h1>
         <button
           type="button"
           className="px-3 py-1.5 rounded-md bg-brand text-white text-sm hover:bg-brand-strong transition-colors"

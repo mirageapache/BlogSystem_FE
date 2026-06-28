@@ -101,7 +101,7 @@ function UserProfilePage() {
     return <NoSearchResult msgOne="使用者不存在" msgTwo="" type="user" />;
 
   return (
-    <div className="w-full sm:max-w-[600px] p-5">
+    <div className="w-full max-w-4xl p-5">
       <div className="flex justify-between mb-3">
         <div className="flex gap-4">
           <div>

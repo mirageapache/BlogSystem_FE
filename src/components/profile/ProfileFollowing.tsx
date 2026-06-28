@@ -62,7 +62,7 @@ function ProfileFollowing(props: { userId: string; identify: boolean }) {
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
-    <div className="w-full max-w-[600px] p-1 sm:p-0">
+    <div className="w-full max-w-4xl p-1 sm:p-0">
       <UserListDynamic
         userListData={followList}
         isLoading={isLoading}

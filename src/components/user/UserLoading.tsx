@@ -4,7 +4,7 @@ function UserLoading({ withBorder = true }: { withBorder: boolean }) {
   if (withBorder) {
     // 有 border 樣式
     return (
-      <div className="w-[600px] my-4 border border-line bg-surface shadow-card rounded-card p-4">
+      <div className="w-full max-w-4xl my-4 border border-line bg-surface shadow-card rounded-card p-4">
         <div className="animate-pulse flex space-x-4 items-center">
           <div className="rounded-full bg-line-strong/70 h-14 w-14" />
           <div className="flex-1 space-y-2 py-1">

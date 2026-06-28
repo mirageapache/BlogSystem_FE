@@ -158,7 +158,7 @@ function EditProfilePage() {
   if (!isEmpty(userData)) {
     const isVisitor = userData.userRole === -1;
     return (
-      <div className="w-full sm:max-w-[600px] p-5">
+      <div className="w-full max-w-4xl p-5">
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* avatar */}
           <div className="flex flex-col items-center w-full mb-5 pb-5 border-b border-line">
