@@ -1,15 +1,13 @@
 import { RqResponseType, errorMsgType } from './apiType';
 import { UserInfoPanelType } from './userType';
 
-/** article API接收資料型別 */
 export interface ArticleDataType extends errorMsgType {
   _id: string;
-  author: UserInfoPanelType; // userId
+  author: UserInfoPanelType;
   title: string;
   content: string;
   image: string;
   status: number;
-  subject: string;
   hashTags: string[];
   collectionCount: number;
   shareCount: number;
@@ -19,10 +17,9 @@ export interface ArticleDataType extends errorMsgType {
   editedAt: string;
 }
 
-/** article API參數型別 */
 export interface ArticleVariablesType {
   articleId?: string;
-  userId: string; // author
+  userId: string;
   content: string;
   image?: string;
   status: number;
@@ -31,4 +28,10 @@ export interface ArticleVariablesType {
 
 export interface ArticleResultType extends RqResponseType {
   data: ArticleDataType | null;
+}
+
+export interface MyArticleListType {
+  articles: ArticleDataType[];
+  nextPage: number;
+  totalArticle: number;
 }

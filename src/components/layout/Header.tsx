@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { faBars, faSearch, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
 // --- images ---
-import brand from '../../assets/images/brand.png';
+import brand from '../../assets/images/brand_img.png';
 // --- components ---
 import MainMenu from './MainMenu';
 import BackwardBtn from '../../components/common/BackwardBtn';

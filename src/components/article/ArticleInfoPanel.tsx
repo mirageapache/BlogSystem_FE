@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,6 +20,7 @@ import { deleteArticle, toggleLikeArticle } from 'api/article';
 import { setSignInPop } from 'redux/loginSlice';
 import { setEditMode, SysStateType } from 'redux/sysSlice';
 import { UserStateType } from 'redux/userSlice';
+import { ARTICLE_STATUS } from 'constants/StringConstants';
 // --- components ---
 import ArticleInfoItem from './ArticleInfoItem';
 
@@ -33,7 +34,8 @@ interface PropTypes {
   commentInput: React.RefObject<HTMLDivElement | null>;
   title: string;
   hasContent: boolean;
-  handleSubmit: () => void;
+  handleSubmit: (status?: number) => void;
+  articleStatus: number;
 }
 
 function ArticleInfoPanel({
@@ -42,6 +44,7 @@ function ArticleInfoPanel({
   title,
   hasContent,
   handleSubmit,
+  articleStatus,
 }: PropTypes) {
   const currentUserId = useSelector((state: StateType) => state.user.userData?.userId);
   const dispatchSlice = useDispatch();
@@ -53,6 +56,18 @@ function ArticleInfoPanel({
   const swal = withReactContent(Swal);
   const iscurrentUser = currentUserId === article.author._id;
   const navigate = useNavigate();
+  const [selectedStatus, setSelectedStatus] = useState(articleStatus);
+
+  useEffect(() => {
+    setSelectedStatus(articleStatus);
+  }, [articleStatus]);
+
+  const STATUS_OPTIONS = [
+    { value: ARTICLE_STATUS.DRAFT, label: '草稿' },
+    { value: ARTICLE_STATUS.PUBLIC, label: '發佈（公開）' },
+    { value: ARTICLE_STATUS.MEMBER, label: '發佈（限閱）' },
+    { value: ARTICLE_STATUS.OFFLINE, label: '下架' },
+  ];
 
   /** 喜歡/取消喜歡 mutation */
   const likeMutation = useMutation({
@@ -126,23 +141,27 @@ function ArticleInfoPanel({
   return (
     <div className="flex items-center">
       {editMode ? (
-        <div className="flex gap-2">
-          {!isEmpty(title) && hasContent ? (
-            <button
-              type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors"
-              onClick={handleSubmit}
-            >
-              <p className="text-[14px] sm:text-[16px]">更新</p>
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium rounded-full bg-surface-2 text-muted border border-line cursor-not-allowed"
-            >
-              <p className="text-[14px] sm:text-[16px]">更新</p>
-            </button>
-          )}
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedStatus}
+            disabled={isEmpty(title) || !hasContent}
+            onChange={(e) => setSelectedStatus(Number(e.target.value))}
+            className="h-9 px-2 rounded-md border border-line bg-paper text-ink text-sm disabled:text-muted disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-brand"
+          >
+            {STATUS_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={isEmpty(title) || !hasContent}
+            className="flex justify-center items-center w-16 sm:w-20 p-2 sm:py-1.5 font-medium text-white rounded-full bg-brand hover:bg-brand-strong transition-colors disabled:bg-surface-2 disabled:text-muted disabled:border disabled:border-line disabled:cursor-not-allowed"
+            onClick={() => handleSubmit(selectedStatus)}
+          >
+            <p className="text-[14px] sm:text-[16px]">更新</p>
+          </button>
         </div>
       ) : (
         <div className="flex gap-4">

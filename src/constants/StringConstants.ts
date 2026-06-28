@@ -27,3 +27,12 @@ export const GUEST_USER_DATA: UserProfileType = {
 
 /** 訪客被擋下時顯示的提示文字 */
 export const GUEST_BLOCK_MSG = '訪客身份僅供瀏覽，請註冊或登入後才能使用此功能';
+
+export const ARTICLE_STATUS = {
+  DRAFT: 0, // 草稿
+  PUBLIC: 1, // 發佈（公開）
+  MEMBER: 2, // 發佈（限閱）
+  OFFLINE: 3, // 下架
+} as const;
+
+export const POST_STATUS = ARTICLE_STATUS;

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { faCircleXmark, faImage, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import withReactContent from 'sweetalert2-react-content';
@@ -22,7 +22,7 @@ import { UserStateType } from '../../redux/userSlice';
 import { PostStateType, setShowEditModal } from '../../redux/postSlice';
 import '../../styles/post.scss';
 import { GRAY_BG_PANEL, WHITE_SPACER, BTN_PRIMARY } from '../../constants/LayoutConstants';
-import { ERR_NETWORK_MSG } from '../../constants/StringConstants';
+import { ERR_NETWORK_MSG, POST_STATUS } from '../../constants/StringConstants';
 
 interface stateType {
   post: PostStateType;
@@ -42,6 +42,17 @@ function PostEditModal() {
   const [image, setImage] = useState(postData.image); // 處理 image preview
   const [imageFile, setImageFile] = useState<any>(null); // 處理 image file upload
   const [removeImage, setRemoveImage] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(postData.status ?? POST_STATUS.PUBLIC);
+
+  const STATUS_OPTIONS = useMemo(
+    () => [
+      { value: POST_STATUS.DRAFT, label: '草稿' },
+      { value: POST_STATUS.PUBLIC, label: '發佈（公開）' },
+      { value: POST_STATUS.MEMBER, label: '發佈（限閱）' },
+      { value: POST_STATUS.OFFLINE, label: '下架' },
+    ],
+    []
+  );
   const contentRef = useRef<HTMLDivElement>(null); // 輸入框div
   const swal = withReactContent(Swal);
   const authorId = postData.author._id;
@@ -104,15 +115,23 @@ function PostEditModal() {
   /** 編輯貼文 mutation */
   const editPostMutation = useMutation({
     mutationFn: (formData: FormData) => updatePost(formData),
-    onSuccess: (res) => {
+    onSuccess: (res, formData) => {
       if (handleStatus(get(res, 'status')) === 2) {
-        // 失效所有貼文 cache（含 detail 與列表），讓 react-query 自動取回最新內容
-        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost', 'postDetail'].forEach(
-          (key) => queryClient.invalidateQueries({ queryKey: [key] })
-        );
+        const updatedStatus = Number(formData.get('status'));
+        [
+          'homepagePost',
+          'explorePost',
+          'exploreHashTag',
+          'profilePost',
+          'postDetail',
+          'myPostList',
+        ].forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
+        let title = '貼文已修改';
+        if (updatedStatus === POST_STATUS.DRAFT) title = '草稿已儲存';
+        else if (updatedStatus === POST_STATUS.OFFLINE) title = '貼文已下架';
         swal
           .fire({
-            title: '貼文已修改',
+            title,
             icon: 'success',
             confirmButtonText: '確認',
           })
@@ -151,7 +170,7 @@ function PostEditModal() {
     const formData = new FormData();
     formData.set('postId', postId);
     formData.set('content', content);
-    formData.set('status', '1');
+    formData.set('status', String(selectedStatus));
     formData.set('removeImage', removeImage.toString());
     formData.set('hashTags', JSON.stringify(hashTagArr));
     // 只有真的選了新檔案才 append；避免 null 被序列化為字串 "null"
@@ -227,15 +246,26 @@ function PostEditModal() {
               onChange={(e) => handleFileChange(e)}
             />
           </div>
-          <div>
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(Number(e.target.value))}
+              className="h-9 px-2 rounded-md border border-line bg-paper text-ink text-sm focus:outline-none focus:ring-1 focus:ring-brand"
+            >
+              {STATUS_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
             <button
               type="button"
               disabled={isEmpty(content) || editPostMutation.isPending}
-              className={`${BTN_PRIMARY} w-40 sm:w-24 py-1.5 rounded-full`}
+              className={`${BTN_PRIMARY} w-16 sm:w-20 py-1.5 rounded-full`}
               onClick={handleSubmit}
             >
               {editPostMutation.isPending ? (
-                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5" />
               ) : (
                 <>確認</>
               )}

@@ -131,7 +131,7 @@ function ExplorePage() {
         </div>
 
         {/* 頁籤 */}
-        <div className="w-full max-w-[600px]">
+        <div className="w-full max-w-4xl">
           <div className="text-lg flex border-b border-line text-ink-soft">
             <button
               type="button"
@@ -223,25 +223,25 @@ function ExplorePage() {
       <div className="flex justify-center">
         {/* 文章 */}
         {exploreTag === 'article' && (
-          <section className="flex justify-center w-full max-w-[600px]">
+          <section className="flex justify-center w-full max-w-4xl">
             <ExploreArticle />
           </section>
         )}
         {/* 貼文 */}
         {exploreTag === 'post' && (
-          <section className="flex justify-center w-full max-w-[600px]">
+          <section className="flex justify-center w-full max-w-4xl">
             <ExplorePost />
           </section>
         )}
         {/* 用戶 */}
         {exploreTag === 'user' && (
-          <section className="flex justify-center w-full max-w-[600px]">
+          <section className="flex justify-center w-full max-w-4xl">
             <ExploreUser />
           </section>
         )}
         {/* 標籤 */}
         {exploreTag === 'tag' && (
-          <section className="flex justify-center w-full max-w-[600px]">
+          <section className="flex justify-center w-full max-w-4xl">
             <ExploreHashTag />
           </section>
         )}

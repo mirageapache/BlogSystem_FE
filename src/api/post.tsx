@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './index';
-import { PostDataType } from '../types/postType';
+import { PostDataType, MyPostListType } from '../types/postType';
 import { AxResponseType } from '../types/apiType';
 
 const baseUrl = API_URL;
@@ -117,6 +117,24 @@ export async function toggleLikePost(postId: string, action: boolean) {
       return error.response;
     });
   return result;
+}
+
+/** 取得登入者本人的所有貼文（含草稿、下架） */
+export async function getMyPostList(
+  page: number,
+  pageLimit?: number,
+  status?: number
+): Promise<MyPostListType | null> {
+  if (page <= 0) return null;
+  const body: Record<string, number> = { page, limit: pageLimit ?? 20 };
+  if (status !== undefined) body.status = status;
+  return axios
+    .post(`${baseUrl}/post/myList`, body)
+    .then((res) => res.data)
+    .catch((error) => {
+      if (error.code === 'ERR_NETWORK') return { code: 'ERR_NETWORK' };
+      return error.response;
+    });
 }
 
 /** 取得搜尋hashTag(貼文) */

@@ -33,3 +33,10 @@ export interface PostVariablesType {
 export interface PostResultType extends RqResponseType {
   data: PostDataType | null;
 }
+
+export interface MyPostListType {
+  posts: PostDataType[];
+  nextPage: number;
+  totalPosts: number;
+  code?: string;
+}

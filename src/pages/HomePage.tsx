@@ -56,7 +56,7 @@ function HomePage() {
     return <BasicErrorPanel errorMsg={ERR_NETWORK_MSG} />;
 
   return (
-    <div className="w-full max-w-[600px] p-1 sm:p-0">
+    <div className="w-full max-w-[700px] p-1 sm:p-0">
       <PostListDynamic postListData={postList} isLoading={isLoading} atBottom={!hasNextPage} />
     </div>
   );

@@ -19,6 +19,7 @@ import { ERR_NETWORK_MSG } from 'constants/StringConstants';
 import { handleHashTag } from '../../utils/input';
 import { setShowCreateModal } from '../../redux/postSlice';
 import { GRAY_BG_PANEL, WHITE_SPACER, BTN_PRIMARY } from '../../constants/LayoutConstants';
+import { POST_STATUS } from '../../constants/StringConstants';
 
 function PostCreateModal() {
   const dispatchSlice = useDispatch();
@@ -62,16 +63,20 @@ function PostCreateModal() {
   /** 新增貼文 mutation */
   const createPostMutation = useMutation({
     mutationFn: (formData: FormData) => createPost(formData),
-    onSuccess: (res) => {
+    onSuccess: (res, formData) => {
       if (handleStatus(get(res, 'status')) === 2) {
         const swal = withReactContent(Swal);
-        // 失效所有貼文列表 cache，新貼文自動拉回
-        ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
-          queryClient.invalidateQueries({ queryKey: [key] })
-        );
+        const submittedStatus = Number(formData.get('status'));
+        const isDraft = submittedStatus === POST_STATUS.DRAFT;
+        if (!isDraft) {
+          ['homepagePost', 'explorePost', 'exploreHashTag', 'profilePost'].forEach((key) =>
+            queryClient.invalidateQueries({ queryKey: [key] })
+          );
+        }
+        queryClient.invalidateQueries({ queryKey: ['myPostList'] });
         swal
           .fire({
-            title: '貼文已發佈',
+            title: isDraft ? '草稿已儲存' : '貼文已發佈',
             icon: 'success',
             confirmButtonText: '確認',
           })
@@ -89,17 +94,14 @@ function PostCreateModal() {
     onError: () => errorAlert(),
   });
 
-  /** 發佈貼文 */
-  const handleSubmit = async () => {
-    // validate form data
-    if (isEmpty(content) || content.length === 0) {
-      return;
-    }
+  /** 送出貼文（status: 0=草稿, 1=發佈） */
+  const handleSubmit = (status: number) => {
+    if (isEmpty(content) || content.length === 0) return;
     if (guardVisitorAction()) return;
 
     const formData = new FormData();
     formData.set('content', content);
-    formData.set('status', '1');
+    formData.set('status', String(status));
     formData.set('image', image);
     formData.set('hashTags', JSON.stringify(hashTagArr));
     if (imageFile instanceof File) formData.set('imageFile', imageFile);
@@ -175,15 +177,23 @@ function PostCreateModal() {
               onChange={(e) => handleFileChange(e)}
             />
           </div>
-          <div>
+          <div className="flex gap-2">
             <button
               type="button"
               disabled={isEmpty(content) || createPostMutation.isPending}
-              className={`${BTN_PRIMARY} w-40 sm:w-24 py-1.5 rounded-full`}
-              onClick={handleSubmit}
+              className="w-24 py-1.5 rounded-full border border-line text-sm text-muted hover:text-ink hover:border-ink transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => handleSubmit(POST_STATUS.DRAFT)}
+            >
+              儲存草稿
+            </button>
+            <button
+              type="button"
+              disabled={isEmpty(content) || createPostMutation.isPending}
+              className={`${BTN_PRIMARY} w-16 sm:w-20 py-1.5 rounded-full`}
+              onClick={() => handleSubmit(POST_STATUS.PUBLIC)}
             >
               {createPostMutation.isPending ? (
-                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5 " />
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin h-5 w-5" />
               ) : (
                 <>發佈</>
               )}
