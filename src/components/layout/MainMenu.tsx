@@ -12,6 +12,8 @@ import {
   faRightFromBracket,
   faSun,
   faXmark,
+  faFileLines,
+  faNewspaper,
 } from '@fortawesome/free-solid-svg-icons';
 import { faBell, faCompass } from '@fortawesome/free-regular-svg-icons';
 import get from 'lodash/get';
@@ -259,6 +261,19 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     <FontAwesomeIcon icon={faPenNib} />
                   </MenuItem>
                   <MenuItem
+                    href={checkLogin() ? '/my-articles' : ''}
+                    text="我的文章"
+                    count={0}
+                    activeItem={activePage === 'myArticles'}
+                    handleClick={() => {
+                      closeMenu();
+                      dispatch(setActivePage('myArticles'));
+                      scrollToTop();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faFileLines} />
+                  </MenuItem>
+                  <MenuItem
                     href=""
                     text="建立貼文"
                     count={0}
@@ -266,6 +281,19 @@ function MainMenu({ toggleMenuAnimation, setToggleMenuAnimation }: MainMenuType)
                     handleClick={closeMenu}
                   >
                     <FontAwesomeIcon icon={faPenToSquare} />
+                  </MenuItem>
+                  <MenuItem
+                    href={checkLogin() ? '/my-posts' : ''}
+                    text="我的貼文"
+                    count={0}
+                    activeItem={activePage === 'myPosts'}
+                    handleClick={() => {
+                      closeMenu();
+                      dispatch(setActivePage('myPosts'));
+                      scrollToTop();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faNewspaper} />
                   </MenuItem>
                 </>
               )}
